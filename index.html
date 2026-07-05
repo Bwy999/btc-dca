@@ -304,7 +304,7 @@ body{
 
 <!-- Month bar -->
 <div class="month-bar">
-  <div class="month-tx"><b id="cm">--</b> · 锚点 AHR999=1 <b class="num">$<span id="rhd">78,000</span></b></div>
+  <div class="month-tx"><b id="cm">--</b> · 锚点 (MA250+AHR₁)/2 <b class="num">$<span id="rhd">78,000</span></b></div>
   <button class="btn ghost sm" onclick="upHigh()">更新高点</button>
   <button class="btn sm" onclick="nxtMo()">下月</button>
 </div>
@@ -343,8 +343,8 @@ body{
   <!-- Dimensions -->
   <div class="dim">
     <div class="dim-info">
-      <div class="dim-name">AHR999</div>
-      <div class="dim-meta"><span class="dim-live">LIVE</span> · 20%</div>
+      <div class="dim-name">AHR999 新拟</div>
+      <div class="dim-meta"><span class="dim-live">LIVE</span> · 20% · 26回归</div>
     </div>
     <input class="dim-slider" type="range" min="0" max="100" value="65" id="d0" oninput="calc()">
     <div class="dim-raw num" id="r0"></div>
@@ -486,6 +486,15 @@ body{
 
 <div class="divider"></div>
 
+<!-- MA Ladder -->
+<div class="sec">
+  <div class="sec-title">均线阶梯</div>
+  <div class="sec-sub">51 · 120 · 250 · 850 —— 追高等回踩，越远的线越稳</div>
+  <div id="maList"><div class="log-empty">刷新后自动计算</div></div>
+</div>
+
+<div class="divider"></div>
+
 <!-- Budget -->
 <div class="sec">
   <div class="sec-title">本月预算</div>
@@ -535,7 +544,7 @@ body{
   <div class="sec-sub">从高点每跌一档自动提示 · 触发就买不许等</div>
 
   <div class="trig-hdr">
-    <span>基准 <span style="color:var(--gn);font-weight:600">AHR999=1 自动</span></span>
+    <span>基准 <span style="color:var(--gn);font-weight:600">MA250·AHR999 均值</span></span>
     <input id="rh" type="number" value="78000" oninput="trig()" class="num">
     <span>跌幅 <span class="drop-badge num" id="dp2" style="color:var(--rd)">--</span></span>
     <span style="margin-left:auto" class="num" id="cp"></span>
@@ -631,6 +640,9 @@ var TR=[
 ];
 var CACHE_KEY='btc_live_v6';
 var CACHE_TTL=5*60*1000;
+// AHR999 power-law coefficients: log10(P) = a*log10(days) + b
+var AHR_A=5.5856,AHR_B=-16.1567;   // 2010-2026 refit (R²=0.958)
+var AHR_A0=5.84,AHR_B0=-17.1;      // ahr999 classic 2018 fit
 
 // ── State ────────────────────────────────────────────────────────────────────
 function mstr(){var d=new Date();return d.getFullYear()+'年'+(d.getMonth()+1)+'月';}
@@ -693,8 +705,10 @@ async function fetchLive(force){
       var p=result.price||mp;
       if(p){
         var g=new Date('2009-01-03'),dg=Math.floor((new Date()-g)/86400000);
-        var pl=Math.pow(10,5.84*Math.log10(dg)-17.1);
+        var pl=Math.pow(10,AHR_A*Math.log10(dg)+AHR_B);
+        var pl0=Math.pow(10,AHR_A0*Math.log10(dg)+AHR_B0);
         result.ahr999=p*p/(m200*pl);
+        result.ahr999c=p*p/(m200*pl0);
         result.ahr1price=Math.sqrt(m200*pl);
         ok.push('AHR999');
       }
@@ -724,22 +738,26 @@ async function fetchLive(force){
     ok.push('200WMA');
   }catch(e){fail.push('200WMA');}
 
-  // 3. AHR999 fallback via Binance daily
-  if(!result.ahr999){
-    try{
-      var dk=await tryFetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=210');
-      var dc=dk.map(function(k){return parseFloat(k[4]);});
-      var d200=dc.slice(-200);
-      result.dma200=d200.reduce(function(a,b){return a+b;},0)/d200.length;
+  // 3. Binance daily klines (1000d) → MA51/120/250/850 + AHR999 fallback
+  try{
+    var dk=await tryFetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=1000');
+    var dc=dk.map(function(k){return parseFloat(k[4]);});
+    function maN(n){if(dc.length<n)return null;var s=dc.slice(-n);return s.reduce(function(a,b){return a+b;},0)/n;}
+    result.ma51=maN(51);result.ma120=maN(120);result.ma250=maN(250);result.ma850=maN(850);
+    ok.push('均线');
+    if(!result.ahr999){
+      result.dma200=maN(200);
       if(result.price&&result.dma200){
         var g2=new Date('2009-01-03'),dg2=Math.floor((new Date()-g2)/86400000);
-        var pl2=Math.pow(10,5.84*Math.log10(dg2)-17.1);
+        var pl2=Math.pow(10,AHR_A*Math.log10(dg2)+AHR_B);
+        var pl20=Math.pow(10,AHR_A0*Math.log10(dg2)+AHR_B0);
         result.ahr999=result.price*result.price/(result.dma200*pl2);
+        result.ahr999c=result.price*result.price/(result.dma200*pl20);
         result.ahr1price=Math.sqrt(result.dma200*pl2);
         ok.push('AHR999');
       }
-    }catch(e){fail.push('AHR999');}
-  }
+    }
+  }catch(e){fail.push('均线');}
 
   // 4. FGI
   try{
@@ -801,6 +819,7 @@ async function fetchLive(force){
     setLiveStatus(ok.length>fail.length?'ok':'','已更新 '+msg);
     var extra=[];
     if(result.mayerMult)extra.push('Mayer '+result.mayerMult.toFixed(2)+'x');
+    if(result.ahr999c)extra.push('经典AHR '+result.ahr999c.toFixed(2));
     document.getElementById('lupdated').textContent=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})+(extra.length?' · '+extra.join(' '):'');
   }else{
     setLiveStatus('','全部失败 · 请下载后用浏览器直接打开');
@@ -825,8 +844,15 @@ function applyLive(d){
     document.getElementById('r0').textContent=d.ahr999.toFixed(3);
     S.dims[0]=sc;
   }
-  if(d.ahr1price){
-    var anchor=Math.round(d.ahr1price);
+  if(d.ma51){
+    S.mas={m51:d.ma51,m120:d.ma120,m250:d.ma250,m850:d.ma850};
+    renderMA();
+  }
+  if(d.ahr1price||d.ma250){
+    var ap=[];
+    if(d.ma250)ap.push(d.ma250);
+    if(d.ahr1price)ap.push(d.ahr1price);
+    var anchor=Math.round(ap.reduce(function(a,b){return a+b;},0)/ap.length);
     S.rh=anchor;
     document.getElementById('rh').value=anchor;
   }
@@ -945,6 +971,33 @@ function upH2(){
   document.getElementById('hl').textContent=h.l.toFixed(4)+' BTC';
   document.getElementById('hlc').textContent='均价 $'+Number(h.lc).toLocaleString();
 }
+function renderMA(){
+  var el=document.getElementById('maList');
+  if(!el)return;
+  var cur=S.price,m=S.mas;
+  if(!m||!m.m51){el.innerHTML='<div class="log-empty">刷新后自动计算</div>';return;}
+  var rows=[
+    ['MA51','快线·急行军',m.m51],
+    ['MA120','半年线',m.m120],
+    ['MA250','年线·锚点成分',m.m250],
+    ['MA850','三年线·压箱底',m.m850]
+  ];
+  el.innerHTML=rows.map(function(r){
+    var name=r[0],sub=r[1],v=r[2];
+    if(!v)return '<div class="trig"><div class="trig-pct">'+name+'</div><div class="trig-price num" style="color:var(--tx3)">数据不足</div></div>';
+    var dd=(cur-v)/v*100;
+    var pill,pc='';
+    if(dd>2){pill='<span class="pill wait">上方 +'+dd.toFixed(1)+'%</span>';}
+    else if(dd>=-2){pill='<span class="pill fire">▶ 到位可买</span>';pc='color:var(--gn)';}
+    else{pill='<span class="pill done">已低于 '+Math.abs(dd).toFixed(1)+'%</span>';pc='color:var(--gn)';}
+    return '<div class="trig">'+
+      '<div class="trig-pct">'+name+'</div>'+
+      '<div class="trig-price num" style="'+pc+'">$'+Math.round(v).toLocaleString()+
+      '<span style="font-size:11px;color:var(--tx3);font-weight:500"> '+sub+'</span></div>'+
+      pill+'</div>';
+  }).join('');
+}
+
 function upG(){
   var p=S.price,g=300000,pct=Math.min(100,p/g*100);
   document.getElementById('gb').style.width=pct+'%';
@@ -1113,7 +1166,7 @@ function init(){
   S.dims.forEach(function(v,i){document.getElementById('d'+i).value=v;});
   if(!S.sigs)S.sigs={};
   if(!S.sigs.lo){S.sigs.lo=29132;S.sigs.hi=90461;}
-  calc();upB();trig();upH2();upG();rl2();rSig();
+  calc();upB();trig();upH2();upG();rl2();rSig();renderMA();
   fetchLive(false);
 }
 init();
