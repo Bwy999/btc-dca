@@ -438,10 +438,10 @@ body{
       <div class="tile-hint">全网矿机关机价分布</div>
     </div>
     <div class="tile">
-      <div class="tile-name">均衡价格</div>
-      <input id="sbl" type="number" placeholder="28000" oninput="sig()">
+      <div class="tile-name"><span class="tile-live"></span>均衡价格</div>
+      <input id="sbl" type="number" placeholder="39143" oninput="sig()">
       <div class="tile-status" id="ss1"></div>
-      <div class="tile-hint">历史周期底部锚</div>
+      <div class="tile-hint">RP−TP · TP校准26/07</div>
     </div>
     <div class="tile">
       <div class="tile-name"><span class="tile-live"></span>200周均线</div>
@@ -643,6 +643,8 @@ var CACHE_TTL=5*60*1000;
 // AHR999 power-law coefficients: log10(P) = a*log10(days) + b
 var AHR_A=5.5856,AHR_B=-16.1567;   // 2010-2026 refit (R²=0.958)
 var AHR_A0=5.84,AHR_B0=-17.1;      // ahr999 classic 2018 fit
+// 均衡价 = Realized Price − Transferred Price; TP为极慢变量,按2026-07 fuckbtc $39,143校准
+var BAL_TP=14657;
 
 // ── State ────────────────────────────────────────────────────────────────────
 function mstr(){var d=new Date();return d.getFullYear()+'年'+(d.getMonth()+1)+'月';}
@@ -777,11 +779,17 @@ async function fetchLive(force){
     ok.push('减半');
   }catch(e){fail.push('减半');}
 
-  // 6. MVRV
+  // 6. MVRV + Realized Price → 均衡价格实时计算
   try{
-    var mv=await tryFetch('https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=CapMVRVCur&frequency=1d&limit_per_asset=1');
-    if(mv.data&&mv.data.length>0&&mv.data[0].CapMVRVCur){
-      result.mvrv=parseFloat(mv.data[0].CapMVRVCur);ok.push('MVRV');
+    var mv=await tryFetch('https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=CapMVRVCur,CapRealUSD,SplyCur&frequency=1d&limit_per_asset=1');
+    if(mv.data&&mv.data.length>0){
+      var row=mv.data[0];
+      if(row.CapMVRVCur){result.mvrv=parseFloat(row.CapMVRVCur);ok.push('MVRV');}
+      if(row.CapRealUSD&&row.SplyCur){
+        result.realized=parseFloat(row.CapRealUSD)/parseFloat(row.SplyCur);
+        result.balanced=Math.round(result.realized-BAL_TP);
+        ok.push('均衡价');
+      }
     }
   }catch(e){fail.push('MVRV');}
 
@@ -820,6 +828,7 @@ async function fetchLive(force){
     var extra=[];
     if(result.mayerMult)extra.push('Mayer '+result.mayerMult.toFixed(2)+'x');
     if(result.ahr999c)extra.push('经典AHR '+result.ahr999c.toFixed(2));
+    if(result.realized)extra.push('RP $'+(result.realized/1000).toFixed(1)+'K');
     document.getElementById('lupdated').textContent=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})+(extra.length?' · '+extra.join(' '):'');
   }else{
     setLiveStatus('','全部失败 · 请下载后用浏览器直接打开');
@@ -879,6 +888,7 @@ function applyLive(d){
   if(d.halvingDays)document.getElementById('shv').value=d.halvingDays;
   if(d.prob50!==undefined)document.getElementById('spb').value=d.prob50;
   if(d.prob80!==undefined)document.getElementById('spu').value=d.prob80;
+  if(d.balanced)document.getElementById('sbl').value=d.balanced;
   sv3(S);
   calc();trig();upB();upH2();upG();sig();
 }
