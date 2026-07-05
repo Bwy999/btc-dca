@@ -384,7 +384,7 @@ body{
   <div class="dim">
     <div class="dim-info">
       <div class="dim-name">Puell 矿工</div>
-      <div class="dim-meta"><span class="dim-manual">手动</span> · 15% <a class="dim-link" href="https://charts.checkonchain.com/btconchain/mining/puellmultiple/puellmultiple_light.html" target="_blank">↗</a></div>
+      <div class="dim-meta"><span class="dim-live">LIVE</span> · 15% · BGeometrics</div>
     </div>
     <input class="dim-slider" type="range" min="0" max="100" value="60" id="d4" oninput="calc()">
     <div class="dim-raw num" id="r4"></div>
@@ -394,7 +394,7 @@ body{
   <div class="dim">
     <div class="dim-info">
       <div class="dim-name">Reserve Risk</div>
-      <div class="dim-meta"><span class="dim-manual">手动</span> · 10% <a class="dim-link" href="https://charts.checkonchain.com/btconchain/lifespan/reserverisk/reserverisk_light.html" target="_blank">↗</a></div>
+      <div class="dim-meta"><span class="dim-live">LIVE</span> · 10% · BGeometrics</div>
     </div>
     <input class="dim-slider" type="range" min="0" max="100" value="70" id="d5" oninput="calc()">
     <div class="dim-raw num" id="r5"></div>
@@ -404,7 +404,7 @@ body{
   <div class="dim">
     <div class="dim-info">
       <div class="dim-name">SOPR</div>
-      <div class="dim-meta"><span class="dim-manual">手动</span> · 10% <a class="dim-link" href="https://charts.checkonchain.com/btconchain/realised/sopr/sopr_light.html" target="_blank">↗</a></div>
+      <div class="dim-meta"><span class="dim-live">LIVE</span> · 10% · BGeometrics</div>
     </div>
     <input class="dim-slider" type="range" min="0" max="100" value="55" id="d6" oninput="calc()">
     <div class="dim-raw num" id="r6"></div>
@@ -450,10 +450,10 @@ body{
       <div class="tile-hint">从未长期跌破</div>
     </div>
     <div class="tile">
-      <div class="tile-name">SOPR</div>
-      <input id="ssp" type="number" step="0.001" placeholder="0.985" oninput="sig()">
+      <div class="tile-name"><span class="tile-live"></span>SOPR</div>
+      <input id="ssp" type="number" step="0.001" placeholder="1.008" oninput="sig()">
       <div class="tile-status" id="ss3"></div>
-      <div class="tile-hint">&lt;1 投降 · &gt;1 获利了结</div>
+      <div class="tile-hint">BGeometrics · 6h缓存</div>
     </div>
     <div class="tile">
       <div class="tile-name"><span class="tile-live"></span>减半倒计时</div>
@@ -690,6 +690,42 @@ function ahr999ToSc(v){if(!v)return 65;if(v<0.45)return 95;if(v<0.7)return 88;if
 function wma200ToSc(r){if(!r)return 60;if(r<0.7)return 95;if(r<0.85)return 82;if(r<1.1)return 67;if(r<1.5)return 47;if(r<2.2)return 30;return 15;}
 function mvrvToSc(v){if(!v)return 62;if(v<0.8)return 95;if(v<1.2)return 85;if(v<1.8)return 72;if(v<2.5)return 52;if(v<3.5)return 32;return 15;}
 function fgiToSc(v){if(v==null)return 50;if(v<10)return 95;if(v<20)return 85;if(v<35)return 72;if(v<50)return 58;if(v<65)return 44;if(v<80)return 28;return 15;}
+function soprToSc(v){if(!v)return 55;if(v<0.95)return 95;if(v<0.97)return 88;if(v<0.99)return 76;if(v<1.0)return 64;if(v<1.02)return 50;if(v<1.05)return 34;return 16;}
+function puellToSc(v){if(!v)return 60;if(v<0.4)return 92;if(v<0.5)return 84;if(v<0.8)return 70;if(v<1)return 60;if(v<1.5)return 46;if(v<2.5)return 30;return 14;}
+function rrToSc(v){if(!v)return 70;if(v<0.001)return 94;if(v<0.0015)return 84;if(v<0.0025)return 72;if(v<0.004)return 58;if(v<0.008)return 40;if(v<0.015)return 25;return 12;}
+function bgLast(res){
+  var arr=res&&res.data?res.data:res;
+  if(!arr)return null;
+  if(!Array.isArray(arr))arr=[arr];
+  if(!arr.length)return null;
+  var last=arr[arr.length-1];
+  if(Array.isArray(last)){var n=parseFloat(last[1]);return isFinite(n)?n:null;}
+  for(var k in last){
+    if(/date|day|time|unix/i.test(k))continue;
+    var v=parseFloat(last[k]);
+    if(isFinite(v))return v;
+  }
+  return null;
+}
+async function bgMetric(key,paths){
+  try{var cc=JSON.parse(localStorage.getItem('bg_'+key));if(cc&&Date.now()-cc.ts<6*3600*1000)return cc.v;}catch(e){}
+  var mem={};try{mem=JSON.parse(localStorage.getItem('bg_ep')||'{}');}catch(e){}
+  var order=paths.slice();
+  if(mem[key])order=[mem[key]].concat(paths.filter(function(p){return p!==mem[key];}));
+  for(var i=0;i<order.length;i++){
+    try{
+      var r=await tryFetch(order[i]);
+      var v=bgLast(r);
+      if(v!=null){
+        mem[key]=order[i];
+        localStorage.setItem('bg_ep',JSON.stringify(mem));
+        localStorage.setItem('bg_'+key,JSON.stringify({ts:Date.now(),v:v}));
+        return v;
+      }
+    }catch(e){}
+  }
+  return null;
+}
 
 async function fetchLive(force){
   if(!force){var c=fetchCache();if(c){applyLive(c);return;}}
@@ -819,6 +855,14 @@ async function fetchLive(force){
     if(p50!==null||p80!==null)ok.push('概率');
   }catch(e){fail.push('概率');}
 
+  // 8. SOPR / Puell / Reserve Risk — BGeometrics (匿名限15次/天; 6h缓存+端点记忆省配额)
+  var soprV=await bgMetric('sopr',['https://bitcoin-data.com/v1/sopr','https://api.bgeometrics.com/v1/sopr']);
+  if(soprV){result.sopr=soprV;ok.push('SOPR');}else fail.push('SOPR');
+  var puellV=await bgMetric('puell',['https://bitcoin-data.com/v1/puell-multiple','https://api.bgeometrics.com/v1/puell-multiple','https://bitcoin-data.com/v1/puell_multiple']);
+  if(puellV){result.puell=puellV;ok.push('Puell');}else fail.push('Puell');
+  var rrV=await bgMetric('rr',['https://bitcoin-data.com/v1/reserve-risk','https://api.bgeometrics.com/v1/reserve-risk','https://bitcoin-data.com/v1/reserve_risk']);
+  if(rrV){result.rr=rrV;ok.push('RR');}else fail.push('RR');
+
   if(ok.length>0){
     saveCache(result);
     applyLive(result);
@@ -889,6 +933,25 @@ function applyLive(d){
   if(d.prob50!==undefined)document.getElementById('spb').value=d.prob50;
   if(d.prob80!==undefined)document.getElementById('spu').value=d.prob80;
   if(d.balanced)document.getElementById('sbl').value=d.balanced;
+  if(d.sopr){
+    var s6=soprToSc(d.sopr);
+    document.getElementById('d6').value=s6;
+    document.getElementById('r6').textContent=d.sopr.toFixed(3);
+    S.dims[6]=s6;
+    document.getElementById('ssp').value=d.sopr.toFixed(3);
+  }
+  if(d.puell){
+    var s4=puellToSc(d.puell);
+    document.getElementById('d4').value=s4;
+    document.getElementById('r4').textContent=d.puell.toFixed(2);
+    S.dims[4]=s4;
+  }
+  if(d.rr){
+    var s5=rrToSc(d.rr);
+    document.getElementById('d5').value=s5;
+    document.getElementById('r5').textContent=d.rr.toFixed(4);
+    S.dims[5]=s5;
+  }
   sv3(S);
   calc();trig();upB();upH2();upG();sig();
 }
