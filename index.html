@@ -304,7 +304,7 @@ body{
 
 <!-- Month bar -->
 <div class="month-bar">
-  <div class="month-tx"><b id="cm">--</b> · 高点基准 <b class="num">$<span id="rhd">78,000</span></b></div>
+  <div class="month-tx"><b id="cm">--</b> · 锚点 AHR999=1 <b class="num">$<span id="rhd">78,000</span></b></div>
   <button class="btn ghost sm" onclick="upHigh()">更新高点</button>
   <button class="btn sm" onclick="nxtMo()">下月</button>
 </div>
@@ -431,11 +431,11 @@ body{
   <div class="tiles">
     <div class="tile">
       <div class="tile-name">关机价区间</div>
-      <input id="slo" type="number" placeholder="42000" oninput="sig()">
+      <input id="slo" type="number" placeholder="29132" oninput="sig()">
       <div class="tile-sep">至</div>
-      <input id="shi" type="number" placeholder="52000" oninput="sig()">
+      <input id="shi" type="number" placeholder="90461" oninput="sig()">
       <div class="tile-status" id="ss0"></div>
-      <div class="tile-hint">矿工关机支撑区</div>
+      <div class="tile-hint">全网矿机关机价分布</div>
     </div>
     <div class="tile">
       <div class="tile-name">均衡价格</div>
@@ -462,10 +462,16 @@ body{
       <div class="tile-hint">奖励 3.125 → 1.5625</div>
     </div>
     <div class="tile">
-      <div class="tile-name">跌破 $50K 概率</div>
+      <div class="tile-name"><span class="tile-live"></span>跌破 $50K 概率</div>
       <input id="spb" type="number" step="0.1" placeholder="18" oninput="sig()">
       <div class="tile-status" id="ss5"></div>
-      <div class="tile-hint">Polymarket / Kalshi %</div>
+      <div class="tile-hint">Polymarket 实时 %</div>
+    </div>
+    <div class="tile">
+      <div class="tile-name"><span class="tile-live"></span>突破 $80K 概率</div>
+      <input id="spu" type="number" step="0.1" placeholder="32" oninput="sig()">
+      <div class="tile-status" id="ss6"></div>
+      <div class="tile-hint">Polymarket 实时 %</div>
     </div>
   </div>
 
@@ -529,7 +535,7 @@ body{
   <div class="sec-sub">从高点每跌一档自动提示 · 触发就买不许等</div>
 
   <div class="trig-hdr">
-    <span>基准高点</span>
+    <span>基准 <span style="color:var(--gn);font-weight:600">AHR999=1 自动</span></span>
     <input id="rh" type="number" value="78000" oninput="trig()" class="num">
     <span>跌幅 <span class="drop-badge num" id="dp2" style="color:var(--rd)">--</span></span>
     <span style="margin-left:auto" class="num" id="cp"></span>
@@ -688,7 +694,9 @@ async function fetchLive(force){
       if(p){
         var g=new Date('2009-01-03'),dg=Math.floor((new Date()-g)/86400000);
         var pl=Math.pow(10,5.84*Math.log10(dg)-17.1);
-        result.ahr999=p*p/(m200*pl);ok.push('AHR999');
+        result.ahr999=p*p/(m200*pl);
+        result.ahr1price=Math.sqrt(m200*pl);
+        ok.push('AHR999');
       }
     }
     if(mult)result.mayerMult=mult;
@@ -727,6 +735,7 @@ async function fetchLive(force){
         var g2=new Date('2009-01-03'),dg2=Math.floor((new Date()-g2)/86400000);
         var pl2=Math.pow(10,5.84*Math.log10(dg2)-17.1);
         result.ahr999=result.price*result.price/(result.dma200*pl2);
+        result.ahr1price=Math.sqrt(result.dma200*pl2);
         ok.push('AHR999');
       }
     }catch(e){fail.push('AHR999');}
@@ -757,6 +766,32 @@ async function fetchLive(force){
       result.mvrv=parseFloat(mv.data[0].CapMVRVCur);ok.push('MVRV');
     }
   }catch(e){fail.push('MVRV');}
+
+  // 7. Polymarket: ↓$50K & ↑$80K probabilities (Gamma API, free & CORS-open)
+  try{
+    var ev=await tryFetch('https://gamma-api.polymarket.com/events?slug=what-price-will-bitcoin-hit-before-2027');
+    var e0=Array.isArray(ev)?ev[0]:ev;
+    var mk=(e0&&e0.markets)||[];
+    function findMkt(num,dirRe){
+      var re=new RegExp('(^|[^0-9])'+num);
+      for(var i=0;i<mk.length;i++){
+        var q=(mk[i].question||'')+' '+(mk[i].groupItemTitle||'');
+        if(re.test(q)&&dirRe.test(q))return mk[i];
+      }
+      return null;
+    }
+    function yesProb(m){
+      if(!m)return null;
+      var op=m.outcomePrices;
+      var pr=typeof op==='string'?JSON.parse(op):(op||[]);
+      return pr.length?Math.round(parseFloat(pr[0])*1000)/10:null;
+    }
+    var p50=yesProb(findMkt('50,000',/dip|below|↓/i));
+    var p80=yesProb(findMkt('80,000',/hit|reach|above|↑/i));
+    if(p50!==null)result.prob50=p50;
+    if(p80!==null)result.prob80=p80;
+    if(p50!==null||p80!==null)ok.push('概率');
+  }catch(e){fail.push('概率');}
 
   if(ok.length>0){
     saveCache(result);
@@ -790,6 +825,11 @@ function applyLive(d){
     document.getElementById('r0').textContent=d.ahr999.toFixed(3);
     S.dims[0]=sc;
   }
+  if(d.ahr1price){
+    var anchor=Math.round(d.ahr1price);
+    S.rh=anchor;
+    document.getElementById('rh').value=anchor;
+  }
   if(d.wma200&&d.wma200ratio){
     var s1=wma200ToSc(d.wma200ratio);
     document.getElementById('d1').value=s1;
@@ -811,6 +851,8 @@ function applyLive(d){
     S.dims[3]=s3;
   }
   if(d.halvingDays)document.getElementById('shv').value=d.halvingDays;
+  if(d.prob50!==undefined)document.getElementById('spb').value=d.prob50;
+  if(d.prob80!==undefined)document.getElementById('spu').value=d.prob80;
   sv3(S);
   calc();trig();upB();upH2();upG();sig();
 }
@@ -982,11 +1024,13 @@ function sig(){
   var sp=+document.getElementById('ssp').value||0;
   var hv=+document.getElementById('shv').value||0;
   var pb=+document.getElementById('spb').value||0;
+  var pu=+document.getElementById('spu').value||0;
 
   if(lo&&hi2){
-    var inZ=cur>=lo&&cur<=hi2,bel=cur<lo;
-    sst('ss0',bel?'极端支撑':inZ?'接近关机区':cur<hi2*1.2?'矿工承压':'矿工盈利',
-      bel?'var(--gn)':inZ?'var(--rd)':cur<hi2*1.2?'var(--or)':'var(--tx2)');
+    var bel=cur<lo,abv=cur>hi2;
+    var pcm=Math.round(Math.min(100,Math.max(0,(hi2-cur)/(hi2-lo)*100)));
+    sst('ss0',bel?'全网亏损 极端底':abv?'矿工全面盈利':'约'+pcm+'% 矿机承压',
+      bel?'var(--gn)':abv?'var(--tx2)':pcm>60?'var(--rd)':'var(--or)');
     document.getElementById('kp0').textContent='$'+(lo/1000).toFixed(0)+'K';
   }
   if(bl){
@@ -1008,6 +1052,7 @@ function sig(){
   }
   if(hv){sst('ss4',hv+' 天'+(hv>500?' · 尚早':hv>180?' · 接近':' · 冲刺'),hv>500?'var(--tx2)':hv>180?'var(--yl)':'var(--gn)');}
   if(pb){sst('ss5',pb<10?'低风险':pb<25?'中等风险':pb<40?'较高风险':'高风险',pb<10?'var(--gn)':pb<25?'var(--yl)':pb<40?'var(--or)':'var(--rd)');}
+  if(pu){sst('ss6',pu<15?'突破渺茫':pu<35?'偏空定价':pu<55?'五五开':'看涨升温',pu<15?'var(--rd)':pu<35?'var(--or)':pu<55?'var(--yl)':'var(--gn)');}
 
   document.getElementById('kp3').textContent='$'+cur.toLocaleString();
   var all=[lo,bl,wm,cur].filter(function(v){return v>0;});
@@ -1015,13 +1060,13 @@ function sig(){
     var mn=Math.min.apply(null,all)*.92,mx=Math.max.apply(null,all)*1.05;
     document.getElementById('pd').style.left=Math.min(100,Math.max(0,(cur-mn)/(mx-mn)*100))+'%';
   }
-  S.sigs={lo:lo,hi:hi2,bl:bl,wm:wm,sp:sp,hv:hv,pb:pb};
+  S.sigs={lo:lo,hi:hi2,bl:bl,wm:wm,sp:sp,hv:hv,pb:pb,pu:pu};
   sv3(S);
 }
 
 function rSig(){
   if(!S.sigs)return;
-  var m={lo:'slo',hi:'shi',bl:'sbl',wm:'swm',sp:'ssp',hv:'shv',pb:'spb'};
+  var m={lo:'slo',hi:'shi',bl:'sbl',wm:'swm',sp:'ssp',hv:'shv',pb:'spb',pu:'spu'};
   Object.keys(m).forEach(function(k){
     var e=document.getElementById(m[k]);
     if(e&&S.sigs[k])e.value=S.sigs[k];
@@ -1066,6 +1111,8 @@ function init(){
   document.getElementById('rh').value=S.rh;
   document.getElementById('lp').value=S.price;
   S.dims.forEach(function(v,i){document.getElementById('d'+i).value=v;});
+  if(!S.sigs)S.sigs={};
+  if(!S.sigs.lo){S.sigs.lo=29132;S.sigs.hi=90461;}
   calc();upB();trig();upH2();upG();rl2();rSig();
   fetchLive(false);
 }
