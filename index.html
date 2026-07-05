@@ -430,12 +430,12 @@ body{
 
   <div class="tiles">
     <div class="tile">
-      <div class="tile-name">关机价区间</div>
+      <div class="tile-name"><span class="tile-live"></span>关机价区间</div>
       <input id="slo" type="number" placeholder="29132" oninput="sig()">
       <div class="tile-sep">至</div>
       <input id="shi" type="number" placeholder="90461" oninput="sig()">
       <div class="tile-status" id="ss0"></div>
-      <div class="tile-hint">全网矿机关机价分布</div>
+      <div class="tile-hint">算力实时推算 · $0.06/kWh</div>
     </div>
     <div class="tile">
       <div class="tile-name"><span class="tile-live"></span>均衡价格</div>
@@ -645,6 +645,8 @@ var AHR_A=5.5856,AHR_B=-16.1567;   // 2010-2026 refit (R²=0.958)
 var AHR_A0=5.84,AHR_B0=-17.1;      // ahr999 classic 2018 fit
 // 均衡价 = Realized Price − Transferred Price; TP为极慢变量,按2026-07 fuckbtc $39,143校准
 var BAL_TP=14657;
+// 关机价推算: 效率区间 J/TH (S21XP Hyd≈12 → S19≈37.3), 电价$0.06/kWh, 按fuckbtc口径校准
+var MINER_EFF_LO=12,MINER_EFF_HI=37.3,ELEC_KWH=0.06;
 
 // ── State ────────────────────────────────────────────────────────────────────
 function mstr(){var d=new Date();return d.getFullYear()+'年'+(d.getMonth()+1)+'月';}
@@ -693,33 +695,49 @@ function fgiToSc(v){if(v==null)return 50;if(v<10)return 95;if(v<20)return 85;if(
 function soprToSc(v){if(!v)return 55;if(v<0.95)return 95;if(v<0.97)return 88;if(v<0.99)return 76;if(v<1.0)return 64;if(v<1.02)return 50;if(v<1.05)return 34;return 16;}
 function puellToSc(v){if(!v)return 60;if(v<0.4)return 92;if(v<0.5)return 84;if(v<0.8)return 70;if(v<1)return 60;if(v<1.5)return 46;if(v<2.5)return 30;return 14;}
 function rrToSc(v){if(!v)return 70;if(v<0.001)return 94;if(v<0.0015)return 84;if(v<0.0025)return 72;if(v<0.004)return 58;if(v<0.008)return 40;if(v<0.015)return 25;return 12;}
+function numOnly(x){
+  if(typeof x==='number')return isFinite(x)?x:null;
+  if(typeof x!=='string')return null;
+  if(!/^-?\d+(\.\d+)?([eE][+-]?\d+)?$/.test(x.trim()))return null;
+  var n=parseFloat(x);return isFinite(n)?n:null;
+}
 function bgLast(res){
   var arr=res&&res.data?res.data:res;
   if(!arr)return null;
   if(!Array.isArray(arr))arr=[arr];
   if(!arr.length)return null;
   var last=arr[arr.length-1];
-  if(Array.isArray(last)){var n=parseFloat(last[1]);return isFinite(n)?n:null;}
-  for(var k in last){
-    if(/date|day|time|unix/i.test(k))continue;
-    var v=parseFloat(last[k]);
-    if(isFinite(v))return v;
+  if(Array.isArray(last)){return numOnly(last[1]);}
+  var pref=['sopr','puellmultiple','puell_multiple','puell','reserverisk','reserve_risk','rr','value','val','v','metric'];
+  var keys=Object.keys(last);
+  for(var i=0;i<pref.length;i++){
+    for(var j=0;j<keys.length;j++){
+      if(keys[j].toLowerCase()===pref[i]){
+        var pv=numOnly(last[keys[j]]);
+        if(pv!=null)return pv;
+      }
+    }
+  }
+  for(var k=0;k<keys.length;k++){
+    if(/date|day|time|unix|^d$|^t$|ts$/i.test(keys[k]))continue;
+    var v2=numOnly(last[keys[k]]);
+    if(v2!=null)return v2;
   }
   return null;
 }
-async function bgMetric(key,paths){
-  try{var cc=JSON.parse(localStorage.getItem('bg_'+key));if(cc&&Date.now()-cc.ts<6*3600*1000)return cc.v;}catch(e){}
-  var mem={};try{mem=JSON.parse(localStorage.getItem('bg_ep')||'{}');}catch(e){}
+async function bgMetric(key,paths,lo,hi){
+  try{var cc=JSON.parse(localStorage.getItem('bg2_'+key));if(cc&&Date.now()-cc.ts<6*3600*1000)return cc.v;}catch(e){}
+  var mem={};try{mem=JSON.parse(localStorage.getItem('bg_ep2')||'{}');}catch(e){}
   var order=paths.slice();
   if(mem[key])order=[mem[key]].concat(paths.filter(function(p){return p!==mem[key];}));
   for(var i=0;i<order.length;i++){
     try{
       var r=await tryFetch(order[i]);
       var v=bgLast(r);
-      if(v!=null){
+      if(v!=null&&v>=lo&&v<=hi){
         mem[key]=order[i];
-        localStorage.setItem('bg_ep',JSON.stringify(mem));
-        localStorage.setItem('bg_'+key,JSON.stringify({ts:Date.now(),v:v}));
+        localStorage.setItem('bg_ep2',JSON.stringify(mem));
+        localStorage.setItem('bg2_'+key,JSON.stringify({ts:Date.now(),v:v}));
         return v;
       }
     }catch(e){}
@@ -815,6 +833,21 @@ async function fetchLive(force){
     ok.push('减半');
   }catch(e){fail.push('减半');}
 
+  // 5b. 关机价区间 — 全网算力+真实日产出(含手续费)实时推算
+  try{
+    var hr=await tryFetch('https://mempool.space/api/v1/mining/hashrate/3d');
+    var rw=await tryFetch('https://mempool.space/api/v1/mining/reward-stats/144');
+    var hashTH=(hr.currentHashrate||0)/1e12;
+    var dailyBTC=parseFloat(rw.totalReward)/1e8;
+    if(hashTH>0&&dailyBTC>0){
+      var btcPerTH=dailyBTC/hashTH;
+      result.shutLo=Math.round(MINER_EFF_LO*0.024*ELEC_KWH/btcPerTH);
+      result.shutHi=Math.round(MINER_EFF_HI*0.024*ELEC_KWH/btcPerTH);
+      result.netEH=Math.round(hashTH/1e6);
+      ok.push('关机价');
+    }
+  }catch(e){fail.push('关机价');}
+
   // 6. MVRV + Realized Price → 均衡价格实时计算
   try{
     var mv=await tryFetch('https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=CapMVRVCur,CapRealUSD,SplyCur&frequency=1d&limit_per_asset=1');
@@ -856,11 +889,11 @@ async function fetchLive(force){
   }catch(e){fail.push('概率');}
 
   // 8. SOPR / Puell / Reserve Risk — BGeometrics (匿名限15次/天; 6h缓存+端点记忆省配额)
-  var soprV=await bgMetric('sopr',['https://bitcoin-data.com/v1/sopr','https://api.bgeometrics.com/v1/sopr']);
+  var soprV=await bgMetric('sopr',['https://bitcoin-data.com/v1/sopr','https://api.bgeometrics.com/v1/sopr'],0.5,2);
   if(soprV){result.sopr=soprV;ok.push('SOPR');}else fail.push('SOPR');
-  var puellV=await bgMetric('puell',['https://bitcoin-data.com/v1/puell-multiple','https://api.bgeometrics.com/v1/puell-multiple','https://bitcoin-data.com/v1/puell_multiple']);
+  var puellV=await bgMetric('puell',['https://bitcoin-data.com/v1/puell-multiple','https://api.bgeometrics.com/v1/puell-multiple','https://bitcoin-data.com/v1/puell_multiple'],0.05,20);
   if(puellV){result.puell=puellV;ok.push('Puell');}else fail.push('Puell');
-  var rrV=await bgMetric('rr',['https://bitcoin-data.com/v1/reserve-risk','https://api.bgeometrics.com/v1/reserve-risk','https://bitcoin-data.com/v1/reserve_risk']);
+  var rrV=await bgMetric('rr',['https://bitcoin-data.com/v1/reserve-risk','https://api.bgeometrics.com/v1/reserve-risk','https://bitcoin-data.com/v1/reserve_risk'],0.00005,0.2);
   if(rrV){result.rr=rrV;ok.push('RR');}else fail.push('RR');
 
   if(ok.length>0){
@@ -873,6 +906,7 @@ async function fetchLive(force){
     if(result.mayerMult)extra.push('Mayer '+result.mayerMult.toFixed(2)+'x');
     if(result.ahr999c)extra.push('经典AHR '+result.ahr999c.toFixed(2));
     if(result.realized)extra.push('RP $'+(result.realized/1000).toFixed(1)+'K');
+    if(result.netEH)extra.push('算力 '+result.netEH+'EH');
     document.getElementById('lupdated').textContent=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})+(extra.length?' · '+extra.join(' '):'');
   }else{
     setLiveStatus('','全部失败 · 请下载后用浏览器直接打开');
@@ -930,6 +964,10 @@ function applyLive(d){
     S.dims[3]=s3;
   }
   if(d.halvingDays)document.getElementById('shv').value=d.halvingDays;
+  if(d.shutLo&&d.shutHi){
+    document.getElementById('slo').value=d.shutLo;
+    document.getElementById('shi').value=d.shutHi;
+  }
   if(d.prob50!==undefined)document.getElementById('spb').value=d.prob50;
   if(d.prob80!==undefined)document.getElementById('spu').value=d.prob80;
   if(d.balanced)document.getElementById('sbl').value=d.balanced;
