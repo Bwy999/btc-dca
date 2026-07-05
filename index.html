@@ -848,7 +848,7 @@ async function fetchLive(force){
     }
   }catch(e){fail.push('关机价');}
 
-  // 6. MVRV + Realized Price → 均衡价格实时计算
+  // 6. MVRV + Realized Price → 均衡价格 (CoinMetrics 主 / BGeometrics 备)
   try{
     var mv=await tryFetch('https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=CapMVRVCur,CapRealUSD,SplyCur&frequency=1d&limit_per_asset=1');
     if(mv.data&&mv.data.length>0){
@@ -860,7 +860,17 @@ async function fetchLive(force){
         ok.push('均衡价');
       }
     }
-  }catch(e){fail.push('MVRV');}
+    if(!result.mvrv)throw new Error('empty');
+  }catch(e){
+    // 备用: BG Realized Price → MVRV = 价格/RP, 均衡价 = RP − TP
+    var rpV=await bgMetric('rp',['https://bitcoin-data.com/v1/realized-price','https://api.bgeometrics.com/v1/realized-price','https://bitcoin-data.com/v1/realized_price'],5000,300000);
+    if(rpV){
+      result.realized=rpV;
+      result.balanced=Math.round(rpV-BAL_TP);
+      if(result.price){result.mvrv=result.price/rpV;ok.push('MVRV');}
+      ok.push('均衡价');
+    }else fail.push('MVRV');
+  }
 
   // 7. Polymarket: ↓$50K & ↑$80K probabilities (Gamma API, free & CORS-open)
   try{
