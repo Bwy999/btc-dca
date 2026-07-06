@@ -473,6 +473,12 @@ body{
       <div class="tile-status" id="ss6"></div>
       <div class="tile-hint">Polymarket 实时 %</div>
     </div>
+    <div class="tile">
+      <div class="tile-name"><span class="tile-live"></span>稳定币购买力</div>
+      <input id="sstb" type="number" placeholder="200" oninput="sig()">
+      <div class="tile-status" id="ss7"></div>
+      <div class="tile-hint">USDT+USDC 总市值 $B</div>
+    </div>
   </div>
 
   <div class="klevel-row">
@@ -899,6 +905,17 @@ async function fetchLive(force){
   }catch(e){fail.push('概率');}
 
   // 8. SOPR / Puell / Reserve Risk — BGeometrics (匿名限15次/天; 6h缓存+端点记忆省配额)
+  // 8. 稳定币总市值 (USDT+USDC) — Coinpaprika 免费无鉴权 = 场内购买力水位
+  try{
+    var stbl=0;
+    var ut=await tryFetch('https://api.coinpaprika.com/v1/tickers/usdt-tether');
+    if(ut&&ut.quotes&&ut.quotes.USD)stbl+=ut.quotes.USD.market_cap||0;
+    var uc=await tryFetch('https://api.coinpaprika.com/v1/tickers/usdc-usd-coin');
+    if(uc&&uc.quotes&&uc.quotes.USD)stbl+=uc.quotes.USD.market_cap||0;
+    if(stbl>0){result.stableCap=stbl;ok.push('稳定币');}
+  }catch(e){fail.push('稳定币');}
+
+  // 9. SOPR / Puell / Reserve Risk — BGeometrics (匿名限15次/天; 6h缓存+端点记忆省配额)
   var soprV=await bgMetric('sopr',['https://bitcoin-data.com/v1/sopr','https://api.bgeometrics.com/v1/sopr'],0.5,2);
   if(soprV){result.sopr=soprV;ok.push('SOPR');}else fail.push('SOPR');
   var puellV=await bgMetric('puell',['https://bitcoin-data.com/v1/puell-multiple','https://api.bgeometrics.com/v1/puell-multiple','https://bitcoin-data.com/v1/puell_multiple'],0.05,20);
@@ -980,6 +997,7 @@ function applyLive(d){
   }
   if(d.prob50!==undefined)document.getElementById('spb').value=d.prob50;
   if(d.prob80!==undefined)document.getElementById('spu').value=d.prob80;
+  if(d.stableCap)document.getElementById('sstb').value=(d.stableCap/1e9).toFixed(1);
   if(d.balanced)document.getElementById('sbl').value=d.balanced;
   if(d.sopr){
     var s6=soprToSc(d.sopr);
@@ -1199,6 +1217,7 @@ function sig(){
   var hv=+document.getElementById('shv').value||0;
   var pb=+document.getElementById('spb').value||0;
   var pu=+document.getElementById('spu').value||0;
+  var stb=+document.getElementById('sstb').value||0;
 
   if(lo&&hi2){
     var bel=cur<lo,abv=cur>hi2;
@@ -1227,6 +1246,7 @@ function sig(){
   if(hv){sst('ss4',hv+' 天'+(hv>500?' · 尚早':hv>180?' · 接近':' · 冲刺'),hv>500?'var(--tx2)':hv>180?'var(--yl)':'var(--gn)');}
   if(pb){sst('ss5',pb<10?'低风险':pb<25?'中等风险':pb<40?'较高风险':'高风险',pb<10?'var(--gn)':pb<25?'var(--yl)':pb<40?'var(--or)':'var(--rd)');}
   if(pu){sst('ss6',pu<15?'突破渺茫':pu<35?'偏空定价':pu<55?'五五开':'看涨升温',pu<15?'var(--rd)':pu<35?'var(--or)':pu<55?'var(--yl)':'var(--gn)');}
+  if(stb){sst('ss7','$'+stb+'B 场内水位',stb<160?'var(--rd)':stb<210?'var(--yl)':'var(--gn)');}
 
   document.getElementById('kp3').textContent='$'+cur.toLocaleString();
   var all=[lo,bl,wm,cur].filter(function(v){return v>0;});
@@ -1234,13 +1254,13 @@ function sig(){
     var mn=Math.min.apply(null,all)*.92,mx=Math.max.apply(null,all)*1.05;
     document.getElementById('pd').style.left=Math.min(100,Math.max(0,(cur-mn)/(mx-mn)*100))+'%';
   }
-  S.sigs={lo:lo,hi:hi2,bl:bl,wm:wm,sp:sp,hv:hv,pb:pb,pu:pu};
+  S.sigs={lo:lo,hi:hi2,bl:bl,wm:wm,sp:sp,hv:hv,pb:pb,pu:pu,stb:stb};
   sv3(S);
 }
 
 function rSig(){
   if(!S.sigs)return;
-  var m={lo:'slo',hi:'shi',bl:'sbl',wm:'swm',sp:'ssp',hv:'shv',pb:'spb',pu:'spu'};
+  var m={lo:'slo',hi:'shi',bl:'sbl',wm:'swm',sp:'ssp',hv:'shv',pb:'spb',pu:'spu',stb:'sstb'};
   Object.keys(m).forEach(function(k){
     var e=document.getElementById(m[k]);
     if(e&&S.sigs[k])e.value=S.sigs[k];
