@@ -742,6 +742,12 @@ function bgLast(res){
   }
   return null;
 }
+async function cgCapSeries(id){
+  try{
+    var r=await tryFetch('https://api.coingecko.com/api/v3/coins/'+id+'/market_chart?vs_currency=usd&days=7&interval=daily');
+    return (r.market_caps||[]).map(function(p){return p[1];}).filter(function(v){return v>0;});
+  }catch(e){return [];}
+}
 async function llamaSeries(id){
   try{
     var r=await tryFetch('https://stablecoins.llama.fi/stablecoincharts/all?stablecoin='+id);
@@ -932,6 +938,24 @@ async function fetchLive(force){
     if(!llc){
       var us=await llamaSeries(1);
       var ucS=await llamaSeries(2);
+      if(!us.length)us=await cgCapSeries('tether');
+      if(!ucS.length)ucS=await cgCapSeries('usd-coin');
+      if(!us.length||!ucS.length){
+        try{
+          var pt=await tryFetch('https://api.coinpaprika.com/v1/tickers/usdt-tether');
+          var pc=await tryFetch('https://api.coinpaprika.com/v1/tickers/usdc-usd-coin');
+          var a=(pt&&pt.quotes&&pt.quotes.USD)?pt.quotes.USD.market_cap:0;
+          var b=(pc&&pc.quotes&&pc.quotes.USD)?pc.quotes.USD.market_cap:0;
+          if(a)us=[a];
+          if(b)ucS=[b];
+        }catch(e3){}
+      }
+      if(!us.length&&!ucS.length){
+        try{
+          var stale=JSON.parse(localStorage.getItem('llama_stb2'));
+          if(stale){us=stale.u||[];ucS=stale.c||[];}
+        }catch(e4){}
+      }
       llc={u:us,c:ucS};
       if(us.length||ucS.length)localStorage.setItem('llama_stb2',JSON.stringify({ts:Date.now(),u:us,c:ucS}));
     }
