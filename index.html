@@ -156,6 +156,19 @@ body{
 .stb-chg{font-size:11px;font-weight:700;min-height:14px}
 .spark{width:100%;height:28px;margin-top:2px;display:block}
 
+/* AHR999 module */
+.ahr-wrap{display:flex;gap:28px;align-items:flex-start;padding:4px 0 14px;flex-wrap:wrap}
+.ahr-big{font-size:52px;font-weight:700;letter-spacing:-.04em;line-height:1}
+.ahr-zone{font-size:13px;font-weight:600;margin-top:6px}
+.ahr-side{display:flex;flex-direction:column;gap:8px;padding-top:8px;min-width:170px}
+.ahr-kv{display:flex;justify-content:space-between;gap:16px;font-size:13px}
+.ahr-k{color:var(--tx2)}
+.ahr-v{font-weight:700}
+.ahr-barwrap{padding:2px 0 16px}
+.ahr-bar{height:6px;border-radius:3px;overflow:hidden;display:flex;gap:2px}
+.ahr-bar div{height:100%;border-radius:2px}
+.ahr-lbls{display:flex;justify-content:space-between;font-size:10px;color:var(--tx3);margin-top:6px;font-weight:500}
+
 /* key levels */
 .klevel-row{display:flex;gap:20px;align-items:center;padding:16px 0 0;flex-wrap:wrap}
 .klevel{display:flex;flex-direction:column;gap:2px}
@@ -422,6 +435,39 @@ body{
     <button class="chip primary" onclick="pre(75)">低估区</button>
     <button class="chip" onclick="pre(90)">极低估</button>
   </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- AHR999 独立模块 -->
+<div class="sec">
+  <div class="sec-title">AHR999 囤币指数</div>
+  <div class="sec-sub">2026 重拟合幂律 · R²=0.958 · 定投择时核心</div>
+
+  <div class="ahr-wrap">
+    <div>
+      <div class="ahr-big num" id="ahrBig">--</div>
+      <div class="ahr-zone" id="ahrZone">等待数据</div>
+    </div>
+    <div class="ahr-side">
+      <div class="ahr-kv"><span class="ahr-k">经典 2018 值</span><span class="ahr-v num" id="ahrC">--</span></div>
+      <div class="ahr-kv"><span class="ahr-k">幂律估值</span><span class="ahr-v num" id="ahrPL">--</span></div>
+      <div class="ahr-kv"><span class="ahr-k">200日定投成本</span><span class="ahr-v num" id="ahrDMA">--</span></div>
+    </div>
+  </div>
+
+  <div class="ahr-barwrap">
+    <div class="ahr-bar">
+      <div style="flex:35;background:var(--gn)"></div>
+      <div style="flex:43;background:var(--lg);opacity:.85"></div>
+      <div style="flex:62;background:var(--or);opacity:.8"></div>
+      <div style="flex:38;background:var(--rd);opacity:.85"></div>
+    </div>
+    <div class="zcursor-track"><div class="zcursor" id="ahrCur"></div></div>
+    <div class="ahr-lbls"><span>抄底 &lt;0.45</span><span>定投 0.45–1.2</span><span>观望 1.2–5</span><span>高危 &gt;5</span></div>
+  </div>
+
+  <div id="ahrLadder"></div>
 </div>
 
 <div class="divider"></div>
@@ -799,6 +845,7 @@ async function fetchLive(force){
         result.ahr999=p*p/(m200*pl);
         result.ahr999c=p*p/(m200*pl0);
         result.ahr1price=Math.sqrt(m200*pl);
+        result.plNew=pl;
         ok.push('AHR999');
       }
     }
@@ -843,6 +890,7 @@ async function fetchLive(force){
         result.ahr999=result.price*result.price/(result.dma200*pl2);
         result.ahr999c=result.price*result.price/(result.dma200*pl20);
         result.ahr1price=Math.sqrt(result.dma200*pl2);
+        result.plNew=pl2;
         ok.push('AHR999');
       }
     }
@@ -1006,6 +1054,10 @@ function applyLive(d){
     document.getElementById('r0').textContent=d.ahr999.toFixed(3);
     S.dims[0]=sc;
   }
+  if(d.ahr999&&d.plNew&&d.dma200){
+    S.ahr={v:d.ahr999,c:d.ahr999c,pl:d.plNew,dma:d.dma200,p1:d.ahr1price};
+    renderAhr(S.ahr);
+  }
   if(d.ma51){
     S.mas={m51:d.ma51,m120:d.ma120,m250:d.ma250,m850:d.ma850};
     renderMA();
@@ -1159,6 +1211,49 @@ function upH2(){
   document.getElementById('hl').textContent=h.l.toFixed(4)+' BTC';
   document.getElementById('hlc').textContent='均价 $'+Number(h.lc).toLocaleString();
 }
+function renderAhr(a){
+  if(!a||!a.v)return;
+  var v=a.v;
+  var z=v<0.45?{t:'抄底区 · 加倍囤',c:'var(--gn)'}
+       :v<1.2?{t:'定投区 · 照常买',c:'var(--lg)'}
+       :v<5?{t:'观望区 · 停止定投',c:'var(--or)'}
+       :{t:'高危区 · 分批止盈',c:'var(--rd)'};
+  var b=document.getElementById('ahrBig');
+  if(b){b.textContent=v.toFixed(3);b.style.color=z.c;}
+  var ze=document.getElementById('ahrZone');
+  if(ze){ze.textContent=z.t;ze.style.color=z.c;}
+  var ce=document.getElementById('ahrC');
+  if(ce&&a.c)ce.textContent=a.c.toFixed(3);
+  var pe=document.getElementById('ahrPL');
+  if(pe&&a.pl)pe.textContent='$'+Math.round(a.pl/1000)+'K';
+  var de=document.getElementById('ahrDMA');
+  if(de&&a.dma)de.textContent='$'+Math.round(a.dma/1000)+'K';
+  var cu=document.getElementById('ahrCur');
+  if(cu){
+    var lg=(Math.log(Math.min(12,Math.max(0.2,v)))-Math.log(0.2))/(Math.log(12)-Math.log(0.2))*100;
+    cu.style.left=lg.toFixed(1)+'%';
+  }
+  var lad=document.getElementById('ahrLadder');
+  if(lad&&a.dma&&a.pl){
+    var p045=Math.sqrt(0.45*a.dma*a.pl);
+    var p1=a.p1||Math.sqrt(a.dma*a.pl);
+    var p12=Math.sqrt(1.2*a.dma*a.pl);
+    var cp=S.price;
+    var row=function(lbl,px,desc){
+      var below=cp<=px;
+      var dd=(cp-px)/px*100;
+      var pill=below?'<span class="pill done">已低于</span>'
+        :'<span class="pill wait">上方 +'+dd.toFixed(1)+'%</span>';
+      return '<div class="trig"><div class="trig-pct" style="width:92px">'+lbl+'</div>'+
+        '<div class="trig-price num">$'+Math.round(px).toLocaleString()+
+        '<span style="font-size:11px;color:var(--tx3);font-weight:500"> '+desc+'</span></div>'+pill+'</div>';
+    };
+    lad.innerHTML=row('AHR = 0.45',p045,'抄底线')
+      +row('AHR = 1.00',p1,'锚点成分 · 破1价')
+      +row('AHR = 1.20',p12,'定投区上沿');
+  }
+}
+
 function drawStb(key,ser){
   var svg=document.getElementById(key+'Spark');
   var vEl=document.getElementById(key+'Val');
@@ -1376,6 +1471,7 @@ function init(){
   calc();upB();trig();upH2();upG();rl2();rSig();renderMA();
   if(S.stbU)drawStb('usdt',S.stbU);
   if(S.stbC)drawStb('usdc',S.stbC);
+  if(S.ahr)renderAhr(S.ahr);
   fetchLive(false);
 }
 init();
