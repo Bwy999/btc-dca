@@ -152,6 +152,9 @@ body{
 .tile-sep{font-size:11px;color:var(--tx3);text-align:center;padding:2px 0}
 .tile-status{font-size:12px;font-weight:700;margin-top:8px;min-height:15px}
 .tile-hint{font-size:10px;color:var(--tx3);margin-top:3px;line-height:1.3}
+.stb-val{font-size:17px;font-weight:700;letter-spacing:-.01em}
+.stb-chg{font-size:11px;font-weight:700;min-height:14px}
+.spark{width:100%;height:28px;margin-top:2px;display:block}
 
 /* key levels */
 .klevel-row{display:flex;gap:20px;align-items:center;padding:16px 0 0;flex-wrap:wrap}
@@ -474,10 +477,18 @@ body{
       <div class="tile-hint">Polymarket 实时 %</div>
     </div>
     <div class="tile">
-      <div class="tile-name"><span class="tile-live"></span>稳定币购买力</div>
-      <input id="sstb" type="number" placeholder="200" oninput="sig()">
-      <div class="tile-status" id="ss7"></div>
-      <div class="tile-hint">USDT+USDC 总市值 $B</div>
+      <div class="tile-name"><span class="tile-live"></span>USDT 市值</div>
+      <div class="stb-val num" id="usdtVal">--</div>
+      <div class="stb-chg num" id="usdtChg"></div>
+      <svg class="spark" id="usdtSpark" viewBox="0 0 100 28" preserveAspectRatio="none"></svg>
+      <div class="tile-hint">7日走势 · DefiLlama</div>
+    </div>
+    <div class="tile">
+      <div class="tile-name"><span class="tile-live"></span>USDC 市值</div>
+      <div class="stb-val num" id="usdcVal">--</div>
+      <div class="stb-chg num" id="usdcChg"></div>
+      <svg class="spark" id="usdcSpark" viewBox="0 0 100 28" preserveAspectRatio="none"></svg>
+      <div class="tile-hint">7日走势 · DefiLlama</div>
     </div>
   </div>
 
@@ -731,6 +742,16 @@ function bgLast(res){
   }
   return null;
 }
+async function llamaSeries(id){
+  try{
+    var r=await tryFetch('https://stablecoins.llama.fi/stablecoincharts/all?stablecoin='+id);
+    if(!Array.isArray(r))return [];
+    return r.slice(-8).map(function(d){
+      var t=d.totalCirculatingUSD||d.totalCirculating||{};
+      return t.peggedUSD||0;
+    }).filter(function(v){return v>0;});
+  }catch(e){return [];}
+}
 async function bgMetric(key,paths,lo,hi){
   try{var cc=JSON.parse(localStorage.getItem('bg2_'+key));if(cc&&Date.now()-cc.ts<6*3600*1000)return cc.v;}catch(e){}
   var mem={};try{mem=JSON.parse(localStorage.getItem('bg_ep2')||'{}');}catch(e){}
@@ -904,15 +925,18 @@ async function fetchLive(force){
     if(p50!==null||p80!==null)ok.push('概率');
   }catch(e){fail.push('概率');}
 
-  // 8. SOPR / Puell / Reserve Risk — BGeometrics (匿名限15次/天; 6h缓存+端点记忆省配额)
-  // 8. 稳定币总市值 (USDT+USDC) — Coinpaprika 免费无鉴权 = 场内购买力水位
+  // 8. 稳定币 USDT/USDC 市值+7日序列 — DefiLlama stablecoincharts (免费无鉴权, 6h缓存)
   try{
-    var stbl=0;
-    var ut=await tryFetch('https://api.coinpaprika.com/v1/tickers/usdt-tether');
-    if(ut&&ut.quotes&&ut.quotes.USD)stbl+=ut.quotes.USD.market_cap||0;
-    var uc=await tryFetch('https://api.coinpaprika.com/v1/tickers/usdc-usd-coin');
-    if(uc&&uc.quotes&&uc.quotes.USD)stbl+=uc.quotes.USD.market_cap||0;
-    if(stbl>0){result.stableCap=stbl;ok.push('稳定币');}
+    var llc=null;
+    try{var lc=JSON.parse(localStorage.getItem('llama_stb2'));if(lc&&Date.now()-lc.ts<6*3600*1000)llc=lc;}catch(e2){}
+    if(!llc){
+      var us=await llamaSeries(1);
+      var ucS=await llamaSeries(2);
+      llc={u:us,c:ucS};
+      if(us.length||ucS.length)localStorage.setItem('llama_stb2',JSON.stringify({ts:Date.now(),u:us,c:ucS}));
+    }
+    if(llc.u&&llc.u.length){result.usdtSeries=llc.u;ok.push('USDT');}else fail.push('USDT');
+    if(llc.c&&llc.c.length){result.usdcSeries=llc.c;ok.push('USDC');}else fail.push('USDC');
   }catch(e){fail.push('稳定币');}
 
   // 9. SOPR / Puell / Reserve Risk — BGeometrics (匿名限15次/天; 6h缓存+端点记忆省配额)
@@ -997,7 +1021,8 @@ function applyLive(d){
   }
   if(d.prob50!==undefined)document.getElementById('spb').value=d.prob50;
   if(d.prob80!==undefined)document.getElementById('spu').value=d.prob80;
-  if(d.stableCap)document.getElementById('sstb').value=(d.stableCap/1e9).toFixed(1);
+  if(d.usdtSeries){drawStb('usdt',d.usdtSeries);S.stbU=d.usdtSeries;}
+  if(d.usdcSeries){drawStb('usdc',d.usdcSeries);S.stbC=d.usdcSeries;}
   if(d.balanced)document.getElementById('sbl').value=d.balanced;
   if(d.sopr){
     var s6=soprToSc(d.sopr);
@@ -1110,6 +1135,25 @@ function upH2(){
   document.getElementById('hl').textContent=h.l.toFixed(4)+' BTC';
   document.getElementById('hlc').textContent='均价 $'+Number(h.lc).toLocaleString();
 }
+function drawStb(key,ser){
+  var svg=document.getElementById(key+'Spark');
+  var vEl=document.getElementById(key+'Val');
+  var cEl=document.getElementById(key+'Chg');
+  if(!ser||!ser.length)return;
+  var val=ser[ser.length-1];
+  if(vEl)vEl.textContent='$'+(val/1e9).toFixed(1)+'B';
+  if(ser.length<2){if(cEl){cEl.textContent='数据不足';cEl.style.color='var(--tx2)';}return;}
+  var first=ser[0],chg=(val-first)/first*100,up=chg>=0;
+  if(cEl){cEl.textContent=(up?'▲ +':'▼ ')+chg.toFixed(2)+'% · 7日';cEl.style.color=up?'var(--gn)':'var(--rd)';}
+  if(svg){
+    var mn=Math.min.apply(null,ser),mx=Math.max.apply(null,ser),rng=(mx-mn)||1;
+    var pts=ser.map(function(v,i){
+      return (i/(ser.length-1)*100).toFixed(1)+','+(26-((v-mn)/rng)*24).toFixed(1);
+    }).join(' ');
+    svg.innerHTML='<polyline points="'+pts+'" fill="none" stroke="'+(up?'var(--gn)':'var(--rd)')+'" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>';
+  }
+}
+
 function renderMA(){
   var el=document.getElementById('maList');
   if(!el)return;
@@ -1217,7 +1261,6 @@ function sig(){
   var hv=+document.getElementById('shv').value||0;
   var pb=+document.getElementById('spb').value||0;
   var pu=+document.getElementById('spu').value||0;
-  var stb=+document.getElementById('sstb').value||0;
 
   if(lo&&hi2){
     var bel=cur<lo,abv=cur>hi2;
@@ -1246,7 +1289,6 @@ function sig(){
   if(hv){sst('ss4',hv+' 天'+(hv>500?' · 尚早':hv>180?' · 接近':' · 冲刺'),hv>500?'var(--tx2)':hv>180?'var(--yl)':'var(--gn)');}
   if(pb){sst('ss5',pb<10?'低风险':pb<25?'中等风险':pb<40?'较高风险':'高风险',pb<10?'var(--gn)':pb<25?'var(--yl)':pb<40?'var(--or)':'var(--rd)');}
   if(pu){sst('ss6',pu<15?'突破渺茫':pu<35?'偏空定价':pu<55?'五五开':'看涨升温',pu<15?'var(--rd)':pu<35?'var(--or)':pu<55?'var(--yl)':'var(--gn)');}
-  if(stb){sst('ss7','$'+stb+'B 场内水位',stb<160?'var(--rd)':stb<210?'var(--yl)':'var(--gn)');}
 
   document.getElementById('kp3').textContent='$'+cur.toLocaleString();
   var all=[lo,bl,wm,cur].filter(function(v){return v>0;});
@@ -1254,13 +1296,13 @@ function sig(){
     var mn=Math.min.apply(null,all)*.92,mx=Math.max.apply(null,all)*1.05;
     document.getElementById('pd').style.left=Math.min(100,Math.max(0,(cur-mn)/(mx-mn)*100))+'%';
   }
-  S.sigs={lo:lo,hi:hi2,bl:bl,wm:wm,sp:sp,hv:hv,pb:pb,pu:pu,stb:stb};
+  S.sigs={lo:lo,hi:hi2,bl:bl,wm:wm,sp:sp,hv:hv,pb:pb,pu:pu};
   sv3(S);
 }
 
 function rSig(){
   if(!S.sigs)return;
-  var m={lo:'slo',hi:'shi',bl:'sbl',wm:'swm',sp:'ssp',hv:'shv',pb:'spb',pu:'spu',stb:'sstb'};
+  var m={lo:'slo',hi:'shi',bl:'sbl',wm:'swm',sp:'ssp',hv:'shv',pb:'spb',pu:'spu'};
   Object.keys(m).forEach(function(k){
     var e=document.getElementById(m[k]);
     if(e&&S.sigs[k])e.value=S.sigs[k];
@@ -1308,6 +1350,8 @@ function init(){
   if(!S.sigs)S.sigs={};
   if(!S.sigs.lo){S.sigs.lo=29132;S.sigs.hi=90461;}
   calc();upB();trig();upH2();upG();rl2();rSig();renderMA();
+  if(S.stbU)drawStb('usdt',S.stbU);
+  if(S.stbC)drawStb('usdc',S.stbC);
   fetchLive(false);
 }
 init();
