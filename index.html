@@ -170,7 +170,8 @@ body{
 .stb-chg{font-size:11px;font-weight:700;min-height:14px}
 .spark{width:100%;height:28px;margin-top:2px;display:block}
 
-/* ─ USDT 单日增减监控 ─ */
+/* ─ 稳定币单日增减监控 ─ */
+.stable-flow-stack{display:flex;flex-direction:column;gap:10px}
 .usdt-flow-card{
   background:var(--card);border-radius:18px;padding:16px;border:1px solid var(--div);
   transition:border-color .25s ease,box-shadow .25s ease,background .25s ease;
@@ -528,12 +529,17 @@ body{
 
 <div class="divider"></div>
 
-<!-- USDT Flow Alert -->
+<!-- Stablecoin Flow Alert -->
 <div class="sec usdt-flow-sec">
-  <div class="sec-title">USDT 增减监控</div>
-  <div class="sec-sub">当天净增发/净减少 ≥ $1B 自动高亮 · 基于 USDT 流通市值日变化</div>
-  <div class="usdt-flow-card flow-normal" id="usdtFlowCard">
-    <div class="flow-empty">刷新后自动计算 USDT 当天增减</div>
+  <div class="sec-title">稳定币增减监控</div>
+  <div class="sec-sub">USDT / USDC 当天净增发或净减少 ≥ $1B 自动高亮 · 基于流通市值日变化</div>
+  <div class="stable-flow-stack">
+    <div class="usdt-flow-card flow-normal" id="usdtFlowCard">
+      <div class="flow-empty">刷新后自动计算 USDT 当天增减</div>
+    </div>
+    <div class="usdt-flow-card flow-normal" id="usdcFlowCard">
+      <div class="flow-empty">刷新后自动计算 USDC 当天增减</div>
+    </div>
   </div>
 </div>
 
@@ -770,7 +776,8 @@ var TR=[
 ];
 var CACHE_KEY='btc_live_v6';
 var CACHE_TTL=5*60*1000;
-var USDT_FLOW_THRESHOLD=1e9; // USDT 当天增发/减少提醒阈值：10亿美元
+var STABLE_FLOW_THRESHOLD=1e9; // 稳定币当天增发/减少提醒阈值：10亿美元
+var USDT_FLOW_THRESHOLD=STABLE_FLOW_THRESHOLD; // 兼容旧变量名
 // AHR999 power-law coefficients: log10(P) = a*log10(days) + b
 var AHR_A=5.5856,AHR_B=-16.1567;   // 2010-2026 refit (R²=0.958)
 var AHR_A0=5.84,AHR_B0=-17.1;      // ahr999 classic 2018 fit
@@ -1238,7 +1245,7 @@ function applyLive(d){
   if(d.prob50!==undefined)document.getElementById('spb').value=d.prob50;
   if(d.prob80!==undefined)document.getElementById('spu').value=d.prob80;
   if(d.usdtSeries){drawStb('usdt',d.usdtSeries);renderUsdtFlow(d.usdtSeries);S.stbU=d.usdtSeries;}
-  if(d.usdcSeries){drawStb('usdc',d.usdcSeries);S.stbC=d.usdcSeries;}
+  if(d.usdcSeries){drawStb('usdc',d.usdcSeries);renderUsdcFlow(d.usdcSeries);S.stbC=d.usdcSeries;}
   if(d.balanced)document.getElementById('sbl').value=d.balanced;
   if(d.sopr){
     var s6=soprToSc(d.sopr);
@@ -1399,17 +1406,17 @@ function fmtFlowUsd(n){
   var a=Math.abs(n),b=a/1e9;
   return sign+'$'+(b>=10?b.toFixed(1):b.toFixed(2))+'B';
 }
-function renderUsdtFlow(ser){
-  var card=document.getElementById('usdtFlowCard');
+function renderStableFlow(cardId,symbol,ser){
+  var card=document.getElementById(cardId);
   if(!card)return;
   if(!ser||ser.length<2){
     card.className='usdt-flow-card flow-normal';
-    card.innerHTML='<div class="flow-empty">USDT 数据不足，无法判断当天增发/减少</div>';
+    card.innerHTML='<div class="flow-empty">'+symbol+' 数据不足，无法判断当天增发/减少</div>';
     return;
   }
   var last=ser[ser.length-1],prev=ser[ser.length-2];
   var diff=last-prev,pct=prev?diff/prev*100:0;
-  var hit=Math.abs(diff)>=USDT_FLOW_THRESHOLD;
+  var hit=Math.abs(diff)>=STABLE_FLOW_THRESHOLD;
   var up=diff>=0;
   var cls=hit?(up?'flow-up':'flow-down'):'flow-normal';
   var badge=hit?(up?'触发：增发 ≥ $1B':'触发：减少 ≥ $1B'):'未触发';
@@ -1417,23 +1424,24 @@ function renderUsdtFlow(ser){
   var recent=[];
   for(var i=Math.max(1,ser.length-5);i<ser.length;i++){
     var d=ser[i]-ser[i-1];
-    var h=Math.abs(d)>=USDT_FLOW_THRESHOLD;
+    var h=Math.abs(d)>=STABLE_FLOW_THRESHOLD;
     recent.push('<div class="flow-row"><span>近'+(ser.length-i)+'日</span><span class="'+(h?'hit ':'')+(d>=0?'up':'down')+'">'+fmtFlowUsd(d)+'</span></div>');
   }
   card.className='usdt-flow-card '+cls;
   card.innerHTML=
     '<div class="flow-head">'+
-      '<div class="flow-title"><span class="flow-dot"></span>USDT 单日净变化</div>'+
+      '<div class="flow-title"><span class="flow-dot"></span>'+symbol+' 单日净变化</div>'+
       '<div class="flow-badge">'+badge+'</div>'+
     '</div>'+
     '<div class="flow-main">'+
       '<div><div class="flow-big num">'+fmtFlowUsd(diff)+'</div>'+
       '<div class="flow-sub">'+title+' · '+(pct>=0?'+':'')+pct.toFixed(2)+'% · 阈值 $1.00B</div></div>'+
-      '<div class="flow-meta"><div class="flow-meta-k">当前 USDT 流通市值</div><div class="flow-meta-v num">$'+(last/1e9).toFixed(1)+'B</div></div>'+
+      '<div class="flow-meta"><div class="flow-meta-k">当前 '+symbol+' 流通市值</div><div class="flow-meta-v num">$'+(last/1e9).toFixed(1)+'B</div></div>'+
     '</div>'+
     '<div class="flow-list">'+recent.join('')+'</div>';
 }
-
+function renderUsdtFlow(ser){renderStableFlow('usdtFlowCard','USDT',ser);}
+function renderUsdcFlow(ser){renderStableFlow('usdcFlowCard','USDC',ser);}
 function drawStb(key,ser){
   var svg=document.getElementById(key+'Spark');
   var vEl=document.getElementById(key+'Val');
@@ -1650,7 +1658,7 @@ function init(){
   if(!S.sigs.lo){S.sigs.lo=29132;S.sigs.hi=90461;}
   calc();upB();trig();upH2();upG();rl2();rSig();renderMA();
   if(S.stbU){drawStb('usdt',S.stbU);renderUsdtFlow(S.stbU);}
-  if(S.stbC)drawStb('usdc',S.stbC);
+  if(S.stbC){drawStb('usdc',S.stbC);renderUsdcFlow(S.stbC);}
   if(S.ahr)renderAhr(S.ahr);
   fetchLive(false);
 }
