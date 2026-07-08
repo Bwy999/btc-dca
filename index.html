@@ -59,6 +59,8 @@
   }
 }
 .bgfix{position:fixed;inset:0;background:var(--bg);z-index:-1}
+.fetchbar-track{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;height:3px;z-index:2147483647;pointer-events:none;background:transparent}
+.fetchbar{height:100%;width:0%;opacity:0;background:linear-gradient(90deg,var(--gn),var(--lg));box-shadow:0 0 10px rgba(0,200,5,.75);border-radius:0 3px 3px 0;transition:width .28s cubic-bezier(.4,0,.2,1),opacity .35s ease}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{background:var(--bg)}
 body{
@@ -167,11 +169,11 @@ body{
 .stb-chg{font-size:11px;font-weight:700;min-height:14px}
 .spark{width:100%;height:28px;margin-top:2px;display:block}
 
-/* Robinhood / YouTube style top loading progress */
-.pg-top{position:fixed;top:0;left:0;right:0;height:3px;z-index:2000;pointer-events:none;overflow:hidden}
-.pg-fill{height:100%;width:0;background:linear-gradient(90deg,var(--gn),var(--lg),var(--gn));
-  box-shadow:0 0 10px rgba(0,200,5,.58);opacity:0;border-radius:0 2px 2px 0;
-  transition:width .28s cubic-bezier(.4,0,.2,1),opacity .45s ease}
+/* top progress bar */
+.pg-top{position:fixed;top:0;left:0;right:0;height:3px;z-index:2000;pointer-events:none}
+.pg-fill{height:100%;width:0;background:linear-gradient(90deg,var(--gn),var(--lg));
+  box-shadow:0 0 10px rgba(0,200,5,.55);opacity:0;border-radius:0 2px 2px 0;
+  transition:width .35s cubic-bezier(.4,0,.2,1),opacity .5s ease}
 
 /* AHR999 module */
 .ahr-wrap{display:flex;gap:28px;align-items:flex-start;padding:4px 0 14px;flex-wrap:wrap}
@@ -315,6 +317,7 @@ body{
 </head>
 <body>
 <div class="bgfix"></div>
+<div class="fetchbar-track"><div class="fetchbar" id="fetchBar"></div></div>
 <div class="pg-top"><div class="pg-fill" id="pgFill"></div></div>
 <div class="w">
 
@@ -751,56 +754,78 @@ function fetchCache(){
 }
 function saveCache(d){try{localStorage.setItem(CACHE_KEY,JSON.stringify({ts:Date.now(),data:d}));}catch(e){}}
 
-var _pg={on:false,n:0,total:18,label:'准备连接数据源…'};
-function pgPct(){return Math.min(94,4+(_pg.n/Math.max(1,_pg.total))*90);}
-function pgRender(){
+var _pg={on:false,n:0,total:16};
+function pgStart(){
+  _pg.on=true;_pg.n=0;
   var f=document.getElementById('pgFill');
-  if(f){f.style.opacity=_pg.on?'1':'0';f.style.width=(_pg.on?pgPct():0).toFixed(0)+'%';}
-  var lu=document.getElementById('lupdated');
-  if(lu&&_pg.on)lu.textContent='加载 '+Math.min(99,Math.round((_pg.n/Math.max(1,_pg.total))*100))+'%';
+  if(f){f.style.opacity='1';f.style.width='4%';}
 }
-function pgStart(total,label){
-  _pg.on=true;_pg.n=0;_pg.total=total||18;_pg.label=label||'准备连接数据源…';
-  pgRender();
-}
-function pgStep(label){
+function pgStep(){
   if(!_pg.on)return;
-  _pg.n=Math.min(_pg.total,_pg.n+1);
-  if(label)_pg.label=label;
-  pgRender();
+  _pg.n++;
+  var f=document.getElementById('pgFill');
+  if(f)f.style.width=Math.min(94,4+_pg.n/_pg.total*90).toFixed(0)+'%';
+  var lu=document.getElementById('lupdated');
+  if(lu)lu.textContent=_pg.n+'/'+_pg.total;
 }
 function pgDone(){
-  var f=document.getElementById('pgFill');
-  if(f){f.style.opacity='1';f.style.width='100%';}
   _pg.on=false;
-  setTimeout(function(){if(f)f.style.opacity='0';},350);
-  setTimeout(function(){if(f)f.style.width='0';},900);
-}
-function srcName(url){
-  if(url.indexOf('bitcoin.com')>-1)return '价格 / AHR999';
-  if(url.indexOf('binance.com')>-1)return 'Binance 均线';
-  if(url.indexOf('alternative.me')>-1)return '恐惧贪婪';
-  if(url.indexOf('mempool.space')>-1)return '链上 / 矿工数据';
-  if(url.indexOf('coinmetrics')>-1)return 'MVRV / Realized Price';
-  if(url.indexOf('polymarket')>-1)return 'Polymarket 概率';
-  if(url.indexOf('stablecoins')>-1||url.indexOf('coingecko')>-1||url.indexOf('coinpaprika')>-1)return '稳定币市值';
-  if(url.indexOf('bitcoin-data')>-1||url.indexOf('bgeometrics')>-1)return 'BGeometrics 指标';
-  return '拉取数据中';
+  var f=document.getElementById('pgFill');
+  if(!f)return;
+  f.style.width='100%';
+  setTimeout(function(){f.style.opacity='0';},350);
+  setTimeout(function(){f.style.width='0';},900);
 }
 function setLiveStatus(state,msg){
   document.getElementById('ldot').className='dot '+(state==='ok'?'on':state==='loading'?'spin':'');
   document.getElementById('ltx').innerHTML=msg;
 }
 
+var progActive=false,progN=0,PROG_TOTAL=16;
+function progStart(total){
+  PROG_TOTAL=total||16;
+  progActive=true;
+  progN=0;
+  var e=document.getElementById('fetchBar');
+  if(!e)return;
+  e.style.transition='none';
+  e.style.opacity='1';
+  e.style.width='3%';
+  e.offsetHeight; // 强制先绘制，避免 iPhone 上看不到
+  requestAnimationFrame(function(){
+    e.style.transition='width .28s cubic-bezier(.4,0,.2,1),opacity .35s ease';
+    e.style.width='6%';
+  });
+}
+function progStep(){
+  if(!progActive)return;
+  progN++;
+  var e=document.getElementById('fetchBar');
+  if(!e)return;
+  var pct=Math.min(96,6+(progN/PROG_TOTAL)*90);
+  e.style.width=pct.toFixed(1)+'%';
+}
+function progDone(){
+  var e=document.getElementById('fetchBar');
+  if(!e)return;
+  progActive=false;
+  e.style.width='100%';
+  setTimeout(function(){e.style.opacity='0';},300);
+  setTimeout(function(){
+    e.style.transition='none';
+    e.style.width='0%';
+    e.offsetHeight;
+    e.style.transition='width .28s cubic-bezier(.4,0,.2,1),opacity .35s ease';
+  },800);
+}
 async function tryFetch(url){
-  var label=srcName(url);
-  if(_pg.on){_pg.label=label;pgRender();}
   try{
     var r=await fetch(url,{mode:'cors',cache:'no-store'});
     if(!r.ok)throw new Error(r.status);
     return await r.json();
   }finally{
-    pgStep(label);
+    progStep();
+    pgStep();
   }
 }
 function lastVal(arr){
@@ -886,8 +911,9 @@ async function bgMetric(key,paths,lo,hi){
 
 async function fetchLive(force){
   if(!force){var c=fetchCache();if(c){applyLive(c);return;}}
-  pgStart(18,'准备连接数据源…');
-  setLiveStatus('loading','拉取数据中');
+  progStart(16);
+  setLiveStatus('loading','拉取中');
+  pgStart();
 
   var result={},ok=[],fail=[];
 
@@ -1098,7 +1124,7 @@ async function fetchLive(force){
     setLiveStatus('','全部失败 · 请下载后用浏览器直接打开');
   }
 
-}
+  progDone();}
 
 function applyLive(d){
   if(!d)return;
