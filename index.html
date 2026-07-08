@@ -170,6 +170,40 @@ body{
 .stb-chg{font-size:11px;font-weight:700;min-height:14px}
 .spark{width:100%;height:28px;margin-top:2px;display:block}
 
+/* ─ USDT 单日增减监控 ─ */
+.usdt-flow-card{
+  background:var(--card);border-radius:18px;padding:16px;border:1px solid var(--div);
+  transition:border-color .25s ease,box-shadow .25s ease,background .25s ease;
+}
+.usdt-flow-card.flow-up{border-color:rgba(0,200,5,.38);box-shadow:0 0 0 1px rgba(0,200,5,.08),0 10px 30px rgba(0,200,5,.08)}
+.usdt-flow-card.flow-down{border-color:rgba(255,80,0,.42);box-shadow:0 0 0 1px rgba(255,80,0,.08),0 10px 30px rgba(255,80,0,.08)}
+.usdt-flow-card.flow-normal{border-color:var(--div)}
+.flow-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:12px}
+.flow-title{font-size:13px;color:var(--tx2);font-weight:700;display:flex;align-items:center;gap:7px}
+.flow-dot{width:8px;height:8px;border-radius:50%;background:var(--tx3);flex-shrink:0}
+.flow-up .flow-dot{background:var(--gn);box-shadow:0 0 8px rgba(0,200,5,.6)}
+.flow-down .flow-dot{background:var(--rd);box-shadow:0 0 8px rgba(255,80,0,.55)}
+.flow-badge{font-size:11px;font-weight:800;padding:5px 10px;border-radius:999px;background:var(--card2);color:var(--tx2);white-space:nowrap}
+.flow-up .flow-badge{background:var(--gn-dim);color:var(--gn)}
+.flow-down .flow-badge{background:var(--rd-dim);color:var(--rd)}
+.flow-main{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.flow-big{font-size:38px;font-weight:800;letter-spacing:-.04em;line-height:1}
+.flow-up .flow-big{color:var(--gn)}
+.flow-down .flow-big{color:var(--rd)}
+.flow-normal .flow-big{color:var(--tx)}
+.flow-sub{font-size:12px;color:var(--tx2);margin-top:6px;line-height:1.45}
+.flow-meta{text-align:right;min-width:128px}
+.flow-meta-k{font-size:11px;color:var(--tx3);font-weight:700}
+.flow-meta-v{font-size:17px;font-weight:800;margin-top:3px}
+.flow-list{margin-top:14px;border-top:1px solid var(--div);padding-top:8px}
+.flow-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;font-size:12px;border-bottom:1px solid var(--div)}
+.flow-row:last-child{border-bottom:none}
+.flow-row span:first-child{color:var(--tx2)}
+.flow-row .hit{font-weight:800}
+.flow-row .up{color:var(--gn)}
+.flow-row .down{color:var(--rd)}
+.flow-empty{font-size:13px;color:var(--tx3);padding:18px 0;text-align:center}
+
 /* top progress bar */
 .pg-top{display:none}
 .pg-fill{height:100%;width:0;background:linear-gradient(90deg,var(--gn),var(--lg));
@@ -571,6 +605,17 @@ body{
 
 <div class="divider"></div>
 
+<!-- USDT Flow Alert -->
+<div class="sec">
+  <div class="sec-title">USDT 增减监控</div>
+  <div class="sec-sub">当天净增发/净减少 ≥ $1B 自动高亮 · 基于 USDT 流通市值日变化</div>
+  <div class="usdt-flow-card flow-normal" id="usdtFlowCard">
+    <div class="flow-empty">刷新后自动计算 USDT 当天增减</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
 <!-- MA Ladder -->
 <div class="sec">
   <div class="sec-title">均线阶梯</div>
@@ -725,6 +770,7 @@ var TR=[
 ];
 var CACHE_KEY='btc_live_v6';
 var CACHE_TTL=5*60*1000;
+var USDT_FLOW_THRESHOLD=1e9; // USDT 当天增发/减少提醒阈值：10亿美元
 // AHR999 power-law coefficients: log10(P) = a*log10(days) + b
 var AHR_A=5.5856,AHR_B=-16.1567;   // 2010-2026 refit (R²=0.958)
 var AHR_A0=5.84,AHR_B0=-17.1;      // ahr999 classic 2018 fit
@@ -1191,7 +1237,7 @@ function applyLive(d){
   }
   if(d.prob50!==undefined)document.getElementById('spb').value=d.prob50;
   if(d.prob80!==undefined)document.getElementById('spu').value=d.prob80;
-  if(d.usdtSeries){drawStb('usdt',d.usdtSeries);S.stbU=d.usdtSeries;}
+  if(d.usdtSeries){drawStb('usdt',d.usdtSeries);renderUsdtFlow(d.usdtSeries);S.stbU=d.usdtSeries;}
   if(d.usdcSeries){drawStb('usdc',d.usdcSeries);S.stbC=d.usdcSeries;}
   if(d.balanced)document.getElementById('sbl').value=d.balanced;
   if(d.sopr){
@@ -1346,6 +1392,46 @@ function renderAhr(a){
       +row('AHR = 1.00',p1,'锚点成分 · 破1价')
       +row('AHR = 1.20',p12,'定投区上沿');
   }
+}
+
+function fmtFlowUsd(n){
+  var sign=n>=0?'+':'-';
+  var a=Math.abs(n),b=a/1e9;
+  return sign+'$'+(b>=10?b.toFixed(1):b.toFixed(2))+'B';
+}
+function renderUsdtFlow(ser){
+  var card=document.getElementById('usdtFlowCard');
+  if(!card)return;
+  if(!ser||ser.length<2){
+    card.className='usdt-flow-card flow-normal';
+    card.innerHTML='<div class="flow-empty">USDT 数据不足，无法判断当天增发/减少</div>';
+    return;
+  }
+  var last=ser[ser.length-1],prev=ser[ser.length-2];
+  var diff=last-prev,pct=prev?diff/prev*100:0;
+  var hit=Math.abs(diff)>=USDT_FLOW_THRESHOLD;
+  var up=diff>=0;
+  var cls=hit?(up?'flow-up':'flow-down'):'flow-normal';
+  var badge=hit?(up?'触发：增发 ≥ $1B':'触发：减少 ≥ $1B'):'未触发';
+  var title=up?'当天净增发':'当天净减少';
+  var recent=[];
+  for(var i=Math.max(1,ser.length-5);i<ser.length;i++){
+    var d=ser[i]-ser[i-1];
+    var h=Math.abs(d)>=USDT_FLOW_THRESHOLD;
+    recent.push('<div class="flow-row"><span>近'+(ser.length-i)+'日</span><span class="'+(h?'hit ':'')+(d>=0?'up':'down')+'">'+fmtFlowUsd(d)+'</span></div>');
+  }
+  card.className='usdt-flow-card '+cls;
+  card.innerHTML=
+    '<div class="flow-head">'+
+      '<div class="flow-title"><span class="flow-dot"></span>USDT 单日净变化</div>'+
+      '<div class="flow-badge">'+badge+'</div>'+
+    '</div>'+
+    '<div class="flow-main">'+
+      '<div><div class="flow-big num">'+fmtFlowUsd(diff)+'</div>'+
+      '<div class="flow-sub">'+title+' · '+(pct>=0?'+':'')+pct.toFixed(2)+'% · 阈值 $1.00B</div></div>'+
+      '<div class="flow-meta"><div class="flow-meta-k">当前 USDT 流通市值</div><div class="flow-meta-v num">$'+(last/1e9).toFixed(1)+'B</div></div>'+
+    '</div>'+
+    '<div class="flow-list">'+recent.join('')+'</div>';
 }
 
 function drawStb(key,ser){
@@ -1563,7 +1649,7 @@ function init(){
   if(!S.sigs)S.sigs={};
   if(!S.sigs.lo){S.sigs.lo=29132;S.sigs.hi=90461;}
   calc();upB();trig();upH2();upG();rl2();rSig();renderMA();
-  if(S.stbU)drawStb('usdt',S.stbU);
+  if(S.stbU){drawStb('usdt',S.stbU);renderUsdtFlow(S.stbU);}
   if(S.stbC)drawStb('usdc',S.stbC);
   if(S.ahr)renderAhr(S.ahr);
   fetchLive(false);
