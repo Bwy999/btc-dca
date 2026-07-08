@@ -59,8 +59,9 @@
   }
 }
 .bgfix{position:fixed;inset:0;background:var(--bg);z-index:-1}
-.fetchbar-track{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;height:3px;z-index:2147483647;pointer-events:none;background:transparent}
-.fetchbar{height:100%;width:0%;opacity:0;background:linear-gradient(90deg,var(--gn),var(--lg));box-shadow:0 0 10px rgba(0,200,5,.75);border-radius:0 3px 3px 0;transition:width .28s cubic-bezier(.4,0,.2,1),opacity .35s ease}
+/* Robinhood / YouTube 风格顶部细进度条 */
+.fetchbar-track{position:relative;width:100%;height:3px;margin:10px 0 6px;z-index:1;pointer-events:none;background:transparent;overflow:hidden;border-radius:999px;transform:translateZ(0)}
+.fetchbar{height:100%;width:0%;opacity:0;display:block;background:linear-gradient(90deg,var(--gn),var(--lg));box-shadow:0 0 10px rgba(0,200,5,.75);border-radius:999px;transition:width .28s cubic-bezier(.4,0,.2,1),opacity .35s ease;will-change:width,opacity}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{background:var(--bg)}
 body{
@@ -170,7 +171,7 @@ body{
 .spark{width:100%;height:28px;margin-top:2px;display:block}
 
 /* top progress bar */
-.pg-top{position:fixed;top:0;left:0;right:0;height:3px;z-index:2000;pointer-events:none}
+.pg-top{display:none}
 .pg-fill{height:100%;width:0;background:linear-gradient(90deg,var(--gn),var(--lg));
   box-shadow:0 0 10px rgba(0,200,5,.55);opacity:0;border-radius:0 2px 2px 0;
   transition:width .35s cubic-bezier(.4,0,.2,1),opacity .5s ease}
@@ -317,7 +318,6 @@ body{
 </head>
 <body>
 <div class="bgfix"></div>
-<div class="fetchbar-track"><div class="fetchbar" id="fetchBar"></div></div>
 <div class="pg-top"><div class="pg-fill" id="pgFill"></div></div>
 <div class="w">
 
@@ -329,6 +329,7 @@ body{
     <div class="chg-pill" id="pc24"></div>
   </div>
   <div class="hdr-sub">点击价格可手动修改 · 实时数据自动覆盖</div>
+  <div class="fetchbar-track"><div class="fetchbar" id="fetchBar"></div></div>
 </div>
 
 <!-- Live status -->
@@ -790,11 +791,11 @@ function progStart(total){
   if(!e)return;
   e.style.transition='none';
   e.style.opacity='1';
-  e.style.width='3%';
-  e.offsetHeight; // 强制先绘制，避免 iPhone 上看不到
+  e.style.width='0%';
+  e.offsetHeight; // 强制浏览器先绘制，解决 iPhone 上偶发不显示
   requestAnimationFrame(function(){
     e.style.transition='width .28s cubic-bezier(.4,0,.2,1),opacity .35s ease';
-    e.style.width='6%';
+    e.style.width='5%';
   });
 }
 function progStep(){
@@ -802,8 +803,8 @@ function progStep(){
   progN++;
   var e=document.getElementById('fetchBar');
   if(!e)return;
-  var pct=Math.min(96,6+(progN/PROG_TOTAL)*90);
-  e.style.width=pct.toFixed(1)+'%';
+  var pct=Math.min(96,5+(progN/PROG_TOTAL)*91);
+  requestAnimationFrame(function(){e.style.width=pct.toFixed(1)+'%';});
 }
 function progDone(){
   var e=document.getElementById('fetchBar');
@@ -816,7 +817,7 @@ function progDone(){
     e.style.width='0%';
     e.offsetHeight;
     e.style.transition='width .28s cubic-bezier(.4,0,.2,1),opacity .35s ease';
-  },800);
+  },850);
 }
 async function tryFetch(url){
   try{
@@ -824,6 +825,7 @@ async function tryFetch(url){
     if(!r.ok)throw new Error(r.status);
     return await r.json();
   }finally{
+    // 统一计数点：所有 API 成功/失败都会在完成后推进一次
     progStep();
     pgStep();
   }
@@ -910,7 +912,9 @@ async function bgMetric(key,paths,lo,hi){
 }
 
 async function fetchLive(force){
-  if(!force){var c=fetchCache();if(c){applyLive(c);return;}}
+  // 打开页面时：先把缓存数据显示出来，但不 return；继续自动拉实时数据
+  // 这样不用手动点“刷新”，顶部进度条也会正常出现
+  if(!force){var c=fetchCache();if(c)applyLive(c);}
   progStart(16);
   setLiveStatus('loading','拉取中');
   pgStart();
