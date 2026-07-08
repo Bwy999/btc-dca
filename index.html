@@ -381,6 +381,17 @@ body{
   <button class="btn sm" onclick="nxtMo()">下月</button>
 </div>
 
+<!-- USDT Flow Alert -->
+<div class="sec usdt-flow-sec">
+  <div class="sec-title">USDT 增减监控</div>
+  <div class="sec-sub">当天净增发/净减少 ≥ $1B 自动高亮 · 基于 USDT 流通市值日变化</div>
+  <div class="usdt-flow-card flow-normal" id="usdtFlowCard">
+    <div class="flow-empty">刷新后自动计算 USDT 当天增减</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
 <!-- Score -->
 <div class="sec">
   <div class="sec-title">综合评分</div>
@@ -600,17 +611,6 @@ body{
     <div class="klevel"><span class="klevel-lbl">200WMA</span><span class="klevel-val num" id="kp2">--</span></div>
     <div class="klevel"><span class="klevel-lbl">当前</span><span class="klevel-val num" style="color:var(--gn)" id="kp3">--</span></div>
     <div class="kline"><div class="kdot" id="pd"></div></div>
-  </div>
-</div>
-
-<div class="divider"></div>
-
-<!-- USDT Flow Alert -->
-<div class="sec">
-  <div class="sec-title">USDT 增减监控</div>
-  <div class="sec-sub">当天净增发/净减少 ≥ $1B 自动高亮 · 基于 USDT 流通市值日变化</div>
-  <div class="usdt-flow-card flow-normal" id="usdtFlowCard">
-    <div class="flow-empty">刷新后自动计算 USDT 当天增减</div>
   </div>
 </div>
 
