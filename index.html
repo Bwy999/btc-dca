@@ -7,7 +7,18 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BTC定投">
-<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" id="atIcon">
+<script>
+(function(){
+  function setIcon(){
+    var d=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches;
+    var l=document.getElementById('atIcon');
+    if(l)l.href=d?'apple-touch-icon-dark.png':'apple-touch-icon.png';
+  }
+  setIcon();
+  if(window.matchMedia)matchMedia('(prefers-color-scheme: dark)').addEventListener('change',setIcon);
+})();
+</script>
 <title>BTC 定投</title>
 <style>
 :root{
@@ -156,6 +167,12 @@ body{
 .stb-chg{font-size:11px;font-weight:700;min-height:14px}
 .spark{width:100%;height:28px;margin-top:2px;display:block}
 
+/* Robinhood / YouTube style top loading progress */
+.pg-top{position:fixed;top:0;left:0;right:0;height:3px;z-index:2000;pointer-events:none;overflow:hidden}
+.pg-fill{height:100%;width:0;background:linear-gradient(90deg,var(--gn),var(--lg),var(--gn));
+  box-shadow:0 0 10px rgba(0,200,5,.58);opacity:0;border-radius:0 2px 2px 0;
+  transition:width .28s cubic-bezier(.4,0,.2,1),opacity .45s ease}
+
 /* AHR999 module */
 .ahr-wrap{display:flex;gap:28px;align-items:flex-start;padding:4px 0 14px;flex-wrap:wrap}
 .ahr-big{font-size:52px;font-weight:700;letter-spacing:-.04em;line-height:1}
@@ -298,6 +315,7 @@ body{
 </head>
 <body>
 <div class="bgfix"></div>
+<div class="pg-top"><div class="pg-fill" id="pgFill"></div></div>
 <div class="w">
 
 <!-- Header -->
@@ -733,15 +751,57 @@ function fetchCache(){
 }
 function saveCache(d){try{localStorage.setItem(CACHE_KEY,JSON.stringify({ts:Date.now(),data:d}));}catch(e){}}
 
+var _pg={on:false,n:0,total:18,label:'准备连接数据源…'};
+function pgPct(){return Math.min(94,4+(_pg.n/Math.max(1,_pg.total))*90);}
+function pgRender(){
+  var f=document.getElementById('pgFill');
+  if(f){f.style.opacity=_pg.on?'1':'0';f.style.width=(_pg.on?pgPct():0).toFixed(0)+'%';}
+  var lu=document.getElementById('lupdated');
+  if(lu&&_pg.on)lu.textContent='加载 '+Math.min(99,Math.round((_pg.n/Math.max(1,_pg.total))*100))+'%';
+}
+function pgStart(total,label){
+  _pg.on=true;_pg.n=0;_pg.total=total||18;_pg.label=label||'准备连接数据源…';
+  pgRender();
+}
+function pgStep(label){
+  if(!_pg.on)return;
+  _pg.n=Math.min(_pg.total,_pg.n+1);
+  if(label)_pg.label=label;
+  pgRender();
+}
+function pgDone(){
+  var f=document.getElementById('pgFill');
+  if(f){f.style.opacity='1';f.style.width='100%';}
+  _pg.on=false;
+  setTimeout(function(){if(f)f.style.opacity='0';},350);
+  setTimeout(function(){if(f)f.style.width='0';},900);
+}
+function srcName(url){
+  if(url.indexOf('bitcoin.com')>-1)return '价格 / AHR999';
+  if(url.indexOf('binance.com')>-1)return 'Binance 均线';
+  if(url.indexOf('alternative.me')>-1)return '恐惧贪婪';
+  if(url.indexOf('mempool.space')>-1)return '链上 / 矿工数据';
+  if(url.indexOf('coinmetrics')>-1)return 'MVRV / Realized Price';
+  if(url.indexOf('polymarket')>-1)return 'Polymarket 概率';
+  if(url.indexOf('stablecoins')>-1||url.indexOf('coingecko')>-1||url.indexOf('coinpaprika')>-1)return '稳定币市值';
+  if(url.indexOf('bitcoin-data')>-1||url.indexOf('bgeometrics')>-1)return 'BGeometrics 指标';
+  return '拉取数据中';
+}
 function setLiveStatus(state,msg){
   document.getElementById('ldot').className='dot '+(state==='ok'?'on':state==='loading'?'spin':'');
   document.getElementById('ltx').innerHTML=msg;
 }
 
 async function tryFetch(url){
-  var r=await fetch(url,{mode:'cors',cache:'no-store'});
-  if(!r.ok)throw new Error(r.status);
-  return r.json();
+  var label=srcName(url);
+  if(_pg.on){_pg.label=label;pgRender();}
+  try{
+    var r=await fetch(url,{mode:'cors',cache:'no-store'});
+    if(!r.ok)throw new Error(r.status);
+    return await r.json();
+  }finally{
+    pgStep(label);
+  }
 }
 function lastVal(arr){
   if(!arr||!arr.length)return null;
@@ -826,7 +886,8 @@ async function bgMetric(key,paths,lo,hi){
 
 async function fetchLive(force){
   if(!force){var c=fetchCache();if(c){applyLive(c);return;}}
-  setLiveStatus('loading','拉取中');
+  pgStart(18,'准备连接数据源…');
+  setLiveStatus('loading','拉取数据中');
 
   var result={},ok=[],fail=[];
 
@@ -1024,6 +1085,7 @@ async function fetchLive(force){
     applyLive(result);
     var msg='<span style="color:var(--gn);font-weight:600">'+ok.join(' · ')+'</span>';
     if(fail.length)msg+=' <span style="color:var(--rd)">失败:'+fail.join(' ')+'</span>';
+    pgDone();
     setLiveStatus(ok.length>fail.length?'ok':'','已更新 '+msg);
     var extra=[];
     if(result.mayerMult)extra.push('Mayer '+result.mayerMult.toFixed(2)+'x');
@@ -1032,8 +1094,10 @@ async function fetchLive(force){
     if(result.netEH)extra.push('算力 '+result.netEH+'EH');
     document.getElementById('lupdated').textContent=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})+(extra.length?' · '+extra.join(' '):'');
   }else{
+    pgDone();
     setLiveStatus('','全部失败 · 请下载后用浏览器直接打开');
   }
+
 }
 
 function applyLive(d){
