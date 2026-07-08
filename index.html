@@ -59,8 +59,9 @@
   }
 }
 .bgfix{position:fixed;inset:0;background:var(--bg);z-index:-1}
-.fetchbar-track{position:fixed;top:0;left:0;right:0;height:3px;z-index:2000;pointer-events:none}
-.fetchbar{height:100%;width:0;background:linear-gradient(90deg,var(--gn),var(--lg));box-shadow:0 0 8px rgba(0,200,5,.55);transition:width .25s ease,opacity .4s;opacity:0;border-radius:0 2px 2px 0}
+/* Robinhood / YouTube 风格顶部细进度条 */
+.fetchbar-track{position:relative;width:100%;height:3px;margin:10px 0 6px;z-index:1;pointer-events:none;background:transparent;overflow:hidden;border-radius:999px;transform:translateZ(0)}
+.fetchbar{height:100%;width:0%;opacity:0;display:block;background:linear-gradient(90deg,var(--gn),var(--lg));box-shadow:0 0 10px rgba(0,200,5,.75);border-radius:999px;transition:width .28s cubic-bezier(.4,0,.2,1),opacity .35s ease;will-change:width,opacity}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{background:var(--bg)}
 body{
@@ -169,8 +170,107 @@ body{
 .stb-chg{font-size:11px;font-weight:700;min-height:14px}
 .spark{width:100%;height:28px;margin-top:2px;display:block}
 
+/* ─ 稳定币单日增减监控 ─ */
+.stable-flow-stack{display:flex;flex-direction:column;gap:10px}
+.usdt-flow-card{
+  background:var(--card);border-radius:18px;padding:16px;border:1px solid var(--div);
+  transition:border-color .25s ease,box-shadow .25s ease,background .25s ease;
+}
+.usdt-flow-card.flow-up{border-color:rgba(0,200,5,.38);box-shadow:0 0 0 1px rgba(0,200,5,.08),0 10px 30px rgba(0,200,5,.08)}
+.usdt-flow-card.flow-down{border-color:rgba(255,80,0,.42);box-shadow:0 0 0 1px rgba(255,80,0,.08),0 10px 30px rgba(255,80,0,.08)}
+.usdt-flow-card.flow-normal{border-color:var(--div)}
+.flow-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:12px}
+.flow-title{font-size:13px;color:var(--tx2);font-weight:700;display:flex;align-items:center;gap:7px}
+.flow-dot{width:8px;height:8px;border-radius:50%;background:var(--tx3);flex-shrink:0}
+.flow-up .flow-dot{background:var(--gn);box-shadow:0 0 8px rgba(0,200,5,.6)}
+.flow-down .flow-dot{background:var(--rd);box-shadow:0 0 8px rgba(255,80,0,.55)}
+.flow-badge{font-size:11px;font-weight:800;padding:5px 10px;border-radius:999px;background:var(--card2);color:var(--tx2);white-space:nowrap}
+.flow-up .flow-badge{background:var(--gn-dim);color:var(--gn)}
+.flow-down .flow-badge{background:var(--rd-dim);color:var(--rd)}
+.flow-main{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.flow-big{font-size:38px;font-weight:800;letter-spacing:-.04em;line-height:1}
+.flow-up .flow-big{color:var(--gn)}
+.flow-down .flow-big{color:var(--rd)}
+.flow-normal .flow-big{color:var(--tx)}
+.flow-sub{font-size:12px;color:var(--tx2);margin-top:6px;line-height:1.45}
+.flow-meta{text-align:right;min-width:128px}
+.flow-meta-k{font-size:11px;color:var(--tx3);font-weight:700}
+.flow-meta-v{font-size:17px;font-weight:800;margin-top:3px}
+.flow-list{margin-top:14px;border-top:1px solid var(--div);padding-top:8px}
+.flow-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;font-size:12px;border-bottom:1px solid var(--div)}
+.flow-row:last-child{border-bottom:none}
+.flow-row span:first-child{color:var(--tx2)}
+.flow-row .hit{font-weight:800}
+.flow-row .up{color:var(--gn)}
+.flow-row .down{color:var(--rd)}
+.flow-empty{font-size:13px;color:var(--tx3);padding:18px 0;text-align:center}
+
+
+
+/* ─ 今日结论卡 / 数据源健康度 / 微调开关 ─ */
+.decision-card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--div);border-radius:18px;padding:15px 16px;margin:8px 0 8px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+.decision-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:8px}
+.decision-label{font-size:11px;color:var(--tx2);font-weight:800;letter-spacing:.02em;margin-bottom:3px}
+.decision-title{font-size:22px;font-weight:800;letter-spacing:-.03em;line-height:1.12}
+.decision-pill{font-size:11px;font-weight:800;padding:5px 10px;border-radius:999px;background:var(--gn-dim);color:var(--gn);white-space:nowrap}
+.decision-line{font-size:12px;line-height:1.5;color:var(--tx2);margin-top:5px}
+.decision-line b{color:var(--tx);font-weight:800}
+.decision-risk{color:var(--or)}
+.decision-liq{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.liq-chip{font-size:11px;font-weight:800;padding:5px 9px;border-radius:999px;background:var(--card);border:1px solid var(--div);color:var(--tx2)}
+.liq-chip.up{background:var(--gn-dim);border-color:rgba(0,200,5,.22);color:var(--gn)}
+.liq-chip.down{background:var(--rd-dim);border-color:rgba(255,80,0,.22);color:var(--rd)}
+.liq-chip.neutral{color:var(--tx2)}
+.health-card{background:var(--card);border:1px solid var(--div);border-radius:14px;padding:10px 12px;margin:8px 0 0}
+.health-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.health-title{font-size:12px;font-weight:800;color:var(--tx2)}
+.health-time{font-size:11px;color:var(--tx3)}
+.health-list{display:flex;gap:6px;flex-wrap:wrap}
+.health-chip{font-size:10px;font-weight:800;padding:4px 7px;border-radius:999px;background:var(--card2);color:var(--tx2);border:1px solid transparent}
+.health-chip.ok{background:var(--gn-dim);color:var(--gn);border-color:rgba(0,200,5,.18)}
+.health-chip.cache{background:rgba(255,159,10,.12);color:var(--or);border-color:rgba(255,159,10,.2)}
+.health-chip.fail{background:var(--rd-dim);color:var(--rd);border-color:rgba(255,80,0,.18)}
+.health-chip.wait{color:var(--tx3)}
+.sec-head-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.mini-toggle{font-family:inherit;font-size:12px;font-weight:800;border:1px solid var(--div);background:var(--card);color:var(--tx2);border-radius:999px;padding:7px 11px;white-space:nowrap}
+.mini-toggle.on{background:var(--gn);border-color:var(--gn);color:#000}
+.dim-slider:disabled{opacity:.48;cursor:default}
+.dim-slider:disabled::-webkit-slider-thumb{background:var(--tx3);box-shadow:none}
+.chip:disabled{opacity:.45;cursor:default}
+
+/* ─ 稳定币合计流动性 ─ */
+.stable-total-card{background:var(--card);border:1px solid var(--div);border-radius:18px;padding:15px 16px;margin-bottom:10px}
+.stable-total-card.flow-up{border-color:rgba(0,200,5,.38);box-shadow:0 0 0 1px rgba(0,200,5,.08),0 10px 30px rgba(0,200,5,.08)}
+.stable-total-card.flow-down{border-color:rgba(255,80,0,.42);box-shadow:0 0 0 1px rgba(255,80,0,.08),0 10px 30px rgba(255,80,0,.08)}
+.stable-total-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:10px}
+.stable-total-title{font-size:13px;font-weight:800;color:var(--tx2)}
+.stable-total-status{font-size:11px;font-weight:800;padding:5px 10px;border-radius:999px;background:var(--card2);color:var(--tx2);white-space:nowrap}
+.stable-total-main{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;flex-wrap:wrap}
+.stable-total-big{font-size:34px;font-weight:850;letter-spacing:-.04em;line-height:1}
+.stable-total-card.flow-up .stable-total-big{color:var(--gn)}
+.stable-total-card.flow-down .stable-total-big{color:var(--rd)}
+.stable-total-sub{font-size:12px;color:var(--tx2);margin-top:6px;line-height:1.45}
+.stable-total-kv{text-align:right;min-width:132px}
+.stable-total-k{font-size:11px;color:var(--tx3);font-weight:800}
+.stable-total-v{font-size:16px;font-weight:850;margin-top:3px}
+
+/* ─ 市场体温只读卡视觉 ─ */
+.tile{border:1px solid transparent;min-height:132px}
+.tile input{background:transparent;padding:0;border-radius:0;font-size:24px;line-height:1.1;font-weight:850;letter-spacing:-.03em;pointer-events:none;color:var(--tx)}
+.tile input:focus{background:transparent}
+.tile-sep{font-weight:800;color:var(--tx3);padding:5px 0 4px}
+body.sig-edit .tile input{pointer-events:auto;background:var(--card2);padding:7px 10px;border-radius:10px;font-size:18px}
+body.sig-edit .tile input:focus{background:#232327}
+body.sig-edit .tile{border-color:var(--div)}
+@media(max-width:640px){
+  .decision-title{font-size:20px}
+  .stable-total-big{font-size:30px}
+  .health-card{padding:10px}
+  .tile input{font-size:22px}
+}
+
 /* top progress bar */
-.pg-top{position:fixed;top:0;left:0;right:0;height:3px;z-index:2000;pointer-events:none}
+.pg-top{display:none}
 .pg-fill{height:100%;width:0;background:linear-gradient(90deg,var(--gn),var(--lg));
   box-shadow:0 0 10px rgba(0,200,5,.55);opacity:0;border-radius:0 2px 2px 0;
   transition:width .35s cubic-bezier(.4,0,.2,1),opacity .5s ease}
@@ -317,8 +417,7 @@ body{
 </head>
 <body>
 <div class="bgfix"></div>
-<div class="fetchbar-track"><div class="fetchbar" id="fetchBar"></div></div>
-<div class="pg-top"></div>
+<div class="pg-top"><div class="pg-fill" id="pgFill"></div></div>
 <div class="w">
 
 <!-- Header -->
@@ -329,6 +428,21 @@ body{
     <div class="chg-pill" id="pc24"></div>
   </div>
   <div class="hdr-sub">点击价格可手动修改 · 实时数据自动覆盖</div>
+  <div class="fetchbar-track"><div class="fetchbar" id="fetchBar"></div></div>
+</div>
+
+<!-- Today Decision -->
+<div class="decision-card" id="decisionCard">
+  <div class="decision-top">
+    <div>
+      <div class="decision-label">今日策略</div>
+      <div class="decision-title num" id="decisionTitle">等待实时数据</div>
+    </div>
+    <div class="decision-pill" id="decisionPill">自动判断</div>
+  </div>
+  <div class="decision-line" id="decisionReason">刷新后根据综合评分、AHR999、200WMA、MVRV 自动生成结论。</div>
+  <div class="decision-line decision-risk" id="decisionRisk">风险提示：等待 SOPR / Puell / 稳定币数据。</div>
+  <div class="decision-liq" id="decisionLiq"><span class="liq-chip neutral">流动性等待数据</span></div>
 </div>
 
 <!-- Live status -->
@@ -337,6 +451,11 @@ body{
   <span id="ltx">等待加载</span>
   <span id="lupdated" style="color:var(--tx3)"></span>
   <button class="refresh" onclick="fetchLive(true)">刷新</button>
+</div>
+
+<div class="health-card" id="healthCard">
+  <div class="health-head"><div class="health-title">数据源健康度</div><div class="health-time" id="healthTime">等待刷新</div></div>
+  <div class="health-list" id="healthList"><span class="health-chip wait">等待数据</span></div>
 </div>
 
 <!-- Month bar -->
@@ -348,8 +467,8 @@ body{
 
 <!-- Score -->
 <div class="sec">
-  <div class="sec-title">综合评分</div>
-  <div class="sec-sub">7维度加权 · 决定本月定投倍数</div>
+  <div class="sec-head-row"><div class="sec-title">综合评分</div><button class="mini-toggle" id="tweakBtn" onclick="toggleTweak()">微调 OFF</button></div>
+  <div class="sec-sub">7维度加权 · 默认锁定实时数据，开启微调后可手动修正</div>
 
   <div class="score-wrap">
     <div class="score-left">
@@ -493,53 +612,72 @@ body{
 
 <div class="divider"></div>
 
+<!-- Stablecoin Flow Alert -->
+<div class="sec usdt-flow-sec">
+  <div class="sec-title">稳定币增减监控</div>
+  <div class="sec-sub">USDT / USDC 当天净增发或净减少 ≥ $1B 自动高亮 · 基于流通市值日变化</div>
+  <div class="stable-total-card" id="stableTotalCard">
+    <div class="flow-empty">刷新后自动计算 USDT + USDC 合计流动性</div>
+  </div>
+  <div class="stable-flow-stack">
+    <div class="usdt-flow-card flow-normal" id="usdtFlowCard">
+      <div class="flow-empty">刷新后自动计算 USDT 当天增减</div>
+    </div>
+    <div class="usdt-flow-card flow-normal" id="usdcFlowCard">
+      <div class="flow-empty">刷新后自动计算 USDC 当天增减</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
 <!-- fuckbtc Signals -->
 <div class="sec">
-  <div class="sec-title">市场体温</div>
-  <div class="sec-sub">fuckbtc.com 关键信号 · 手动填入每日参考 <a href="https://fuckbtc.com" target="_blank" style="color:var(--gn);text-decoration:none;font-weight:600">打开 ↗</a></div>
+  <div class="sec-head-row"><div class="sec-title">市场体温</div><button class="mini-toggle" id="sigEditBtn" onclick="toggleSigEdit()">编辑 OFF</button></div>
+  <div class="sec-sub">自动数据默认只读 · API 失败时可开启编辑手动修正 · <a href="https://fuckbtc.com" target="_blank" style="color:var(--gn);text-decoration:none;font-weight:600">打开 ↗</a></div>
 
   <div class="tiles">
     <div class="tile">
       <div class="tile-name"><span class="tile-live"></span>关机价区间</div>
-      <input id="slo" type="number" placeholder="29132" oninput="sig()">
+      <input id="slo" readonly type="number" placeholder="29132" oninput="sig()">
       <div class="tile-sep">至</div>
-      <input id="shi" type="number" placeholder="90461" oninput="sig()">
+      <input id="shi" readonly type="number" placeholder="90461" oninput="sig()">
       <div class="tile-status" id="ss0"></div>
       <div class="tile-hint">算力实时推算 · $0.06/kWh</div>
     </div>
     <div class="tile">
       <div class="tile-name"><span class="tile-live"></span>均衡价格</div>
-      <input id="sbl" type="number" placeholder="39143" oninput="sig()">
+      <input id="sbl" readonly type="number" placeholder="39143" oninput="sig()">
       <div class="tile-status" id="ss1"></div>
       <div class="tile-hint">RP−TP · TP校准26/07</div>
     </div>
     <div class="tile">
       <div class="tile-name"><span class="tile-live"></span>200周均线</div>
-      <input id="swm" type="number" oninput="sig()">
+      <input id="swm" readonly type="number" oninput="sig()">
       <div class="tile-status" id="ss2"></div>
       <div class="tile-hint">从未长期跌破</div>
     </div>
     <div class="tile">
       <div class="tile-name"><span class="tile-live"></span>SOPR</div>
-      <input id="ssp" type="number" step="0.001" placeholder="1.008" oninput="sig()">
+      <input id="ssp" readonly type="number" step="0.001" placeholder="1.008" oninput="sig()">
       <div class="tile-status" id="ss3"></div>
       <div class="tile-hint">BGeometrics · 6h缓存</div>
     </div>
     <div class="tile">
       <div class="tile-name"><span class="tile-live"></span>减半倒计时</div>
-      <input id="shv" type="number" oninput="sig()">
+      <input id="shv" readonly type="number" oninput="sig()">
       <div class="tile-status" id="ss4"></div>
       <div class="tile-hint">奖励 3.125 → 1.5625</div>
     </div>
     <div class="tile">
       <div class="tile-name"><span class="tile-live"></span>跌破 $50K 概率</div>
-      <input id="spb" type="number" step="0.1" placeholder="18" oninput="sig()">
+      <input id="spb" readonly type="number" step="0.1" placeholder="18" oninput="sig()">
       <div class="tile-status" id="ss5"></div>
       <div class="tile-hint">Polymarket 实时 %</div>
     </div>
     <div class="tile">
       <div class="tile-name"><span class="tile-live"></span>突破 $80K 概率</div>
-      <input id="spu" type="number" step="0.1" placeholder="32" oninput="sig()">
+      <input id="spu" readonly type="number" step="0.1" placeholder="32" oninput="sig()">
       <div class="tile-status" id="ss6"></div>
       <div class="tile-hint">Polymarket 实时 %</div>
     </div>
@@ -694,7 +832,6 @@ body{
     <div class="field"><span class="field-lbl">DCA 均价 ($)</span><input id="ed1" type="number"></div>
     <div class="field"><span class="field-lbl">一次性建仓 (BTC)</span><input id="ed2" type="number" step="0.0001"></div>
     <div class="field"><span class="field-lbl">一次性均价 ($)</span><input id="ed3" type="number"></div>
-    <div class="field"><span class="field-lbl">人民币汇率 USD/CNY</span><input id="ed4" type="number" step="0.01"></div>
     <div style="display:flex;gap:10px;margin-top:8px">
       <button class="btn" onclick="se()" style="flex:1">保存</button>
       <button class="btn ghost" onclick="ce()" style="flex:1">取消</button>
@@ -725,6 +862,10 @@ var TR=[
 ];
 var CACHE_KEY='btc_live_v6';
 var CACHE_TTL=5*60*1000;
+var STABLE_FLOW_THRESHOLD=1e9; // 稳定币当天增发/减少提醒阈值：10亿美元
+var USDT_FLOW_THRESHOLD=STABLE_FLOW_THRESHOLD; // 兼容旧变量名
+var SOURCE_ORDER=['价格','AHR999','200WMA','均线','FGI','减半','关机价','MVRV','均衡价','概率','USDT','USDC','SOPR','Puell','RR'];
+var HEALTH={};
 // AHR999 power-law coefficients: log10(P) = a*log10(days) + b
 var AHR_A=5.5856,AHR_B=-16.1567;   // 2010-2026 refit (R²=0.958)
 var AHR_A0=5.84,AHR_B0=-17.1;      // ahr999 classic 2018 fit
@@ -744,8 +885,12 @@ var S=sv2()||{
   bud:{base:0,pull:0,ext:0},
   log:[],
   hd:{d:0.26,dc:30000,l:0,lc:0},
-  sigs:{}
+  sigs:{},
+  tweak:false,
+  sigEdit:false
 };
+if(S.tweak===undefined)S.tweak=false;
+if(S.sigEdit===undefined)S.sigEdit=false;
 
 // ── Live data ────────────────────────────────────────────────────────────────
 function fetchCache(){
@@ -755,27 +900,107 @@ function fetchCache(){
 }
 function saveCache(d){try{localStorage.setItem(CACHE_KEY,JSON.stringify({ts:Date.now(),data:d}));}catch(e){}}
 
+function markHealth(name,status,detail){
+  if(!name)return;
+  var old=HEALTH[name];
+  if(old&&old.status==='cache'&&status==='ok')detail=old.detail||detail;
+  HEALTH[name]={status:status,detail:detail||'',ts:Date.now()};
+}
+function markCacheHealth(d){
+  if(!d)return;
+  var map=[['price','价格'],['ahr999','AHR999'],['wma200','200WMA'],['ma51','均线'],['fgi','FGI'],['halvingDays','减半'],['shutLo','关机价'],['mvrv','MVRV'],['balanced','均衡价'],['prob50','概率'],['usdtSeries','USDT'],['usdcSeries','USDC'],['sopr','SOPR'],['puell','Puell'],['rr','RR']];
+  map.forEach(function(x){if(d[x[0]]!==undefined)markHealth(x[1],'cache','显示缓存，后台刷新中');});
+  renderHealth();
+}
+function renderHealth(){
+  var list=document.getElementById('healthList'),time=document.getElementById('healthTime');
+  if(!list)return;
+  var items=SOURCE_ORDER.filter(function(n){return HEALTH[n];});
+  if(!items.length){list.innerHTML='<span class="health-chip wait">等待数据</span>';return;}
+  list.innerHTML=items.map(function(n){
+    var h=HEALTH[n],txt=n;
+    if(h.status==='cache')txt+='·缓存';
+    if(h.status==='fail')txt+='·失败';
+    return '<span class="health-chip '+h.status+'" title="'+(h.detail||'')+'">'+txt+'</span>';
+  }).join('');
+  if(time)time.textContent=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+}
+
+var _pg={on:false,n:0,total:16};
+function pgStart(){
+  _pg.on=true;_pg.n=0;
+  var f=document.getElementById('pgFill');
+  if(f){f.style.opacity='1';f.style.width='4%';}
+}
+function pgStep(){
+  if(!_pg.on)return;
+  _pg.n++;
+  var f=document.getElementById('pgFill');
+  if(f)f.style.width=Math.min(94,4+_pg.n/_pg.total*90).toFixed(0)+'%';
+  var lu=document.getElementById('lupdated');
+  if(lu)lu.textContent=_pg.n+'/'+_pg.total;
+}
+function pgDone(){
+  _pg.on=false;
+  var f=document.getElementById('pgFill');
+  if(!f)return;
+  f.style.width='100%';
+  setTimeout(function(){f.style.opacity='0';},350);
+  setTimeout(function(){f.style.width='0';},900);
+}
 function setLiveStatus(state,msg){
   document.getElementById('ldot').className='dot '+(state==='ok'?'on':state==='loading'?'spin':'');
   document.getElementById('ltx').innerHTML=msg;
 }
 
-var progActive=false,progN=0,PROG_EST=14;
-function progStart(){progActive=true;progN=0;var e=document.getElementById('fetchBar');if(e){e.style.opacity='1';e.style.width='4%';}}
-function progStep(){if(!progActive)return;progN++;var e=document.getElementById('fetchBar');if(e)e.style.width=Math.min(90,progN/PROG_EST*90)+'%';var lu=document.getElementById('lupdated');if(lu)lu.textContent=progN+'/'+PROG_EST;}
-function progDone(){progActive=false;var e=document.getElementById('fetchBar');if(e){e.style.width='100%';setTimeout(function(){e.style.opacity='0';setTimeout(function(){e.style.width='0';},400);},350);}}
-async function tryFetch(url){
-  progStep();
-  var ctl=new AbortController();
-  var tid=setTimeout(function(){ctl.abort();},8000);
-  try{
-    var r0=await fetch(url,{mode:'cors',cache:'no-store',signal:ctl.signal});
-    clearTimeout(tid);
-    if(!r0.ok)throw new Error(r0.status);
-    return r0.json();
-  }catch(e){clearTimeout(tid);throw e;}
+var progActive=false,progN=0,PROG_TOTAL=16;
+function progStart(total){
+  PROG_TOTAL=total||16;
+  progActive=true;
+  progN=0;
+  var e=document.getElementById('fetchBar');
+  if(!e)return;
+  e.style.transition='none';
+  e.style.opacity='1';
+  e.style.width='0%';
+  e.offsetHeight; // 强制浏览器先绘制，解决 iPhone 上偶发不显示
+  requestAnimationFrame(function(){
+    e.style.transition='width .28s cubic-bezier(.4,0,.2,1),opacity .35s ease';
+    e.style.width='5%';
+  });
 }
-
+function progStep(){
+  if(!progActive)return;
+  progN++;
+  var e=document.getElementById('fetchBar');
+  if(!e)return;
+  var pct=Math.min(96,5+(progN/PROG_TOTAL)*91);
+  requestAnimationFrame(function(){e.style.width=pct.toFixed(1)+'%';});
+}
+function progDone(){
+  var e=document.getElementById('fetchBar');
+  if(!e)return;
+  progActive=false;
+  e.style.width='100%';
+  setTimeout(function(){e.style.opacity='0';},300);
+  setTimeout(function(){
+    e.style.transition='none';
+    e.style.width='0%';
+    e.offsetHeight;
+    e.style.transition='width .28s cubic-bezier(.4,0,.2,1),opacity .35s ease';
+  },850);
+}
+async function tryFetch(url){
+  try{
+    var r=await fetch(url,{mode:'cors',cache:'no-store'});
+    if(!r.ok)throw new Error(r.status);
+    return await r.json();
+  }finally{
+    // 统一计数点：所有 API 成功/失败都会在完成后推进一次
+    progStep();
+    pgStep();
+  }
+}
 function lastVal(arr){
   if(!arr||!arr.length)return null;
   var x=arr[arr.length-1];
@@ -838,7 +1063,7 @@ async function llamaSeries(id){
   }catch(e){return [];}
 }
 async function bgMetric(key,paths,lo,hi){
-  try{var cc=JSON.parse(localStorage.getItem('bg2_'+key));if(cc&&Date.now()-cc.ts<6*3600*1000)return cc.v;}catch(e){}
+  try{var cc=JSON.parse(localStorage.getItem('bg2_'+key));if(cc&&Date.now()-cc.ts<6*3600*1000){var nm={sopr:'SOPR',puell:'Puell',rr:'RR',rp:'MVRV'}[key]||key;markHealth(nm,'cache','6小时缓存');return cc.v;}}catch(e){}
   var mem={};try{mem=JSON.parse(localStorage.getItem('bg_ep2')||'{}');}catch(e){}
   var order=paths.slice();
   if(mem[key])order=[mem[key]].concat(paths.filter(function(p){return p!==mem[key];}));
@@ -858,9 +1083,13 @@ async function bgMetric(key,paths,lo,hi){
 }
 
 async function fetchLive(force){
-  if(!force){var c=fetchCache();if(c){applyLive(c);return;}}
-  progStart();
+  // 打开页面时：先把缓存数据显示出来，但不 return；继续自动拉实时数据
+  // 这样不用手动点“刷新”，顶部进度条也会正常出现
+  if(!force){var c=fetchCache();if(c){applyLive(c);markCacheHealth(c);}}
+  progStart(16);
   setLiveStatus('loading','拉取中');
+  pgStart();
+
   var result={},ok=[],fail=[];
 
   // 1. bitcoin.com Mayer Multiple (price + 200DMA + multiple)
@@ -897,11 +1126,6 @@ async function fetchLive(force){
     }
   }
 
-
-  // ── 其余数据源并行拉取 ──
-  var _T=[];
-  function _t(f){_T.push((async function(){try{await f();}catch(_e){}})());}
-  _t(async function(){
   // 2. Binance weekly → 200WMA
   try{
     var wk=await tryFetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1w&limit=210');
@@ -912,8 +1136,6 @@ async function fetchLive(force){
     ok.push('200WMA');
   }catch(e){fail.push('200WMA');}
 
-  });
-  _t(async function(){
   // 3. Binance daily klines (1000d) → MA51/120/250/850 + AHR999 fallback
   try{
     var dk=await tryFetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=1000');
@@ -936,8 +1158,6 @@ async function fetchLive(force){
     }
   }catch(e){fail.push('均线');}
 
-  });
-  _t(async function(){
   // 4. FGI
   try{
     var fg=await tryFetch('https://api.alternative.me/fng/?limit=1');
@@ -948,8 +1168,6 @@ async function fetchLive(force){
     }
   }catch(e){fail.push('FGI');}
 
-  });
-  _t(async function(){   // mempool 同域串行
   // 5. Halving
   try{
     var bh=await tryFetch('https://mempool.space/api/blocks/tip/height');
@@ -973,8 +1191,6 @@ async function fetchLive(force){
     }
   }catch(e){fail.push('关机价');}
 
-  });
-  _t(async function(){
   // 6. MVRV + Realized Price → 均衡价格 (CoinMetrics 主 / BGeometrics 备)
   try{
     var mv=await tryFetch('https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=CapMVRVCur,CapRealUSD,SplyCur&frequency=1d&limit_per_asset=1');
@@ -999,8 +1215,6 @@ async function fetchLive(force){
     }else fail.push('MVRV');
   }
 
-  });
-  _t(async function(){
   // 7. Polymarket: ↓$50K & ↑$80K probabilities (Gamma API, free & CORS-open)
   try{
     var ev=await tryFetch('https://gamma-api.polymarket.com/events?slug=what-price-will-bitcoin-hit-before-2027');
@@ -1027,12 +1241,10 @@ async function fetchLive(force){
     if(p50!==null||p80!==null)ok.push('概率');
   }catch(e){fail.push('概率');}
 
-  });
-  _t(async function(){
   // 8. 稳定币 USDT/USDC 市值+7日序列 — DefiLlama stablecoincharts (免费无鉴权, 6h缓存)
   try{
     var llc=null;
-    try{var lc=JSON.parse(localStorage.getItem('llama_stb2'));if(lc&&Date.now()-lc.ts<6*3600*1000)llc=lc;}catch(e2){}
+    try{var lc=JSON.parse(localStorage.getItem('llama_stb2'));if(lc&&Date.now()-lc.ts<6*3600*1000){llc=lc;markHealth('USDT','cache','6小时缓存');markHealth('USDC','cache','6小时缓存');}}catch(e2){}
     if(!llc){
       var us=await llamaSeries(1);
       var ucS=await llamaSeries(2);
@@ -1061,8 +1273,6 @@ async function fetchLive(force){
     if(llc.c&&llc.c.length){result.usdcSeries=llc.c;ok.push('USDC');}else fail.push('USDC');
   }catch(e){fail.push('稳定币');}
 
-  });
-  _t(async function(){   // BGeometrics 串行护配额
   // 9. SOPR / Puell / Reserve Risk — BGeometrics (匿名限15次/天; 6h缓存+端点记忆省配额)
   var soprV=await bgMetric('sopr',['https://bitcoin-data.com/v1/sopr','https://api.bgeometrics.com/v1/sopr'],0.5,2);
   if(soprV){result.sopr=soprV;ok.push('SOPR');}else fail.push('SOPR');
@@ -1071,14 +1281,15 @@ async function fetchLive(force){
   var rrV=await bgMetric('rr',['https://bitcoin-data.com/v1/reserve-risk','https://api.bgeometrics.com/v1/reserve-risk','https://bitcoin-data.com/v1/reserve_risk'],0.00005,0.2);
   if(rrV){result.rr=rrV;ok.push('RR');}else fail.push('RR');
 
-  });
-  await Promise.all(_T);
-
   if(ok.length>0){
     saveCache(result);
     applyLive(result);
     var msg='<span style="color:var(--gn);font-weight:600">'+ok.join(' · ')+'</span>';
     if(fail.length)msg+=' <span style="color:var(--rd)">失败:'+fail.join(' ')+'</span>';
+    ok.forEach(function(n){if(!HEALTH[n]||HEALTH[n].status!=='cache')markHealth(n,'ok','实时更新');});
+    fail.forEach(function(n){markHealth(n,'fail','本次失败，保留旧值或等待下次刷新');});
+    renderHealth();
+    pgDone();
     setLiveStatus(ok.length>fail.length?'ok':'','已更新 '+msg);
     var extra=[];
     if(result.mayerMult)extra.push('Mayer '+result.mayerMult.toFixed(2)+'x');
@@ -1087,6 +1298,8 @@ async function fetchLive(force){
     if(result.netEH)extra.push('算力 '+result.netEH+'EH');
     document.getElementById('lupdated').textContent=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})+(extra.length?' · '+extra.join(' '):'');
   }else{
+    SOURCE_ORDER.forEach(function(n){markHealth(n,'fail','本次刷新失败');});renderHealth();
+    pgDone();
     setLiveStatus('','全部失败 · 请下载后用浏览器直接打开');
   }
 
@@ -1153,8 +1366,9 @@ function applyLive(d){
   }
   if(d.prob50!==undefined)document.getElementById('spb').value=d.prob50;
   if(d.prob80!==undefined)document.getElementById('spu').value=d.prob80;
-  if(d.usdtSeries){drawStb('usdt',d.usdtSeries);S.stbU=d.usdtSeries;}
-  if(d.usdcSeries){drawStb('usdc',d.usdcSeries);S.stbC=d.usdcSeries;}
+  if(d.usdtSeries){drawStb('usdt',d.usdtSeries);renderUsdtFlow(d.usdtSeries);S.stbU=d.usdtSeries;}
+  if(d.usdcSeries){drawStb('usdc',d.usdcSeries);renderUsdcFlow(d.usdcSeries);S.stbC=d.usdcSeries;}
+  renderStableCombined();
   if(d.balanced)document.getElementById('sbl').value=d.balanced;
   if(d.sopr){
     var s6=soprToSc(d.sopr);
@@ -1176,7 +1390,7 @@ function applyLive(d){
     S.dims[5]=s5;
   }
   sv3(S);
-  calc();trig();upB();upH2();upG();sig();
+  calc();trig();upB();upH2();upG();sig();renderSignalValues();updateDecisionCard();
 }
 
 // ── Score ────────────────────────────────────────────────────────────────────
@@ -1216,6 +1430,7 @@ function calc(){
   document.getElementById('ma').textContent='建议 ¥'+ra.toLocaleString();
   document.getElementById('bm').textContent=' '+ml.toFixed(2)+'x';
   document.getElementById('cur').style.left=sc+'%';
+  updateDecisionCard();
   sv3(S);return sc;
 }
 
@@ -1223,7 +1438,7 @@ function calc(){
 function onP(){
   S.price=+document.getElementById('bp').value||0;
   document.getElementById('lp').value=S.price;
-  sv3(S);trig();upG();sig();
+  sv3(S);trig();upG();sig();renderSignalValues();updateDecisionCard();
 }
 
 function trig(){
@@ -1263,12 +1478,105 @@ function upB(){
 function upH2(){
   var h=S.hd;
   document.getElementById('hd').textContent=h.d.toFixed(4)+' BTC';
-  var pnl=(h.dc>0&&S.price>0)?((S.price/h.dc-1)*100):null;
-  document.getElementById('hdc').innerHTML='均价 $'+Number(h.dc).toLocaleString()
-    +(pnl===null?'':' · <span style="color:'+(pnl>=0?'var(--gn)':'var(--rd)')+';font-weight:700">'+(pnl>=0?'+':'')+pnl.toFixed(1)+'%</span>');
+  document.getElementById('hdc').textContent='均价 $'+Number(h.dc).toLocaleString();
   document.getElementById('hl').textContent=h.l.toFixed(4)+' BTC';
   document.getElementById('hlc').textContent='均价 $'+Number(h.lc).toLocaleString();
 }
+
+function fmtUsdB(n){
+  if(n==null||!isFinite(n))return '--';
+  var sign=n>=0?'+':'-';
+  var b=Math.abs(n)/1e9;
+  return sign+'$'+(b>=10?b.toFixed(1):b.toFixed(2))+'B';
+}
+function stableStats(ser){
+  if(!ser||ser.length<2)return null;
+  var last=ser[ser.length-1],prev=ser[ser.length-2];
+  var first=ser[Math.max(0,ser.length-7)];
+  return {last:last,d1:last-prev,d7:last-first};
+}
+function combinedStableStats(){
+  var u=stableStats(S.stbU),c=stableStats(S.stbC);
+  if(!u&&!c)return null;
+  return {
+    d1:(u?u.d1:0)+(c?c.d1:0),
+    d7:(u?u.d7:0)+(c?c.d7:0),
+    last:(u?u.last:0)+(c?c.last:0),
+    hasU:!!u,hasC:!!c
+  };
+}
+function liqState(d7){
+  if(d7>=5e9)return {t:'明显扩张',c:'up'};
+  if(d7>=1e9)return {t:'温和扩张',c:'up'};
+  if(d7<=-5e9)return {t:'明显收缩',c:'down'};
+  if(d7<=-1e9)return {t:'温和收缩',c:'down'};
+  return {t:'中性',c:'neutral'};
+}
+function renderStableCombined(){
+  var card=document.getElementById('stableTotalCard');
+  if(!card)return;
+  var st=combinedStableStats();
+  if(!st){card.className='stable-total-card';card.innerHTML='<div class="flow-empty">刷新后自动计算 USDT + USDC 合计流动性</div>';updateDecisionCard();return;}
+  var state=liqState(st.d7);
+  var cls=state.c==='up'?'flow-up':state.c==='down'?'flow-down':'';
+  card.className='stable-total-card '+cls;
+  card.innerHTML='<div class="stable-total-top"><div class="stable-total-title">USDT + USDC 合计流动性</div><div class="stable-total-status">'+state.t+'</div></div>'+ 
+    '<div class="stable-total-main"><div><div class="stable-total-big num">'+fmtUsdB(st.d7)+'</div><div class="stable-total-sub">7日合计净变化 · 今日 '+fmtUsdB(st.d1)+' · '+(st.hasU&&st.hasC?'双币种':'部分数据')+'</div></div>'+ 
+    '<div class="stable-total-kv"><div class="stable-total-k">合计流通市值</div><div class="stable-total-v num">$'+(st.last/1e9).toFixed(1)+'B</div></div></div>';
+  updateDecisionCard();
+}
+function updateDecisionCard(){
+  var title=document.getElementById('decisionTitle');
+  if(!title)return;
+  var sc=Math.round((S.dims||[]).reduce(function(a,v,i){return a+v*DM[i].w;},0));
+  if(!sc){title.textContent='等待实时数据';return;}
+  var ml=s2m(sc),amt=Math.round(1000*ml/100)*100;
+  var action=sc<30?'暂停加仓':sc<50?'降低定投':sc<70?'正常定投':sc<85?'加倍定投':'重仓定投';
+  var color=sc<30?'var(--rd)':sc<50?'var(--or)':sc<70?'var(--yl)':sc<85?'var(--lg)':'var(--gn)';
+  title.textContent=action+' ¥'+amt.toLocaleString();title.style.color=color;
+  var pill=document.getElementById('decisionPill');if(pill){pill.textContent=sc+'分 · '+ml.toFixed(2)+'x';pill.style.background=sc>=70?'var(--gn-dim)':sc<50?'var(--rd-dim)':'rgba(255,159,10,.12)';pill.style.color=sc>=70?'var(--gn)':sc<50?'var(--rd)':'var(--or)';}
+  var ahr=(S.ahr&&S.ahr.v)?S.ahr.v:null;
+  var wma=document.getElementById('r1')?document.getElementById('r1').textContent:'';
+  var mvrv=document.getElementById('r2')?document.getElementById('r2').textContent:'';
+  var fgi=document.getElementById('r3')?document.getElementById('r3').textContent:'';
+  var reasons=[];
+  if(ahr){reasons.push('AHR999 '+ahr.toFixed(3)+(ahr<0.45?' 抄底区':ahr<1.2?' 定投区':ahr<5?' 观望区':' 高危区'));}
+  if(wma)reasons.push('200WMA '+wma);
+  if(mvrv)reasons.push('MVRV '+mvrv);
+  if(fgi)reasons.push('恐贪 '+fgi);
+  var rEl=document.getElementById('decisionReason');if(rEl)rEl.innerHTML='<b>原因：</b>'+reasons.slice(0,3).join(' · ');
+  var sopr=+((document.getElementById('ssp')||{}).value||0),puell=+((document.getElementById('r4')||{}).textContent||0);
+  var risk='按计划执行，不因短线波动改变买点。';
+  if(sopr){risk=sopr<0.97?'SOPR 深度投降，可能是强买点但波动会很大。':sopr<1?'SOPR 低于 1，市场仍有投降盘。':sopr<1.02?'SOPR 贴近 1，短线可能反复。':sopr>1.05?'SOPR 偏高，注意获利盘释放。':'SOPR 温和，暂无极端风险。';}
+  if(puell&&puell>2)risk+=' Puell 偏热，矿工侧风险升温。';
+  var riskEl=document.getElementById('decisionRisk');if(riskEl)riskEl.textContent='注意：'+risk;
+  var st=combinedStableStats(),liq=document.getElementById('decisionLiq');
+  if(liq){
+    if(st){var ls=liqState(st.d7);liq.innerHTML='<span class="liq-chip '+ls.c+'">稳定币7日 '+fmtUsdB(st.d7)+' · '+ls.t+'</span><span class="liq-chip '+(Math.abs(st.d1)>=STABLE_FLOW_THRESHOLD?(st.d1>=0?'up':'down'):'neutral')+'">今日 '+fmtUsdB(st.d1)+'</span>';}
+    else liq.innerHTML='<span class="liq-chip neutral">流动性等待数据</span>';
+  }
+}
+function setTweak(on,silent){
+  S.tweak=!!on;
+  for(var i=0;i<DM.length;i++){var e=document.getElementById('d'+i);if(e)e.disabled=!S.tweak;}
+  document.querySelectorAll('.chips .chip').forEach(function(b){b.disabled=!S.tweak;});
+  var btn=document.getElementById('tweakBtn');if(btn){btn.textContent=S.tweak?'微调 ON':'微调 OFF';btn.classList.toggle('on',S.tweak);}
+  sv3(S);if(!silent)ntf(S.tweak?'已开启指标微调':'已锁定实时指标');
+}
+function toggleTweak(){setTweak(!S.tweak,false);}
+function setSigEdit(on,silent){
+  S.sigEdit=!!on;
+  document.body.classList.toggle('sig-edit',S.sigEdit);
+  ['slo','shi','sbl','swm','ssp','shv','spb','spu'].forEach(function(id){var e=document.getElementById(id);if(e)e.readOnly=!S.sigEdit;});
+  var btn=document.getElementById('sigEditBtn');if(btn){btn.textContent=S.sigEdit?'编辑 ON':'编辑 OFF';btn.classList.toggle('on',S.sigEdit);}
+  sv3(S);if(!silent)ntf(S.sigEdit?'市场体温可编辑':'市场体温已锁定');
+}
+function toggleSigEdit(){setSigEdit(!S.sigEdit,false);}
+function renderSignalValues(){
+  // 保持 input 作为数据容器，但默认以只读指标卡呈现
+  ['slo','shi','sbl','swm','ssp','shv','spb','spu'].forEach(function(id){var e=document.getElementById(id);if(e&&e.value)e.setAttribute('data-value',e.value);});
+}
+
 function renderAhr(a){
   if(!a||!a.v)return;
   var v=a.v;
@@ -1312,6 +1620,47 @@ function renderAhr(a){
   }
 }
 
+function fmtFlowUsd(n){
+  var sign=n>=0?'+':'-';
+  var a=Math.abs(n),b=a/1e9;
+  return sign+'$'+(b>=10?b.toFixed(1):b.toFixed(2))+'B';
+}
+function renderStableFlow(cardId,symbol,ser){
+  var card=document.getElementById(cardId);
+  if(!card)return;
+  if(!ser||ser.length<2){
+    card.className='usdt-flow-card flow-normal';
+    card.innerHTML='<div class="flow-empty">'+symbol+' 数据不足，无法判断当天增发/减少</div>';
+    return;
+  }
+  var last=ser[ser.length-1],prev=ser[ser.length-2];
+  var diff=last-prev,pct=prev?diff/prev*100:0;
+  var hit=Math.abs(diff)>=STABLE_FLOW_THRESHOLD;
+  var up=diff>=0;
+  var cls=hit?(up?'flow-up':'flow-down'):'flow-normal';
+  var badge=hit?(up?'触发：增发 ≥ $1B':'触发：减少 ≥ $1B'):'未触发';
+  var title=up?'当天净增发':'当天净减少';
+  var recent=[];
+  for(var i=Math.max(1,ser.length-5);i<ser.length;i++){
+    var d=ser[i]-ser[i-1];
+    var h=Math.abs(d)>=STABLE_FLOW_THRESHOLD;
+    recent.push('<div class="flow-row"><span>近'+(ser.length-i)+'日</span><span class="'+(h?'hit ':'')+(d>=0?'up':'down')+'">'+fmtFlowUsd(d)+'</span></div>');
+  }
+  card.className='usdt-flow-card '+cls;
+  card.innerHTML=
+    '<div class="flow-head">'+
+      '<div class="flow-title"><span class="flow-dot"></span>'+symbol+' 单日净变化</div>'+
+      '<div class="flow-badge">'+badge+'</div>'+
+    '</div>'+
+    '<div class="flow-main">'+
+      '<div><div class="flow-big num">'+fmtFlowUsd(diff)+'</div>'+
+      '<div class="flow-sub">'+title+' · '+(pct>=0?'+':'')+pct.toFixed(2)+'% · 阈值 $1.00B</div></div>'+
+      '<div class="flow-meta"><div class="flow-meta-k">当前 '+symbol+' 流通市值</div><div class="flow-meta-v num">$'+(last/1e9).toFixed(1)+'B</div></div>'+
+    '</div>'+
+    '<div class="flow-list">'+recent.join('')+'</div>';
+}
+function renderUsdtFlow(ser){renderStableFlow('usdtFlowCard','USDT',ser);renderStableCombined();}
+function renderUsdcFlow(ser){renderStableFlow('usdcFlowCard','USDC',ser);renderStableCombined();}
 function drawStb(key,ser){
   var svg=document.getElementById(key+'Spark');
   var vEl=document.getElementById(key+'Val');
@@ -1375,15 +1724,8 @@ function logB(){
   var lim={base:1000,pull:700,ext:300};
   if(S.bud[tp]+a>lim[tp]){ntf('超出预算上限');return;}
   S.bud[tp]+=a;
-  var btc=(a/(S.fx||7.1))/pr;
-  var hitTp=null;
-  if(tp!=='base'){
-    TR.forEach(function(t){
-      var trigPx=S.rh*(1-t.p);
-      if(t.k===tp&&Math.abs(pr-trigPx)/trigPx<0.05&&hitTp===null)hitTp=t.p;
-    });
-  }
-  S.log.unshift({dt:new Date().toLocaleDateString('zh-CN',{month:'2-digit',day:'2-digit'}),t:tp,a:a,p:pr,b:btc,mo:S.month,tp:hitTp});
+  var btc=(a/6.9)/pr;
+  S.log.unshift({dt:new Date().toLocaleDateString('zh-CN',{month:'2-digit',day:'2-digit'}),t:tp,a:a,p:pr,b:btc,mo:S.month});
   if(tp==='base'){var tot=S.hd.d+btc;S.hd.dc=(S.hd.d*S.hd.dc+btc*pr)/tot;S.hd.d=tot;}
   sv3(S);upB();upH2();rl2();
   document.getElementById('la').value='';
@@ -1424,13 +1766,11 @@ function nxtMo(){
 function oe(){
   var h=S.hd;
   ['ed0','ed1','ed2','ed3'].forEach(function(id,i){document.getElementById(id).value=[h.d,h.dc,h.l,h.lc][i];});
-  document.getElementById('ed4').value=S.fx||7.1;
   document.getElementById('em').style.display='flex';
 }
 function ce(){document.getElementById('em').style.display='none';}
 function se(){
   S.hd={d:+document.getElementById('ed0').value||0,dc:+document.getElementById('ed1').value||0,l:+document.getElementById('ed2').value||0,lc:+document.getElementById('ed3').value||0};
-  S.fx=+document.getElementById('ed4').value||7.1;
   sv3(S);upH2();ce();ntf('持仓已更新');
 }
 
@@ -1483,6 +1823,7 @@ function sig(){
     document.getElementById('pd').style.left=Math.min(100,Math.max(0,(cur-mn)/(mx-mn)*100))+'%';
   }
   S.sigs={lo:lo,hi:hi2,bl:bl,wm:wm,sp:sp,hv:hv,pb:pb,pu:pu};
+  renderSignalValues();updateDecisionCard();
   sv3(S);
 }
 
@@ -1498,6 +1839,7 @@ function rSig(){
 
 // ── Preset / Toast ───────────────────────────────────────────────────────────
 function pre(t){
+  if(!S.tweak){ntf('先开启微调');return;}
   DM.forEach(function(_,i){
     var v=Math.max(0,Math.min(100,t+Math.round((Math.random()-.5)*10)));
     document.getElementById('d'+i).value=v;
@@ -1516,12 +1858,11 @@ async function tickPrice(){
     if(p>0){
       S.price=Math.round(p);
       document.getElementById('bp').value=S.price;
-      var lpEl=document.getElementById('lp');
-      if(document.activeElement!==lpEl)lpEl.value=S.price;
+      document.getElementById('lp').value=S.price;
       var el=document.getElementById('pc24');
       el.textContent=(c>=0?'+':'')+c.toFixed(2)+'%';
       el.className='chg-pill num '+(c>=0?'chg-up':'chg-dn');
-      sv3(S);trig();upG();sig();
+      sv3(S);trig();upG();sig();renderSignalValues();updateDecisionCard();
     }
   }catch(e){}
 }
@@ -1529,11 +1870,6 @@ setInterval(tickPrice,60000);
 
 // ── Init ─────────────────────────────────────────────────────────────────────
 function init(){
-  var nowM=mstr();
-  if(S.month!==nowM){
-    S.month=nowM;S.bud={base:0,pull:0,ext:0};sv3(S);
-    setTimeout(function(){ntf('新月份 '+nowM+' · 预算已自动重置');},600);
-  }
   document.getElementById('cm').textContent=S.month;
   document.getElementById('bp').value=S.price;
   document.getElementById('rh').value=S.rh;
@@ -1542,9 +1878,11 @@ function init(){
   if(!S.sigs)S.sigs={};
   if(!S.sigs.lo){S.sigs.lo=29132;S.sigs.hi=90461;}
   calc();upB();trig();upH2();upG();rl2();rSig();renderMA();
-  if(S.stbU)drawStb('usdt',S.stbU);
-  if(S.stbC)drawStb('usdc',S.stbC);
+  if(S.stbU){drawStb('usdt',S.stbU);renderUsdtFlow(S.stbU);}
+  if(S.stbC){drawStb('usdc',S.stbC);renderUsdcFlow(S.stbC);}
+  renderStableCombined();
   if(S.ahr)renderAhr(S.ahr);
+  setTweak(S.tweak,true);setSigEdit(S.sigEdit,true);renderSignalValues();updateDecisionCard();
   fetchLive(false);
 }
 init();
