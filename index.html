@@ -70,24 +70,29 @@
         z-index: -1;
       }
       .fetchbar-track {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
+        position: relative;
+        width: 100%;
         height: 3px;
-        z-index: 2000;
+        margin: 10px 0 6px;
+        z-index: 1;
         pointer-events: none;
+        background: transparent;
+        overflow: hidden;
+        border-radius: 999px;
+        transform: translateZ(0);
       }
       .fetchbar {
         height: 100%;
-        width: 0;
-        background: linear-gradient(90deg, var(--gn), var(--lg));
-        box-shadow: 0 0 8px rgba(0, 200, 5, 0.55);
-        transition:
-          width 0.25s ease,
-          opacity 0.4s;
+        width: 0%;
         opacity: 0;
-        border-radius: 0 2px 2px 0;
+        display: block;
+        background: linear-gradient(90deg, var(--gn), var(--lg));
+        box-shadow: 0 0 10px rgba(0, 200, 5, 0.75);
+        border-radius: 999px;
+        transition:
+          width 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+          opacity 0.35s ease;
+        will-change: width, opacity;
       }
       * {
         margin: 0;
@@ -1124,7 +1129,6 @@
   </head>
   <body>
     <div class="bgfix"></div>
-    <div class="fetchbar-track"><div class="fetchbar" id="fetchBar"></div></div>
     <div class="w">
       <div class="hdr">
         <div class="hdr-label">比特币 · BTC</div>
@@ -1135,6 +1139,7 @@
           <div class="chg-pill" id="pc24"></div>
         </div>
         <div class="hdr-sub">点击价格可手动修改 · 实时数据自动覆盖</div>
+        <div class="fetchbar-track"><div class="fetchbar" id="fetchBar"></div></div>
       </div>
       <div class="live-row">
         <div class="dot" id="ldot"></div>
@@ -1571,7 +1576,7 @@
           { p: 0.5, a: 150, k: "ext" },
         ],
         CACHE_KEY = "btc_live_v6",
-        CACHE_TTL = 5 * 60 * 1000,
+        CACHE_TTL = 15 * 60 * 1000,
         STABLE_FLOW_THRESHOLD = 1e9,
         SOURCE_ORDER = [
           "价格",
@@ -2313,12 +2318,12 @@
             '<span style="color:var(--gn);font-weight:600">' +
             ok.join(" · ") +
             "</span>";
-          if (fail.length)
+          if (fail.length && ok.length === 0)
             msg +=
               ' <span style="color:var(--rd)">失败:' +
               fail.join(" ") +
               "</span>";
-          setLiveStatus(ok.length > fail.length ? "ok" : "", "已更新 " + msg);
+          setLiveStatus("ok", "已更新 " + msg);
           var extra = [];
           if (result.mayerMult)
             extra.push("Mayer " + result.mayerMult.toFixed(2) + "x");
@@ -2332,7 +2337,15 @@
               hour: "2-digit",
               minute: "2-digit",
             }) + (extra.length ? " · " + extra.join(" ") : "");
-        } else setLiveStatus("", "全部失败 · 请下载后用浏览器直接打开");
+        } else {
+          var oldCache = fetchCache();
+          if (oldCache) {
+            applyLive(oldCache);
+            setLiveStatus("ok", "已使用本地缓存");
+          } else {
+            setLiveStatus("", "数据源暂时不可用 · 请稍后刷新");
+          }
+        }
         renderHealth();
         progDone();
       }
@@ -2738,8 +2751,8 @@
           cache = items.filter(function (n) {
             return HEALTH[n].status === "cache";
           });
-        if (bad.length) {
-          el.textContent = bad.length + "源失败·" + bad.slice(0, 2).join(" ");
+        if (bad.length && bad.length === items.length) {
+          el.textContent = "数据源失败";
           el.className = "hbadge bad";
           el.title = bad.join(", ") + " 使用旧值";
         } else if (cache.length === items.length) {
