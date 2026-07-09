@@ -165,9 +165,6 @@ body{
 .tile-sep{font-size:11px;color:var(--tx3);text-align:center;padding:2px 0}
 .tile-status{font-size:12px;font-weight:700;margin-top:8px;min-height:15px}
 .tile-hint{font-size:10px;color:var(--tx3);margin-top:3px;line-height:1.3}
-.stb-val{font-size:17px;font-weight:700;letter-spacing:-.01em}
-.stb-chg{font-size:11px;font-weight:700;min-height:14px}
-.spark{width:100%;height:28px;margin-top:2px;display:block}
 
 /* top progress bar */
 .pg-top{position:fixed;top:0;left:0;right:0;height:3px;z-index:2000;pointer-events:none}
@@ -189,16 +186,6 @@ body{
 .liq-chip.up{background:var(--gn-dim);border-color:rgba(0,200,5,.22);color:var(--gn)}
 .liq-chip.down{background:var(--rd-dim);border-color:rgba(255,80,0,.22);color:var(--rd)}
 .liq-chip.neutral{color:var(--tx2)}
-.health-card{background:var(--card);border:1px solid var(--div);border-radius:14px;padding:10px 12px;margin:8px 0 0}
-.health-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
-.health-title{font-size:12px;font-weight:800;color:var(--tx2)}
-.health-time{font-size:11px;color:var(--tx3)}
-.health-list{display:flex;gap:6px;flex-wrap:wrap}
-.health-chip{font-size:10px;font-weight:800;padding:4px 7px;border-radius:999px;background:var(--card2);color:var(--tx2);border:1px solid transparent}
-.health-chip.ok{background:var(--gn-dim);color:var(--gn);border-color:rgba(0,200,5,.18)}
-.health-chip.cache{background:rgba(255,159,10,.12);color:var(--or);border-color:rgba(255,159,10,.2)}
-.health-chip.fail{background:var(--rd-dim);color:var(--rd);border-color:rgba(255,80,0,.18)}
-.health-chip.wait{color:var(--tx3)}
 .sec-head-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .mini-toggle{font-family:inherit;font-size:12px;font-weight:800;border:1px solid var(--div);background:var(--card);color:var(--tx2);border-radius:999px;padding:7px 11px;white-space:nowrap}
 .mini-toggle.on{background:var(--gn);border-color:var(--gn);color:#000}
@@ -207,20 +194,6 @@ body{
 .chip:disabled{opacity:.45;cursor:default}
 
 /* ─ 稳定币合计流动性 ─ */
-.stable-total-card{background:var(--card);border:1px solid var(--div);border-radius:18px;padding:15px 16px;margin-bottom:10px}
-.stable-total-card.flow-up{border-color:rgba(0,200,5,.38);box-shadow:0 0 0 1px rgba(0,200,5,.08),0 10px 30px rgba(0,200,5,.08)}
-.stable-total-card.flow-down{border-color:rgba(255,80,0,.42);box-shadow:0 0 0 1px rgba(255,80,0,.08),0 10px 30px rgba(255,80,0,.08)}
-.stable-total-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:10px}
-.stable-total-title{font-size:13px;font-weight:800;color:var(--tx2)}
-.stable-total-status{font-size:11px;font-weight:800;padding:5px 10px;border-radius:999px;background:var(--card2);color:var(--tx2);white-space:nowrap}
-.stable-total-main{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;flex-wrap:wrap}
-.stable-total-big{font-size:34px;font-weight:850;letter-spacing:-.04em;line-height:1}
-.stable-total-card.flow-up .stable-total-big{color:var(--gn)}
-.stable-total-card.flow-down .stable-total-big{color:var(--rd)}
-.stable-total-sub{font-size:12px;color:var(--tx2);margin-top:6px;line-height:1.45}
-.stable-total-kv{text-align:right;min-width:132px}
-.stable-total-k{font-size:11px;color:var(--tx3);font-weight:800}
-.stable-total-v{font-size:16px;font-weight:850;margin-top:3px}
 
 /* ─ 市场体温只读卡视觉 ─ */
 .tile{border:1px solid transparent;min-height:132px}
@@ -230,20 +203,41 @@ body{
 body.sig-edit .tile input{pointer-events:auto;background:var(--card2);padding:7px 10px;border-radius:10px;font-size:18px}
 body.sig-edit .tile input:focus{background:#232327}
 body.sig-edit .tile{border-color:var(--div)}
-.stable-flow-stack{display:flex;flex-direction:column;gap:10px}
-.usdt-flow-card{
-.usdt-flow-card.flow-up{border-color:rgba(0,200,5,.38);box-shadow:0 0 0 1px rgba(0,200,5,.08),0 10px 30px rgba(0,200,5,.08)}
-.usdt-flow-card.flow-down{border-color:rgba(255,80,0,.42);box-shadow:0 0 0 1px rgba(255,80,0,.08),0 10px 30px rgba(255,80,0,.08)}
-.usdt-flow-card.flow-normal{border-color:var(--div)}
 .flow-up .flow-dot{background:var(--gn);box-shadow:0 0 8px rgba(0,200,5,.6)}
 .flow-down .flow-dot{background:var(--rd);box-shadow:0 0 8px rgba(255,80,0,.55)}
 .flow-up .flow-badge{background:var(--gn-dim);color:var(--gn)}
 .flow-down .flow-badge{background:var(--rd-dim);color:var(--rd)}
-.flow-up .flow-big{color:var(--gn)}
-.flow-down .flow-big{color:var(--rd)}
-.flow-normal .flow-big{color:var(--tx)}
-.flow-empty{font-size:13px;color:var(--tx3);padding:18px 0;text-align:center}
-  .health-card{padding:10px}
+.flow-up .flow-down .flow-normal .flow-empty{font-size:13px;color:var(--tx3);padding:18px 0;text-align:center}
+  
+.score-zone-row{padding:2px 0 14px}
+.score-zone-row .score-zone{font-size:14px;font-weight:700}
+
+/* ─ 稳定币流动性（重构）─ */
+.liq-card{background:var(--card);border:1px solid var(--div);border-radius:18px;padding:16px;transition:border-color .3s}
+.liq-card.up{border-color:rgba(0,200,5,.35)}
+.liq-card.down{border-color:rgba(255,80,0,.35)}
+.liq-hero{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding-bottom:14px;border-bottom:1px solid var(--div)}
+.liq-big{font-size:34px;font-weight:700;letter-spacing:-.03em;line-height:1.05}
+.liq-cap{font-size:11px;color:var(--tx2);margin-top:4px;font-weight:500}
+.liq-right{text-align:right;flex-shrink:0}
+.liq-state{font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;display:inline-block;background:var(--card2);color:var(--tx2)}
+.liq-state.up{background:var(--gn-dim);color:var(--gn)}
+.liq-state.down{background:var(--rd-dim);color:var(--rd)}
+.liq-rows{display:flex;flex-direction:column}
+.liq-row{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--div)}
+.liq-row:last-child{border-bottom:none;padding-bottom:0}
+.liq-sym{font-size:14px;font-weight:700;width:52px;flex-shrink:0}
+.liq-cap-sm{font-size:11px;color:var(--tx3);font-weight:500}
+.liq-spark{flex:1;height:26px;min-width:40px}
+.liq-nums{text-align:right;flex-shrink:0;min-width:82px}
+.liq-d1{font-size:15px;font-weight:700;letter-spacing:-.01em}
+.liq-mc{font-size:11px;color:var(--tx2);margin-top:1px}
+.liq-alert{font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;margin-left:6px;background:var(--rd-dim);color:var(--rd)}
+
+.hbadge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;line-height:1.5}
+.hbadge:empty{display:none}
+.hbadge.bad{background:var(--rd-dim);color:var(--rd);cursor:help}
+.hbadge.cache{background:var(--card2);color:var(--tx2)}
 
 /* AHR999 module */
 .ahr-wrap{display:flex;gap:28px;align-items:flex-start;padding:4px 0 14px;flex-wrap:wrap}
@@ -419,14 +413,9 @@ body.sig-edit .tile{border-color:var(--div)}
 <!-- Live status -->
 <div class="live-row">
   <div class="dot" id="ldot"></div>
-  <span id="ltx">等待加载</span>
-  <span id="lupdated" style="color:var(--tx3)"></span>
+  <span id="lupdated" style="color:var(--tx3)">等待加载</span>
+  <span class="hbadge" id="healthBadge"></span>
   <button class="refresh" onclick="fetchLive(true)">刷新</button>
-</div>
-
-<div class="health-card" id="healthCard">
-  <div class="health-head"><div class="health-title">数据源健康度</div><div class="health-time" id="healthTime">等待刷新</div></div>
-  <div class="health-list" id="healthList"><span class="health-chip wait">等待数据</span></div>
 </div>
 
 <!-- Month bar -->
@@ -441,17 +430,7 @@ body.sig-edit .tile{border-color:var(--div)}
   <div class="sec-head-row"><div class="sec-title">综合评分</div><button class="mini-toggle" id="tweakBtn" onclick="toggleTweak()">微调 OFF</button></div>
   <div class="sec-sub">7维度加权 · 默认锁定实时数据，开启微调后可手动修正</div>
 
-  <div class="score-wrap">
-    <div class="score-left">
-      <div><span class="score-num num" id="sv">--</span><span class="score-den"> /100</span></div>
-      <div class="score-zone" id="sz">--</div>
-    </div>
-    <div class="mult-block">
-      <div class="mult-num num" id="mv">--x</div>
-      <div class="mult-lbl">定投倍数</div>
-      <div class="mult-rec num" id="ma">建议 ¥--</div>
-    </div>
-  </div>
+  <div class="score-zone-row"><span class="score-zone" id="sz">--</span></div>
 
   <div class="zbar-wrap">
     <div class="zbar">
@@ -581,19 +560,22 @@ body.sig-edit .tile{border-color:var(--div)}
   <div id="ahrLadder"></div>
 </div>
 
-<div class="sec usdt-flow-sec">
-  <div class="sec-title">稳定币增减监控</div>
-  <div class="sec-sub">USDT / USDC 当天净增发或净减少 ≥ $1B 自动高亮 · 基于流通市值日变化</div>
-  <div class="stable-total-card" id="stableTotalCard">
-    <div class="flow-empty">刷新后自动计算 USDT + USDC 合计流动性</div>
-  </div>
-  <div class="stable-flow-stack">
-    <div class="usdt-flow-card flow-normal" id="usdtFlowCard">
-      <div class="flow-empty">刷新后自动计算 USDT 当天增减</div>
+<div class="sec">
+  <div class="sec-title">稳定币流动性</div>
+  <div class="sec-sub">USDT + USDC 合计净变化 · 场内购买力水位</div>
+
+  <div class="liq-card" id="liqCard">
+    <div class="liq-hero">
+      <div>
+        <div class="liq-big num" id="liqBig">--</div>
+        <div class="liq-cap">7日合计净变化</div>
+      </div>
+      <div class="liq-right">
+        <div class="liq-state" id="liqState">等待数据</div>
+        <div class="liq-cap">合计市值 <span class="num" id="liqTotal">--</span></div>
+      </div>
     </div>
-    <div class="usdt-flow-card flow-normal" id="usdcFlowCard">
-      <div class="flow-empty">刷新后自动计算 USDC 当天增减</div>
-    </div>
+    <div class="liq-rows" id="liqRows"></div>
   </div>
 </div>
 
@@ -650,20 +632,6 @@ body.sig-edit .tile{border-color:var(--div)}
       <input id="spu" type="number" step="0.1" placeholder="32" oninput="sig()">
       <div class="tile-status" id="ss6"></div>
       <div class="tile-hint">Polymarket 实时 %</div>
-    </div>
-    <div class="tile">
-      <div class="tile-name"><span class="tile-live"></span>USDT 市值</div>
-      <div class="stb-val num" id="usdtVal">--</div>
-      <div class="stb-chg num" id="usdtChg"></div>
-      <svg class="spark" id="usdtSpark" viewBox="0 0 100 28" preserveAspectRatio="none"></svg>
-      <div class="tile-hint">7日走势 · DefiLlama</div>
-    </div>
-    <div class="tile">
-      <div class="tile-name"><span class="tile-live"></span>USDC 市值</div>
-      <div class="stb-val num" id="usdcVal">--</div>
-      <div class="stb-chg num" id="usdcChg"></div>
-      <svg class="spark" id="usdcSpark" viewBox="0 0 100 28" preserveAspectRatio="none"></svg>
-      <div class="tile-hint">7日走势 · DefiLlama</div>
     </div>
   </div>
 
@@ -868,17 +836,17 @@ function saveCache(d){try{localStorage.setItem(CACHE_KEY,JSON.stringify({ts:Date
 
 function setLiveStatus(state,msg){
   document.getElementById('ldot').className='dot '+(state==='ok'?'on':state==='loading'?'spin':'');
-  document.getElementById('ltx').innerHTML=msg;
+  var _t=document.getElementById('ltx');if(_t)_t.innerHTML=msg;
 }
 
 var progActive=false,progN=0,PROG_EST=14;
 function progStart(){progActive=true;progN=0;var e=document.getElementById('fetchBar');if(e){e.style.opacity='1';e.style.width='4%';}}
 function progStep(){if(!progActive)return;progN++;var e=document.getElementById('fetchBar');if(e)e.style.width=Math.min(90,progN/PROG_EST*90)+'%';var lu=document.getElementById('lupdated');if(lu)lu.textContent=progN+'/'+PROG_EST;}
 function progDone(){progActive=false;var e=document.getElementById('fetchBar');if(e){e.style.width='100%';setTimeout(function(){e.style.opacity='0';setTimeout(function(){e.style.width='0';},400);},350);}}
-async function tryFetch(url){
+async function tryFetch(url,ms){
   progStep();
   var ctl=new AbortController();
-  var tid=setTimeout(function(){ctl.abort();},8000);
+  var tid=setTimeout(function(){ctl.abort();},ms||8000);
   try{
     var r0=await fetch(url,{mode:'cors',cache:'no-store',signal:ctl.signal});
     clearTimeout(tid);
@@ -1070,7 +1038,7 @@ async function fetchLive(force){
   _t(async function(){   // mempool 同域串行
   // 5. Halving
   try{
-    var bh=await tryFetch('https://mempool.space/api/blocks/tip/height');
+    var bh=await tryFetch('https://mempool.space/api/blocks/tip/height',12000);
     var nh=bh<840000?840000:bh<1050000?1050000:1260000;
     result.halvingDays=Math.ceil((nh-bh)*10/60/24);
     ok.push('减半');
@@ -1272,10 +1240,9 @@ function applyLive(d){
   }
   if(d.prob50!==undefined)document.getElementById('spb').value=d.prob50;
   if(d.prob80!==undefined)document.getElementById('spu').value=d.prob80;
-  if(d.usdtSeries){drawStb('usdt',d.usdtSeries);S.stbU=d.usdtSeries;}
-  if(d.usdcSeries){drawStb('usdc',d.usdcSeries);S.stbC=d.usdcSeries;}
-  if(d.usdtSeries)renderStableFlow('usdtFlowCard','USDT',d.usdtSeries);
-  if(d.usdcSeries)renderStableFlow('usdcFlowCard','USDC',d.usdcSeries);
+  if(d.usdtSeries)S.stbU=d.usdtSeries;
+  if(d.usdcSeries)S.stbC=d.usdcSeries;
+  if(d.usdtSeries||d.usdcSeries)renderStableCombined();
   if(d.balanced)document.getElementById('sbl').value=d.balanced;
   if(d.sopr){
     var s6=soprToSc(d.sopr);
@@ -1330,11 +1297,11 @@ function calc(){
   var ra=Math.round(1000*ml/100)*100;
   var c=sc<30?'var(--rd)':sc<50?'var(--or)':sc<70?'var(--yl)':sc<85?'var(--lg)':'var(--gn)';
   var sv=document.getElementById('sv');
-  sv.textContent=sc;sv.style.color=c;
+  if(sv){sv.textContent=sc;sv.style.color=c;}
   var sz=document.getElementById('sz');
-  sz.textContent=z.t;sz.style.color=z.c;
-  document.getElementById('mv').textContent=ml.toFixed(2)+'x';
-  document.getElementById('ma').textContent='建议 ¥'+ra.toLocaleString();
+  if(sz){sz.textContent=z.t;sz.style.color=z.c;}
+  var mvE=document.getElementById('mv');if(mvE)mvE.textContent=ml.toFixed(2)+'x';
+  var maE=document.getElementById('ma');if(maE)maE.textContent='建议 ¥'+ra.toLocaleString();
   document.getElementById('bm').textContent=' '+ml.toFixed(2)+'x';
   document.getElementById('cur').style.left=sc+'%';
   sv3(S);updateDecisionCard();return sc;
@@ -1448,6 +1415,13 @@ function liqState(d7){
   return {t:'中性',c:'neutral'};
 }
 
+function stableStats(ser){
+  if(!ser||ser.length<2)return null;
+  var last=ser[ser.length-1],prev=ser[ser.length-2];
+  var first=ser[Math.max(0,ser.length-7)];
+  return {last:last,d1:last-prev,d7:last-first};
+}
+
 function combinedStableStats(){
   var u=stableStats(S.stbU),c=stableStats(S.stbC);
   if(!u&&!c)return null;
@@ -1459,54 +1433,54 @@ function combinedStableStats(){
   };
 }
 
+function sparkPath(ser,w,h){
+  if(!ser||ser.length<2)return '';
+  var mn=Math.min.apply(null,ser),mx=Math.max.apply(null,ser),rng=(mx-mn)||1;
+  return ser.map(function(v,i){
+    return (i/(ser.length-1)*w).toFixed(1)+','+(h-2-((v-mn)/rng)*(h-4)).toFixed(1);
+  }).join(' ');
+}
+
+function liqRow(sym,ser){
+  var st=stableStats(ser);
+  if(!st)return '<div class="liq-row"><div class="liq-sym">'+sym+'</div><div class="liq-cap-sm">数据不足</div></div>';
+  var up=st.d1>=0, col=up?'var(--gn)':'var(--rd)';
+  var alert=Math.abs(st.d1)>=STABLE_FLOW_THRESHOLD?'<span class="liq-alert">异动</span>':'';
+  var pts=sparkPath(ser,100,26);
+  return '<div class="liq-row">'+
+    '<div><div class="liq-sym">'+sym+'</div><div class="liq-cap-sm">7日</div></div>'+
+    '<svg class="liq-spark" viewBox="0 0 100 26" preserveAspectRatio="none">'+
+      (pts?'<polyline points="'+pts+'" fill="none" stroke="'+col+'" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>':'')+
+    '</svg>'+
+    '<div class="liq-nums">'+
+      '<div class="liq-d1" style="color:'+col+'">'+fmtUsdB(st.d1)+alert+'</div>'+
+      '<div class="liq-mc">$'+(st.last/1e9).toFixed(1)+'B</div>'+
+    '</div></div>';
+}
+
 function renderStableCombined(){
-  var card=document.getElementById('stableTotalCard');
+  var card=document.getElementById('liqCard');
   if(!card)return;
   var st=combinedStableStats();
-  if(!st){card.className='stable-total-card';card.innerHTML='<div class="flow-empty">刷新后自动计算 USDT + USDC 合计流动性</div>';updateDecisionCard();return;}
-  var state=liqState(st.d7);
-  var cls=state.c==='up'?'flow-up':state.c==='down'?'flow-down':'';
-  card.className='stable-total-card '+cls;
-  card.innerHTML='<div class="stable-total-top"><div class="stable-total-title">USDT + USDC 合计流动性</div><div class="stable-total-status">'+state.t+'</div></div>'+ 
-    '<div class="stable-total-main"><div><div class="stable-total-big num">'+fmtUsdB(st.d7)+'</div><div class="stable-total-sub">7日合计净变化 · 今日 '+fmtUsdB(st.d1)+' · '+(st.hasU&&st.hasC?'双币种':'部分数据')+'</div></div>'+ 
-    '<div class="stable-total-kv"><div class="stable-total-k">合计流通市值</div><div class="stable-total-v num">$'+(st.last/1e9).toFixed(1)+'B</div></div></div>';
+  var big=document.getElementById('liqBig');
+  var stEl=document.getElementById('liqState');
+  var tot=document.getElementById('liqTotal');
+  var rows=document.getElementById('liqRows');
+  if(!st){
+    if(big)big.textContent='--';
+    if(rows)rows.innerHTML='<div class="liq-row"><div class="liq-cap-sm">刷新后自动计算</div></div>';
+    updateDecisionCard();return;
+  }
+  var s=liqState(st.d7);
+  card.className='liq-card '+(s.c==='up'?'up':s.c==='down'?'down':'');
+  if(big){big.textContent=fmtUsdB(st.d7);big.style.color=st.d7>=0?'var(--gn)':'var(--rd)';}
+  if(stEl){stEl.textContent=s.t;stEl.className='liq-state '+(s.c==='up'?'up':s.c==='down'?'down':'');}
+  if(tot)tot.textContent='$'+(st.last/1e9).toFixed(1)+'B';
+  if(rows)rows.innerHTML=liqRow('USDT',S.stbU)+liqRow('USDC',S.stbC);
   updateDecisionCard();
 }
 
-function renderStableFlow(cardId,symbol,ser){
-  var card=document.getElementById(cardId);
-  if(!card)return;
-  if(!ser||ser.length<2){
-    card.className='usdt-flow-card flow-normal';
-    card.innerHTML='<div class="flow-empty">'+symbol+' 数据不足，无法判断当天增发/减少</div>';
-    return;
-  }
-  var last=ser[ser.length-1],prev=ser[ser.length-2];
-  var diff=last-prev,pct=prev?diff/prev*100:0;
-  var hit=Math.abs(diff)>=STABLE_FLOW_THRESHOLD;
-  var up=diff>=0;
-  var cls=hit?(up?'flow-up':'flow-down'):'flow-normal';
-  var badge=hit?(up?'触发：增发 ≥ $1B':'触发：减少 ≥ $1B'):'未触发';
-  var title=up?'当天净增发':'当天净减少';
-  var recent=[];
-  for(var i=Math.max(1,ser.length-5);i<ser.length;i++){
-    var d=ser[i]-ser[i-1];
-    var h=Math.abs(d)>=STABLE_FLOW_THRESHOLD;
-    recent.push('<div class="flow-row"><span>近'+(ser.length-i)+'日</span><span class="'+(h?'hit ':'')+(d>=0?'up':'down')+'">'+fmtFlowUsd(d)+'</span></div>');
-  }
-  card.className='usdt-flow-card '+cls;
-  card.innerHTML=
-    '<div class="flow-head">'+
-      '<div class="flow-title"><span class="flow-dot"></span>'+symbol+' 单日净变化</div>'+
-      '<div class="flow-badge">'+badge+'</div>'+
-    '</div>'+
-    '<div class="flow-main">'+
-      '<div><div class="flow-big num">'+fmtFlowUsd(diff)+'</div>'+
-      '<div class="flow-sub">'+title+' · '+(pct>=0?'+':'')+pct.toFixed(2)+'% · 阈值 $1.00B</div></div>'+
-      '<div class="flow-meta"><div class="flow-meta-k">当前 '+symbol+' 流通市值</div><div class="flow-meta-v num">$'+(last/1e9).toFixed(1)+'B</div></div>'+
-    '</div>'+
-    '<div class="flow-list">'+recent.join('')+'</div>';
-}
+
 
 function updateDecisionCard(){
   var title=document.getElementById('decisionTitle');
@@ -1547,18 +1521,28 @@ function markHealth(name,status,detail){
   HEALTH[name]={status:status,detail:detail||'',ts:Date.now()};
 }
 
-function renderHealth(){
-  var list=document.getElementById('healthList'),time=document.getElementById('healthTime');
-  if(!list)return;
+function healthSummary(){
   var items=SOURCE_ORDER.filter(function(n){return HEALTH[n];});
-  if(!items.length){list.innerHTML='<span class="health-chip wait">等待数据</span>';return;}
-  list.innerHTML=items.map(function(n){
-    var h=HEALTH[n],txt=n;
-    if(h.status==='cache')txt+='·缓存';
-    if(h.status==='fail')txt+='·失败';
-    return '<span class="health-chip '+h.status+'" title="'+(h.detail||'')+'">'+txt+'</span>';
-  }).join('');
-  if(time)time.textContent=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+  if(!items.length)return null;
+  var bad=items.filter(function(n){return HEALTH[n].status==='fail';});
+  var cache=items.filter(function(n){return HEALTH[n].status==='cache';});
+  return {total:items.length,bad:bad,cache:cache.length};
+}
+
+function renderHealth(){
+  var el=document.getElementById('healthBadge');
+  if(!el)return;
+  var h=healthSummary();
+  if(!h){el.textContent='';el.className='hbadge';return;}
+  if(h.bad.length){
+    el.textContent=h.bad.length+'源失败·'+h.bad.slice(0,2).join(' ');
+    el.className='hbadge bad';
+    el.title=h.bad.join(', ')+' 使用旧值';
+  }else if(h.cache===h.total){
+    el.textContent='缓存';el.className='hbadge cache';el.title='5分钟缓存数据';
+  }else{
+    el.textContent='';el.className='hbadge';
+  }
 }
 
 function toggleTweak(){setTweak(!S.tweak,false);}
@@ -1574,25 +1558,6 @@ function setTweak(on,silent){
 function renderSignalValues(){
   // 保持 input 作为数据容器，但默认以只读指标卡呈现
   ['slo','shi','sbl','swm','ssp','shv','spb','spu'].forEach(function(id){var e=document.getElementById(id);if(e&&e.value)e.setAttribute('data-value',e.value);});
-}
-
-function drawStb(key,ser){
-  var svg=document.getElementById(key+'Spark');
-  var vEl=document.getElementById(key+'Val');
-  var cEl=document.getElementById(key+'Chg');
-  if(!ser||!ser.length)return;
-  var val=ser[ser.length-1];
-  if(vEl)vEl.textContent='$'+(val/1e9).toFixed(1)+'B';
-  if(ser.length<2){if(cEl){cEl.textContent='数据不足';cEl.style.color='var(--tx2)';}return;}
-  var first=ser[0],chg=(val-first)/first*100,up=chg>=0;
-  if(cEl){cEl.textContent=(up?'▲ +':'▼ ')+chg.toFixed(2)+'% · 7日';cEl.style.color=up?'var(--gn)':'var(--rd)';}
-  if(svg){
-    var mn=Math.min.apply(null,ser),mx=Math.max.apply(null,ser),rng=(mx-mn)||1;
-    var pts=ser.map(function(v,i){
-      return (i/(ser.length-1)*100).toFixed(1)+','+(26-((v-mn)/rng)*24).toFixed(1);
-    }).join(' ');
-    svg.innerHTML='<polyline points="'+pts+'" fill="none" stroke="'+(up?'var(--gn)':'var(--rd)')+'" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>';
-  }
 }
 
 function renderMA(){
@@ -1806,11 +1771,7 @@ function init(){
   if(!S.sigs)S.sigs={};
   if(!S.sigs.lo){S.sigs.lo=29132;S.sigs.hi=90461;}
   calc();upB();trig();upH2();upG();rl2();rSig();renderMA();
-  if(S.stbU)drawStb('usdt',S.stbU);
-  if(S.stbC)drawStb('usdc',S.stbC);
   if(S.ahr)renderAhr(S.ahr);
-  if(S.stbU)renderStableFlow('usdtFlowCard','USDT',S.stbU);
-  if(S.stbC)renderStableFlow('usdcFlowCard','USDC',S.stbC);
   renderStableCombined();updateDecisionCard();
   setTweak(!!S.tweak,true);
   fetchLive(false);
