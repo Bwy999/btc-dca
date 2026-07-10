@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-title" content="BTC定投" />
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
-  <title>BTC 定投 · V10</title>
+  <title>BTC 定投 · V10.2 稳源版</title>
   <style>
     :root{
       color-scheme:dark;
@@ -33,7 +33,11 @@
       -webkit-font-smoothing:antialiased}
     button,input,select{font:inherit}.bgfix{position:fixed;inset:0;background:var(--bg);z-index:-1}
     .w{max-width:720px;margin:auto}.num{font-variant-numeric:tabular-nums;letter-spacing:-.02em}
-    .hdr{padding:28px 0 8px}.hdr-label{font-size:13px;color:var(--tx2);font-weight:600;margin-bottom:4px}
+    .hdr{padding:max(28px,calc(env(safe-area-inset-top,0px) + 18px)) 0 8px}.hdr-label{font-size:13px;color:var(--tx2);font-weight:600;margin-bottom:4px}
+
+    @media (display-mode:standalone){
+      .hdr{padding-top:calc(env(safe-area-inset-top,0px) + 18px)}
+    }
     .price-row{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}.price-big{font-size:44px;font-weight:760;line-height:1.05;letter-spacing:-.04em}
     .price-big input{background:transparent;border:0;outline:0;color:var(--tx);font:inherit;width:255px;padding:0;font-size:44px;font-weight:760;letter-spacing:-.04em}
     .chg-pill{font-size:15px;font-weight:750}.chg-up{color:var(--gn)}.chg-dn{color:var(--rd)}
@@ -162,7 +166,7 @@
   </div>
 
   <details class="health" id="healthPanel">
-    <summary><span>数据健康度</span><span id="healthSummary">等待检查</span></summary>
+    <summary><span>数据可用性</span><span id="healthSummary">等待检查</span></summary>
     <div class="health-grid" id="healthGrid"></div>
   </details>
 
@@ -355,9 +359,11 @@ const MB=[[0,.1],[30,.3],[50,.8],[70,1.2],[85,1.95],[100,3]];
 const TR=[{p:.1,a:200,k:"pull"},{p:.2,a:200,k:"pull"},{p:.3,a:300,k:"pull"},{p:.4,a:150,k:"ext"},{p:.5,a:150,k:"ext"}];
 const CORE_HEALTH=["AHR999","200WMA","MVRV","FGI","Puell","RR","SOPR"];
 const SOURCE_ORDER=["价格","AHR999","200WMA","均线","FGI","减半","关机价","MVRV","均衡价","概率","USDT","USDC","SOPR","Puell","RR"];
-const CACHE_KEY="btc_live_v7",STATE_KEY="btc_exec_v7",CACHE_TTL=15*60*1000,STABLE_FLOW_THRESHOLD=1e9;
+const CACHE_KEY="btc_live_v8",STATE_KEY="btc_exec_v7",CACHE_TTL=30*60*1000,STABLE_FLOW_THRESHOLD=1e9;
+const BINANCE_BASES=["https://data-api.binance.vision","https://api-gcp.binance.com","https://api.binance.com"];
+const SLOW_TTL=24*3600*1000,STABLE_TTL=12*3600*1000;
 const AHR_A=5.5856,AHR_B=-16.1567,AHR_A0=5.84,AHR_B0=-17.1,BAL_TP=14657,MINER_EFF_LO=12,MINER_EFF_HI=37.3,ELEC_KWH=.06;
-let HEALTH={},progActive=false,progN=0,PROG_EST=14,preparedTp=null;
+let HEALTH={},progActive=false,progN=0,PROG_EST=16,preparedTp=null;
 function mstr(){const d=new Date();return d.getFullYear()+"年"+(d.getMonth()+1)+"月"}
 function loadState(){try{return JSON.parse(localStorage.getItem(STATE_KEY))}catch(e){return null}}
 function saveState(){localStorage.setItem(STATE_KEY,JSON.stringify(S))}
@@ -393,43 +399,363 @@ function puellToSc(v){if(!v)return 60;if(v<.4)return 92;if(v<.5)return 84;if(v<.
 function rrToSc(v){if(!v)return 70;if(v<.001)return 94;if(v<.0015)return 84;if(v<.0025)return 72;if(v<.004)return 58;if(v<.008)return 40;if(v<.015)return 25;return 12}
 function numOnly(x){if(typeof x==="number")return isFinite(x)?x:null;if(typeof x!=="string")return null;if(!/^-?\d+(\.\d+)?([eE][+-]?\d+)?$/.test(x.trim()))return null;const n=parseFloat(x);return isFinite(n)?n:null}
 function bgLast(res){let arr=res&&res.data?res.data:res;if(!arr)return null;if(!Array.isArray(arr))arr=[arr];if(!arr.length)return null;const last=arr[arr.length-1];if(Array.isArray(last))return numOnly(last[1]);const pref=["sopr","puellmultiple","puell_multiple","puell","reserverisk","reserve_risk","rr","value","val","v","metric"],keys=Object.keys(last);for(const p of pref)for(const k of keys)if(k.toLowerCase()===p){const v=numOnly(last[k]);if(v!=null)return v}for(const k of keys){if(/date|day|time|unix|^d$|^t$|ts$/i.test(k))continue;const v=numOnly(last[k]);if(v!=null)return v}return null}
-async function cgCapSeries(id){try{const r=await tryFetch(`https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=7&interval=daily`);return (r.market_caps||[]).map(p=>p[1]).filter(v=>v>0)}catch(e){return []}}
-async function llamaSeries(id){try{const r=await tryFetch(`https://stablecoins.llama.fi/stablecoincharts/all?stablecoin=${id}`);if(!Array.isArray(r))return[];return r.slice(-8).map(d=>{const t=d.totalCirculatingUSD||d.totalCirculating||{};return t.peggedUSD||0}).filter(v=>v>0)}catch(e){return[]}}
-async function bgMetric(key,paths,lo,hi){try{const c=JSON.parse(localStorage.getItem("bg3_"+key));if(c&&Date.now()-c.ts<6*3600e3){markHealth(key==="puell"?"Puell":key==="rr"?"RR":"SOPR","cache","6小时缓存");return c.v}}catch(e){}for(const url of paths){try{const r=await tryFetch(url),v=bgLast(r);if(v!=null&&v>=lo&&v<=hi){localStorage.setItem("bg3_"+key,JSON.stringify({ts:Date.now(),v}));return v}}catch(e){}}return null}
+async function fetchAny(urls,ms=7000){
+  const errors=[];
+  for(const url of urls){
+    try{return await tryFetch(url,ms)}
+    catch(e){errors.push(e)}
+  }
+  throw errors[errors.length-1]||new Error("all sources failed");
+}
+async function binanceFetch(path,ms=7000){
+  return fetchAny(BINANCE_BASES.map(base=>base+path),ms);
+}
+function getFallbackData(){
+  const c=readCache(true),d=c&&c.data?{...c.data}:{};
+  if(d.price==null&&S.price)d.price=S.price;
+  if(S.ahr){
+    if(d.ahr999==null)d.ahr999=S.ahr.v;
+    if(d.ahr999c==null)d.ahr999c=S.ahr.c;
+    if(d.plNew==null)d.plNew=S.ahr.pl;
+    if(d.dma200==null)d.dma200=S.ahr.dma;
+    if(d.ahr1price==null)d.ahr1price=S.ahr.p1;
+  }
+  if(S.mas){
+    if(d.ma51==null)d.ma51=S.mas.m51;
+    if(d.ma120==null)d.ma120=S.mas.m120;
+    if(d.ma250==null)d.ma250=S.mas.m250;
+    if(d.ma850==null)d.ma850=S.mas.m850;
+  }
+  if(S.sigs){
+    if(d.wma200==null&&S.sigs.wm)d.wma200=S.sigs.wm;
+    if(d.wma200ratio==null&&d.wma200&&d.price)d.wma200ratio=d.price/d.wma200;
+    if(d.balanced==null&&S.sigs.bl)d.balanced=S.sigs.bl;
+    if(d.sopr==null&&S.sigs.sp)d.sopr=S.sigs.sp;
+    if(d.halvingDays==null&&S.sigs.hv)d.halvingDays=S.sigs.hv;
+    if(d.shutLo==null&&S.sigs.lo)d.shutLo=S.sigs.lo;
+    if(d.shutHi==null&&S.sigs.hi)d.shutHi=S.sigs.hi;
+    if(d.prob50==null&&S.sigs.pb)d.prob50=S.sigs.pb;
+    if(d.prob80==null&&S.sigs.pu)d.prob80=S.sigs.pu;
+  }
+  if(d.usdtSeries==null&&S.stbU)d.usdtSeries=S.stbU;
+  if(d.usdcSeries==null&&S.stbC)d.usdcSeries=S.stbC;
+  if(S.raw){
+    ["fgi","mvrv","puell","rr"].forEach(k=>{if(d[k]==null&&S.raw[k]!=null)d[k]=S.raw[k]});
+  }
+  return d;
+}
+function carryFields(result,fallback,name,fields,detail="沿用上次成功值"){
+  let used=false;
+  fields.forEach(k=>{
+    if(result[k]==null&&fallback[k]!=null){
+      result[k]=fallback[k];
+      used=true;
+    }
+  });
+  if(used)markHealth(name,"cache",detail);
+  else markHealth(name,"fail","暂无可用值");
+  return used;
+}
+async function cgCapSeries(id){
+  try{
+    const r=await tryFetch(`https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=7&interval=daily`,8000);
+    return (r.market_caps||[]).map(p=>p[1]).filter(v=>v>0);
+  }catch(e){return[]}
+}
+async function llamaSeries(id){
+  try{
+    const r=await tryFetch(`https://stablecoins.llama.fi/stablecoincharts/all?stablecoin=${id}`,8000);
+    if(!Array.isArray(r))return[];
+    return r.slice(-8).map(d=>{
+      const t=d.totalCirculatingUSD||d.totalCirculating||{};
+      return t.peggedUSD||0
+    }).filter(v=>v>0);
+  }catch(e){return[]}
+}
+async function bgMetric(key,label,paths,lo,hi){
+  let cached=null;
+  try{cached=JSON.parse(localStorage.getItem("bg4_"+key))}catch(e){}
+  if(cached&&Date.now()-cached.ts<SLOW_TTL){
+    markHealth(label,"cache","24小时慢指标");
+    return cached.v;
+  }
+  for(const url of paths){
+    try{
+      const r=await tryFetch(url,7000),v=bgLast(r);
+      if(v!=null&&v>=lo&&v<=hi){
+        localStorage.setItem("bg4_"+key,JSON.stringify({ts:Date.now(),v}));
+        markHealth(label,"ok","已更新");
+        return v;
+      }
+    }catch(e){}
+  }
+  if(cached&&cached.v!=null){
+    markHealth(label,"cache","源不可用 · 保留旧值");
+    return cached.v;
+  }
+  return null;
+}
+async function stableSeriesCached(){
+  let c=null;
+  try{c=JSON.parse(localStorage.getItem("stable4_cache"))}catch(e){}
+  if(c&&Date.now()-c.ts<STABLE_TTL&&c.u&&c.c){
+    return {u:c.u,c:c.c,cached:true};
+  }
+  let u=await llamaSeries(1),s=await llamaSeries(2);
+  if(!u.length)u=await cgCapSeries("tether");
+  if(!s.length)s=await cgCapSeries("usd-coin");
+  if(u.length&&s.length){
+    try{localStorage.setItem("stable4_cache",JSON.stringify({ts:Date.now(),u,c:s}))}catch(e){}
+    return {u,c:s,cached:false};
+  }
+  if(c&&c.u&&c.c)return {u:c.u,c:c.c,cached:true,stale:true};
+  return null;
+}
+function markHealth(name,status,detail=""){HEALTH[name]={status,detail,ts:Date.now()}}
 function markHealth(name,status,detail=""){HEALTH[name]={status,detail,ts:Date.now()}}
 function renderHealth(){
-  const items=SOURCE_ORDER.filter(n=>HEALTH[n]),ok=items.filter(n=>HEALTH[n].status==="ok").length,cache=items.filter(n=>HEALTH[n].status==="cache").length,fail=items.filter(n=>HEALTH[n].status==="fail").length;
-  const total=items.length;$("healthSummary").textContent=total?`${ok}正常 · ${cache}缓存 · ${fail}失败`:"等待检查";
-  $("healthGrid").innerHTML=items.map(n=>{const h=HEALTH[n],tx=h.status==="ok"?"正常":h.status==="cache"?"缓存":"失败",c=h.status==="ok"?"var(--gn)":h.status==="cache"?"var(--or)":"var(--rd)";return `<div class="health-item"><div class="health-name">${n}</div><div class="health-state" style="color:${c}">${tx}${h.detail?" · "+h.detail:""}</div></div>`}).join("");
-  const badge=$("healthBadge");if(!total){badge.textContent="--";badge.className="hbadge"}else if(fail===0&&cache<=2){badge.textContent=`${ok}/${total} 正常`;badge.className="hbadge good"}else if(fail<Math.ceil(total/2)){badge.textContent=`${fail}项异常`;badge.className="hbadge warn"}else{badge.textContent="数据异常";badge.className="hbadge bad"}
+  const items=SOURCE_ORDER.filter(n=>HEALTH[n]),
+    ok=items.filter(n=>HEALTH[n].status==="ok").length,
+    cache=items.filter(n=>HEALTH[n].status==="cache").length,
+    fail=items.filter(n=>HEALTH[n].status==="fail").length;
+  const total=items.length;
+  $("healthSummary").textContent=total?`${ok}实时 · ${cache}沿用 · ${fail}缺失`:"等待检查";
+  $("healthGrid").innerHTML=items.map(n=>{
+    const h=HEALTH[n],
+      tx=h.status==="ok"?"实时":h.status==="cache"?"沿用":"缺失",
+      c=h.status==="ok"?"var(--gn)":h.status==="cache"?"var(--or)":"var(--rd)";
+    return `<div class="health-item"><div class="health-name">${n}</div><div class="health-state" style="color:${c}">${tx}${h.detail?" · "+h.detail:""}</div></div>`
+  }).join("");
+  const badge=$("healthBadge");
+  if(!total){badge.textContent="--";badge.className="hbadge"}
+  else if(fail===0){badge.textContent="数据可用";badge.className="hbadge good"}
+  else if(fail<=2){badge.textContent=`${fail}项缺失`;badge.className="hbadge warn"}
+  else{badge.textContent=`${fail}项缺失`;badge.className="hbadge bad"}
   renderAction();
 }
 async function fetchLive(force=false){
-  if(!force){const c=readCache(false);if(c){applyLive(c.data);SOURCE_ORDER.forEach(n=>markHealth(n,"cache","15分钟内"));renderHealth();setLiveStatus("ok","缓存数据 · 后台更新");setTimeout(()=>fetchLive(true),350);return}}
-  progStart();setLiveStatus("loading","拉取中");HEALTH={};const result={};
-  try{
-    const mm=await tryFetch("https://charts.bitcoin.com/api/v1/charts/mayer-multiple?interval=daily&timespan=1y&limit=365"),mp=lastVal(mm.data.price),m200=lastVal(mm.data.ma200),mult=lastVal(mm.data.multiple);
-    if(mp){result.price=mp;markHealth("价格","ok","主源")}
-    if(m200){result.dma200=m200;const p=result.price||mp;if(p){const dg=Math.floor((new Date()-new Date("2009-01-03"))/864e5),pl=Math.pow(10,AHR_A*Math.log10(dg)+AHR_B),pl0=Math.pow(10,AHR_A0*Math.log10(dg)+AHR_B0);result.ahr999=p*p/(m200*pl);result.ahr999c=p*p/(m200*pl0);result.ahr1price=Math.sqrt(m200*pl);result.plNew=pl;markHealth("AHR999","ok","主源")}}
-    if(mult)result.mayerMult=mult;
-  }catch(e){
-    try{const t=await tryFetch("https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT");result.price=parseFloat(t.lastPrice);result.change24h=parseFloat(t.priceChangePercent);markHealth("价格","ok","Binance备用")}catch(e2){markHealth("价格","fail","沿用旧值")}
+  if(!force){
+    const c=readCache(false);
+    if(c){
+      applyLive(c.data);
+      SOURCE_ORDER.forEach(n=>markHealth(n,"cache","本地快照"));
+      renderHealth();
+      setLiveStatus("ok","已显示缓存 · 后台更新");
+      setTimeout(()=>fetchLive(true),450);
+      return;
+    }
   }
-  const tasks=[];const task=f=>tasks.push((async()=>{try{await f()}catch(e){}})());
-  task(async()=>{try{const wk=await tryFetch("https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1w&limit=210"),wc=wk.map(k=>+k[4]),w=wc.slice(-200);result.wma200=w.reduce((a,b)=>a+b,0)/w.length;if(result.price)result.wma200ratio=result.price/result.wma200;markHealth("200WMA","ok","Binance")}catch(e){markHealth("200WMA","fail","沿用旧值")}});
-  task(async()=>{try{const dk=await tryFetch("https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=1000"),dc=dk.map(k=>+k[4]),ma=n=>dc.length<n?null:dc.slice(-n).reduce((a,b)=>a+b,0)/n;result.ma51=ma(51);result.ma120=ma(120);result.ma250=ma(250);result.ma850=ma(850);markHealth("均线","ok","Binance");if(!result.ahr999){result.dma200=ma(200);if(result.price&&result.dma200){const dg=Math.floor((new Date()-new Date("2009-01-03"))/864e5),pl=Math.pow(10,AHR_A*Math.log10(dg)+AHR_B),pl0=Math.pow(10,AHR_A0*Math.log10(dg)+AHR_B0);result.ahr999=result.price*result.price/(result.dma200*pl);result.ahr999c=result.price*result.price/(result.dma200*pl0);result.ahr1price=Math.sqrt(result.dma200*pl);result.plNew=pl;markHealth("AHR999","ok","均线备用")}}}catch(e){markHealth("均线","fail","沿用旧值")}});
-  task(async()=>{try{const fg=await tryFetch("https://api.alternative.me/fng/?limit=1");if(fg.data&&fg.data[0]){result.fgi=+fg.data[0].value;result.fgiLabel=fg.data[0].value_classification;markHealth("FGI","ok","Alternative.me")}}catch(e){markHealth("FGI","fail","沿用旧值")}});
-  task(async()=>{try{const bh=await tryFetch("https://mempool.space/api/blocks/tip/height",12000),nh=bh<840000?840000:bh<1050000?1050000:1260000;result.halvingDays=Math.ceil((nh-bh)*10/60/24);markHealth("减半","ok","mempool.space")}catch(e){markHealth("减半","fail","沿用旧值")}try{const hr=await tryFetch("https://mempool.space/api/v1/mining/hashrate/3d"),rw=await tryFetch("https://mempool.space/api/v1/mining/reward-stats/144"),hashTH=(hr.currentHashrate||0)/1e12,dailyBTC=+rw.totalReward/1e8;if(hashTH>0&&dailyBTC>0){const btcPerTH=dailyBTC/hashTH;result.shutLo=Math.round(MINER_EFF_LO*.024*ELEC_KWH/btcPerTH);result.shutHi=Math.round(MINER_EFF_HI*.024*ELEC_KWH/btcPerTH);result.netEH=Math.round(hashTH/1e6);markHealth("关机价","ok","算力推算")}}catch(e){markHealth("关机价","fail","沿用旧值")}});
-  task(async()=>{try{const mv=await tryFetch("https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=CapMVRVCur,CapRealUSD,SplyCur&frequency=1d&limit_per_asset=1");if(mv.data&&mv.data[0]){const row=mv.data[0];if(row.CapMVRVCur){result.mvrv=+row.CapMVRVCur;markHealth("MVRV","ok","CoinMetrics")}if(row.CapRealUSD&&row.SplyCur){result.realized=+row.CapRealUSD/+row.SplyCur;result.balanced=Math.round(result.realized-BAL_TP);markHealth("均衡价","ok","CoinMetrics")}}if(!result.mvrv)throw new Error("empty")}catch(e){markHealth("MVRV","fail","沿用旧值");markHealth("均衡价","fail","沿用旧值")}});
-  task(async()=>{try{const ev=await tryFetch("https://gamma-api.polymarket.com/events?slug=what-price-will-bitcoin-hit-before-2027"),e0=Array.isArray(ev)?ev[0]:ev,mk=e0&&e0.markets||[];const findMkt=(num,re)=>mk.find(m=>new RegExp("(^|[^0-9])"+num).test((m.question||"")+" "+(m.groupItemTitle||""))&&re.test((m.question||"")+" "+(m.groupItemTitle||"")));const yesProb=m=>{if(!m)return null;const p=typeof m.outcomePrices==="string"?JSON.parse(m.outcomePrices):m.outcomePrices||[];return p.length?Math.round(+p[0]*1000)/10:null};const p50=yesProb(findMkt("50,000",/dip|below|↓/i)),p80=yesProb(findMkt("80,000",/hit|reach|above|↑/i));if(p50!=null)result.prob50=p50;if(p80!=null)result.prob80=p80;if(p50!=null||p80!=null)markHealth("概率","ok","Polymarket");else throw new Error("empty")}catch(e){markHealth("概率","fail","沿用旧值")}});
-  task(async()=>{try{let us=await llamaSeries(1),uc=await llamaSeries(2);if(!us.length)us=await cgCapSeries("tether");if(!uc.length)uc=await cgCapSeries("usd-coin");if(us.length){result.usdtSeries=us;markHealth("USDT","ok","7日序列")}else markHealth("USDT","fail","沿用旧值");if(uc.length){result.usdcSeries=uc;markHealth("USDC","ok","7日序列")}else markHealth("USDC","fail","沿用旧值")}catch(e){markHealth("USDT","fail","沿用旧值");markHealth("USDC","fail","沿用旧值")}});
-  task(async()=>{const sopr=await bgMetric("sopr",["https://bitcoin-data.com/v1/sopr","https://api.bgeometrics.com/v1/sopr"],.5,2);if(sopr){result.sopr=sopr;if(!HEALTH.SOPR||HEALTH.SOPR.status!=="cache")markHealth("SOPR","ok","BGeometrics")}else markHealth("SOPR","fail","沿用旧值");const puell=await bgMetric("puell",["https://bitcoin-data.com/v1/puell-multiple","https://api.bgeometrics.com/v1/puell-multiple","https://bitcoin-data.com/v1/puell_multiple"],.05,20);if(puell){result.puell=puell;if(!HEALTH.Puell||HEALTH.Puell.status!=="cache")markHealth("Puell","ok","BGeometrics")}else markHealth("Puell","fail","沿用旧值");const rr=await bgMetric("rr",["https://bitcoin-data.com/v1/reserve-risk","https://api.bgeometrics.com/v1/reserve-risk","https://bitcoin-data.com/v1/reserve_risk"],.00005,.2);if(rr){result.rr=rr;if(!HEALTH.RR||HEALTH.RR.status!=="cache")markHealth("RR","ok","BGeometrics")}else markHealth("RR","fail","沿用旧值")});
+
+  progStart();
+  setLiveStatus("loading","拉取中");
+  HEALTH={};
+
+  const fallback=getFallbackData(),result={};
+  const tasks=[];
+  const task=f=>tasks.push((async()=>{try{await f()}catch(e){}})());
+
+  // 核心行情：只使用 Binance 官方公共行情节点，节点自动切换。
+  task(async()=>{
+    try{
+      const t=await binanceFetch("/api/v3/ticker/24hr?symbol=BTCUSDT",6500);
+      const p=+t.lastPrice,c=+t.priceChangePercent;
+      if(!(p>0))throw new Error("bad ticker");
+      result.price=p;
+      result.change24h=c;
+      markHealth("价格","ok","Binance公共行情");
+    }catch(e){
+      carryFields(result,fallback,"价格",["price","change24h"]);
+    }
+
+    try{
+      const dk=await binanceFetch("/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=1000",8000);
+      const dc=dk.map(k=>+k[4]).filter(Number.isFinite);
+      const ma=n=>dc.length<n?null:dc.slice(-n).reduce((a,b)=>a+b,0)/n;
+      result.ma51=ma(51);
+      result.ma120=ma(120);
+      result.dma200=ma(200);
+      result.ma250=ma(250);
+      result.ma850=ma(850);
+      if(!result.ma51||!result.ma850)throw new Error("bad daily klines");
+      markHealth("均线","ok","一次请求计算");
+
+      const p=result.price||fallback.price;
+      if(p&&result.dma200){
+        const dg=Math.floor((new Date()-new Date("2009-01-03"))/864e5),
+          pl=Math.pow(10,AHR_A*Math.log10(dg)+AHR_B),
+          pl0=Math.pow(10,AHR_A0*Math.log10(dg)+AHR_B0);
+        result.ahr999=p*p/(result.dma200*pl);
+        result.ahr999c=p*p/(result.dma200*pl0);
+        result.ahr1price=Math.sqrt(result.dma200*pl);
+        result.plNew=pl;
+        markHealth("AHR999","ok","本地公式计算");
+      }else{
+        carryFields(result,fallback,"AHR999",["ahr999","ahr999c","ahr1price","plNew","dma200"]);
+      }
+    }catch(e){
+      carryFields(result,fallback,"均线",["ma51","ma120","ma250","ma850","dma200"]);
+      carryFields(result,fallback,"AHR999",["ahr999","ahr999c","ahr1price","plNew","dma200"]);
+    }
+
+    try{
+      const wk=await binanceFetch("/api/v3/klines?symbol=BTCUSDT&interval=1w&limit=210",8000);
+      const wc=wk.map(k=>+k[4]).filter(Number.isFinite),w=wc.slice(-200);
+      if(w.length<190)throw new Error("bad weekly klines");
+      result.wma200=w.reduce((a,b)=>a+b,0)/w.length;
+      const p=result.price||fallback.price;
+      if(p)result.wma200ratio=p/result.wma200;
+      markHealth("200WMA","ok","Binance周线");
+    }catch(e){
+      carryFields(result,fallback,"200WMA",["wma200","wma200ratio"]);
+    }
+  });
+
+  task(async()=>{
+    try{
+      const fg=await tryFetch("https://api.alternative.me/fng/?limit=1",7000);
+      if(!fg.data||!fg.data[0])throw new Error("empty");
+      result.fgi=+fg.data[0].value;
+      result.fgiLabel=fg.data[0].value_classification;
+      markHealth("FGI","ok","已更新");
+    }catch(e){
+      carryFields(result,fallback,"FGI",["fgi","fgiLabel"]);
+    }
+  });
+
+  task(async()=>{
+    try{
+      const bh=await tryFetch("https://mempool.space/api/blocks/tip/height",9000),
+        height=+bh,nh=height<840000?840000:height<1050000?1050000:1260000;
+      if(!(height>0))throw new Error("bad height");
+      result.halvingDays=Math.ceil((nh-height)*10/60/24);
+      markHealth("减半","ok","mempool.space");
+    }catch(e){
+      carryFields(result,fallback,"减半",["halvingDays"]);
+    }
+
+    try{
+      const [hr,rw]=await Promise.all([
+        tryFetch("https://mempool.space/api/v1/mining/hashrate/3d",10000),
+        tryFetch("https://mempool.space/api/v1/mining/reward-stats/144",10000)
+      ]);
+      const hashTH=(hr.currentHashrate||0)/1e12,dailyBTC=+rw.totalReward/1e8;
+      if(!(hashTH>0&&dailyBTC>0))throw new Error("bad mining");
+      const btcPerTH=dailyBTC/hashTH;
+      result.shutLo=Math.round(MINER_EFF_LO*.024*ELEC_KWH/btcPerTH);
+      result.shutHi=Math.round(MINER_EFF_HI*.024*ELEC_KWH/btcPerTH);
+      result.netEH=Math.round(hashTH/1e6);
+      markHealth("关机价","ok","算力推算");
+    }catch(e){
+      carryFields(result,fallback,"关机价",["shutLo","shutHi","netEH"]);
+    }
+  });
+
+  task(async()=>{
+    try{
+      const mv=await tryFetch(
+        "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=CapMVRVCur,CapRealUSD,SplyCur&frequency=1d&limit_per_asset=1",
+        9000
+      );
+      const row=mv.data&&mv.data[0];
+      if(!row)throw new Error("empty");
+      if(row.CapMVRVCur)result.mvrv=+row.CapMVRVCur;
+      if(row.CapRealUSD&&row.SplyCur){
+        result.realized=+row.CapRealUSD/+row.SplyCur;
+        result.balanced=Math.round(result.realized-BAL_TP);
+      }
+      if(result.mvrv)markHealth("MVRV","ok","Coin Metrics");
+      else carryFields(result,fallback,"MVRV",["mvrv"]);
+      if(result.balanced)markHealth("均衡价","ok","Coin Metrics");
+      else carryFields(result,fallback,"均衡价",["balanced","realized"]);
+    }catch(e){
+      carryFields(result,fallback,"MVRV",["mvrv"]);
+      carryFields(result,fallback,"均衡价",["balanced","realized"]);
+    }
+  });
+
+  task(async()=>{
+    try{
+      const ev=await fetchAny([
+        "https://gamma-api.polymarket.com/events/slug/what-price-will-bitcoin-hit-before-2027",
+        "https://gamma-api.polymarket.com/events?slug=what-price-will-bitcoin-hit-before-2027"
+      ],8000);
+      const e0=Array.isArray(ev)?ev[0]:ev,mk=e0&&e0.markets||[];
+      const text=m=>(m.question||"")+" "+(m.groupItemTitle||"");
+      const findMkt=(amount,re)=>mk.find(m=>text(m).includes(amount)&&re.test(text(m)));
+      const yesProb=m=>{
+        if(!m)return null;
+        const p=typeof m.outcomePrices==="string"?JSON.parse(m.outcomePrices):m.outcomePrices||[];
+        return p.length?Math.round(+p[0]*1000)/10:null
+      };
+      const p50=yesProb(findMkt("50,000",/dip|below|less|↓/i)),
+        p80=yesProb(findMkt("80,000",/hit|reach|above|greater|↑/i));
+      if(p50!=null)result.prob50=p50;
+      if(p80!=null)result.prob80=p80;
+      if(p50==null&&p80==null)throw new Error("markets changed");
+      markHealth("概率","ok","Polymarket");
+    }catch(e){
+      carryFields(result,fallback,"概率",["prob50","prob80"]);
+    }
+  });
+
+  task(async()=>{
+    const st=await stableSeriesCached();
+    if(st&&st.u&&st.c){
+      result.usdtSeries=st.u;
+      result.usdcSeries=st.c;
+      markHealth("USDT",st.cached?"cache":"ok",st.cached?"12小时慢数据":"已更新");
+      markHealth("USDC",st.cached?"cache":"ok",st.cached?"12小时慢数据":"已更新");
+    }else{
+      carryFields(result,fallback,"USDT",["usdtSeries"]);
+      carryFields(result,fallback,"USDC",["usdcSeries"]);
+    }
+  });
+
+  task(async()=>{
+    const sopr=await bgMetric("sopr","SOPR",[
+      "https://bitcoin-data.com/v1/sopr",
+      "https://api.bgeometrics.com/v1/sopr"
+    ],.5,2);
+    if(sopr!=null)result.sopr=sopr;
+    else carryFields(result,fallback,"SOPR",["sopr"]);
+
+    const puell=await bgMetric("puell","Puell",[
+      "https://bitcoin-data.com/v1/puell-multiple",
+      "https://api.bgeometrics.com/v1/puell-multiple",
+      "https://bitcoin-data.com/v1/puell_multiple"
+    ],.05,20);
+    if(puell!=null)result.puell=puell;
+    else carryFields(result,fallback,"Puell",["puell"]);
+
+    const rr=await bgMetric("rr","RR",[
+      "https://bitcoin-data.com/v1/reserve-risk",
+      "https://api.bgeometrics.com/v1/reserve-risk",
+      "https://bitcoin-data.com/v1/reserve_risk"
+    ],.00005,.2);
+    if(rr!=null)result.rr=rr;
+    else carryFields(result,fallback,"RR",["rr"]);
+  });
+
   await Promise.all(tasks);
-  const got=Object.keys(result).length>0;
-  if(got){saveCache(result);applyLive(result);setLiveStatus("ok",new Date().toLocaleTimeString("zh-CN",{hour:"2-digit",minute:"2-digit"})+" · 已完成刷新")}else{const stale=readCache(true);if(stale){applyLive(stale.data);SOURCE_ORDER.forEach(n=>{if(!HEALTH[n])markHealth(n,"cache","旧缓存")});setLiveStatus("ok","实时源失败 · 已使用旧缓存")}else setLiveStatus("","数据源暂时不可用")}
-  renderHealth();progDone();
+
+  // 永远合并上次完整快照，避免一次局部失败把原有数据清空。
+  const merged={...fallback,...result};
+  const got=Object.keys(merged).length>0;
+  if(got){
+    saveCache(merged);
+    applyLive(merged);
+    const fail=SOURCE_ORDER.filter(n=>HEALTH[n]&&HEALTH[n].status==="fail").length;
+    setLiveStatus("ok",
+      new Date().toLocaleTimeString("zh-CN",{hour:"2-digit",minute:"2-digit"})+
+      (fail?` · ${fail}项暂无数据`:" · 数据可用")
+    );
+  }else{
+    setLiveStatus("","暂无可用数据");
+  }
+  renderHealth();
+  progDone();
 }
-function applyLive(d){if(!d)return;if(d.price>0){S.price=Math.round(d.price);$("bp").value=S.price;$("lp").value=S.price}if(d.change24h!=null){$("pc24").textContent=(d.change24h>=0?"+":"")+d.change24h.toFixed(2)+"%";$("pc24").className="chg-pill num "+(d.change24h>=0?"chg-up":"chg-dn")}
+function applyLive(d){if(!d)return;S.raw=S.raw||{};["fgi","mvrv","puell","rr"].forEach(k=>{if(d[k]!=null)S.raw[k]=d[k]});if(d.price>0){S.price=Math.round(d.price);$("bp").value=S.price;$("lp").value=S.price}if(d.change24h!=null){$("pc24").textContent=(d.change24h>=0?"+":"")+d.change24h.toFixed(2)+"%";$("pc24").className="chg-pill num "+(d.change24h>=0?"chg-up":"chg-dn")}
   if(d.ahr999){const sc=ahr999ToSc(d.ahr999);$("d0").value=sc;$("r0").textContent=d.ahr999.toFixed(3);S.dims[0]=sc}
   if(d.ahr999&&d.plNew&&d.dma200){S.ahr={v:d.ahr999,c:d.ahr999c,pl:d.plNew,dma:d.dma200,p1:d.ahr1price};renderAhr(S.ahr)}
   if(d.ma51){S.mas={m51:d.ma51,m120:d.ma120,m250:d.ma250,m850:d.ma850};renderMA()}
@@ -490,7 +816,21 @@ function sig(){const curp=S.price,lo=+$("slo").value||0,hi=+$("shi").value||0,bl
 function rSig(){const m={lo:"slo",hi:"shi",bl:"sbl",wm:"swm",sp:"ssp",hv:"shv",pb:"spb",pu:"spu"};Object.keys(m).forEach(k=>{const e=$(m[k]);if(e&&S.sigs&&S.sigs[k]!=null)e.value=S.sigs[k]});sig()}
 function pre(t){DM.forEach((_,i)=>$(`d${i}`).value=Math.max(0,Math.min(100,t+Math.round((Math.random()-.5)*10))));calc()}
 function ntf(msg){$("nf").textContent=msg;$("nf").classList.add("on");setTimeout(()=>$("nf").classList.remove("on"),2300)}
-async function tickPrice(){try{const t=await tryFetch("https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT"),p=+t.lastPrice,c=+t.priceChangePercent;if(p>0){S.price=Math.round(p);$("bp").value=S.price;if(document.activeElement!==$("lp"))$("lp").value=S.price;$("pc24").textContent=(c>=0?"+":"")+c.toFixed(2)+"%";$("pc24").className="chg-pill num "+(c>=0?"chg-up":"chg-dn");saveState();trig();upG();sig()}}catch(e){}}
+async function tickPrice(){
+  try{
+    const t=await binanceFetch("/api/v3/ticker/24hr?symbol=BTCUSDT",6000),
+      p=+t.lastPrice,c=+t.priceChangePercent;
+    if(p>0){
+      S.price=Math.round(p);
+      $("bp").value=S.price;
+      if(document.activeElement!==$("lp"))$("lp").value=S.price;
+      $("pc24").textContent=(c>=0?"+":"")+c.toFixed(2)+"%";
+      $("pc24").className="chg-pill num "+(c>=0?"chg-up":"chg-dn");
+      saveState();trig();upG();sig();
+    }
+  }catch(e){}
+}
+setInterval(tickPrice,60000);
 function initSectionNav(){
   const links=[...document.querySelectorAll(".section-nav a[data-section]")];
   if(!links.length)return;
