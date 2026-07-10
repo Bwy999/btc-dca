@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-title" content="BTC定投" />
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
-  <title>BTC 定投 · V9</title>
+  <title>BTC 定投 · V10</title>
   <style>
     :root{
       color-scheme:dark;
@@ -29,7 +29,7 @@
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
     html{background:var(--bg);scroll-behavior:smooth}
     body{font-family:var(--sf);color:var(--tx);background:var(--bg);min-height:100vh;
-      padding:0 20px calc(116px + env(safe-area-inset-bottom));font-variant-numeric:tabular-nums;
+      padding:0 20px calc(48px + env(safe-area-inset-bottom));font-variant-numeric:tabular-nums;
       -webkit-font-smoothing:antialiased}
     button,input,select{font:inherit}.bgfix{position:fixed;inset:0;background:var(--bg);z-index:-1}
     .w{max-width:720px;margin:auto}.num{font-variant-numeric:tabular-nums;letter-spacing:-.02em}
@@ -96,110 +96,46 @@
     .log-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--div)}.log-icon{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:760;flex:none}.li-base{background:var(--gn-dim);color:var(--gn)}.li-pull{background:rgba(74,158,255,.12);color:var(--blue)}.li-ext{background:var(--rd-dim);color:var(--rd)}.log-main{flex:1}.log-t1{font-size:14px;font-weight:680}.log-t2{font-size:11px;color:var(--tx2);margin-top:2px}.log-amt{font-size:15px;font-weight:760}.log-empty{text-align:center;color:var(--tx3);font-size:13px;padding:28px 0}
     .rule{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--div)}.rule:last-child{border-bottom:0}.rule-n{width:28px;height:28px;border-radius:50%;background:var(--card2);color:var(--gn);display:grid;place-items:center;font-size:13px;font-weight:760;flex:none}.rule-tx{font-size:14px;line-height:1.5}.rule-tx span{display:block;color:var(--tx2);font-size:13px;margin-top:1px}
     .modal{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);align-items:flex-end;justify-content:center}.sheet{background:var(--card);width:100%;max-width:720px;border-radius:20px 20px 0 0;padding:24px 20px calc(34px + env(safe-area-inset-bottom))}.sheet-title{font-size:18px;font-weight:780;margin-bottom:18px}.sheet .field{margin-bottom:14px}.sheet .field input{width:100%;background:var(--card2)}
-    .toast{position:fixed;bottom:calc(92px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(70px);z-index:1000;opacity:0;background:var(--card2);padding:12px 20px;border-radius:999px;font-size:13px;font-weight:680;white-space:nowrap;box-shadow:0 4px 24px rgba(0,0,0,.45);transition:.28s}.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
-    /* iOS 26 Liquid Glass 风格浮动底栏：Web 近似实现 */
-    .nav{
-      --nav-index:0;
-      position:fixed;left:50%;transform:translateX(-50%);
-      bottom:calc(12px + env(safe-area-inset-bottom));
-      width:min(calc(100% - 20px),560px);height:72px;z-index:200;
-      padding:7px;display:grid;grid-template-columns:repeat(5,1fr);
-      border-radius:28px;overflow:hidden;isolation:isolate;
-      background:
-        linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.035) 42%,rgba(255,255,255,.018)),
-        rgba(20,20,22,.48);
-      -webkit-backdrop-filter:blur(34px) saturate(190%) brightness(1.06);
-      backdrop-filter:blur(34px) saturate(190%) brightness(1.06);
-      border:1px solid rgba(255,255,255,.18);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.27),
-        inset 0 -1px 0 rgba(0,0,0,.18),
-        0 14px 44px rgba(0,0,0,.30),
-        0 2px 8px rgba(0,0,0,.16);
+    .toast{position:fixed;bottom:calc(22px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(70px);z-index:1000;opacity:0;background:var(--card2);padding:12px 20px;border-radius:999px;font-size:13px;font-weight:680;white-space:nowrap;box-shadow:0 4px 24px rgba(0,0,0,.45);transition:.28s}.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+    /* 顶部内嵌分段导航：不固定、不遮挡正文 */
+    .section-nav{
+      display:grid;
+      grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:4px;
+      margin-top:14px;
+      padding:4px;
+      border:1px solid var(--div);
+      border-radius:15px;
+      background:var(--card);
+      overflow:hidden;
     }
-    .nav::before{
-      content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
-      background:
-        radial-gradient(120% 90% at 12% -8%,rgba(255,255,255,.24),transparent 44%),
-        radial-gradient(90% 75% at 92% 115%,rgba(0,200,5,.10),transparent 55%);
-    }
-    .nav::after{
-      content:"";position:absolute;left:9%;right:9%;top:0;height:1px;z-index:3;pointer-events:none;
-      background:linear-gradient(90deg,transparent,rgba(255,255,255,.62),transparent);
-      opacity:.72;
-    }
-    .nav-liquid{
-      position:absolute;z-index:1;left:7px;top:7px;
-      width:calc((100% - 14px)/5);height:58px;border-radius:22px;
-      transform:translate3d(calc(var(--nav-index) * 100%),0,0);
-      transition:transform .46s cubic-bezier(.22,.88,.26,1.14);
-      background:
-        linear-gradient(180deg,rgba(255,255,255,.25),rgba(255,255,255,.08) 46%,rgba(255,255,255,.035)),
-        rgba(255,255,255,.055);
-      border:1px solid rgba(255,255,255,.24);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.38),
-        inset 0 -1px 0 rgba(0,0,0,.10),
-        0 5px 16px rgba(0,0,0,.16);
-      pointer-events:none;
-    }
-    .nav-liquid::before{
-      content:"";position:absolute;left:12%;right:12%;top:3px;height:42%;border-radius:999px;
-      background:linear-gradient(180deg,rgba(255,255,255,.24),transparent);
-      filter:blur(.2px);opacity:.85;
-    }
-    .nav-liquid::after{
-      content:"";position:absolute;width:20px;height:20px;right:8px;bottom:5px;border-radius:50%;
-      background:radial-gradient(circle,rgba(0,200,5,.15),transparent 68%);
-      filter:blur(4px);
-    }
-    .nav a{
-      position:relative;z-index:2;min-width:0;text-decoration:none;color:var(--tx2);
-      display:flex;flex-direction:column;align-items:center;justify-content:center;
-      text-align:center;font-size:10px;font-weight:720;line-height:1.05;
-      padding:5px 2px;border-radius:20px;
-      transition:color .26s ease,transform .18s ease,text-shadow .26s ease;
-      -webkit-user-select:none;user-select:none;
-    }
-    .nav-icon{
-      width:24px;height:24px;display:block;margin-bottom:4px;overflow:visible;
-      fill:none;stroke:currentColor;stroke-width:1.8;
-      stroke-linecap:round;stroke-linejoin:round;
-      vector-effect:non-scaling-stroke;
+    .section-nav a{
+      min-width:0;
+      height:38px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:11px;
+      text-decoration:none;
+      color:var(--tx2);
+      font-size:12px;
+      font-weight:720;
+      white-space:nowrap;
       transition:
-        transform .34s cubic-bezier(.2,.8,.2,1),
-        color .26s ease,
-        filter .26s ease;
+        color .2s ease,
+        background-color .2s ease,
+        transform .15s ease;
+      -webkit-user-select:none;
+      user-select:none;
     }
-    .nav a span{display:block}
-    .nav a.active{color:var(--tx);text-shadow:0 1px 12px rgba(255,255,255,.18)}
-    .nav a.active .nav-icon{
-      transform:translateY(-1px) scale(1.07);
+    .section-nav a.active{
       color:var(--gn);
-      filter:drop-shadow(0 2px 7px rgba(0,200,5,.22));
+      background:var(--gn-dim);
+      box-shadow:inset 0 0 0 1px rgba(0,200,5,.10);
     }
-    .nav a:active{transform:scale(.92)}
-    .nav a:active .nav-icon{transform:scale(.94)}
-    @media(prefers-color-scheme:light){
-      .nav{
-        background:linear-gradient(180deg,rgba(255,255,255,.70),rgba(255,255,255,.30)),rgba(238,238,242,.50);
-        border-color:rgba(255,255,255,.72);
-        box-shadow:inset 0 1px 0 rgba(255,255,255,.92),inset 0 -1px 0 rgba(110,110,120,.12),0 14px 38px rgba(40,40,55,.16),0 2px 8px rgba(40,40,55,.08)
-      }
-      .nav-liquid{
-        background:linear-gradient(180deg,rgba(255,255,255,.90),rgba(255,255,255,.42)),rgba(255,255,255,.28);
-        border-color:rgba(255,255,255,.88);
-        box-shadow:inset 0 1px 0 #fff,inset 0 -1px 0 rgba(90,90,100,.10),0 5px 16px rgba(70,70,85,.12)
-      }
-    }
-    @media(prefers-reduced-motion:reduce){.nav-liquid,.nav a,.nav-icon{transition:none}}
-    @media(prefers-reduced-transparency:reduce){
-      .nav{background:var(--card2);-webkit-backdrop-filter:none;backdrop-filter:none}
-      .nav-liquid{background:var(--card);box-shadow:none}
-    }
-    @supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
-      .nav{background:rgba(24,24,27,.97)}
-      @media(prefers-color-scheme:light){.nav{background:rgba(248,248,250,.98)}}
+    .section-nav a:active{transform:scale(.96)}
+    @media(prefers-reduced-motion:reduce){
+      .section-nav a{transition:none}
     }
     @media(min-width:721px){.modal{align-items:center}.sheet{max-width:420px;border-radius:20px}}
     @media(max-width:640px){.tiles{grid-template-columns:repeat(2,1fr)}.dim-hint{display:none}.dim-raw{width:48px}.price-big,.price-big input{font-size:38px}.price-big input{width:200px}.score-num{font-size:48px}.health-grid{grid-template-columns:repeat(2,1fr)}.today-title{font-size:22px}}
@@ -235,6 +171,14 @@
     <button class="btn ghost sm" onclick="upHigh()">更新高点</button>
     <button class="btn sm" onclick="nxtMo()">下月</button>
   </div>
+
+  <nav class="section-nav" aria-label="页面分区导航">
+    <a href="#today" class="active" data-section="today" aria-current="page">今日</a>
+    <a href="#valuation" data-section="valuation">估值</a>
+    <a href="#market" data-section="market">市场</a>
+    <a href="#plan" data-section="plan">计划</a>
+    <a href="#holding" data-section="holding">持仓</a>
+  </nav>
 
   <section class="today-card" aria-label="今日行动">
     <div class="today-top">
@@ -381,57 +325,7 @@
   </section>
 </div>
 
-<nav class="nav" aria-label="主导航">
-  <span class="nav-liquid" aria-hidden="true"></span>
 
-  <a href="#today" class="active" data-section="today" aria-current="page" aria-label="今日总览">
-    <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
-      <rect x="4" y="4" width="6" height="6" rx="2"></rect>
-      <rect x="14" y="4" width="6" height="6" rx="2"></rect>
-      <rect x="4" y="14" width="6" height="6" rx="2"></rect>
-      <rect x="14" y="14" width="6" height="6" rx="2"></rect>
-    </svg>
-    <span>今日</span>
-  </a>
-
-  <a href="#valuation" data-section="valuation" aria-label="估值指标">
-    <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M4 19.5V5"></path>
-      <path d="M4 19.5h16"></path>
-      <path d="m7 15 4-4 3 2 5-6"></path>
-      <path d="M16 7h3v3"></path>
-    </svg>
-    <span>估值</span>
-  </a>
-
-  <a href="#market" data-section="market" aria-label="市场体温">
-    <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M3 12h3l2-5 4 10 3-7 2 2h4"></path>
-    </svg>
-    <span>市场</span>
-  </a>
-
-  <a href="#plan" data-section="plan" aria-label="定投计划">
-    <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="m4 6.5 1.7 1.7L9 5"></path>
-      <path d="M11.5 7h8"></path>
-      <path d="m4 12 1.7 1.7L9 10.5"></path>
-      <path d="M11.5 12.5h8"></path>
-      <path d="m4 17.5 1.7 1.7L9 16"></path>
-      <path d="M11.5 18h8"></path>
-    </svg>
-    <span>计划</span>
-  </a>
-
-  <a href="#holding" data-section="holding" aria-label="持仓资产">
-    <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h10A2.5 2.5 0 0 1 19 7.5V9"></path>
-      <path d="M4 7.5v10A2.5 2.5 0 0 0 6.5 20h12A1.5 1.5 0 0 0 20 18.5v-8A1.5 1.5 0 0 0 18.5 9h-12A2.5 2.5 0 0 1 4 6.5"></path>
-      <path d="M16.5 13.5h2"></path>
-    </svg>
-    <span>持仓</span>
-  </a>
-</nav>
 
 <div class="modal" id="em"><div class="sheet">
   <div class="sheet-title">编辑持仓</div>
@@ -597,28 +491,54 @@ function rSig(){const m={lo:"slo",hi:"shi",bl:"sbl",wm:"swm",sp:"ssp",hv:"shv",p
 function pre(t){DM.forEach((_,i)=>$(`d${i}`).value=Math.max(0,Math.min(100,t+Math.round((Math.random()-.5)*10))));calc()}
 function ntf(msg){$("nf").textContent=msg;$("nf").classList.add("on");setTimeout(()=>$("nf").classList.remove("on"),2300)}
 async function tickPrice(){try{const t=await tryFetch("https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT"),p=+t.lastPrice,c=+t.priceChangePercent;if(p>0){S.price=Math.round(p);$("bp").value=S.price;if(document.activeElement!==$("lp"))$("lp").value=S.price;$("pc24").textContent=(c>=0?"+":"")+c.toFixed(2)+"%";$("pc24").className="chg-pill num "+(c>=0?"chg-up":"chg-dn");saveState();trig();upG();sig()}}catch(e){}}
-function initLiquidNav(){
-  const nav=document.querySelector(".nav"),links=[...document.querySelectorAll(".nav a[data-section]")];
-  if(!nav||!links.length)return;
-  let raf=0,current="today";
+function initSectionNav(){
+  const links=[...document.querySelectorAll(".section-nav a[data-section]")];
+  if(!links.length)return;
+
+  let raf=0,current="";
+
   const setActive=id=>{
-    const idx=links.findIndex(a=>a.dataset.section===id);
-    if(idx<0||id===current&&links[idx].classList.contains("active"))return;
-    current=id;nav.style.setProperty("--nav-index",idx);
-    links.forEach((a,i)=>{const on=i===idx;a.classList.toggle("active",on);if(on)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
+    if(id===current)return;
+    current=id;
+    links.forEach(a=>{
+      const on=a.dataset.section===id;
+      a.classList.toggle("active",on);
+      if(on)a.setAttribute("aria-current","page");
+      else a.removeAttribute("aria-current");
+    });
   };
-  links.forEach((a,i)=>a.addEventListener("click",()=>{nav.style.setProperty("--nav-index",i);setActive(a.dataset.section)}));
+
+  links.forEach(a=>{
+    a.addEventListener("click",()=>{
+      setActive(a.dataset.section);
+    });
+  });
+
   const update=()=>{
-    raf=0;const probe=window.scrollY+Math.min(window.innerHeight*.34,260);let id=links[0].dataset.section;
-    links.forEach(a=>{const sec=document.getElementById(a.dataset.section);if(sec&&sec.offsetTop<=probe)id=a.dataset.section});
-    if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-24)id=links.at(-1).dataset.section;
+    raf=0;
+    const probe=window.scrollY+Math.min(window.innerHeight*.32,240);
+    let id=links[0].dataset.section;
+
+    links.forEach(a=>{
+      const sec=document.getElementById(a.dataset.section);
+      if(sec&&sec.offsetTop<=probe)id=a.dataset.section;
+    });
+
+    if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-24){
+      id=links.at(-1).dataset.section;
+    }
+
     setActive(id);
   };
-  window.addEventListener("scroll",()=>{if(!raf)raf=requestAnimationFrame(update)},{passive:true});
+
+  window.addEventListener("scroll",()=>{
+    if(!raf)raf=requestAnimationFrame(update);
+  },{passive:true});
+
   window.addEventListener("resize",update,{passive:true});
-  nav.style.setProperty("--nav-index",0);update();
+  update();
 }
-function init(){buildUI();const nowM=mstr();if(S.month!==nowM){S.month=nowM;S.bud={base:0,pull:0,ext:0};saveState();setTimeout(()=>ntf("新月份 "+nowM+" · 预算已自动重置"),600)}$("cm").textContent=S.month;$("bp").value=S.price;$("rh").value=S.rh;$("lp").value=S.price;S.dims.forEach((v,i)=>$(`d${i}`).value=v);if(!S.sigs.lo){S.sigs.lo=29132;S.sigs.hi=90461}calc();upB();trig();upH2();upG();rl2();rSig();renderMA();if(S.ahr)renderAhr(S.ahr);renderStableCombined();setTweak(!!S.tweak,true);initLiquidNav();const c=readCache(false);if(c){applyLive(c.data);SOURCE_ORDER.forEach(n=>markHealth(n,"cache","15分钟内"));renderHealth();setLiveStatus("ok","缓存数据 · 后台更新");setTimeout(()=>fetchLive(true),350)}else fetchLive(true);setInterval(tickPrice,60000)}
+function init(){buildUI();const nowM=mstr();if(S.month!==nowM){S.month=nowM;S.bud={base:0,pull:0,ext:0};saveState();setTimeout(()=>ntf("新月份 "+nowM+" · 预算已自动重置"),600)}$("cm").textContent=S.month;$("bp").value=S.price;$("rh").value=S.rh;$("lp").value=S.price;S.dims.forEach((v,i)=>$(`d${i}`).value=v);if(!S.sigs.lo){S.sigs.lo=29132;S.sigs.hi=90461}calc();upB();trig();upH2();upG();rl2();rSig();renderMA();if(S.ahr)renderAhr(S.ahr);renderStableCombined();setTweak(!!S.tweak,true);initSectionNav();const c=readCache(false);if(c){applyLive(c.data);SOURCE_ORDER.forEach(n=>markHealth(n,"cache","15分钟内"));renderHealth();setLiveStatus("ok","缓存数据 · 后台更新");setTimeout(()=>fetchLive(true),350)}else fetchLive(true);setInterval(tickPrice,60000)}
 init();
 </script>
 </body>
