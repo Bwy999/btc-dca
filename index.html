@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-title" content="BTC定投" />
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
-  <title>BTC 定投 · V10.4 稳定币当日提醒版</title>
+  <title>BTC 定投 · V10.4.1 自动刷新修复版</title>
   <style>
     :root{
       color-scheme:dark;
@@ -367,7 +367,10 @@ const AHR_A=5.5856,AHR_B=-16.1567,AHR_A0=5.84,AHR_B0=-17.1,BAL_TP=14657,MINER_EF
 let HEALTH={},progActive=false,progN=0,PROG_EST=16,preparedTp=null,priceTimer=null;
 function mstr(){const d=new Date();return d.getFullYear()+"年"+(d.getMonth()+1)+"月"}
 function loadState(){try{return JSON.parse(localStorage.getItem(STATE_KEY))}catch(e){return null}}
-function saveState(){localStorage.setItem(STATE_KEY,JSON.stringify(S))}
+function saveState(){
+  try{localStorage.setItem(STATE_KEY,JSON.stringify(S))}
+  catch(e){console.warn("状态保存不可用",e)}
+}
 let S=loadState()||{price:61800,rh:78000,month:mstr(),dims:[65,60,62,68,60,70,55],bud:{base:0,pull:0,ext:0},log:[],hd:{d:.26,dc:30000,l:0,lc:0},sigs:{},fx:7.1};
 if(!S.bud)S.bud={base:0,pull:0,ext:0};if(!S.log)S.log=[];if(!S.hd)S.hd={d:0,dc:0,l:0,lc:0};if(!S.sigs)S.sigs={};if(S.probMarket!=="90k-active-v1"){S.probMarket="90k-active-v1";S.sigs.pu=0;try{localStorage.removeItem("btc_live_v8")}catch(e){}saveState();}
 function buildUI(){
@@ -994,6 +997,13 @@ function combinedStableStats(){
     last:(u?u.last:0)+(c?c.last:0)
   }
 }
+function liqStateFn(d7){
+  if(d7>=5e9)return{t:"明显扩张",c:"up"};
+  if(d7>=1e9)return{t:"温和扩张",c:"up"};
+  if(d7<=-5e9)return{t:"明显收缩",c:"down"};
+  if(d7<=-1e9)return{t:"温和收缩",c:"down"};
+  return{t:"中性",c:"neutral"};
+}
 function stableDailyAlerts(){
   const out=[];
   [
@@ -1098,6 +1108,17 @@ async function tickPrice(){
     }
   }catch(e){}
 }
+const fetchLiveCore=fetchLive;
+fetchLive=async function(force=false){
+  try{
+    return await fetchLiveCore(force);
+  }catch(e){
+    console.error("数据刷新中断",e);
+    setLiveStatus("","刷新中断 · 点击刷新重试");
+  }finally{
+    if(progActive)progDone();
+  }
+};
 function initSectionNav(){
   const links=[...document.querySelectorAll(".section-nav a[data-section]")];
   if(!links.length)return;
@@ -1145,7 +1166,7 @@ function initSectionNav(){
   window.addEventListener("resize",update,{passive:true});
   update();
 }
-function init(){buildUI();const nowM=mstr();if(S.month!==nowM){S.month=nowM;S.bud={base:0,pull:0,ext:0};saveState();setTimeout(()=>ntf("新月份 "+nowM+" · 预算已自动重置"),600)}$("cm").textContent=S.month;$("bp").value=S.price;$("rh").value=S.rh;$("lp").value=S.price;S.dims.forEach((v,i)=>$(`d${i}`).value=v);if(!S.sigs.lo){S.sigs.lo=29132;S.sigs.hi=90461}calc();upB();trig();upH2();upG();rl2();rSig();renderMA();if(S.ahr)renderAhr(S.ahr);renderStableCombined();setTweak(!!S.tweak,true);initSectionNav();const c=readCache(false);if(c){applyLive(c.data);SOURCE_ORDER.forEach(n=>markHealth(n,"cache","15分钟内"));renderHealth();setLiveStatus("ok","缓存数据 · 后台更新");setTimeout(()=>fetchLive(true),350)}else fetchLive(true);if(!priceTimer)priceTimer=setInterval(tickPrice,60000)}
+function init(){buildUI();const nowM=mstr();if(S.month!==nowM){S.month=nowM;S.bud={base:0,pull:0,ext:0};saveState();setTimeout(()=>ntf("新月份 "+nowM+" · 预算已自动重置"),600)}$("cm").textContent=S.month;$("bp").value=S.price;$("rh").value=S.rh;$("lp").value=S.price;S.dims.forEach((v,i)=>$(`d${i}`).value=v);if(!S.sigs.lo){S.sigs.lo=29132;S.sigs.hi=90461}calc();upB();trig();upH2();upG();rl2();rSig();renderMA();if(S.ahr)renderAhr(S.ahr);try{renderStableCombined()}catch(e){console.error("稳定币卡片初始化失败",e)}setTweak(!!S.tweak,true);initSectionNav();const c=readCache(false);if(c){applyLive(c.data);SOURCE_ORDER.forEach(n=>markHealth(n,"cache","15分钟内"));renderHealth();setLiveStatus("ok","缓存数据 · 后台更新");setTimeout(()=>fetchLive(true),350)}else fetchLive(true);setTimeout(()=>{if($("lupdated").textContent==="等待加载")fetchLive(true)},800);if(!priceTimer)priceTimer=setInterval(tickPrice,60000)}
 init();
 </script>
 </body>
