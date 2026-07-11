@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-title" content="BTC定投" />
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
-  <title>BTC 定投 · V10.6 估值三级兜底版</title>
+  <title>BTC 定投 · V10.8 旧版估值链恢复版</title>
   <style>
     :root{
       color-scheme:dark;
@@ -681,78 +681,182 @@ function readValuationCache(){
   }
   return out;
 }
+
 function valuationStatus(sourceTs,mode){
-  if(!sourceTs)return{
+  const hasDate=!!sourceTs;
+  const isStale=hasDate&&Date.now()-sourceTs>CHAIN_STALE_MS;
+
+  if(mode==="主源"){
+    if(isStale)return{
+      status:"stale",
+      detail:`Coin Metrics · ${staleDetail(sourceTs)}`
+    };
+    return{
+      status:"ok",
+      detail:hasDate
+        ?`Coin Metrics · 数据日 ${formatDataDay(sourceTs)}`
+        :"Coin Metrics · 日期未知"
+    };
+  }
+
+  if(mode==="备用源"){
+    if(isStale)return{
+      status:"stale",
+      detail:`Realized Price备用 · ${staleDetail(sourceTs)}`
+    };
+    return{
+      status:"fallback",
+      detail:hasDate
+        ?`Realized Price备用 · 数据日 ${formatDataDay(sourceTs)}`
+        :"Realized Price备用 · 日期未知"
+    };
+  }
+
+  if(isStale)return{
     status:"stale",
-    detail:`${mode} · 数据日期未知`
-  };
-  if(Date.now()-sourceTs>CHAIN_STALE_MS)return{
-    status:"stale",
-    detail:`${mode} · ${staleDetail(sourceTs)}`
-  };
-  if(mode==="主源")return{
-    status:"ok",
-    detail:`Coin Metrics · 数据日 ${formatDataDay(sourceTs)}`
-  };
-  if(mode==="备用源")return{
-    status:"fallback",
-    detail:`Realized Price备用 · 数据日 ${formatDataDay(sourceTs)}`
+    detail:`估值缓存 · ${staleDetail(sourceTs)}`
   };
   return{
     status:"cache",
-    detail:`估值缓存 · 数据日 ${formatDataDay(sourceTs)}`
+    detail:hasDate
+      ?`估值缓存 · 数据日 ${formatDataDay(sourceTs)}`
+      :"估值缓存 · 日期未知"
   };
 }
-async function fetchRealizedPriceFallback(){
-  const sources=[
-    {
-      name:"Bitcoin Data",
-      url:"https://bitcoin-data.com/v1/realized-price"
-    },
-    {
-      name:"BGeometrics",
-      url:"https://api.bgeometrics.com/v1/realized-price"
-    },
-    {
-      name:"Bitcoin Data",
-      url:"https://bitcoin-data.com/v1/realized_price"
-    }
-  ];
-
+async function tryFetchValuation(url,ms=20000){
+  progStep();
+  const ctl=new AbortController(),
+    tid=setTimeout(()=>ctl.abort(),ms);
   try{
-    const point=await Promise.any(
-      sources.map(src=>
-        tryFetch(src.url,7500).then(res=>{
-          const p=bgPoint(res);
-          if(!p||!(p.v>=5000&&p.v<=300000))throw new Error("invalid realized price");
-          return{
-            v:p.v,
-            sourceTs:p.dataTs||null,
-            source:src.name,
-            cached:false
-          };
-        })
-      )
-    );
-    saveValuationCache({
-      realized:point.v,
-      balanced:Math.round(point.v-BAL_TP),
-      sourceTs:point.sourceTs,
-      source:point.source,
-      mode:"fallback"
+    const r=await fetch(url,{
+      mode:"cors",
+      cache:"no-store",
+      signal:ctl.signal
     });
-    return point;
+    clearTimeout(tid);
+    if(!r.ok)throw new Error(r.status);
+    const ct=r.headers.get("content-type")||"";
+    return ct.includes("json")?r.json():r.text();
+  }catch(e){
+    clearTimeout(tid);
+    throw e;
+  }
+}
+function readLegacyRpCache(){
+  try{
+    const c=JSON.parse(localStorage.getItem("bg2_rp")||"null");
+    if(c&&c.v!=null)return c;
   }catch(e){}
+  return null;
+}
+async function fetchRealizedPriceFallback(){
+  const fresh=readLegacyRpCache();
 
-  const cached=readValuationCache();
-  if(cached.realized!=null){
+  // 完全恢复旧版行为：6小时内优先直接使用 bg2_rp。
+  if(fresh&&Date.now()-fresh.ts<6*3600*1000){
     return{
-      v:+cached.realized,
-      sourceTs:cached.sourceTs||null,
-      source:cached.source||"估值缓存",
-      cached:true
+      v:+fresh.v,
+      sourceTs:fresh.sourceTs||null,
+      source:fresh.source||"旧版 bg2_rp",
+      url:fresh.url||null,
+      cached:true,
+      staleCache:false
     };
   }
+
+  let mem={};
+  try{
+    mem=JSON.parse(localStorage.getItem("bg_ep2")||"{}");
+  }catch(e){}
+
+  const paths=[
+    "https://bitcoin-data.com/v1/realized-price",
+    "https://api.bgeometrics.com/v1/realized-price",
+    "https://bitcoin-data.com/v1/realized_price"
+  ];
+
+  // 与旧版一致：上次成功的端点下一次优先。
+  let order=paths.slice();
+  if(mem.rp){
+    order=[mem.rp].concat(
+      paths.filter(p=>p!==mem.rp)
+    );
+  }
+
+  for(const url of order){
+    try{
+      // 旧版没有短超时；这里放宽到20秒，避免手机代理握手尚未完成就被中断。
+      const res=await tryFetchValuation(url,20000),
+        point=bgPoint(res),
+        value=point&&point.v!=null?point.v:bgLast(res);
+
+      if(value!=null&&value>=5000&&value<=300000){
+        const sourceTs=point&&point.dataTs?point.dataTs:null;
+        const source=url.includes("bgeometrics")
+          ?"BGeometrics"
+          :"Bitcoin Data";
+
+        mem.rp=url;
+        try{
+          localStorage.setItem("bg_ep2",JSON.stringify(mem));
+          localStorage.setItem(
+            "bg2_rp",
+            JSON.stringify({
+              ts:Date.now(),
+              v:value,
+              sourceTs:sourceTs||null,
+              source,
+              url
+            })
+          );
+        }catch(e){}
+
+        saveValuationCache({
+          realized:value,
+          balanced:Math.round(value-BAL_TP),
+          sourceTs:sourceTs||null,
+          source,
+          sourceUrl:url,
+          mode:"legacy-fallback"
+        });
+
+        return{
+          v:value,
+          sourceTs:sourceTs||null,
+          source,
+          url,
+          cached:false,
+          staleCache:false
+        };
+      }
+    }catch(e){}
+  }
+
+  // 网络全部失败后，旧 bg2_rp 即使超过6小时也继续作为沿用值，
+  // 只影响状态标签，不让有效数值消失。
+  if(fresh&&fresh.v!=null){
+    return{
+      v:+fresh.v,
+      sourceTs:fresh.sourceTs||null,
+      source:fresh.source||"旧版 bg2_rp",
+      url:fresh.url||null,
+      cached:true,
+      staleCache:true
+    };
+  }
+
+  const permanent=readValuationCache();
+  if(permanent.realized!=null){
+    return{
+      v:+permanent.realized,
+      sourceTs:permanent.sourceTs||null,
+      source:permanent.source||"永久估值缓存",
+      url:permanent.sourceUrl||null,
+      cached:true,
+      staleCache:true
+    };
+  }
+
   return null;
 }
 
@@ -947,58 +1051,71 @@ async function fetchLive(force=false){
   });
 
   task(async()=>{
-    let cmMvrv=false,cmBalanced=false,cmSourceTs=null;
+    let primaryMvrv=false,
+      primaryRp=false,
+      primaryTs=null;
 
-    // 一级：Coin Metrics 直接指标。
+    // 一级：保持旧版 Coin Metrics 主链。
     try{
       const mv=await tryFetch(
         "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=CapMVRVCur,CapRealUSD,SplyCur&frequency=1d&limit_per_asset=1",
-        9000
+        12000
       );
       const row=mv.data&&mv.data[0];
       if(!row)throw new Error("Coin Metrics empty");
 
-      cmSourceTs=parseDataTs(row.time||row.timestamp||row.date);
+      primaryTs=parseDataTs(
+        row.time||row.timestamp||row.date
+      );
 
       if(row.CapMVRVCur!=null&&+row.CapMVRVCur>0){
         result.mvrv=+row.CapMVRVCur;
-        cmMvrv=true;
-      }
-      if(row.CapRealUSD!=null&&row.SplyCur!=null&&+row.SplyCur>0){
-        result.realized=+row.CapRealUSD/+row.SplyCur;
-        result.balanced=Math.round(result.realized-BAL_TP);
-        cmBalanced=true;
+        primaryMvrv=true;
+        const state=valuationStatus(primaryTs,"主源");
+        markHealth("MVRV",state.status,state.detail);
       }
 
-      if(cmMvrv||cmBalanced){
+      if(
+        row.CapRealUSD!=null&&
+        row.SplyCur!=null&&
+        +row.SplyCur>0
+      ){
+        result.realized=+row.CapRealUSD/+row.SplyCur;
+        result.balanced=Math.round(result.realized-BAL_TP);
+        primaryRp=true;
+        const state=valuationStatus(primaryTs,"主源");
+        markHealth("均衡价",state.status,state.detail);
+      }
+
+      if(primaryMvrv||primaryRp){
         saveValuationCache({
-          ...(cmMvrv?{mvrv:result.mvrv}:{}),
-          ...(cmBalanced?{
+          ...(primaryMvrv?{mvrv:result.mvrv}:{}),
+          ...(primaryRp?{
             realized:result.realized,
             balanced:result.balanced
           }:{}),
-          sourceTs:cmSourceTs,
+          sourceTs:primaryTs||null,
           source:"Coin Metrics",
           mode:"primary"
         });
       }
-
-      const cmState=valuationStatus(cmSourceTs,"主源");
-      if(cmMvrv)markHealth("MVRV",cmState.status,cmState.detail);
-      if(cmBalanced)markHealth("均衡价",cmState.status,cmState.detail);
     }catch(e){}
 
-    // 二级：Realized Price 备用源。
-    if(!cmMvrv||!cmBalanced){
+    // 二级：只要 MVRV 或均衡价任意一个没拿到，就恢复旧版 Realized Price 三端点。
+    if(result.mvrv==null||result.balanced==null){
       const rp=await fetchRealizedPriceFallback();
-      if(rp){
-        const price=result.price||fallback.price||S.price;
-        const mode=rp.cached?"缓存":"备用源";
-        const state=valuationStatus(rp.sourceTs,mode);
 
-        if(!cmBalanced){
+      if(rp&&rp.v>0){
+        if(result.realized==null){
           result.realized=rp.v;
+        }
+
+        if(result.balanced==null){
           result.balanced=Math.round(rp.v-BAL_TP);
+          const state=valuationStatus(
+            rp.sourceTs,
+            rp.cached?"缓存":"备用源"
+          );
           markHealth(
             "均衡价",
             state.status,
@@ -1006,48 +1123,80 @@ async function fetchLive(force=false){
           );
         }
 
-        if(!cmMvrv&&price>0){
-          result.mvrv=price/rp.v;
-          result.mvrvDerived=true;
-          markHealth(
-            "MVRV",
-            state.status,
-            `${rp.source} · 现价÷RP · ${state.detail}`
-          );
+        if(result.mvrv==null){
+          const latestPrice=result.price||fallback.price||S.price;
+          if(latestPrice>0){
+            result.mvrv=latestPrice/rp.v;
+            result.mvrvDerived=true;
+            const state=valuationStatus(
+              rp.sourceTs,
+              rp.cached?"缓存":"备用源"
+            );
+            markHealth(
+              "MVRV",
+              state.status,
+              `${rp.source} · 现价÷RP · ${state.detail}`
+            );
+          }
         }
 
         saveValuationCache({
           ...(result.mvrv!=null?{mvrv:result.mvrv}:{}),
           realized:rp.v,
           balanced:Math.round(rp.v-BAL_TP),
-          sourceTs:rp.sourceTs,
+          sourceTs:rp.sourceTs||null,
           source:rp.source,
-          mode:rp.cached?"cache":"fallback"
+          sourceUrl:rp.url||null,
+          mode:rp.cached?"cache":"legacy-fallback"
         });
       }
     }
 
-    // 三级：永久估值缓存。只有主源和备用源都不可用时才使用。
+    // 三级：永久估值缓存。
     const vc=readValuationCache();
+
     if(result.mvrv==null&&vc.mvrv!=null){
       result.mvrv=+vc.mvrv;
       const state=valuationStatus(vc.sourceTs,"缓存");
-      markHealth("MVRV",state.status,`${vc.source||"估值缓存"} · ${state.detail}`);
+      markHealth(
+        "MVRV",
+        state.status,
+        `${vc.source||"估值缓存"} · ${state.detail}`
+      );
     }
+
     if(result.realized==null&&vc.realized!=null){
       result.realized=+vc.realized;
     }
+
     if(result.balanced==null){
-      if(vc.balanced!=null)result.balanced=+vc.balanced;
-      else if(result.realized!=null)result.balanced=Math.round(result.realized-BAL_TP);
+      if(vc.balanced!=null){
+        result.balanced=+vc.balanced;
+      }else if(result.realized!=null){
+        result.balanced=Math.round(result.realized-BAL_TP);
+      }
+
       if(result.balanced!=null&&!HEALTH["均衡价"]){
         const state=valuationStatus(vc.sourceTs,"缓存");
-        markHealth("均衡价",state.status,`${vc.source||"估值缓存"} · ${state.detail}`);
+        markHealth(
+          "均衡价",
+          state.status,
+          `${vc.source||"估值缓存"} · ${state.detail}`
+        );
       }
     }
 
-    if(result.mvrv==null)carryFields(result,fallback,"MVRV",["mvrv"]);
-    if(result.balanced==null)carryFields(result,fallback,"均衡价",["balanced","realized"]);
+    if(result.mvrv==null){
+      carryFields(result,fallback,"MVRV",["mvrv"]);
+    }
+    if(result.balanced==null){
+      carryFields(
+        result,
+        fallback,
+        "均衡价",
+        ["balanced","realized"]
+      );
+    }
   });
 
   task(async()=>{
