@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-title" content="BTC定投" />
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
-  <title>BTC 定投 · V10.4.1 自动刷新修复版</title>
+  <title>BTC 定投 · V10.5 旧版布局恢复</title>
   <style>
     :root{
       color-scheme:dark;
@@ -53,12 +53,18 @@
     .health summary{list-style:none;padding:11px 13px;font-size:12px;color:var(--tx2);display:flex;justify-content:space-between;cursor:pointer}
     .health summary::-webkit-details-marker{display:none}.health-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--div);border-top:1px solid var(--div)}
     .health-item{background:var(--card);padding:9px 10px}.health-name{font-size:11px;font-weight:700}.health-state{font-size:10px;color:var(--tx3);margin-top:2px}
-    .month-bar{display:flex;align-items:center;gap:10px;padding:14px 16px;background:var(--card);border-radius:14px;margin-top:18px;flex-wrap:wrap}
-    .month-tx{font-size:13px;color:var(--tx2);flex:1;min-width:210px}.month-tx b{color:var(--tx)}
+    .month-bar{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:8px;padding:14px 14px;background:var(--card);border-radius:14px;margin-top:18px}
+    .month-tx{min-width:0;font-size:13px;color:var(--tx2);line-height:1.42}
+    .month-line1,.month-line2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .month-line1 b,.month-line2 b{color:var(--tx)}
+    .month-line1 b{font-weight:800}
+    .month-line2 b{font-weight:800}
+    .month-bar .btn{white-space:nowrap}
+
     .btn{border:0;border-radius:999px;background:var(--gn);color:#000;font-weight:780;padding:12px 22px;cursor:pointer;transition:.15s}
     .btn:active,.chip:active{transform:scale(.97);opacity:.85}.btn.sm{font-size:13px;padding:8px 15px}.btn.ghost{background:transparent;color:var(--tx);border:1px solid var(--div)}
     .btn.danger{background:transparent;color:var(--rd);border:1px solid var(--div)}
-    .today-card{margin-top:18px;padding:18px;border-radius:20px;background:linear-gradient(145deg,var(--card),var(--card2));border:1px solid var(--div);box-shadow:var(--shadow)}
+    .today-card{margin-top:22px;padding:18px;border-radius:20px;background:linear-gradient(145deg,var(--card),var(--card2));border:1px solid var(--div);box-shadow:var(--shadow)}
     .today-top{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.eyebrow{font-size:11px;color:var(--tx2);font-weight:750;letter-spacing:.08em}
     .today-title{font-size:25px;font-weight:820;letter-spacing:-.03em;margin-top:5px}.today-sub{font-size:12px;color:var(--tx2);margin-top:5px;line-height:1.5}
     .today-score{text-align:right;flex:none}.today-score b{font-size:28px;line-height:1}.today-score span{display:block;font-size:10px;color:var(--tx3);margin-top:3px}
@@ -142,7 +148,7 @@
       .section-nav a{transition:none}
     }
     @media(min-width:721px){.modal{align-items:center}.sheet{max-width:420px;border-radius:20px}}
-    @media(max-width:640px){.tiles{grid-template-columns:repeat(2,1fr)}.dim-hint{display:none}.dim-raw{width:48px}.price-big,.price-big input{font-size:38px}.price-big input{width:200px}.score-num{font-size:48px}.health-grid{grid-template-columns:repeat(2,1fr)}.today-title{font-size:22px}}
+    @media(max-width:640px){.month-bar{gap:6px;padding:13px 12px}.month-tx{font-size:12px}.month-bar .btn.sm{padding:8px 12px;font-size:12px}.tiles{grid-template-columns:repeat(2,1fr)}.dim-hint{display:none}.dim-raw{width:48px}.price-big,.price-big input{font-size:38px}.price-big input{width:200px}.score-num{font-size:48px}.health-grid{grid-template-columns:repeat(2,1fr)}.today-title{font-size:22px}}
   </style>
 </head>
 <body>
@@ -171,7 +177,10 @@
   </details>
 
   <div class="month-bar">
-    <div class="month-tx"><b id="cm">--</b> · 锚点 (MA250 + AHR₁) / 2 <b class="num">$<span id="rhd">78,000</span></b></div>
+    <div class="month-tx">
+      <div class="month-line1"><b id="cm">--</b><span> · 锚点</span></div>
+      <div class="month-line2">(MA250 + AHR₁) / 2 <b class="num">$<span id="rhd">78,000</span></b></div>
+    </div>
     <button class="btn ghost sm" onclick="upHigh()">更新高点</button>
     <button class="btn sm" onclick="nxtMo()">下月</button>
   </div>
@@ -184,26 +193,7 @@
     <a href="#holding" data-section="holding">持仓</a>
   </nav>
 
-  <section class="today-card" aria-label="今日行动">
-    <div class="today-top">
-      <div>
-        <div class="eyebrow">今日行动</div>
-        <div class="today-title" id="actionTitle">等待数据</div>
-        <div class="today-sub" id="actionSub">系统会根据估值、预算与回撤档位生成下一步操作。</div>
-      </div>
-      <div class="today-score"><b id="actionScore">--</b><span>综合评分</span></div>
-    </div>
-    <div class="today-kpis">
-      <div class="today-kpi"><small>定投机会</small><b id="oppKpi">--</b></div>
-      <div class="today-kpi"><small>市场风险</small><b id="riskKpi">--</b></div>
-      <div class="today-kpi"><small>数据置信度</small><b id="confKpi">--</b></div>
-    </div>
-    <div class="reason-row" id="actionReasons"></div>
-    <div class="today-actions">
-      <button class="btn" id="actionBtn" onclick="prepareAction()">记录本次买入</button>
-      <button class="btn ghost" onclick="document.getElementById('plan').scrollIntoView()">查看计划</button>
-    </div>
-  </section>
+  
 
   <section class="sec" id="valuation">
     <div class="sec-head-row"><div class="sec-title">综合评分</div><button class="mini-toggle" id="tweakBtn" onclick="toggleTweak()">微调 OFF</button></div>
@@ -312,6 +302,28 @@
     <button class="btn ghost sm" onclick="oe()" style="margin-top:6px">编辑持仓</button>
   </section>
 
+  <section class="today-card" aria-label="今日行动">
+    <div class="today-top">
+      <div>
+        <div class="eyebrow">今日行动</div>
+        <div class="today-title" id="actionTitle">等待数据</div>
+        <div class="today-sub" id="actionSub">系统会根据估值、预算与回撤档位生成下一步操作。</div>
+      </div>
+      <div class="today-score"><b id="actionScore">--</b><span>综合评分</span></div>
+    </div>
+    <div class="today-kpis">
+      <div class="today-kpi"><small>定投机会</small><b id="oppKpi">--</b></div>
+      <div class="today-kpi"><small>市场风险</small><b id="riskKpi">--</b></div>
+      <div class="today-kpi"><small>数据置信度</small><b id="confKpi">--</b></div>
+    </div>
+    <div class="reason-row" id="actionReasons"></div>
+    <div class="today-actions">
+      <button class="btn" id="actionBtn" onclick="prepareAction()">记录本次买入</button>
+      <button class="btn ghost" onclick="document.getElementById('plan').scrollIntoView()">查看计划</button>
+    </div>
+  </section>
+
+
   <div class="divider"></div>
   <section class="sec">
     <div class="sec-title">买入记录</div>
@@ -329,7 +341,6 @@
     <div class="rule"><div class="rule-n">5</div><div class="rule-tx"><b>不动生活备用金</b><span>25% 收入是上限，不临时挪借</span></div></div>
   </section>
 </div>
-
 
 
 <div class="modal" id="em"><div class="sheet">
