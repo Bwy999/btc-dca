@@ -95,8 +95,9 @@
     .liq-right{text-align:right}.liq-state{display:inline-block;font-size:11px;font-weight:750;padding:4px 10px;border-radius:999px;background:var(--card2);color:var(--tx2)}.liq-state.up{background:var(--gn-dim);color:var(--gn)}.liq-state.down{background:var(--rd-dim);color:var(--rd)}
     .liq-row{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--div)}.liq-row:last-child{border-bottom:0;padding-bottom:0}.liq-sym{font-size:14px;font-weight:760;width:52px}.liq-cap-sm{font-size:10px;color:var(--tx3)}
     .liq-spark{flex:1;height:26px;min-width:40px}.liq-alert{font-size:9px;font-weight:850;padding:2px 6px;border-radius:999px;margin-left:5px;background:currentColor;color:var(--bg);vertical-align:2px}.liq-nums{text-align:right;min-width:108px}.liq-d7{font-size:15px;font-weight:760}.liq-mc{font-size:10px;color:var(--tx2);margin-top:2px}
-    .tiles{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}.tile{grid-column:span 2;background:var(--card);border-radius:14px;padding:14px;min-height:132px}.tile.halving{grid-column:span 4}.tile.prob{grid-column:span 3}.tile-name{font-size:11px;color:var(--tx2);font-weight:650;margin-bottom:8px;display:flex;align-items:center;gap:5px}.tile-live{width:5px;height:5px;border-radius:50%;background:var(--gn)}
+    .tiles{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}.tile{grid-column:span 2;background:var(--card);border-radius:14px;padding:14px;min-height:132px}.tile.halving{grid-column:span 4;min-height:160px}.tile.prob{grid-column:span 3}.tile-name{font-size:11px;color:var(--tx2);font-weight:650;margin-bottom:8px;display:flex;align-items:center;gap:5px}.tile-live{width:5px;height:5px;border-radius:50%;background:var(--gn)}
     .tile input{width:100%;background:transparent;border:0;outline:0;color:var(--tx);font-size:24px;font-weight:840;letter-spacing:-.03em;-moz-appearance:textfield}.tile input::-webkit-inner-spin-button,.tile input::-webkit-outer-spin-button{-webkit-appearance:none}.tile-sep{text-align:center;color:var(--tx3);font-size:11px;font-weight:800;padding:5px 0}.tile-status{font-size:12px;font-weight:720;margin-top:8px;min-height:15px}.tile-hint{font-size:10px;color:var(--tx3);margin-top:3px;line-height:1.3}
+    .halving-progress{height:7px;background:var(--div);border-radius:999px;overflow:hidden;margin-top:14px}.halving-progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--gn2),var(--gn));border-radius:inherit;box-shadow:0 0 8px rgba(0,200,5,.35);transition:width .6s ease}.halving-progress-meta{display:flex;justify-content:space-between;gap:10px;margin-top:7px;color:var(--tx2);font-size:10px;font-weight:680}.halving-progress-meta span:last-child{text-align:right}
     .klevel-row{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding-top:15px}.klevel{display:flex;flex-direction:column;gap:2px}.klevel-lbl{font-size:10px;color:var(--tx3);font-weight:650}.klevel-val{font-size:14px;font-weight:760}.kline{flex:1;min-width:80px;height:4px;background:var(--div);border-radius:2px;position:relative}.kdot{position:absolute;top:-4px;width:12px;height:12px;border-radius:50%;background:var(--tx);transform:translateX(-50%);box-shadow:0 1px 4px rgba(0,0,0,.5)}
     .trig{display:flex;align-items:center;gap:13px;padding:14px 0;border-bottom:1px solid var(--div)}.trig:last-child{border-bottom:0}.trig-pct{width:56px;flex:none;font-size:14px;color:var(--tx2);font-weight:650}.trig-price{flex:1;font-size:17px;font-weight:780}.trig-amt{font-size:15px;color:var(--gn);font-weight:760}
     .pill.wait{background:var(--card2);color:var(--tx2)}.pill.fire{background:var(--rd-dim);color:var(--rd);animation:blink 1.2s infinite}.pill.done{background:var(--gn-dim);color:var(--gn)}
@@ -379,6 +380,7 @@ const CACHE_KEY="btc_live_v9",STATE_KEY="btc_exec_v7",CACHE_TTL=30*60*1000,STABL
 const BINANCE_BASES=["https://data-api.binance.vision","https://api-gcp.binance.com","https://api.binance.com"];
 const SLOW_TTL=24*3600*1000,STABLE_TTL=12*3600*1000,STABLE_DATA_STALE_MS=3*86400000,CHAIN_STALE_MS=3*86400000,VALUATION_CACHE_KEY="btc_valuation_cache_v1";
 const POLYMARKET_EVENT_SLUG="what-price-will-bitcoin-hit-before-2027",POLYMARKET_EVENT_END=Date.parse("2027-01-01T00:00:00Z"),POLYMARKET_DOWN_PRICE=50000,POLYMARKET_UP_PRICE=90000,POLYMARKET_YEAR=2026,POLYMARKET_MARKET_KEY=`${POLYMARKET_EVENT_SLUG}|${POLYMARKET_DOWN_PRICE}|${POLYMARKET_UP_PRICE}`;
+const HALVING_INTERVAL=210000,HALVING_BLOCK_MINUTES=10,HALVING_CYCLE_DAYS=HALVING_INTERVAL*HALVING_BLOCK_MINUTES/60/24;
 const AHR_A=5.5856,AHR_B=-16.1567,AHR_A0=5.84,AHR_B0=-17.01,BAL_TP=14657,MINER_EFF_LO=12,MINER_EFF_HI=37.3,ELEC_KWH=.06;
 let HEALTH={},FALLBACK_HEALTH={},progActive=false,progN=0,PROG_EST=16,preparedTp=null,priceTimer=null,fetchInFlight=false,priceTickInFlight=false,lastTickAt=0,lastFullAt=0;
 function mstr(){const d=new Date();return d.getFullYear()+"年"+(d.getMonth()+1)+"月"}
@@ -388,7 +390,7 @@ function saveState(){
   catch(e){console.warn("状态保存不可用",e)}
 }
 let S=loadState()||{price:61800,rh:78000,rhManual:false,month:mstr(),dims:[65,60,62,68,60,70,55],bud:{base:0,pull:0,ext:0},log:[],hd:{d:.26,dc:30000,l:0,lc:0},sigs:{},spark30:[],fx:7.1};
-if(!S.bud)S.bud={base:0,pull:0,ext:0};if(!S.log)S.log=[];if(!S.hd)S.hd={d:0,dc:0,l:0,lc:0};if(!S.sigs)S.sigs={};if(typeof S.rhManual!=="boolean")S.rhManual=false;if(!Array.isArray(S.spark30))S.spark30=[];if(S.probMarket!==POLYMARKET_MARKET_KEY){S.probMarket=POLYMARKET_MARKET_KEY;S.sigs.pb=0;S.sigs.pu=0;saveState();}
+if(!S.bud)S.bud={base:0,pull:0,ext:0};if(!S.log)S.log=[];if(!S.hd)S.hd={d:0,dc:0,l:0,lc:0};if(!S.sigs)S.sigs={};if(!S.halving)S.halving={};if(typeof S.rhManual!=="boolean")S.rhManual=false;if(!Array.isArray(S.spark30))S.spark30=[];if(S.probMarket!==POLYMARKET_MARKET_KEY){S.probMarket=POLYMARKET_MARKET_KEY;S.sigs.pb=0;S.sigs.pu=0;saveState();}
 function buildUI(){
   $("dims").innerHTML=DN.map((n,i)=>`<div class="dim"><div class="dim-info"><div class="dim-name">${n}</div><div class="dim-meta"><span class="dim-live" id="ds${i}">LIVE</span> · ${DW[i]}</div></div><input class="dim-slider" type="range" min="0" max="100" value="${S.dims[i]}" id="d${i}" oninput="calc()"><div class="dim-raw num" id="r${i}"></div><div class="dim-val num" id="v${i}">${S.dims[i]}</div><div class="dim-hint" id="h${i}"></div></div>`).join("");
   const tiles=[
@@ -400,7 +402,7 @@ function buildUI(){
     [`跌破 $${POLYMARKET_DOWN_PRICE/1000}K 概率`,"spb",null,`${POLYMARKET_YEAR}年内市场隐含概率 %`,"0.1"],
     [`突破 $${POLYMARKET_UP_PRICE/1000}K 概率`,"spu",null,`${POLYMARKET_YEAR}年内 · 未关闭市场 %`,"0.1"]
   ];
-  $("tiles").innerHTML=tiles.map((t,i)=>{let inp=`<input id="${t[1]}" type="number" ${t[4]?`step="${t[4]}"`:""} oninput="sig()">`;if(t[2])inp+=`<div class="tile-sep">至</div><input id="${t[2]}" type="number" oninput="sig()">`;const cls=i===4?" halving":i>=5?" prob":"";return `<div class="tile${cls}"><div class="tile-name"><span class="tile-live"></span>${t[0]}</div>${inp}<div class="tile-status" id="ss${i}"></div><div class="tile-hint">${t[3]}</div></div>`}).join("");
+  $("tiles").innerHTML=tiles.map((t,i)=>{let inp=`<input id="${t[1]}" type="number" ${t[4]?`step="${t[4]}"`:""} oninput="sig()">`;if(t[2])inp+=`<div class="tile-sep">至</div><input id="${t[2]}" type="number" oninput="sig()">`;const cls=i===4?" halving":i>=5?" prob":"",progress=i===4?'<div class="halving-progress" role="progressbar" aria-label="本轮比特币减半周期进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="halving-progress-fill" id="halvingProgressFill"></div></div><div class="halving-progress-meta"><span id="halvingProgressPct">周期进度 --</span><span id="halvingProgressRemain">剩余 --</span></div>':"";return `<div class="tile${cls}"><div class="tile-name"><span class="tile-live"></span>${t[0]}</div>${inp}<div class="tile-status" id="ss${i}"></div>${progress}<div class="tile-hint">${t[3]}</div></div>`}).join("");
 }
 function readCache(allowStale=false){try{const c=JSON.parse(localStorage.getItem(CACHE_KEY));if(!c)return null;if(allowStale||Date.now()-c.ts<CACHE_TTL)return c}catch(e){}return null}
 function cacheAge(ts){if(!(ts>0))return"时间未知";const ms=Math.max(0,Date.now()-ts);if(ms<60000)return"刚刚";if(ms<3600000)return Math.floor(ms/60000)+"分钟前";if(ms<86400000)return Math.floor(ms/3600000)+"小时前";return Math.floor(ms/86400000)+"天前"}
@@ -557,6 +559,10 @@ function getFallbackData(){
     if(d.shutHi==null&&S.sigs.hi)d.shutHi=S.sigs.hi;
     if(d.prob50==null&&S.probMarket===POLYMARKET_MARKET_KEY&&S.sigs.pb)d.prob50=S.sigs.pb;
     if(d.prob90==null&&S.probMarket===POLYMARKET_MARKET_KEY&&S.sigs.pu)d.prob90=S.sigs.pu;
+  }
+  if(S.halving){
+    if(d.halvingProgress==null&&S.halving.progress!=null)d.halvingProgress=S.halving.progress;
+    if(d.halvingBlocksLeft==null&&S.halving.blocksLeft!=null)d.halvingBlocksLeft=S.halving.blocksLeft;
   }
   if(d.usdtSeries==null&&S.stbU)d.usdtSeries=S.stbU;
   if(d.usdcSeries==null&&S.stbC)d.usdcSeries=S.stbC;
@@ -1048,10 +1054,13 @@ async function fetchLive(force=false){
       const bh=await tryFetch("https://mempool.space/api/blocks/tip/height",9000),
         height=+bh,nh=height<840000?840000:height<1050000?1050000:1260000;
       if(!(height>0))throw new Error("bad height");
-      result.halvingDays=Math.ceil((nh-height)*10/60/24);
-      markHealth("减半","ok","mempool.space");
+      const blocksLeft=nh-height,cycleStart=nh-HALVING_INTERVAL;
+      result.halvingDays=Math.ceil(blocksLeft*HALVING_BLOCK_MINUTES/60/24);
+      result.halvingBlocksLeft=blocksLeft;
+      result.halvingProgress=Math.min(100,Math.max(0,(height-cycleStart)/HALVING_INTERVAL*100));
+      markHealth("减半","ok","mempool.space · 区块进度");
     }catch(e){
-      carryFields(result,fallback,"减半",["halvingDays"]);
+      carryFields(result,fallback,"减半",["halvingDays","halvingBlocksLeft","halvingProgress"]);
     }
 
     try{
@@ -1410,7 +1419,7 @@ function applyLive(d){
   if(d.wma200&&d.wma200ratio){const sc=wma200ToSc(d.wma200ratio);$("d1").value=sc;$("r1").textContent=d.wma200ratio.toFixed(2)+"x";S.dims[1]=sc;$("swm").value=Math.round(d.wma200);$("kp2").textContent="$"+Math.round(d.wma200/1000)+"K"}
   if(d.mvrv){const sc=mvrvToSc(d.mvrv);$("d2").value=sc;$("r2").textContent=d.mvrv.toFixed(2)+"x";S.dims[2]=sc}
   if(d.fgi!=null){const sc=fgiToSc(d.fgi);$("d3").value=sc;$("r3").textContent=d.fgi;S.dims[3]=sc}
-  if(d.halvingDays)$("shv").value=d.halvingDays;
+  if(d.halvingDays){$("shv").value=d.halvingDays;S.halving={days:d.halvingDays,progress:d.halvingProgress,blocksLeft:d.halvingBlocksLeft}}
   if(d.shutLo&&d.shutHi){$("slo").value=d.shutLo;$("shi").value=d.shutHi}
   if(d.prob50!=null)$("spb").value=d.prob50;
   if(d.prob90!=null)$("spu").value=d.prob90;
@@ -1587,7 +1596,8 @@ function upHigh(){S.rh=S.price;S.rhManual=true;$("rh").value=S.price;updateAncho
 function nxtMo(){if(!confirm("切换下个月？本月预算执行额将重置，历史买入记录保留。"))return;const d=new Date();d.setMonth(d.getMonth()+1);S.month=d.getFullYear()+"年"+(d.getMonth()+1)+"月";S.bud={base:0,pull:0,ext:0};$("cm").textContent=S.month;saveState();upB();renderAction();ntf("已切换新月份")}
 function oe(){const h=S.hd;[$("ed0").value,$("ed1").value,$("ed2").value,$("ed3").value]=[h.d,h.dc,h.l,h.lc];$("ed4").value=S.fx||7.1;$("em").style.display="flex"}function ce(){$("em").style.display="none"}function se(){S.hd={d:+$("ed0").value||0,dc:+$("ed1").value||0,l:+$("ed2").value||0,lc:+$("ed3").value||0};S.fx=+$("ed4").value||7.1;saveState();upH2();ce();ntf("持仓已更新")}
 function sst(id,tx,cl){const e=$(id);if(e){e.textContent=tx;e.style.color=cl}}
-function sig(){const curp=S.price,lo=+$("slo").value||0,hi=+$("shi").value||0,bl=+$("sbl").value||0,wm=+$("swm").value||0,sp=+$("ssp").value||0,hv=+$("shv").value||0,pb=+$("spb").value||0,pu=+$("spu").value||0;if(lo&&hi){const bel=curp<lo,abv=curp>hi,pcm=Math.round(Math.min(100,Math.max(0,(hi-curp)/(hi-lo)*100)));sst("ss0",bel?"全网亏损 极端底":abv?"矿工全面盈利":`约${pcm}% 矿机承压`,bel?"var(--gn)":abv?"var(--tx2)":pcm>60?"var(--rd)":"var(--or)");$("kp0").textContent="$"+(lo/1000).toFixed(0)+"K"}if(bl){const r=curp/bl;sst("ss1",r<1?"极低估":r<1.5?`${r.toFixed(2)}x 合理`:r<2.5?`${r.toFixed(2)}x 偏高`:`${r.toFixed(2)}x 高估`,r<1?"var(--gn)":r<1.5?"var(--yl)":r<2.5?"var(--or)":"var(--rd)");$("kp1").textContent="$"+(bl/1000).toFixed(0)+"K"}if(wm){const r=curp/wm;sst("ss2",r<1?"历史底部区":r<1.5?`${r.toFixed(2)}x 正常`:r<2.5?`${r.toFixed(2)}x 偏高`:`${r.toFixed(2)}x 高估`,r<1?"var(--gn)":r<1.5?"var(--yl)":r<2.5?"var(--or)":"var(--rd)");$("kp2").textContent="$"+(wm/1000).toFixed(0)+"K"}if(sp)sst("ss3",sp<.97?"深度投降 买入":sp<1?"轻度投降":sp<1.05?"获利了结":"顶部信号",sp<.97?"var(--gn)":sp<1?"var(--yl)":sp<1.05?"var(--tx2)":"var(--rd)");if(hv)sst("ss4",hv+" 天"+(hv>500?" · 尚早":hv>180?" · 接近":" · 冲刺"),hv>500?"var(--tx2)":hv>180?"var(--yl)":"var(--gn)");if(pb)sst("ss5",pb<10?"低概率":pb<25?"中等概率":pb<40?"较高概率":"高概率",pb<10?"var(--gn)":pb<25?"var(--yl)":pb<40?"var(--or)":"var(--rd)");if(pu)sst("ss6",pu<15?"突破渺茫":pu<35?"低概率":pu<55?"五五开":"看涨升温",pu<15?"var(--rd)":pu<35?"var(--or)":pu<55?"var(--yl)":"var(--gn)");$("kp3").textContent="$"+curp.toLocaleString();const all=[lo,bl,wm,curp].filter(v=>v>0);if(all.length>1){const mn=Math.min(...all)*.92,mx=Math.max(...all)*1.05;$("pd").style.left=Math.min(100,Math.max(0,(curp-mn)/(mx-mn)*100))+"%"}S.sigs={lo,hi,bl,wm,sp,hv,pb,pu};saveState();renderAction()}
+function renderHalvingProgress(days){const bar=$("halvingProgressFill"),pctEl=$("halvingProgressPct"),remainEl=$("halvingProgressRemain"),track=bar&&bar.parentElement;if(!bar||!pctEl||!remainEl)return;const exact=S.halving&&Math.abs((S.halving.days||0)-days)<=1&&Number.isFinite(S.halving.progress),pct=Math.min(100,Math.max(0,exact?S.halving.progress:(1-days/HALVING_CYCLE_DAYS)*100)),blocks=exact&&S.halving.blocksLeft>0?Math.round(S.halving.blocksLeft):null;bar.style.width=pct.toFixed(1)+"%";pctEl.textContent="本轮已完成 "+pct.toFixed(1)+"%";remainEl.textContent=blocks?"剩余 "+blocks.toLocaleString()+" 区块":"剩余 "+Math.round(days)+" 天";if(track)track.setAttribute("aria-valuenow",pct.toFixed(1))}
+function sig(){const curp=S.price,lo=+$("slo").value||0,hi=+$("shi").value||0,bl=+$("sbl").value||0,wm=+$("swm").value||0,sp=+$("ssp").value||0,hv=+$("shv").value||0,pb=+$("spb").value||0,pu=+$("spu").value||0;if(lo&&hi){const bel=curp<lo,abv=curp>hi,pcm=Math.round(Math.min(100,Math.max(0,(hi-curp)/(hi-lo)*100)));sst("ss0",bel?"全网亏损 极端底":abv?"矿工全面盈利":`约${pcm}% 矿机承压`,bel?"var(--gn)":abv?"var(--tx2)":pcm>60?"var(--rd)":"var(--or)");$("kp0").textContent="$"+(lo/1000).toFixed(0)+"K"}if(bl){const r=curp/bl;sst("ss1",r<1?"极低估":r<1.5?`${r.toFixed(2)}x 合理`:r<2.5?`${r.toFixed(2)}x 偏高`:`${r.toFixed(2)}x 高估`,r<1?"var(--gn)":r<1.5?"var(--yl)":r<2.5?"var(--or)":"var(--rd)");$("kp1").textContent="$"+(bl/1000).toFixed(0)+"K"}if(wm){const r=curp/wm;sst("ss2",r<1?"历史底部区":r<1.5?`${r.toFixed(2)}x 正常`:r<2.5?`${r.toFixed(2)}x 偏高`:`${r.toFixed(2)}x 高估`,r<1?"var(--gn)":r<1.5?"var(--yl)":r<2.5?"var(--or)":"var(--rd)");$("kp2").textContent="$"+(wm/1000).toFixed(0)+"K"}if(sp)sst("ss3",sp<.97?"深度投降 买入":sp<1?"轻度投降":sp<1.05?"获利了结":"顶部信号",sp<.97?"var(--gn)":sp<1?"var(--yl)":sp<1.05?"var(--tx2)":"var(--rd)");if(hv){sst("ss4",hv+" 天"+(hv>500?" · 尚早":hv>180?" · 接近":" · 冲刺"),hv>500?"var(--tx2)":hv>180?"var(--yl)":"var(--gn)");renderHalvingProgress(hv)}if(pb)sst("ss5",pb<10?"低概率":pb<25?"中等概率":pb<40?"较高概率":"高概率",pb<10?"var(--gn)":pb<25?"var(--yl)":pb<40?"var(--or)":"var(--rd)");if(pu)sst("ss6",pu<15?"突破渺茫":pu<35?"低概率":pu<55?"五五开":"看涨升温",pu<15?"var(--rd)":pu<35?"var(--or)":pu<55?"var(--yl)":"var(--gn)");$("kp3").textContent="$"+curp.toLocaleString();const all=[lo,bl,wm,curp].filter(v=>v>0);if(all.length>1){const mn=Math.min(...all)*.92,mx=Math.max(...all)*1.05;$("pd").style.left=Math.min(100,Math.max(0,(curp-mn)/(mx-mn)*100))+"%"}S.sigs={lo,hi,bl,wm,sp,hv,pb,pu};saveState();renderAction()}
 function rSig(){const m={lo:"slo",hi:"shi",bl:"sbl",wm:"swm",sp:"ssp",hv:"shv",pb:"spb",pu:"spu"};Object.keys(m).forEach(k=>{const e=$(m[k]);if(e&&S.sigs&&S.sigs[k]!=null)e.value=S.sigs[k]});sig()}
 function pre(t){DM.forEach((_,i)=>$(`d${i}`).value=Math.max(0,Math.min(100,t+Math.round((Math.random()-.5)*10))));calc()}
 function ntf(msg){$("nf").textContent=msg;$("nf").classList.add("on");setTimeout(()=>$("nf").classList.remove("on"),2300)}
