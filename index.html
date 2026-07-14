@@ -1,4 +1,5 @@
 <!doctype html>
+<!-- BUILD: BTC-DCA-V11.0.1-MINER-UI-20260714 -->
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -9,7 +10,7 @@
   <meta name="apple-mobile-web-app-title" content="BTC定投" />
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
-  <title>BTC 定投 · V11.0 决策系统版</title>
+  <title>BTC 定投 · V11.0 专业定投版</title>
   <style>
     :root{
       color-scheme:dark;
@@ -97,6 +98,7 @@
     .liq-spark{flex:1;height:26px;min-width:40px}.liq-alert{font-size:9px;font-weight:850;padding:2px 6px;border-radius:999px;margin-left:5px;background:currentColor;color:var(--bg);vertical-align:2px}.liq-nums{text-align:right;min-width:108px}.liq-d7{font-size:15px;font-weight:760}.liq-mc{font-size:10px;color:var(--tx2);margin-top:2px}
     .tiles{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}.tile{grid-column:span 2;background:var(--card);border-radius:14px;padding:14px;min-height:132px}.tile.halving{grid-column:span 4}.tile.prob{grid-column:span 3}.tile.lth-nupl{grid-column:span 6;min-height:154px}.tile-name{font-size:11px;color:var(--tx2);font-weight:650;margin-bottom:8px;display:flex;align-items:center;gap:5px}.tile-live{width:5px;height:5px;border-radius:50%;background:var(--gn)}
     .tile input{width:100%;background:transparent;border:0;outline:0;color:var(--tx);font-size:24px;font-weight:840;letter-spacing:-.03em;-moz-appearance:textfield}.tile input::-webkit-inner-spin-button,.tile input::-webkit-outer-spin-button{-webkit-appearance:none}.tile-sep{text-align:center;color:var(--tx3);font-size:11px;font-weight:800;padding:5px 0}.tile-status{font-size:12px;font-weight:720;margin-top:8px;min-height:15px}.tile-hint{font-size:10px;color:var(--tx3);margin-top:3px;line-height:1.3}
+    .miner-tile{display:flex;flex-direction:column}.miner-head{display:flex;align-items:center;justify-content:space-between;gap:6px}.miner-head .tile-name{margin-bottom:0;white-space:nowrap}.miner-pressure{min-height:0;margin:0;padding:3px 6px;border-radius:999px;background:var(--card2);font-size:9px;font-weight:800;white-space:nowrap}.miner-values{display:flex;align-items:flex-start;gap:5px;margin-top:13px}.miner-end{display:block;min-width:0;flex:1;cursor:text}.miner-input-wrap{position:relative;display:block;height:27px}.miner-display{display:block;font-size:21px;font-weight:840;letter-spacing:-.04em;line-height:27px;white-space:nowrap}.miner-end.right{text-align:right}.tile .miner-input-wrap input{position:absolute;inset:0;width:100%;height:27px;padding:0;opacity:0;z-index:1;background:var(--card);font-size:17px;line-height:27px}.tile .miner-end.right input{text-align:right}.miner-end:focus-within .miner-display{opacity:0}.tile .miner-input-wrap input:focus{opacity:1}.miner-end small{display:block;margin-top:2px;color:var(--tx3);font-size:8px;font-weight:650;white-space:nowrap}.miner-dash{flex:none;color:var(--tx3);font-size:13px;font-weight:800;line-height:27px}.miner-scale{position:relative;margin-top:13px;padding-bottom:18px}.miner-track{position:relative;height:5px;border-radius:999px;background:linear-gradient(90deg,rgba(0,200,5,.72),rgba(255,159,10,.72))}.miner-dot{position:absolute;top:50%;left:50%;width:13px;height:13px;border:3px solid var(--card);border-radius:50%;background:var(--tx);box-shadow:0 1px 5px rgba(0,0,0,.4);transform:translate(-50%,-50%);transition:left .35s ease}.miner-now{position:absolute;top:9px;left:50%;transform:translateX(-50%);color:var(--gn);font-size:8px;font-weight:800;white-space:nowrap;transition:left .35s ease}.miner-tile .tile-hint{margin-top:auto}
     .halving-track{height:6px;background:var(--div);border-radius:999px;overflow:hidden;margin-top:12px}.halving-fill{height:100%;width:0;background:linear-gradient(90deg,var(--gn2),var(--gn));border-radius:999px;transition:width .4s ease}.halving-meta{display:flex;justify-content:space-between;gap:12px;margin-top:7px;color:var(--tx2);font-size:10px;font-weight:700}.halving-meta span:last-child{text-align:right}
     .lth-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px}.lth-head input{max-width:180px;font-size:30px}.lth-head .tile-status{text-align:right;margin:0;max-width:260px}.lth-scale{position:relative;height:14px;margin-top:16px}.lth-track{position:absolute;left:0;right:0;top:4px;height:6px;border-radius:999px;background:linear-gradient(90deg,var(--rd) 0 13.33%,var(--or) 13.33% 40%,var(--yl) 40% 66.67%,var(--gn2) 66.67% 100%);opacity:.82}.lth-line{position:absolute;top:0;width:1px;height:14px;background:var(--tx3);transform:translateX(-50%)}.lth-line.deep{left:13.33%;background:var(--rd)}.lth-line.zero{left:33.33%;width:2px;background:var(--tx)}.lth-line.early{left:40%;background:var(--or)}.lth-cursor{position:absolute;top:-2px;left:33.33%;width:18px;height:18px;border:3px solid var(--card);border-radius:50%;background:var(--tx);box-shadow:0 1px 7px rgba(0,0,0,.45);transform:translateX(-50%);transition:left .35s ease}.lth-labels{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:5px;color:var(--tx3);font-size:9px;font-weight:650}.lth-labels span:nth-child(2){text-align:center}.lth-labels span:last-child{text-align:right}
     .klevel-row{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding-top:15px}.klevel{display:flex;flex-direction:column;gap:2px}.klevel-lbl{font-size:10px;color:var(--tx3);font-weight:650}.klevel-val{font-size:14px;font-weight:760}.kline{flex:1;min-width:80px;height:4px;background:var(--div);border-radius:2px;position:relative}.kdot{position:absolute;top:-4px;width:12px;height:12px;border-radius:50%;background:var(--tx);transform:translateX(-50%);box-shadow:0 1px 4px rgba(0,0,0,.5)}
@@ -107,7 +109,7 @@
     .form-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;padding:18px 0 6px}.field{display:flex;flex-direction:column;gap:5px}.field-lbl{font-size:11px;color:var(--tx2);font-weight:650}.field input,.field select{background:var(--card);border:0;outline:0;color:var(--tx);font-size:15px;font-weight:650;padding:11px 13px;border-radius:12px;-webkit-appearance:none;appearance:none}
     .trig-hdr{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--tx2);padding:4px 0 12px}.trig-hdr input{background:var(--card);border:0;outline:0;color:var(--tx);padding:8px 11px;border-radius:10px;width:110px;font-weight:650}.drop-badge{font-weight:750}
     .holds{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hold{background:var(--card);border-radius:14px;padding:14px}.hold-lbl{font-size:11px;color:var(--tx2);font-weight:650;margin-bottom:5px}.hold-val{font-size:17px;font-weight:780}.hold-sub{font-size:11px;color:var(--tx3);margin-top:3px}.goal{padding:18px 0 4px}.goal-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}.goal-lbl{font-size:13px;color:var(--tx2)}.goal-pct{font-size:14px;font-weight:760;color:var(--gn)}
-    .chart-card{position:relative;background:var(--card);border:1px solid var(--div);border-radius:18px;padding:14px;overflow:hidden}.chart-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}.chart-live{min-width:0;font-size:11px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chart-ranges{display:flex;gap:4px;flex:none}.chart-range{border:0;border-radius:999px;padding:6px 9px;background:var(--card2);color:var(--tx2);font-size:10px;font-weight:800}.chart-range.on{background:var(--gn);color:#000}.chart-legend{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:3px 0 10px;color:var(--tx2);font-size:9px;font-weight:700}.legend-item{display:inline-flex;align-items:center;gap:4px}.legend-swatch{width:13px;height:2px;border-radius:2px;background:currentColor}.chart-shell{position:relative;min-height:360px}.pro-chart{width:100%;height:360px}.personal-shell{min-height:286px}.personal-chart{width:100%;height:286px}.chart-empty{position:absolute;inset:0;display:none;place-items:center;text-align:center;color:var(--tx3);font-size:12px;line-height:1.5;background:var(--card);z-index:3}.chart-empty.on{display:grid}.halving-vline{display:none;position:absolute;top:28px;bottom:28px;width:1px;border-left:1px dashed var(--or);pointer-events:none;z-index:2}.halving-vline span{position:absolute;top:-23px;left:5px;color:var(--or);font-size:9px;font-weight:800;white-space:nowrap}.personal-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}.personal-kpi{padding:10px;border-radius:12px;background:rgba(127,127,127,.08)}.personal-kpi small{display:block;color:var(--tx2);font-size:9px}.personal-kpi b{display:block;margin-top:3px;font-size:14px}.personal-note{font-size:10px;color:var(--tx3);margin-top:9px;line-height:1.45}
+    .chart-card{position:relative;background:var(--card);border:1px solid var(--div);border-radius:18px;padding:14px;overflow:hidden}.chart-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}.chart-live{min-width:0;font-size:11px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chart-legend{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:3px 0 10px;color:var(--tx2);font-size:9px;font-weight:700}.legend-item{display:inline-flex;align-items:center;gap:4px}.legend-swatch{width:13px;height:2px;border-radius:2px;background:currentColor}.chart-shell{position:relative;min-height:360px}.personal-shell{min-height:286px}.personal-chart{width:100%;height:286px}.chart-empty{position:absolute;inset:0;display:none;place-items:center;text-align:center;color:var(--tx3);font-size:12px;line-height:1.5;background:var(--card);z-index:3}.chart-empty.on{display:grid}.personal-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}.personal-kpi{padding:10px;border-radius:12px;background:rgba(127,127,127,.08)}.personal-kpi small{display:block;color:var(--tx2);font-size:9px}.personal-kpi b{display:block;margin-top:3px;font-size:14px}.personal-note{font-size:10px;color:var(--tx3);margin-top:9px;line-height:1.45}
     .log-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--div)}.log-icon{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:760;flex:none}.li-base{background:var(--gn-dim);color:var(--gn)}.li-pull{background:rgba(74,158,255,.12);color:var(--blue)}.li-ext{background:var(--rd-dim);color:var(--rd)}.log-main{flex:1}.log-t1{font-size:14px;font-weight:680}.log-t2{font-size:11px;color:var(--tx2);margin-top:2px}.log-amt{font-size:15px;font-weight:760}.log-empty{text-align:center;color:var(--tx3);font-size:13px;padding:28px 0}
     .rule{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--div)}.rule:last-child{border-bottom:0}.rule-n{width:28px;height:28px;border-radius:50%;background:var(--card2);color:var(--gn);display:grid;place-items:center;font-size:13px;font-weight:760;flex:none}.rule-tx{font-size:14px;line-height:1.5}.rule-tx span{display:block;color:var(--tx2);font-size:13px;margin-top:1px}
     .modal{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);align-items:flex-end;justify-content:center}.sheet{background:var(--card);width:100%;max-width:720px;border-radius:20px 20px 0 0;padding:24px 20px calc(34px + env(safe-area-inset-bottom))}.sheet-title{font-size:18px;font-weight:780;margin-bottom:18px}.sheet .field{margin-bottom:14px}.sheet .field input{width:100%;background:var(--card2)}
@@ -153,7 +155,7 @@
       .section-nav a{transition:none}
     }
     @media(min-width:721px){.modal{align-items:center}.sheet{max-width:420px;border-radius:20px}}
-    @media(max-width:640px){.month-bar{gap:6px;padding:13px 12px}.month-tx{font-size:12px}.month-bar .btn.sm{padding:8px 12px;font-size:12px}.tiles{grid-template-columns:repeat(2,1fr)}.tile{grid-column:span 1}.tile.halving{grid-column:span 2}.tile.prob{grid-column:span 1}.tile.lth-nupl{grid-column:span 2}.lth-head{align-items:flex-start;flex-direction:column;gap:2px}.lth-head .tile-status{text-align:left}.dim-hint{display:none}.dim-raw{width:48px}.price-big,.price-big input{font-size:38px}.price-big input{width:200px}.price-spark-wrap{width:100%;height:34px;margin-left:0}.score-num{font-size:48px}.health-grid{grid-template-columns:repeat(2,1fr)}.today-title{font-size:22px}.chart-card{padding:11px}.chart-shell,.pro-chart{height:320px;min-height:320px}.personal-shell,.personal-chart{height:260px;min-height:260px}.chart-legend{gap:7px}.personal-kpis{gap:6px}.personal-kpi{padding:9px 8px}.personal-kpi b{font-size:12px}}
+    @media(max-width:640px){.month-bar{gap:6px;padding:13px 12px}.month-tx{font-size:12px}.month-bar .btn.sm{padding:8px 12px;font-size:12px}.tiles{grid-template-columns:repeat(2,1fr)}.tile{grid-column:span 1}.tile.halving{grid-column:span 2}.tile.prob{grid-column:span 1}.tile.lth-nupl{grid-column:span 2}.lth-head{align-items:flex-start;flex-direction:column;gap:2px}.lth-head .tile-status{text-align:left}.dim-hint{display:none}.dim-raw{width:48px}.price-big,.price-big input{font-size:38px}.price-big input{width:200px}.price-spark-wrap{width:100%;height:34px;margin-left:0}.score-num{font-size:48px}.health-grid{grid-template-columns:repeat(2,1fr)}.today-title{font-size:22px}.chart-card{padding:11px}.personal-shell,.personal-chart{height:260px;min-height:260px}.chart-legend{gap:7px}.personal-kpis{gap:6px}.personal-kpi{padding:9px 8px}.personal-kpi b{font-size:12px}}
   </style>
 </head>
 <body>
@@ -274,13 +276,27 @@
     <div class="sec-sub">周期模型与2026年内活跃市场隐含概率 · 已过滤关闭市场</div>
     <!-- 核心市场体温区：原七项指标永久保留；LTH-NUPL 作为第八项追加，图表不得替代指标。 -->
     <div class="tiles" id="tiles">
-      <div class="tile">
-        <div class="tile-name"><span class="tile-live"></span>关机价区间</div>
-        <input id="slo" type="number" inputmode="decimal" placeholder="--" oninput="sig()" aria-label="关机低价" />
-        <div class="tile-sep">至</div>
-        <input id="shi" type="number" inputmode="decimal" placeholder="--" oninput="sig()" aria-label="关机高价" />
-        <div class="tile-status" id="ss0"></div>
-        <div class="tile-hint">算力实时推算 · $0.06/kWh</div>
+      <div class="tile miner-tile">
+        <div class="miner-head">
+          <div class="tile-name"><span class="tile-live"></span>关机价区间</div>
+          <div class="miner-pressure" id="ss0"></div>
+        </div>
+        <div class="miner-values">
+          <label class="miner-end" for="slo">
+            <span class="miner-input-wrap"><span class="miner-display num" id="sloFmt">--</span><input id="slo" type="number" inputmode="decimal" placeholder="--" oninput="sig()" aria-label="高效矿机关机价" /></span>
+            <small>高效矿机</small>
+          </label>
+          <span class="miner-dash">—</span>
+          <label class="miner-end right" for="shi">
+            <span class="miner-input-wrap"><span class="miner-display num" id="shiFmt">--</span><input id="shi" type="number" inputmode="decimal" placeholder="--" oninput="sig()" aria-label="低效矿机关机价" /></span>
+            <small>低效矿机</small>
+          </label>
+        </div>
+        <div class="miner-scale" aria-label="当前价格在关机价区间中的位置">
+          <div class="miner-track"><span class="miner-dot" id="minerDot"></span></div>
+          <div class="miner-now num" id="minerNow">当前 --</div>
+        </div>
+        <div class="tile-hint">按实时算力推算 · 电价 $0.06/kWh</div>
       </div>
       <div class="tile">
         <div class="tile-name"><span class="tile-live"></span>均衡价格</div>
@@ -475,23 +491,24 @@ const DAILY_KEY="btc_daily_v1";
 const BINANCE_BASES=["https://data-api.binance.vision","https://api-gcp.binance.com","https://api.binance.com"];
 const SLOW_TTL=24*3600*1000,STABLE_TTL=12*3600*1000,STABLE_DATA_STALE_MS=3*86400000,CHAIN_STALE_MS=3*86400000,VALUATION_CACHE_KEY="btc_valuation_cache_v1";
 const POLYMARKET_EVENT_SLUG="what-price-will-bitcoin-hit-before-2027",POLYMARKET_EVENT_END=Date.parse("2027-01-01T00:00:00Z"),POLYMARKET_DOWN_PRICE=50000,POLYMARKET_UP_PRICE=90000,POLYMARKET_YEAR=2026,POLYMARKET_MARKET_KEY=`${POLYMARKET_EVENT_SLUG}|${POLYMARKET_DOWN_PRICE}|${POLYMARKET_UP_PRICE}`;
-const AHR_A=5.5856,AHR_B=-16.1567,AHR_A0=5.84,AHR_B0=-17.01,BAL_TP=14657,MINER_EFF_LO=12,MINER_EFF_HI=37.3,ELEC_KWH=.06,HALVING_2024_TS=1713571200;
-let HEALTH={},FALLBACK_HEALTH={},progActive=false,progN=0,PROG_EST=17,preparedTp=null,priceTimer=null,fetchInFlight=false,priceTickInFlight=false,lastTickAt=0,lastFullAt=0,decisionChart=null,decisionSeries=null,decisionDataKey="",personalChart=null,personalSeries=null,personalMarkers=null;
-let DAILY=[],decisionMarkers=null,personalDataKey="",decisionDefaultLabel="",personalDefaultLabel="",onPTimer=null;
+const AHR_A=5.5856,AHR_B=-16.1567,AHR_A0=5.84,AHR_B0=-17.01,BAL_TP=14657,MINER_EFF_LO=12,MINER_EFF_HI=37.3,ELEC_KWH=.06;
+let HEALTH={},FALLBACK_HEALTH={},progActive=false,progN=0,PROG_EST=17,preparedTp=null,priceTimer=null,fetchInFlight=false,priceTickInFlight=false,lastTickAt=0,lastFullAt=0,personalChart=null,personalSeries=null,personalMarkers=null;
+let DAILY=[],personalDataKey="",personalDefaultLabel="",onPTimer=null;
 function mstr(){const d=new Date();return d.getFullYear()+"年"+(d.getMonth()+1)+"月"}
 function loadState(){try{return JSON.parse(localStorage.getItem(STATE_KEY))}catch(e){return null}}
 function saveState(){
   try{localStorage.setItem(STATE_KEY,JSON.stringify(S))}
   catch(e){console.warn("状态保存不可用",e)}
 }
-let S=loadState()||{price:61800,rh:78000,rhManual:false,month:mstr(),dims:[65,60,62,68,60,70,55],bud:{base:0,pull:0,ext:0},log:[],hd:{d:.26,dc:30000,l:0,lc:0},sigs:{},spark30:[],chartDays:0,fx:7.1};
-if(!S.bud)S.bud={base:0,pull:0,ext:0};if(!S.log)S.log=[];if(!S.hd)S.hd={d:0,dc:0,l:0,lc:0};if(!S.sigs)S.sigs={};if(typeof S.rhManual!=="boolean")S.rhManual=false;if(!Array.isArray(S.spark30))S.spark30=[];if(![0,365,1095].includes(+S.chartDays))S.chartDays=0;if(S.probMarket!==POLYMARKET_MARKET_KEY){S.probMarket=POLYMARKET_MARKET_KEY;S.sigs.pb=0;S.sigs.pu=0;saveState();}
+let S=loadState()||{price:61800,rh:78000,rhManual:false,month:mstr(),dims:[65,60,62,68,60,70,55],bud:{base:0,pull:0,ext:0},log:[],hd:{d:.26,dc:30000,l:0,lc:0},sigs:{},spark30:[],fx:7.1};
+if(!S.bud)S.bud={base:0,pull:0,ext:0};if(!S.log)S.log=[];if(!S.hd)S.hd={d:0,dc:0,l:0,lc:0};if(!S.sigs)S.sigs={};if(typeof S.rhManual!=="boolean")S.rhManual=false;if(!Array.isArray(S.spark30))S.spark30=[];if(S.probMarket!==POLYMARKET_MARKET_KEY){S.probMarket=POLYMARKET_MARKET_KEY;S.sigs.pb=0;S.sigs.pu=0;saveState();}
 try{DAILY=JSON.parse(localStorage.getItem(DAILY_KEY))||[]}catch(e){DAILY=[]}
 if(!Array.isArray(DAILY))DAILY=[];
 if(!DAILY.length&&Array.isArray(S.daily)&&S.daily.length)DAILY=S.daily;
 if(!DAILY.length){try{const c=JSON.parse(localStorage.getItem(CACHE_KEY));if(c&&c.data&&Array.isArray(c.data.daily))DAILY=c.data.daily}catch(e){}}
 if(DAILY.length){try{localStorage.setItem(DAILY_KEY,JSON.stringify(DAILY))}catch(e){}}
 if(S.daily!==undefined){delete S.daily;saveState()}
+if(S.chartDays!==undefined){delete S.chartDays;saveState()}
 function buildUI(){
   $("dims").innerHTML=DN.map((n,i)=>`<div class="dim"><div class="dim-info"><div class="dim-name">${n}</div><div class="dim-meta"><span class="dim-live" id="ds${i}">LIVE</span> · ${DW[i]}</div></div><input class="dim-slider" type="range" min="0" max="100" value="${S.dims[i]}" id="d${i}" oninput="calc()"><div class="dim-raw num" id="r${i}"></div><div class="dim-val num" id="v${i}">${S.dims[i]}</div><div class="dim-hint" id="h${i}"></div></div>`).join("");
 }
@@ -556,7 +573,7 @@ function parseDataTs(v){
     if(n>1e9)return n*1000;
     return null;
   }
-  const t=Date.parse(v);
+  const t=Date.parse(String(v).replace(/\.(\d{3})\d+(?=Z)/,'.$1'));
   return Number.isFinite(t)?t:null;
 }
 function bgPoint(res){
@@ -1560,7 +1577,7 @@ function pendingTriggers(){return TR.filter(t=>S.price<=S.rh*(1-t.p)&&!triggerDo
 function nextWaitingTrigger(){return TR.find(t=>!triggerDone(t.p)&&S.price>S.rh*(1-t.p))||null}
 function autoAnchorValue(){const a=[];if(S.mas&&S.mas.m250)a.push(S.mas.m250);if(S.ahr&&S.ahr.p1)a.push(S.ahr.p1);return a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):null}
 function updateAnchorMode(){const mode=$("rhMode"),source=$("rhSourceLabel"),reset=$("anchorAuto");if(mode)mode.textContent=S.rhManual?"手动锚点":"(MA250 + AHR₁) / 2";if(source)source.textContent=S.rhManual?"手动锁定":"MA250·AHR999 均值";if(reset)reset.hidden=!S.rhManual}
-function syncAutoAnchor(){if(!S.rhManual){const v=autoAnchorValue();if(v>0){S.rh=v;$("rh").value=v}}updateAnchorMode()}
+function syncAutoAnchor(){if(!S.rhManual){const v=autoAnchorValue();if(v>0){S.rh=v;if(document.activeElement!==$("rh"))$("rh").value=v}}updateAnchorMode()}
 function setManualAnchor(){S.rhManual=true;updateAnchorMode();trig()}
 function useAutoAnchor(){S.rhManual=false;syncAutoAnchor();trig();saveState();ntf("已恢复自动锚点")}
 function renderPriceDerived(){
@@ -1599,13 +1616,12 @@ function renderAction(){
 }
 function prepareAction(){const plan=currentActionPlan();if(plan.kind==="trigger"){const t=plan.trigger;preparedTp=t.p;$("la").value=t.a;$("ltype").value=t.k;$("lp").value=S.price;$("buyForm").scrollIntoView({behavior:"smooth",block:"center"});ntf(`已填入跌${Math.round(t.p*100)}%档 ¥${t.a}`)}else if(plan.kind==="base"){preparedTp=null;$("la").value=plan.amount;$("ltype").value="base";$("lp").value=S.price;$("buyForm").scrollIntoView({behavior:"smooth",block:"center"});ntf(`已填入第 ${plan.pace.index}/${plan.pace.parts} 笔基础定投`)}else if(plan.kind==="health"){const p=$("healthPanel");p.open=true;p.scrollIntoView({behavior:"smooth",block:"center"});ntf("数据恢复前不提示回撤加仓")}else if(plan.kind==="wait"){$("plan").scrollIntoView({behavior:"smooth",block:"start"});ntf("当前基础定投节奏已完成")}else{$("lb2").scrollIntoView({behavior:"smooth"})}}
 function onP(){S.price=+$("bp").value||0;$("lp").value=S.price;clearTimeout(onPTimer);onPTimer=setTimeout(renderPriceDerived,300)}
-function trig(){const hi=+$("rh").value||78000;S.rh=hi;$("rhd").textContent=hi.toLocaleString();const cur=S.price,dp=hi>0?(hi-cur)/hi*100:0;$("cp").textContent="现价 $"+cur.toLocaleString();$("dp2").textContent=dp>0?"-"+dp.toFixed(1)+"%":"+"+Math.abs(dp).toFixed(1)+"%";$("dp2").style.color=dp>0?"var(--rd)":"var(--gn)";$("tb").innerHTML=TR.map(t=>{const tp=Math.round(hi*(1-t.p)),fire=cur<=tp,done=triggerDone(t.p),pill=done?'<span class="pill done">已执行</span>':fire?'<span class="pill fire">触发</span>':'<span class="pill wait">等待</span>';return `<div class="trig"><div class="trig-pct">跌${Math.round(t.p*100)}%</div><div class="trig-price num" style="${fire&&!done?"color:var(--rd)":""}">$${tp.toLocaleString()}</div><div class="trig-amt num">¥${t.a}</div>${pill}</div>`}).join("");saveState();upB();renderAction()}
+function trig(){const v=+$("rh").value,hi=v>0?v:(S.rh>0?S.rh:78000);S.rh=hi;$("rhd").textContent=hi.toLocaleString();const cur=S.price,dp=hi>0?(hi-cur)/hi*100:0;$("cp").textContent="现价 $"+cur.toLocaleString();$("dp2").textContent=dp>0?"-"+dp.toFixed(1)+"%":"+"+Math.abs(dp).toFixed(1)+"%";$("dp2").style.color=dp>0?"var(--rd)":"var(--gn)";$("tb").innerHTML=TR.map(t=>{const tp=Math.round(hi*(1-t.p)),fire=cur<=tp,done=triggerDone(t.p),pill=done?'<span class="pill done">已执行</span>':fire?'<span class="pill fire">触发</span>':'<span class="pill wait">等待</span>';return `<div class="trig"><div class="trig-pct">跌${Math.round(t.p*100)}%</div><div class="trig-price num" style="${fire&&!done?"color:var(--rd)":""}">$${tp.toLocaleString()}</div><div class="trig-amt num">¥${t.a}</div>${pill}</div>`}).join("");saveState();upB();renderAction()}
 function upB(){const b=S.bud;$("u0").textContent=b.base;$("u1").textContent=b.pull;$("u2").textContent=b.ext;$("b0").style.width=Math.min(100,b.base/10)+"%";$("b1").style.width=Math.min(100,b.pull/7)+"%";$("b2").style.width=Math.min(100,b.ext/3)+"%";const p=pendingTriggers();$("pendingPull").textContent="¥"+p.filter(t=>t.k==="pull").reduce((a,t)=>a+t.a,0);$("pendingExt").textContent="¥"+p.filter(t=>t.k==="ext").reduce((a,t)=>a+t.a,0)}
 function upH2(){const h=S.hd;$("hd").textContent=h.d.toFixed(4)+" BTC";const pnl=h.dc>0&&S.price>0?(S.price/h.dc-1)*100:null;$("hdc").innerHTML="均价 $"+Number(h.dc).toLocaleString()+(pnl==null?"":` · <span style="color:${pnl>=0?"var(--gn)":"var(--rd)"};font-weight:700">${pnl>=0?"+":""}${pnl.toFixed(1)}%</span>`);$("hl").textContent=h.l.toFixed(4)+" BTC";$("hlc").textContent="均价 $"+Number(h.lc).toLocaleString()}
 function renderAhr(a){if(!a||!a.v)return;const v=a.v,z=v<.45?{t:"抄底区 · 加倍囤",c:"var(--gn)"}:v<1.2?{t:"定投区 · 照常买",c:"var(--gn2)"}:v<5?{t:"观望区 · 降低投入",c:"var(--or)"}:{t:"高危区 · 分批止盈",c:"var(--rd)"};$("ahrBig").textContent=v.toFixed(3);$("ahrBig").style.color=z.c;$("ahrZone").textContent=z.t;$("ahrZone").style.color=z.c;if(a.c)$("ahrC").textContent=a.c.toFixed(3);if(a.pl)$("ahrPL").textContent="$"+Math.round(a.pl/1000)+"K";if(a.dma)$("ahrDMA").textContent="$"+Math.round(a.dma/1000)+"K";const lg=(Math.log(Math.min(12,Math.max(.2,v)))-Math.log(.2))/(Math.log(12)-Math.log(.2))*100;$("ahrCur").style.left=lg.toFixed(1)+"%";if(a.dma&&a.pl){const p045=Math.sqrt(.45*a.dma*a.pl),p1=a.p1||Math.sqrt(a.dma*a.pl),p12=Math.sqrt(1.2*a.dma*a.pl),cpv=S.price;const row=(lbl,px,desc)=>{const below=cpv<=px,dd=(cpv-px)/px*100,pill=below?'<span class="pill done">已低于</span>':`<span class="pill wait">上方 +${dd.toFixed(1)}%</span>`;return `<div class="trig"><div class="trig-pct" style="width:92px">${lbl}</div><div class="trig-price num">$${Math.round(px).toLocaleString()}<span style="font-size:11px;color:var(--tx3);font-weight:500"> ${desc}</span></div>${pill}</div>`};$("ahrLadder").innerHTML=row("AHR = 0.45",p045,"抄底线")+row("AHR = 1.00",p1,"锚点成分")+row("AHR = 1.20",p12,"定投区上沿")}}
 function chartTheme(){const c=getComputedStyle(document.documentElement),v=n=>c.getPropertyValue(n).trim();return{card:v("--card"),tx:v("--tx"),tx2:v("--tx2"),div:v("--div"),gn:v("--gn"),rd:v("--rd")}}
 function chartDay(ts){return new Date(ts*1000).toLocaleDateString("zh-CN",{year:"numeric",month:"2-digit",day:"2-digit"})}
-function shortUsd(v){if(!(v>=0))return"--";return v>=1000000?"$"+(v/1000000).toFixed(2)+"M":v>=1000?"$"+(v/1000).toFixed(1)+"K":"$"+v.toFixed(0)}
 function shortCny(v){if(!(v>=0))return"--";return v>=1000000?"¥"+(v/1000000).toFixed(2)+"M":v>=10000?"¥"+(v/10000).toFixed(2)+"万":"¥"+Math.round(v).toLocaleString()}
 function normalizedDaily(){
   const rows=(DAILY||[]).map(r=>({time:+r[0]>1e12?Math.floor(+r[0]/1000):Math.floor(+r[0]),open:+r[1],high:+r[2],low:+r[3],close:+r[4]})).filter(r=>r.time>0&&r.open>0&&r.high>0&&r.low>0&&r.close>0).sort((a,b)=>a.time-b.time),out=[];
@@ -1613,67 +1629,7 @@ function normalizedDaily(){
   const last=out.at(-1);if(last&&S.price>0&&Date.now()/1000-last.time<172800){last.close=S.price;last.high=Math.max(last.high,S.price);last.low=Math.min(last.low,S.price)}
   return out;
 }
-function rollingMA(data,n){let sum=0;const out=[];data.forEach((d,i)=>{sum+=d.close;if(i>=n)sum-=data[i-n].close;if(i>=n-1)out.push({time:d.time,value:sum/n})});return out}
-function ahrPriceLines(data){
-  let inv=0;const p045=[],p1=[],p12=[],genesis=Date.UTC(2009,0,3);
-  data.forEach((d,i)=>{inv+=1/d.close;if(i>=200)inv-=1/data[i-200].close;if(i<199)return;const hm=200/inv,days=Math.floor((d.time*1000-genesis)/86400000);if(!(hm>0&&days>0))return;const pl=Math.pow(10,AHR_A*Math.log10(days)+AHR_B),base=Math.sqrt(hm*pl);p045.push({time:d.time,value:base*Math.sqrt(.45)});p1.push({time:d.time,value:base});p12.push({time:d.time,value:base*Math.sqrt(1.2)})});
-  return{p045,p1,p12};
-}
-function makeDecisionChart(){
-  if(decisionChart||!window.LightweightCharts)return;
-  const LC=LightweightCharts,t=chartTheme(),el=$("decisionChart");
-  decisionChart=LC.createChart(el,{autoSize:true,layout:{background:{type:LC.ColorType.Solid,color:t.card},textColor:t.tx2,fontFamily:getComputedStyle(document.body).fontFamily,attributionLogo:true},grid:{vertLines:{color:t.div},horzLines:{color:t.div}},rightPriceScale:{mode:LC.PriceScaleMode.Logarithmic,borderColor:t.div,scaleMargins:{top:.08,bottom:.08}},timeScale:{borderColor:t.div,timeVisible:false,secondsVisible:false,rightOffset:2,barSpacing:5,minBarSpacing:.5,lockVisibleTimeRangeOnResize:true},crosshair:{mode:LC.CrosshairMode.Normal},kineticScroll:{touch:true,mouse:true},localization:{locale:"zh-CN",priceFormatter:v=>shortUsd(v)}});
-  decisionSeries={
-    candle:decisionChart.addSeries(LC.CandlestickSeries,{upColor:t.gn,downColor:t.rd,borderVisible:false,wickUpColor:t.gn,wickDownColor:t.rd,priceLineVisible:true,lastValueVisible:true}),
-    ma51:decisionChart.addSeries(LC.LineSeries,{color:"#4a9eff",lineWidth:1,priceLineVisible:false,lastValueVisible:false}),
-    ma120:decisionChart.addSeries(LC.LineSeries,{color:"#ffd60a",lineWidth:1,priceLineVisible:false,lastValueVisible:false}),
-    ma250:decisionChart.addSeries(LC.LineSeries,{color:"#ff9f0a",lineWidth:2,priceLineVisible:false,lastValueVisible:false}),
-    ma850:decisionChart.addSeries(LC.LineSeries,{color:"#af52de",lineWidth:2,priceLineVisible:false,lastValueVisible:false}),
-    p045:decisionChart.addSeries(LC.LineSeries,{color:"#00c805",lineWidth:2,lineStyle:LC.LineStyle.Dashed,priceLineVisible:false,lastValueVisible:false}),
-    p1:decisionChart.addSeries(LC.LineSeries,{color:"#7bd88f",lineWidth:1,lineStyle:LC.LineStyle.Dotted,priceLineVisible:false,lastValueVisible:false}),
-    p12:decisionChart.addSeries(LC.LineSeries,{color:"#ff5000",lineWidth:1,lineStyle:LC.LineStyle.Dashed,priceLineVisible:false,lastValueVisible:false})
-  };
-  decisionChart.subscribeCrosshairMove(p=>{if(!p.time){$("decisionChartLive").textContent=decisionDefaultLabel;return}const d=p.seriesData.get(decisionSeries.candle);if(d)$("decisionChartLive").textContent=`${chartDay(+p.time)} · O ${shortUsd(d.open)}  H ${shortUsd(d.high)}  L ${shortUsd(d.low)}  C ${shortUsd(d.close)}`});
-  decisionChart.timeScale().subscribeVisibleTimeRangeChange(()=>requestAnimationFrame(positionHalvingLine));
-  window.addEventListener("resize",()=>requestAnimationFrame(positionHalvingLine),{passive:true});
-}
-function positionHalvingLine(){const line=$("halvingVLine");if(!decisionChart||!line)return;const x=decisionChart.timeScale().timeToCoordinate(HALVING_2024_TS),w=$("decisionChart").clientWidth;if(x==null||x<0||x>w){line.style.display="none";return}line.style.display="block";line.style.left=x+"px"}
-function setDecisionRange(days,persist=true){
-  days=+days||0;S.chartDays=days;document.querySelectorAll(".chart-range").forEach(b=>b.classList.toggle("on",+b.dataset.days===days));
-  const d=normalizedDaily();if(decisionChart&&d.length){const last=d.at(-1).time,first=d[0].time;if(days>0&&last-first>days*86400)decisionChart.timeScale().setVisibleRange({from:last-days*86400,to:last});else decisionChart.timeScale().fitContent();setTimeout(positionHalvingLine,60)}
-  if(persist)saveState();
-}
-function renderDecisionChart(){
-  const data=normalizedDaily(),empty=$("decisionChartEmpty");if(data.length<50||!window.LightweightCharts){empty.classList.add("on");empty.textContent=window.LightweightCharts?"日线数据不足，刷新后重试":"图表组件加载失败";return}empty.classList.remove("on");makeDecisionChart();if(!decisionSeries)return;
-  const key=`${data.length}|${data[0].time}|${data.at(-1).time}`;
-  if(key!==decisionDataKey){
-    decisionDataKey=key;
-    decisionSeries.candle.setData(data);
-    decisionSeries.ma51.setData(rollingMA(data,51));
-    decisionSeries.ma120.setData(rollingMA(data,120));
-    decisionSeries.ma250.setData(rollingMA(data,250));
-    decisionSeries.ma850.setData(rollingMA(data,850));
-    const bands=ahrPriceLines(data);
-    decisionSeries.p045.setData(bands.p045);
-    decisionSeries.p1.setData(bands.p1);
-    decisionSeries.p12.setData(bands.p12);
-    updateDecisionMarkers();
-    decisionDefaultLabel=`${chartDay(data.at(-1).time)} · ${data.length} 根日线 · 对数轴`;
-    $("decisionChartLive").textContent=decisionDefaultLabel;
-    setDecisionRange(S.chartDays,false);
-  }else{
-    decisionSeries.candle.update(data.at(-1));
-    requestAnimationFrame(positionHalvingLine);
-  }
-}
 function logTimestamp(l,i){if(+l.ts>0)return+l.ts;const mo=String(l.mo||"").match(/(\d{4})年(\d{1,2})月/),n=String(l.dt||"").match(/\d+/g)||[];if(mo&&n.length>=2){const y=+mo[1],m=+n[0]||+mo[2],d=+n[1]||1,h=+n[2]||12,mi=+n[3]||0,ts=new Date(y,m-1,d,h,mi).getTime();if(ts>0)return ts}return Date.now()-i*86400000}
-function updateDecisionMarkers(){
-  if(!decisionSeries||!window.LightweightCharts)return;
-  const cmap={base:"#00c805",pull:"#4a9eff",ext:"#ff5000"};
-  const mk=S.log.map((l,i)=>({time:Math.floor(logTimestamp(l,i)/1000/86400)*86400,position:"belowBar",color:cmap[l.t]||"#00c805",shape:"arrowUp",text:""})).sort((a,b)=>a.time-b.time);
-  if(!decisionMarkers)decisionMarkers=LightweightCharts.createSeriesMarkers(decisionSeries.candle,mk);
-  else decisionMarkers.setMarkers(mk);
-}
 function personalCurveData(){
   const logs=S.log.map((l,i)=>({...l,time:Math.floor(logTimestamp(l,i)/1000),a:+l.a||0,b:+l.b||0,p:+l.p||0})).filter(l=>l.time>0&&l.a>0&&l.b>0).sort((a,b)=>a.time-b.time);if(!logs.length)return null;
   const px=normalizedDaily().map(d=>({time:d.time,close:d.close})),today=Math.floor(Date.now()/86400000)*86400;if(!px.length)logs.forEach(l=>px.push({time:Math.floor(l.time/86400)*86400,close:l.p||S.price}));if(!px.length||px.at(-1).time<today)px.push({time:today,close:S.price||px.at(-1).close});else if(px.at(-1).time===today&&S.price>0)px.at(-1).close=S.price;
@@ -1807,6 +1763,7 @@ function upHigh(){S.rh=S.price;S.rhManual=true;$("rh").value=S.price;updateAncho
 function nxtMo(){if(!confirm("切换下个月？本月预算执行额将重置，历史买入记录保留。"))return;const d=new Date();d.setMonth(d.getMonth()+1);S.month=d.getFullYear()+"年"+(d.getMonth()+1)+"月";S.bud={base:0,pull:0,ext:0};$("cm").textContent=S.month;saveState();upB();renderAction();ntf("已切换新月份")}
 function oe(){const h=S.hd;[$("ed0").value,$("ed1").value,$("ed2").value,$("ed3").value]=[h.d,h.dc,h.l,h.lc];$("ed4").value=S.fx||7.1;$("em").style.display="flex"}function ce(){$("em").style.display="none"}function se(){S.hd={d:+$("ed0").value||0,dc:+$("ed1").value||0,l:+$("ed2").value||0,lc:+$("ed3").value||0};S.fx=+$("ed4").value||7.1;saveState();upH2();renderPersonalChart();ce();ntf("持仓已更新")}
 function sst(id,tx,cl){const e=$(id);if(e){e.textContent=tx;e.style.color=cl}}
+function fmtPriceK(v){if(!(v>0))return"--";return v>=1000000?"$"+(v/1000000).toFixed(2)+"M":"$"+(v/1000).toFixed(1)+"K"}
 function renderHalvingProgress(hv){
   const fill=$("halvingProgress"),pctEl=$("halvingPct"),blocksEl=$("halvingBlocks");if(!fill||!pctEl||!blocksEl)return 0;
   if(!(hv>0)){fill.style.width="0%";pctEl.textContent="本轮已完成 --";blocksEl.textContent="剩余 -- 区块";return 0}
@@ -1822,7 +1779,7 @@ function renderLthNupl(v){
 }
 function sig(){
   const lthRaw=$("slth").value,lth=lthRaw===""?null:+lthRaw,curp=S.price,lo=+$("slo").value||0,hi=+$("shi").value||0,bl=+$("sbl").value||0,wm=+$("swm").value||0,sp=+$("ssp").value||0,hv=+$("shv").value||0,pb=+$("spb").value||0,pu=+$("spu").value||0;
-  if(lo&&hi){const bel=curp<lo,abv=curp>hi,pcm=Math.round(Math.min(100,Math.max(0,(hi-curp)/(hi-lo)*100)));sst("ss0",bel?"全网亏损 极端底":abv?"矿工全面盈利":`约${pcm}% 矿机承压`,bel?"var(--gn)":abv?"var(--tx2)":pcm>60?"var(--rd)":"var(--or)");$("kp0").textContent="$"+(lo/1000).toFixed(0)+"K"}
+  if(lo&&hi){const bel=curp<lo,abv=curp>hi,span=Math.max(1,hi-lo),pos=Math.min(100,Math.max(0,(curp-lo)/span*100)),labelPos=Math.min(78,Math.max(22,pos)),pcm=Math.round(Math.min(100,Math.max(0,(hi-curp)/span*100)));sst("ss0",bel?"全网亏损":abv?"全面盈利":`约${pcm}%承压`,bel?"var(--gn)":abv?"var(--tx2)":pcm>60?"var(--rd)":"var(--or)");$("sloFmt").textContent=fmtPriceK(lo);$("shiFmt").textContent=fmtPriceK(hi);$("minerDot").style.left=pos.toFixed(1)+"%";$("minerNow").style.left=labelPos.toFixed(1)+"%";$("minerNow").textContent="当前 "+fmtPriceK(curp);$("kp0").textContent="$"+(lo/1000).toFixed(0)+"K"}
   if(bl){const r=curp/bl;sst("ss1",r<1?"极低估":r<1.5?`${r.toFixed(2)}x 合理`:r<2.5?`${r.toFixed(2)}x 偏高`:`${r.toFixed(2)}x 高估`,r<1?"var(--gn)":r<1.5?"var(--yl)":r<2.5?"var(--or)":"var(--rd)");$("kp1").textContent="$"+(bl/1000).toFixed(0)+"K"}
   if(wm){const r=curp/wm;sst("ss2",r<1?"历史底部区":r<1.5?`${r.toFixed(2)}x 正常`:r<2.5?`${r.toFixed(2)}x 偏高`:`${r.toFixed(2)}x 高估`,r<1?"var(--gn)":r<1.5?"var(--yl)":r<2.5?"var(--or)":"var(--rd)");$("kp2").textContent="$"+(wm/1000).toFixed(0)+"K"}
   if(sp)sst("ss3",sp<.97?"深度投降 买入":sp<1?"轻度投降":sp<1.05?"获利了结":"顶部信号",sp<.97?"var(--gn)":sp<1?"var(--yl)":sp<1.05?"var(--tx2)":"var(--rd)");
@@ -1838,6 +1795,8 @@ function pre(t){DM.forEach((_,i)=>$(`d${i}`).value=Math.max(0,Math.min(100,t+Mat
 function ntf(msg){$("nf").textContent=msg;$("nf").classList.add("on");setTimeout(()=>$("nf").classList.remove("on"),2300)}
 async function tickPrice(){
   if(priceTickInFlight)return;
+  const nowM=mstr();
+  if(S.month!==nowM){S.month=nowM;S.bud={base:0,pull:0,ext:0};$("cm").textContent=nowM;saveState();upB();renderAction();ntf("新月份 "+nowM+" · 预算已自动重置")}
   priceTickInFlight=true;
   try{
     const t=await binanceFetch("/api/v3/ticker/24hr?symbol=BTCUSDT",6000),
