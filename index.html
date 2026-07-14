@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BUILD: BTC-DCA-V12.0.0-20260714 -->
+<!-- BUILD: BTC-DCA-V13.0.0-20260714 -->
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -7,11 +7,11 @@
   <meta name="color-scheme" content="dark light" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="BTC定投" />
-  <meta name="btc-dca-build" content="12.0.0-20260714" />
+  <meta name="apple-mobile-web-app-title" content="BTC看板" />
+  <meta name="btc-dca-build" content="13.0.0-20260714" />
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
-  <title>BTC 定投 · V12.0 数据主权版</title>
+  <title>BTC 状态看板 · V13.0</title>
   <style>
     :root{
       color-scheme:dark;
@@ -78,6 +78,10 @@
     .reason-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}.reason{font-size:10px;font-weight:700;padding:5px 9px;border-radius:999px;background:var(--gn-dim);color:var(--gn)}
     .reason.neutral{background:var(--card2);color:var(--tx2)}.reason.warn{background:rgba(255,159,10,.12);color:var(--or)}
     .today-actions{display:flex;gap:9px;margin-top:15px}.today-actions .btn{flex:1}.today-actions .btn.ghost{flex:0 0 auto}
+    .fresh-badge{display:inline-flex;align-items:center;gap:4px;margin-left:auto;padding:3px 7px;border-radius:999px;background:var(--card2);color:var(--tx3);font-size:8px;font-weight:800;line-height:1;white-space:nowrap}.fresh-badge.good{background:var(--gn-dim);color:var(--gn)}.fresh-badge.warn{background:rgba(255,159,10,.12);color:var(--or)}.fresh-badge.bad{background:var(--rd-dim);color:var(--rd)}
+    .delta-section{margin-top:24px}.delta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.delta-card{min-width:0;padding:12px;border-radius:14px;background:var(--card);border:1px solid var(--div)}.delta-card small{display:block;color:var(--tx2);font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.delta-card b{display:block;margin-top:5px;font-size:17px;font-weight:800}.delta-card span{display:block;margin-top:3px;color:var(--tx3);font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.delta-note{margin-top:9px;padding:10px 12px;border-radius:12px;background:rgba(127,127,127,.07);color:var(--tx2);font-size:10px;line-height:1.45}
+    .fund-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}.fund-card{min-width:0;padding:14px;border-radius:14px;background:var(--card);border:1px solid var(--div)}.fund-head{display:flex;align-items:center;gap:5px;color:var(--tx2);font-size:10px;font-weight:700}.fund-value{margin-top:9px;font-size:23px;font-weight:820;letter-spacing:-.03em}.fund-state{margin-top:5px;font-size:11px;font-weight:720}.fund-hint{margin-top:3px;color:var(--tx3);font-size:9px;line-height:1.35}.subsection-title{display:flex;align-items:center;gap:8px;margin:18px 0 9px;font-size:14px;font-weight:780}
+    .personal-zone{margin-top:34px;border:1px solid var(--div);border-radius:20px;background:var(--card);overflow:hidden;scroll-margin-top:20px}.personal-zone>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px;cursor:pointer}.personal-zone>summary::-webkit-details-marker{display:none}.personal-zone>summary b{display:block;font-size:17px}.personal-zone>summary small{display:block;margin-top:3px;color:var(--tx2);font-size:10px;font-weight:550}.personal-zone>summary>span:last-child{color:var(--gn);font-size:11px;font-weight:800;white-space:nowrap}.personal-zone[open]>summary{border-bottom:1px solid var(--div)}.personal-zone-inner{padding:0 18px 20px}.personal-zone .month-bar{margin-top:18px;background:var(--card2)}
     .sec{margin-top:30px;scroll-margin-top:20px}.divider{height:1px;background:var(--div);margin-top:26px}.sec-title{font-size:19px;font-weight:780;letter-spacing:-.02em}
     .sec-sub{font-size:12px;color:var(--tx2);margin-top:3px;margin-bottom:14px;line-height:1.45}.sec-head-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
     .mini-toggle{font-size:12px;font-weight:800;border:1px solid var(--div);background:var(--card);color:var(--tx2);border-radius:999px;padding:7px 11px}.mini-toggle.on{background:var(--gn);color:#000;border-color:var(--gn)}
@@ -157,14 +161,14 @@
       .section-nav a{transition:none}
     }
     @media(min-width:721px){.modal{align-items:center}.sheet{max-width:420px;border-radius:20px}}
-    @media(max-width:640px){.month-bar{gap:6px;padding:13px 12px}.month-tx{font-size:12px}.month-bar .btn.sm{padding:8px 12px;font-size:12px}.tiles{grid-template-columns:repeat(2,1fr)}.tile{grid-column:span 1}.tile.halving{grid-column:span 2}.tile.prob{grid-column:span 1}.tile.lth-nupl{grid-column:span 2}.lth-head{align-items:flex-start;flex-direction:column;gap:2px}.lth-head .tile-status{text-align:left}.dim-hint{display:none}.dim-raw{width:48px}.price-big,.price-big input{font-size:38px}.price-big input{width:200px}.price-spark-wrap{width:100%;height:34px;margin-left:0}.score-num{font-size:48px}.health-grid{grid-template-columns:repeat(2,1fr)}.today-title{font-size:22px}.chart-card{padding:11px}.personal-shell,.personal-chart{height:260px;min-height:260px}.chart-legend{gap:7px}.personal-kpis{gap:6px}.personal-kpi{padding:9px 8px}.personal-kpi b{font-size:12px}}
+    @media(max-width:640px){.month-bar{gap:6px;padding:13px 12px}.month-tx{font-size:12px}.month-bar .btn.sm{padding:8px 12px;font-size:12px}.tiles{grid-template-columns:repeat(2,1fr)}.tile{grid-column:span 1}.tile.halving{grid-column:span 2}.tile.prob{grid-column:span 1}.tile.lth-nupl{grid-column:span 2}.lth-head{align-items:flex-start;flex-direction:column;gap:2px}.lth-head .tile-status{text-align:left}.dim-hint{display:none}.dim-raw{width:48px}.price-big,.price-big input{font-size:38px}.price-big input{width:200px}.price-spark-wrap{width:100%;height:34px;margin-left:0}.score-num{font-size:48px}.health-grid{grid-template-columns:repeat(2,1fr)}.today-title{font-size:22px}.delta-grid{grid-template-columns:repeat(2,1fr)}.fund-grid{grid-template-columns:1fr}.chart-card{padding:11px}.personal-shell,.personal-chart{height:260px;min-height:260px}.chart-legend{gap:7px}.personal-kpis{gap:6px}.personal-kpi{padding:9px 8px}.personal-kpi b{font-size:12px}.personal-zone-inner{padding-left:12px;padding-right:12px}}
   </style>
 </head>
 <body>
 <div class="bgfix"></div>
 <div class="w">
   <header class="hdr">
-    <div class="hdr-label">比特币 · BTC</div>
+    <div class="hdr-label">BTC 每日状态看板</div>
     <div class="price-row">
       <div class="price-big num">$<input id="bp" type="number" value="61800" oninput="onP()" /></div>
       <div class="chg-pill" id="pc24"></div>
@@ -173,7 +177,7 @@
         <span class="price-spark-label" id="priceSparkLabel">30D</span>
       </div>
     </div>
-    <div class="hdr-sub">点击价格可手动修改 · 实时数据成功后自动覆盖</div>
+    <div class="hdr-sub">点击价格可临时校正 · 每60秒自动同步</div>
     <div class="fetchbar-track"><div class="fetchbar" id="fetchBar"></div></div>
   </header>
 
@@ -181,7 +185,7 @@
     <div class="dot" id="ldot"></div>
     <span id="lupdated" style="color:var(--tx3)">等待加载</span>
     <span class="hbadge" id="healthBadge">--</span>
-    <span class="hbadge num" id="buildBadge">V12.0</span>
+    <span class="hbadge num" id="buildBadge">V13.0</span>
     <button class="refresh" onclick="fetchLive(true)">刷新</button>
   </div>
   <div class="update-banner" id="updateBanner"><span id="updateText">检测到新版本</span><button onclick="reloadLatest()">立即更新</button></div>
@@ -191,62 +195,68 @@
     <div class="health-grid" id="healthGrid"></div>
   </details>
 
-  <div class="month-bar">
-    <div class="month-tx">
-      <div class="month-line1"><b id="cm">--</b><span> · 锚点</span></div>
-      <div class="month-line2"><span id="rhMode">(MA250 + AHR₁) / 2</span> <b class="num">$<span id="rhd">78,000</span></b><button class="anchor-auto" id="anchorAuto" onclick="useAutoAnchor()" hidden>恢复自动</button></div>
-    </div>
-    <button class="btn ghost sm" onclick="upHigh()">更新高点</button>
-    <button class="btn sm" onclick="nxtMo()">下月</button>
-  </div>
-
   <nav class="section-nav" aria-label="页面分区导航">
     <a href="#today" class="active" data-section="today" aria-current="page">今日</a>
+    <a href="#market" data-section="market">体温</a>
     <a href="#valuation" data-section="valuation">估值</a>
-    <a href="#market" data-section="market">市场</a>
-    <a href="#plan" data-section="plan">计划</a>
-    <a href="#holding" data-section="holding">持仓</a>
+    <a href="#liquidity" data-section="liquidity">资金</a>
+    <a href="#personal" data-section="personal">个人</a>
   </nav>
 
-  <section class="today-card" id="today" aria-label="今日行动">
+  <section class="today-card" id="today" aria-label="今日 BTC 状态">
     <div class="today-top">
       <div>
-        <div class="eyebrow">今日行动</div>
+        <div class="eyebrow">每日摘要</div>
         <div class="today-title" id="actionTitle">等待数据</div>
-        <div class="today-sub" id="actionSub">系统会根据估值、预算与回撤档位生成下一步操作。</div>
+        <div class="today-sub" id="actionSub">系统会综合估值、链上、资金面与周期位置生成市场摘要。</div>
       </div>
-      <div class="today-score"><b id="actionScore">--</b><span>综合评分</span></div>
+      <div class="today-score"><b id="actionScore">--</b><span>低估评分</span></div>
     </div>
     <div class="today-kpis">
-      <div class="today-kpi"><small>定投机会</small><b id="oppKpi">--</b></div>
-      <div class="today-kpi"><small>市场风险</small><b id="riskKpi">--</b></div>
+      <div class="today-kpi"><small>估值状态</small><b id="oppKpi">--</b></div>
+      <div class="today-kpi"><small>下行风险</small><b id="riskKpi">--</b></div>
       <div class="today-kpi"><small>数据置信度</small><b id="confKpi">--</b></div>
     </div>
     <div class="reason-row" id="actionReasons"></div>
     <div class="today-actions">
-      <button class="btn" id="actionBtn" onclick="prepareAction()">记录本次买入</button>
-      <button class="btn ghost" onclick="document.getElementById('plan').scrollIntoView()">查看计划</button>
+      <button class="btn" id="actionBtn" onclick="document.getElementById('market').scrollIntoView({behavior:'smooth'})">查看市场体温</button>
+      <button class="btn ghost" onclick="openHealthPanel()">数据状态</button>
     </div>
   </section>
 
+  <section class="delta-section" id="changes" aria-label="和昨天相比">
+    <div class="sec-head-row"><div class="sec-title">和昨天相比</div><span class="fresh-badge" id="freshChanges">日快照</span></div>
+    <div class="sec-sub">BTC 使用上一根日线，其余指标使用本机每日状态快照</div>
+    <div class="delta-grid">
+      <div class="delta-card"><small>BTC</small><b class="num" id="deltaPrice">--</b><span class="num" id="deltaPriceSub">等待日线</span></div>
+      <div class="delta-card"><small>AHR999</small><b class="num" id="deltaAhr">--</b><span class="num" id="deltaAhrSub">等待快照</span></div>
+      <div class="delta-card"><small>SOPR</small><b class="num" id="deltaSopr">--</b><span class="num" id="deltaSoprSub">等待快照</span></div>
+      <div class="delta-card"><small>LTH-NUPL</small><b class="num" id="deltaLth">--</b><span class="num" id="deltaLthSub">等待快照</span></div>
+      <div class="delta-card"><small>稳定币最新日</small><b class="num" id="deltaStable">--</b><span class="num" id="deltaStableSub">等待快照</span></div>
+      <div class="delta-card"><small>低估评分</small><b class="num" id="deltaScore">--</b><span class="num" id="deltaScoreSub">等待快照</span></div>
+    </div>
+    <div class="delta-note" id="deltaNote">首次使用会建立今日快照，明日起显示完整变化。</div>
+  </section>
+
+  <div class="divider" id="valuationDivider"></div>
   <section class="sec" id="valuation">
-    <div class="sec-head-row"><div class="sec-title">综合评分</div><button class="mini-toggle" id="tweakBtn" onclick="toggleTweak()">微调 OFF</button></div>
-    <div class="sec-sub">7维度按数据质量向中性校准 · 评分映射 1 / 2 / 4 次月内基础定投节奏</div>
+    <div class="sec-head-row"><div class="sec-title">综合估值</div><div style="display:flex;align-items:center;gap:7px"><span class="fresh-badge" id="freshScore">待检查</span><button class="mini-toggle" id="tweakBtn" onclick="toggleTweak()">微调 OFF</button></div></div>
+    <div class="sec-sub">7维周期指标按数据质量向中性校准 · 分数越高，长期估值越低</div>
     <div class="score-hero">
       <div><div class="score-num num" id="scoreNum">--</div><div class="score-zone" id="sz">--</div></div>
       <div class="score-side"><b class="num" id="scoreMult">--</b><span id="scoreCoverage">覆盖 --/7</span></div>
     </div>
     <div class="zbar"><div style="flex:30;background:var(--rd);opacity:.85"></div><div style="flex:20;background:var(--or);opacity:.85"></div><div style="flex:20;background:var(--yl);opacity:.75"></div><div style="flex:15;background:var(--gn2);opacity:.85"></div><div style="flex:15;background:var(--gn)"></div></div>
     <div class="zcursor-track"><div class="zcursor" id="cur"></div></div>
-    <div class="zlabels"><span>高估 0.1x</span><span>偏高 0.3x</span><span>合理 0.8x</span><span>低估 1.2x</span><span>极低 3.0x</span></div>
+    <div class="zlabels"><span>高估</span><span>偏热</span><span>合理</span><span>低估</span><span>深度低估</span></div>
     <div id="dims"></div>
     <div class="chips"><button class="chip" onclick="pre(25)">高估区</button><button class="chip" onclick="pre(45)">偏高区</button><button class="chip" onclick="pre(62)">合理区</button><button class="chip primary" onclick="pre(75)">低估区</button><button class="chip" onclick="pre(90)">极低估</button></div>
   </section>
 
   <div class="divider"></div>
   <section class="sec">
-    <div class="sec-title">AHR999 囤币指数</div>
-    <div class="sec-sub">2026 重拟合幂律 · R²=0.958 · 定投择时核心</div>
+    <div class="sec-head-row"><div class="sec-title">AHR999 周期估值</div><span class="fresh-badge" id="freshAhr">待检查</span></div>
+    <div class="sec-sub">2026 重拟合幂律 · R²=0.958 · 观察价格相对长期成本与幂律趋势的位置</div>
     <div class="ahr-wrap">
       <div><div class="ahr-big num" id="ahrBig">--</div><div class="ahr-zone" id="ahrZone">等待数据</div></div>
       <div class="ahr-side">
@@ -257,12 +267,34 @@
     </div>
     <div class="ahr-bar"><div style="flex:35;background:var(--gn)"></div><div style="flex:43;background:var(--gn2);opacity:.85"></div><div style="flex:62;background:var(--or);opacity:.8"></div><div style="flex:38;background:var(--rd);opacity:.85"></div></div>
     <div class="zcursor-track"><div class="zcursor" id="ahrCur"></div></div>
-    <div class="ahr-lbls"><span>抄底 &lt;0.45</span><span>定投 0.45–1.2</span><span>观望 1.2–5</span><span>高危 &gt;5</span></div>
+    <div class="ahr-lbls"><span>深度低估 &lt;0.45</span><span>低估 0.45–1.2</span><span>偏热 1.2–5</span><span>高估 &gt;5</span></div>
     <div id="ahrLadder"></div>
   </section>
 
-  <section class="sec" id="market">
-    <div class="sec-title">稳定币流动性</div>
+  <section class="sec" id="liquidity">
+    <div class="sec-title">资金与情绪</div>
+    <div class="sec-sub">现货需求、永续杠杆、市场情绪与稳定币流动性</div>
+    <div class="fund-grid">
+      <div class="fund-card">
+        <div class="fund-head"><span class="tile-live"></span>恐惧贪婪<span class="fresh-badge" id="freshFgi">待检查</span></div>
+        <div class="fund-value num" id="fgiValue">--</div>
+        <div class="fund-state" id="fgiState">等待数据</div>
+        <div class="fund-hint">Alternative.me · 0 恐惧 / 100 贪婪</div>
+      </div>
+      <div class="fund-card">
+        <div class="fund-head"><span class="tile-live"></span>永续资金费率<span class="fresh-badge" id="freshFunding">待检查</span></div>
+        <div class="fund-value num" id="fundingRate">--</div>
+        <div class="fund-state" id="fundingState">等待数据</div>
+        <div class="fund-hint" id="fundingHint">OKX BTC-USDT 永续 · 每8小时</div>
+      </div>
+      <div class="fund-card">
+        <div class="fund-head"><span class="tile-live"></span>Coinbase 溢价<span class="fresh-badge" id="freshPremium">待检查</span></div>
+        <div class="fund-value num" id="coinbasePremium">--</div>
+        <div class="fund-state" id="premiumState">等待数据</div>
+        <div class="fund-hint" id="premiumHint">Coinbase USD − 主行情</div>
+      </div>
+    </div>
+    <div class="subsection-title">稳定币流动性 <span class="fresh-badge" id="freshStable">待检查</span></div>
     <div class="sec-sub">USDT / USDC 单币最新日市值变化超过 ±$1B 时强提醒 · 同时保留7日趋势</div>
     <div class="liq-card" id="liqCard">
       <div class="liq-hero">
@@ -274,15 +306,15 @@
     </div>
   </section>
 
-  <div class="divider"></div>
-  <section class="sec">
-    <div class="sec-title">市场体温</div>
+  <div class="divider" id="marketDivider"></div>
+  <section class="sec" id="market">
+    <div class="sec-head-row"><div class="sec-title">市场体温</div><span class="fresh-badge" id="freshMarket">多源</span></div>
     <div class="sec-sub">周期模型与2026年内活跃市场隐含概率 · 已过滤关闭市场</div>
     <!-- 核心市场体温区：原七项指标永久保留；LTH-NUPL 作为第八项追加，图表不得替代指标。 -->
     <div class="tiles" id="tiles">
       <div class="tile miner-tile">
         <div class="miner-head">
-          <div class="tile-name"><span class="tile-live"></span>关机价区间</div>
+          <div class="tile-name"><span class="tile-live"></span>关机价区间<span class="fresh-badge" id="freshMiner">--</span></div>
           <div class="miner-pressure" id="ss0"></div>
         </div>
         <div class="miner-values">
@@ -303,25 +335,25 @@
         <div class="tile-hint">按实时算力推算 · 电价 $0.06/kWh</div>
       </div>
       <div class="tile">
-        <div class="tile-name"><span class="tile-live"></span>均衡价格</div>
+        <div class="tile-name"><span class="tile-live"></span>均衡价格<span class="fresh-badge" id="freshBalanced">--</span></div>
         <input id="sbl" type="number" inputmode="decimal" placeholder="--" oninput="sig()" aria-label="均衡价格" />
         <div class="tile-status" id="ss1"></div>
         <div class="tile-hint">RP − TP · TP校准26/07</div>
       </div>
       <div class="tile">
-        <div class="tile-name"><span class="tile-live"></span>200周均线</div>
+        <div class="tile-name"><span class="tile-live"></span>200周均线<span class="fresh-badge" id="freshWma">--</span></div>
         <input id="swm" type="number" inputmode="decimal" placeholder="--" oninput="sig()" aria-label="200周均线" />
         <div class="tile-status" id="ss2"></div>
         <div class="tile-hint">长期估值底座</div>
       </div>
       <div class="tile">
-        <div class="tile-name"><span class="tile-live"></span>SOPR</div>
+        <div class="tile-name"><span class="tile-live"></span>SOPR<span class="fresh-badge" id="freshSopr">--</span></div>
         <input id="ssp" type="number" inputmode="decimal" step="0.001" placeholder="--" oninput="sig()" aria-label="SOPR" />
         <div class="tile-status" id="ss3"></div>
         <div class="tile-hint">链上盈利兑现状态</div>
       </div>
       <div class="tile halving">
-        <div class="tile-name"><span class="tile-live"></span>减半倒计时</div>
+        <div class="tile-name"><span class="tile-live"></span>减半倒计时<span class="fresh-badge" id="freshHalving">--</span></div>
         <input id="shv" type="number" inputmode="numeric" placeholder="--" oninput="sig()" aria-label="减半剩余天数" />
         <div class="tile-status" id="ss4"></div>
         <div class="halving-track" aria-label="本轮减半周期进度"><div class="halving-fill" id="halvingProgress"></div></div>
@@ -329,19 +361,19 @@
         <div class="tile-hint">奖励 3.125 → 1.5625</div>
       </div>
       <div class="tile prob">
-        <div class="tile-name"><span class="tile-live"></span>跌破 $50K 概率</div>
+        <div class="tile-name"><span class="tile-live"></span>跌破 $50K 概率<span class="fresh-badge" id="freshProb50">--</span></div>
         <input id="spb" type="number" inputmode="decimal" step="0.1" placeholder="--" oninput="sig()" aria-label="跌破五万美元概率" />
         <div class="tile-status" id="ss5"></div>
         <div class="tile-hint">2026年内市场隐含概率 %</div>
       </div>
       <div class="tile prob">
-        <div class="tile-name"><span class="tile-live"></span>突破 $90K 概率</div>
+        <div class="tile-name"><span class="tile-live"></span>突破 $90K 概率<span class="fresh-badge" id="freshProb90">--</span></div>
         <input id="spu" type="number" inputmode="decimal" step="0.1" placeholder="--" oninput="sig()" aria-label="突破九万美元概率" />
         <div class="tile-status" id="ss6"></div>
         <div class="tile-hint">2026年内 · 未关闭市场 %</div>
       </div>
       <div class="tile lth-nupl">
-        <div class="tile-name"><span class="tile-live"></span>长期持有者 NUPL</div>
+        <div class="tile-name"><span class="tile-live"></span>长期持有者 NUPL<span class="fresh-badge" id="freshLth">--</span></div>
         <div class="lth-head">
           <input id="slth" type="number" inputmode="decimal" step="0.0001" placeholder="--" oninput="sig()" aria-label="长期持有者 NUPL" />
           <div class="tile-status" id="ss7">等待数据</div>
@@ -368,12 +400,23 @@
 
   <div class="divider"></div>
   <section class="sec">
-    <div class="sec-title">均线阶梯</div>
-    <div class="sec-sub">51 · 120 · 250 · 850 —— 追高等回踩，越远的线越稳</div>
+    <div class="sec-head-row"><div class="sec-title">均线结构</div><span class="fresh-badge" id="freshMA">待检查</span></div>
+    <div class="sec-sub">MA51 · 120 · 250 · 850 —— 观察短中长期趋势层级与价格偏离</div>
     <div id="maList"><div class="log-empty">刷新后自动计算</div></div>
   </section>
 
-  <div class="divider"></div>
+  <details class="personal-zone" id="personal">
+    <summary><span><b>个人定投与持仓</b><small>预算、回撤档位、持仓、成本曲线、买入记录与六条铁律</small></span><span>按需展开</span></summary>
+    <div class="personal-zone-inner">
+  <div class="month-bar">
+    <div class="month-tx">
+      <div class="month-line1"><b id="cm">--</b><span> · 锚点</span></div>
+      <div class="month-line2"><span id="rhMode">(MA250 + AHR₁) / 2</span> <b class="num">$<span id="rhd">78,000</span></b><button class="anchor-auto" id="anchorAuto" onclick="useAutoAnchor()" hidden>恢复自动</button></div>
+    </div>
+    <button class="btn ghost sm" onclick="upHigh()">更新高点</button>
+    <button class="btn sm" onclick="nxtMo()">下月</button>
+  </div>
+
   <section class="sec" id="plan">
     <div class="sec-title">本月预算</div>
     <div class="sec-sub">2000元三分法 · 基础 1000 按评分拆成 1 / 2 / 4 次 + 回撤 700 + 极端 300</div>
@@ -445,7 +488,7 @@
       <button class="btn danger sm" onclick="clr()">清空记录</button>
       <input id="backupInput" type="file" accept="application/json,.json" onchange="importBackup(this)" hidden />
     </div>
-    <div class="data-note" id="storageNote">记录仅保存在本机；V12 会主动申请持久存储，仍建议定期导出备份。</div>
+    <div class="data-note" id="storageNote">记录仅保存在本机；V13 会主动申请持久存储，仍建议定期导出备份。</div>
   </section>
 
   <div class="divider"></div>
@@ -458,6 +501,8 @@
     <div class="rule"><div class="rule-n">5</div><div class="rule-tx"><b>不动生活备用金</b><span>25% 收入是上限，不临时挪借</span></div></div>
     <div class="rule"><div class="rule-n">6</div><div class="rule-tx"><b>买入后必须提至冷钱包</b><span>Not your keys, not your coins.</span></div></div>
   </section>
+    </div>
+  </details>
 </div>
 
 
@@ -483,7 +528,7 @@
 <script>
 const $=id=>document.getElementById(id);
 const DM=[
-  {w:.2,h:["<0.45 抄底","0.45-1.2 定投","1.2-5 观望",">5 高危"],t:[30,55,75]},
+  {w:.2,h:["<0.45 深度低估","0.45-1.2 低估","1.2-5 偏热",">5 高估"],t:[30,55,75]},
   {w:.15,h:["低于均线","1-1.5x 正常","1.5-2.5x 偏高",">2.5x 高估"],t:[30,55,75]},
   {w:.15,h:["<1 低估","1-2x 合理","2-3x 偏高",">3x 泡沫"],t:[30,55,75]},
   {w:.15,h:["极度恐惧","恐惧","贪婪","极度贪婪"],t:[30,50,70]},
@@ -495,17 +540,18 @@ const DN=["AHR999 新拟","200周均线","MVRV","恐惧贪婪","Puell 矿工","R
 const DW=["20% · 26回归","15%","15%","15%","15% · BGeometrics","10% · BGeometrics","10% · BGeometrics"];
 const MB=[[0,.1],[30,.3],[50,.8],[70,1.2],[85,1.95],[100,3]];
 const TR=[{p:.1,a:200,k:"pull"},{p:.2,a:200,k:"pull"},{p:.3,a:300,k:"pull"},{p:.4,a:150,k:"ext"},{p:.5,a:150,k:"ext"}];
-const BUILD_ID="12.0.0-20260714";
+const BUILD_ID="13.0.0-20260714";
 const CORE_HEALTH=["AHR999","200WMA","MVRV","FGI","Puell","RR","SOPR"];
-const SOURCE_ORDER=["价格","AHR999","200WMA","均线","FGI","减半","关机价","MVRV","均衡价","概率","USDT","USDC","LTH-NUPL","SOPR","Puell","RR"];
+const SOURCE_ORDER=["价格","AHR999","200WMA","均线","FGI","资金费率","Coinbase溢价","减半","关机价","MVRV","均衡价","概率","USDT","USDC","LTH-NUPL","SOPR","Puell","RR"];
 const CACHE_KEY="btc_live_v9",STATE_KEY="btc_exec_v7",CACHE_TTL=30*60*1000,STABLE_FLOW_THRESHOLD=1e9;
 const DAILY_KEY="btc_daily_v1";
+const STATUS_HISTORY_KEY="btc_status_history_v1";
 const BINANCE_BASES=["https://data-api.binance.vision","https://api-gcp.binance.com","https://api.binance.com"];
 const SLOW_TTL=24*3600*1000,STABLE_TTL=12*3600*1000,STABLE_DATA_STALE_MS=3*86400000,CHAIN_STALE_MS=3*86400000,VALUATION_CACHE_KEY="btc_valuation_cache_v1";
 const POLYMARKET_EVENT_SLUG="what-price-will-bitcoin-hit-before-2027",POLYMARKET_EVENT_END=Date.parse("2027-01-01T00:00:00Z"),POLYMARKET_DOWN_PRICE=50000,POLYMARKET_UP_PRICE=90000,POLYMARKET_YEAR=2026,POLYMARKET_MARKET_KEY=`${POLYMARKET_EVENT_SLUG}|${POLYMARKET_DOWN_PRICE}|${POLYMARKET_UP_PRICE}`;
 const AHR_A=5.5856,AHR_B=-16.1567,AHR_A0=5.84,AHR_B0=-17.01,BAL_TP=14657,MINER_EFF_LO=12,MINER_EFF_HI=37.3,ELEC_KWH=.06;
-let HEALTH={},FALLBACK_HEALTH={},progActive=false,progN=0,PROG_EST=17,preparedTp=null,priceTimer=null,fetchInFlight=false,priceTickInFlight=false,lastTickAt=0,lastFullAt=0,personalChart=null,personalSeries=null,personalMarkers=null;
-let DAILY=[],personalDataKey="",personalDefaultLabel="",onPTimer=null;
+let HEALTH={},FALLBACK_HEALTH={},progActive=false,progN=0,PROG_EST=19,preparedTp=null,priceTimer=null,fetchInFlight=false,priceTickInFlight=false,lastTickAt=0,lastFullAt=0,personalChart=null,personalSeries=null,personalMarkers=null;
+let DAILY=[],STATUS_HISTORY=[],personalDataKey="",personalDefaultLabel="",onPTimer=null;
 function mstr(){const d=new Date();return d.getFullYear()+"年"+(d.getMonth()+1)+"月"}
 function loadState(){try{return JSON.parse(localStorage.getItem(STATE_KEY))}catch(e){return null}}
 function saveState(){
@@ -521,10 +567,12 @@ if(!DAILY.length){try{const c=JSON.parse(localStorage.getItem(CACHE_KEY));if(c&&
 if(DAILY.length){try{localStorage.setItem(DAILY_KEY,JSON.stringify(DAILY))}catch(e){}}
 if(S.daily!==undefined){delete S.daily;saveState()}
 if(S.chartDays!==undefined){delete S.chartDays;saveState()}
+try{STATUS_HISTORY=JSON.parse(localStorage.getItem(STATUS_HISTORY_KEY))||[]}catch(e){STATUS_HISTORY=[]}
+if(!Array.isArray(STATUS_HISTORY))STATUS_HISTORY=[];
 function exportBackup(){
   try{
-    const payload={app:"BTC-DCA",schema:1,build:BUILD_ID,exportedAt:new Date().toISOString(),state:S,daily:DAILY,liveCache:readCache(true)},blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a"),day=new Date().toISOString().slice(0,10);
-    a.href=URL.createObjectURL(blob);a.download=`btc-dca-backup-${day}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);ntf("备份已导出")
+    const payload={app:"BTC-DCA",schema:2,build:BUILD_ID,exportedAt:new Date().toISOString(),state:S,daily:DAILY,statusHistory:STATUS_HISTORY,liveCache:readCache(true)},blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a"),day=new Date().toISOString().slice(0,10);
+    a.href=URL.createObjectURL(blob);a.download=`btc-status-backup-${day}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);ntf("备份已导出")
   }catch(e){ntf("导出失败，请检查浏览器存储权限")}
 }
 async function importBackup(input){
@@ -535,6 +583,7 @@ async function importBackup(input){
     if(!confirm(`导入 ${payload.exportedAt?new Date(payload.exportedAt).toLocaleString("zh-CN"):"未知时间"} 的备份？当前本机数据将被覆盖。`))return;
     localStorage.setItem(STATE_KEY,JSON.stringify(state));
     if(Array.isArray(payload.daily))localStorage.setItem(DAILY_KEY,JSON.stringify(payload.daily));
+    if(Array.isArray(payload.statusHistory))localStorage.setItem(STATUS_HISTORY_KEY,JSON.stringify(payload.statusHistory));
     if(payload.liveCache)localStorage.setItem(CACHE_KEY,JSON.stringify(payload.liveCache));
     ntf("导入成功，正在重载");setTimeout(()=>location.reload(),500)
   }catch(e){ntf("备份文件无效或已损坏")}
@@ -740,7 +789,7 @@ function getFallbackData(){
   if(d.usdcSeries==null&&S.stbC)d.usdcSeries=S.stbC;
   if(d.stableDataTs==null&&S.stbTs)d.stableDataTs=S.stbTs;
   if(S.raw){
-    ["fgi","mvrv","puell","rr","lthNupl"].forEach(k=>{if(d[k]==null&&S.raw[k]!=null)d[k]=S.raw[k]});
+    ["fgi","fgiLabel","mvrv","puell","rr","lthNupl","fundingRate","fundingTime","coinbasePrice","coinbasePremium"].forEach(k=>{if(d[k]==null&&S.raw[k]!=null)d[k]=S.raw[k]});
   }
   const valuation=readValuationCache();
   if(d.mvrv==null&&valuation.mvrv!=null)d.mvrv=+valuation.mvrv;
@@ -1137,8 +1186,76 @@ function renderHealth(){
   }
 
   updateDimSourceLabels();
+  renderFreshness();
   renderAction();
 }
+function freshnessWorst(names){
+  const rank={ok:0,fallback:1,cache:2,stale:3,fail:4},items=(Array.isArray(names)?names:[names]).map(n=>HEALTH[n]).filter(Boolean);
+  return items.length?items.sort((a,b)=>(rank[b.status]??4)-(rank[a.status]??4))[0]:null;
+}
+function setFresh(id,names){
+  const el=$(id);if(!el)return;const h=freshnessWorst(names);
+  if(!h){el.textContent="待检查";el.className="fresh-badge";el.removeAttribute("title");return}
+  const label=h.status==="ok"?"实时":h.status==="fallback"?"备用":h.status==="cache"?"沿用":h.status==="stale"?"滞后":"缺失",age=h.ts?cacheAge(h.ts):"时间未知";
+  el.textContent=h.status==="ok"&&age==="刚刚"?"实时":`${label} · ${age}`;
+  el.className="fresh-badge "+(h.status==="ok"?"good":h.status==="fail"?"bad":"warn");
+  el.title=h.detail||"";
+}
+function renderFreshness(){
+  setFresh("freshScore",CORE_HEALTH);setFresh("freshAhr","AHR999");setFresh("freshStable",["USDT","USDC"]);
+  setFresh("freshFgi","FGI");setFresh("freshFunding","资金费率");setFresh("freshPremium","Coinbase溢价");
+  setFresh("freshMarket",["关机价","均衡价","200WMA","SOPR","减半","概率","LTH-NUPL"]);
+  setFresh("freshMiner","关机价");setFresh("freshBalanced","均衡价");setFresh("freshWma","200WMA");setFresh("freshSopr","SOPR");setFresh("freshHalving","减半");setFresh("freshProb50","概率");setFresh("freshProb90","概率");setFresh("freshLth","LTH-NUPL");setFresh("freshMA","均线");
+}
+function renderFunds(){
+  S.raw=S.raw||{};
+  const fgi=+S.raw.fgi,fv=$("fgiValue"),fs=$("fgiState");
+  if(Number.isFinite(fgi)&&fgi>=0){
+    const st=fgi<25?["极度恐惧","var(--or)"]:fgi<45?["恐惧","var(--yl)"]:fgi<56?["中性","var(--tx2)"]:fgi<75?["贪婪","var(--gn2)"]:["极度贪婪","var(--rd)"];
+    fv.textContent=Math.round(fgi);fv.style.color=st[1];fs.textContent=st[0];fs.style.color=st[1];
+  }else{fv.textContent="--";fs.textContent="等待数据";fs.style.color="var(--tx3)"}
+  const funding=+S.raw.fundingRate,fr=$("fundingRate"),fst=$("fundingState"),fh=$("fundingHint");
+  if(Number.isFinite(funding)){
+    const pct=funding*100,annual=pct*3*365,st=funding<-.0001?["空头拥挤","var(--blue)"]:funding<=.0001?["杠杆中性","var(--gn2)"]:funding<=.0003?["多头温和","var(--yl)"]:["多头拥挤","var(--rd)"];
+    fr.textContent=(pct>=0?"+":"")+pct.toFixed(4)+"%";fr.style.color=st[1];fst.textContent=st[0];fst.style.color=st[1];fh.textContent=`OKX 永续 · 年化约 ${annual>=0?"+":""}${annual.toFixed(1)}%`;
+  }else{fr.textContent="--";fst.textContent="等待数据";fst.style.color="var(--tx3)";fh.textContent="OKX BTC-USDT 永续 · 每8小时"}
+  const premium=+S.raw.coinbasePremium,cp=$("coinbasePremium"),ps=$("premiumState"),ph=$("premiumHint");
+  if(Number.isFinite(premium)){
+    const st=premium>.1?["美国现货需求偏强","var(--gn)"]:premium<-.1?["美国现货需求偏弱","var(--or)"]:["现货需求中性","var(--tx2)"],diff=S.raw.coinbasePrice>0&&S.price>0?S.raw.coinbasePrice-S.price:null;
+    cp.textContent=(premium>=0?"+":"")+premium.toFixed(3)+"%";cp.style.color=st[1];ps.textContent=st[0];ps.style.color=st[1];ph.textContent=diff==null?"Coinbase USD − 主行情":`价差 ${diff>=0?"+":""}$${Math.round(diff).toLocaleString()} · Coinbase USD`;
+  }else{cp.textContent="--";ps.textContent="等待数据";ps.style.color="var(--tx3)";ph.textContent="Coinbase USD − 主行情"}
+  renderFreshness();
+}
+function statusDay(){const d=new Date(),m=String(d.getMonth()+1).padStart(2,"0"),day=String(d.getDate()).padStart(2,"0");return`${d.getFullYear()}-${m}-${day}`}
+function finiteValue(v){const n=+v;return Number.isFinite(n)?n:null}
+function currentStatusSnapshot(){
+  const stable=combinedStableStats(),wm=finiteValue($("swm")&&$("swm").value),soprRaw=$("ssp")&&$("ssp").value,sopr=soprRaw===""?null:finiteValue(soprRaw),lthRaw=$("slth")&&$("slth").value;
+  return{day:statusDay(),ts:Date.now(),price:finiteValue(S.price),score:finiteValue(S.score),ahr:S.ahr?finiteValue(S.ahr.v):null,sopr,lth:lthRaw===""?null:finiteValue(lthRaw),stableD1:stable?finiteValue(stable.d1):null,stableD7:stable?finiteValue(stable.d7):null,wmaRatio:wm>0&&S.price>0?S.price/wm:null,funding:finiteValue(S.raw&&S.raw.fundingRate),premium:finiteValue(S.raw&&S.raw.coinbasePremium)};
+}
+function commitStatusSnapshot(){
+  const snap=currentStatusSnapshot();if(!(snap.price>0))return;
+  const i=STATUS_HISTORY.findIndex(x=>x&&x.day===snap.day);if(i>=0)STATUS_HISTORY[i]=snap;else STATUS_HISTORY.push(snap);
+  STATUS_HISTORY=STATUS_HISTORY.filter(x=>x&&x.day).sort((a,b)=>String(a.day).localeCompare(String(b.day))).slice(-14);
+  try{localStorage.setItem(STATUS_HISTORY_KEY,JSON.stringify(STATUS_HISTORY))}catch(e){}
+}
+function previousStatusSnapshot(){const today=statusDay();return STATUS_HISTORY.filter(x=>x&&x.day<today).sort((a,b)=>String(a.day).localeCompare(String(b.day))).at(-1)||null}
+function previousDailyClose(){const d=normalizedDaily();if(!d.length)return null;const utcToday=Math.floor(Date.now()/86400000)*86400,last=d.at(-1);return last.time>=utcToday&&d.length>1?d.at(-2).close:last.close}
+function setDelta(id,subId,value,sub,color){const el=$(id),subEl=$(subId);el.textContent=value;el.style.color=color||"var(--tx)";subEl.textContent=sub}
+function signed(n,d=2,suffix=""){return(n>=0?"+":"")+n.toFixed(d)+suffix}
+function renderDailyChanges(){
+  if(!$("deltaPrice"))return;const prev=previousStatusSnapshot(),cur=currentStatusSnapshot(),prevClose=previousDailyClose()||(prev&&prev.price>0?prev.price:null);
+  if(cur.price>0&&prevClose>0){const d=(cur.price/prevClose-1)*100;setDelta("deltaPrice","deltaPriceSub",signed(d,2,"%"),`现价 $${Math.round(cur.price).toLocaleString()} · 对比 $${Math.round(prevClose).toLocaleString()}`,d>=0?"var(--gn)":"var(--rd)")}else setDelta("deltaPrice","deltaPriceSub","--","等待日线");
+  const metric=(key,id,digits,label,downGood=false)=>{const v=cur[key],p=prev&&prev[key];if(v!=null&&p!=null){const d=v-p;setDelta(id,id+"Sub",signed(d,digits),`当前 ${v.toFixed(digits)}`,downGood?(d<=0?"var(--gn)":"var(--or)"):(d>=0?"var(--gn)":"var(--or)"))}else setDelta(id,id+"Sub","--",v!=null?`当前 ${v.toFixed(digits)} · 明日可比`:"等待快照")};
+  metric("ahr","deltaAhr",3,"AHR",true);metric("sopr","deltaSopr",3,"SOPR");metric("lth","deltaLth",4,"LTH");
+  if(cur.stableD1!=null&&prev&&prev.stableD1!=null){const d=cur.stableD1-prev.stableD1;setDelta("deltaStable","deltaStableSub",fmtUsdB(d),`当前 ${fmtUsdB(cur.stableD1)}`,d>=0?"var(--gn)":"var(--rd)")}else setDelta("deltaStable","deltaStableSub","--",cur.stableD1!=null?`当前 ${fmtUsdB(cur.stableD1)} · 明日可比`:"等待快照");
+  if(cur.score!=null&&prev&&prev.score!=null){const d=cur.score-prev.score;setDelta("deltaScore","deltaScoreSub",signed(d,0),`当前 ${Math.round(cur.score)} 分`,d>=0?"var(--gn)":"var(--rd)")}else setDelta("deltaScore","deltaScoreSub","--",cur.score!=null?`当前 ${Math.round(cur.score)} 分 · 明日可比`:"等待快照");
+  const events=[],cross=(p,v,t,name)=>{if(p==null||v==null)return;if(p<t&&v>=t)events.push(`${name}上穿 ${t}`);else if(p>=t&&v<t)events.push(`${name}下穿 ${t}`)};
+  if(prev){cross(prev.ahr,cur.ahr,.45,"AHR ");cross(prev.ahr,cur.ahr,1.2,"AHR ");cross(prev.sopr,cur.sopr,1,"SOPR ");cross(prev.lth,cur.lth,.1,"LTH-NUPL ");cross(prev.wmaRatio,cur.wmaRatio,1,"价格/200WMA ");if(Math.abs(cur.stableD1||0)>=1e9&&Math.abs(prev.stableD1||0)<1e9)events.push("稳定币最新日异动超过 $1B");if((cur.funding||0)>.0003&&(prev.funding||0)<=.0003)events.push("永续资金费率进入拥挤区")}
+  $("deltaNote").textContent=events.length?`今日阈值变化：${events.join(" · ")}`:prev?"今日暂无关键阈值切换 · 继续观察结构变化":"BTC 已与上一根日线比较；其余指标已开始建立本机日快照。";
+  $("freshChanges").textContent=prev?`对比 ${prev.day.slice(5).replace("-","/")}`:"从今日记录";$("freshChanges").className="fresh-badge "+(prev?"good":"warn");
+}
+function openHealthPanel(){const p=$("healthPanel");p.open=true;p.scrollIntoView({behavior:"smooth",block:"start"})}
+function arrangeDashboard(){const market=$("market"),marketDivider=$("marketDivider"),valuationDivider=$("valuationDivider");if(market&&marketDivider&&valuationDivider){valuationDivider.parentNode.insertBefore(marketDivider,valuationDivider);valuationDivider.parentNode.insertBefore(market,valuationDivider)}}
 async function fetchLive(force=false){
   if(!force){
     const c=readCache(false);
@@ -1220,6 +1337,27 @@ async function fetchLive(force=false){
       markHealth("FGI","ok","已更新");
     }catch(e){
       carryFields(result,fallback,"FGI",["fgi","fgiLabel"]);
+    }
+  });
+
+  task(async()=>{
+    try{
+      const j=await tryFetch("https://www.okx.com/api/v5/public/funding-rate?instId=BTC-USDT-SWAP",7000),t=j&&j.data&&j.data[0],rate=+(t&&t.fundingRate);
+      if(!Number.isFinite(rate))throw new Error("bad funding rate");
+      result.fundingRate=rate;
+      result.fundingTime=+(t&&t.fundingTime)||null;
+      markHealth("资金费率","ok","OKX BTC-USDT-SWAP",+(t&&t.ts)||Date.now());
+    }catch(e){
+      carryFields(result,fallback,"资金费率",["fundingRate","fundingTime"]);
+    }
+
+    try{
+      const t=await tryFetch("https://api.exchange.coinbase.com/products/BTC-USD/ticker",7000),price=+t.price;
+      if(!(price>0))throw new Error("bad Coinbase price");
+      result.coinbasePrice=price;
+      markHealth("Coinbase溢价","ok","Coinbase Exchange",parseDataTs(t.time)||Date.now());
+    }catch(e){
+      carryFields(result,fallback,"Coinbase溢价",["coinbasePrice","coinbasePremium"]);
     }
   });
 
@@ -1529,6 +1667,7 @@ async function fetchLive(force=false){
 
   // 统一使用本轮最终价格重算所有价格派生指标，避免并行任务先后造成旧价格。
   const latestPrice=result.price||fallback.price||S.price;
+  if(result.coinbasePrice>0&&latestPrice>0)result.coinbasePremium=(result.coinbasePrice/latestPrice-1)*100;
   if(latestPrice>0&&result.dma200>0){
     const dg=Math.floor((new Date()-new Date("2009-01-03"))/864e5),
       pl=Math.pow(10,AHR_A*Math.log10(dg)+AHR_B),
@@ -1586,7 +1725,7 @@ async function fetchLive(force=false){
 function applyLive(d){
   if(!d)return;
   S.raw=S.raw||{};
-  ["fgi","mvrv","puell","rr","lthNupl"].forEach(k=>{if(d[k]!=null)S.raw[k]=d[k]});
+  ["fgi","fgiLabel","mvrv","puell","rr","lthNupl","fundingRate","fundingTime","coinbasePrice","coinbasePremium"].forEach(k=>{if(d[k]!=null)S.raw[k]=d[k]});
   if(d.mvrv!=null||d.realized!=null||d.balanced!=null)saveValuationCache({...(d.mvrv!=null?{mvrv:d.mvrv}:{}),...(d.realized!=null?{realized:d.realized}:{}),...(d.balanced!=null?{balanced:d.balanced}:{})});
   if(d.price>0){
     S.price=Math.round(d.price);
@@ -1616,9 +1755,12 @@ function applyLive(d){
   if(d.rr){const sc=rrToSc(d.rr);$("d5").value=sc;$("r5").textContent=d.rr.toFixed(4);S.dims[5]=sc}
   renderPriceDerived();
   renderStableCombined();
+  renderFunds();
+  commitStatusSnapshot();
+  renderDailyChanges();
 }
 function s2m(s){for(let i=0;i<MB.length-1;i++){const a=MB[i],b=MB[i+1];if(s>=a[0]&&s<=b[0]){const t=(s-a[0])/(b[0]-a[0]);return Math.round((a[1]+t*(b[1]-a[1]))*100)/100}}return s<=0?.1:3}
-function s2z(s){if(s<30)return{t:"高估区 · 谨慎",c:"var(--rd)"};if(s<50)return{t:"偏高估 · 减少",c:"var(--or)"};if(s<70)return{t:"合理区 · 正常",c:"var(--yl)"};if(s<85)return{t:"低估区 · 增配",c:"var(--gn2)"};return{t:"极度低估 · 重配",c:"var(--gn)"}}
+function s2z(s){if(s<30)return{t:"高估风险",c:"var(--rd)"};if(s<50)return{t:"估值偏热",c:"var(--or)"};if(s<70)return{t:"估值合理",c:"var(--yl)"};if(s<85)return{t:"长期低估",c:"var(--gn2)"};return{t:"深度低估",c:"var(--gn)"}}
 function dh2(i,v){const m=DM[i],t=m.t;return v<t[0]?m.h[0]:v<t[1]?m.h[1]:v<t[2]?m.h[2]:m.h[3]}
 function healthCoverage(){return CORE_HEALTH.reduce((a,n)=>a+healthWeight(HEALTH[n]),0)}
 function confidenceInfo(){const value=healthCoverage(),key=value>=5.5?"high":value>=3.5?"mid":"low";return{value,key,label:key==="high"?"高":key==="mid"?"中":"低",color:key==="high"?"var(--gn)":key==="mid"?"var(--or)":"var(--rd)"}}
@@ -1631,7 +1773,7 @@ function calc(){
   const hasHealth=Object.keys(HEALTH).length>0;
   const raw=S.dims.reduce((a,v,i)=>a+v*DM[i].w,0),adjusted=S.dims.reduce((a,v,i)=>{const q=(S.tweak||!hasHealth)?1:healthWeight(HEALTH[CORE_HEALTH[i]]),neutralized=50+(v-50)*q;return a+neutralized*DM[i].w},0),sc=Math.round(adjusted),ml=s2m(sc),z=s2z(sc),cover=healthCoverage(),pace=basePace(sc);
   S.score=sc;S.scoreRaw=Math.round(raw);S.mult=ml;
-  $("scoreNum").textContent=sc;$("sz").textContent=z.t;$("sz").style.color=z.c;$("scoreMult").textContent=ml.toFixed(2)+"x";$("bm").textContent=` · ${ml.toFixed(2)}x · ${pace.parts}次/月`;$("cur").style.left=sc+"%";$("scoreCoverage").textContent=S.tweak
+  $("scoreNum").textContent=sc;$("sz").textContent=z.t;$("sz").style.color=z.c;$("scoreMult").textContent=S.scoreRaw;$("bm").textContent=` · ${ml.toFixed(2)}x · ${pace.parts}次/月`;$("cur").style.left=sc+"%";$("scoreCoverage").textContent=S.tweak
     ?"微调模式 · 未校准"
     :(hasHealth&&Math.abs(S.scoreRaw-sc)>=1
       ?`有效 ${cover.toFixed(1)}/7 · 原始${S.scoreRaw}→校准${sc}`
@@ -1673,19 +1815,25 @@ function currentActionPlan(){
   return{kind:"done",title:"本月基础定投已完成",sub:next?`下一回撤档位：$${Math.round(S.rh*(1-next.p)).toLocaleString()}，触发后执行 ¥${next.a}。`:"所有回撤档位均已执行。",btn:"查看买入记录",conf,pace,pending};
 }
 function renderAction(){
-  const sc=Number.isFinite(+S.score)?+S.score:50,plan=currentActionPlan();preparedTp=plan.kind==="trigger"?plan.trigger.p:null;
-  $("actionTitle").textContent=plan.title;$("actionSub").textContent=plan.sub;$("actionBtn").textContent=plan.btn;$("actionScore").textContent=sc;
-  const opp=sc>=85?"极高":sc>=70?"高":sc>=50?"中性":"低";$("oppKpi").textContent=opp;$("oppKpi").style.color=sc>=70?"var(--gn)":sc<50?"var(--rd)":"var(--yl)";
-  const pb=+($("spb")&&$("spb").value)||0,risk=pb>=40?"高":pb>=25?"偏高":pb>=10?"中等":"低";$("riskKpi").textContent=risk;$("riskKpi").style.color=pb>=40?"var(--rd)":pb>=25?"var(--or)":pb>=10?"var(--yl)":"var(--gn)";
-  $("confKpi").textContent=plan.conf.label;$("confKpi").style.color=plan.conf.color;
-  const rs=[],coldPending=S.log.filter(l=>l.cold!==true).length;if(coldPending)rs.push([`${coldPending}笔待确认提币`,"warn"]);if(plan.conf.key==="low")rs.push(["低置信度 · 加仓暂停","warn"]);if(S.ahr&&S.ahr.v<.45)rs.push(["AHR 抄底区",""]);else if(S.ahr&&S.ahr.v<1.2)rs.push(["AHR 定投区",""]);const sp=+($("ssp")&&$("ssp").value)||0,soprHealth=HEALTH["SOPR"];if(soprHealth&&soprHealth.status==="stale")rs.push(["SOPR 数据滞后","warn"]);else if(sp&&sp<1)rs.push(["SOPR 低于1",""]);const lthEl=$("slth"),lth=lthEl&&lthEl.value!==""?+lthEl.value:null,lthHealth=HEALTH["LTH-NUPL"];if(lthHealth&&lthHealth.status==="stale")rs.push(["LTH-NUPL 数据滞后","warn"]);else if(Number.isFinite(lth)){if(lth<0)rs.push(["LTH 整体浮亏","warn"]);else if(lth<.1)rs.push(["LTH-NUPL 警戒","warn"]);else if(lth<.25)rs.push(["LTH 利润收窄","warn"]);}const wm=+($("swm")&&$("swm").value)||0;if(wm&&S.price/wm<1.1)rs.push(["接近200WMA",""]);const dailyAlerts=stableDailyAlerts();if(dailyAlerts.length){const tx=dailyAlerts.map(a=>`${a.sym} ${fmtUsdB(a.d1)}`).join(" / ");rs.push([`最新日异动 ${tx}`,dailyAlerts.some(a=>a.d1<0)?"warn":""]);}else{const st=combinedStableStats();if(st)rs.push([st.d7>=0?"稳定币7日扩张":"稳定币7日收缩",st.d7>=0?"":"warn"]);}if(!rs.length)rs.push(["等待更多有效数据","neutral"]);$("actionReasons").innerHTML=rs.slice(0,4).map(r=>`<span class="reason ${r[1]}">${r[0]}</span>`).join("");
+  const sc=Number.isFinite(+S.score)?+S.score:50,conf=confidenceInfo(),zone=s2z(sc),ahr=S.ahr&&Number.isFinite(+S.ahr.v)?+S.ahr.v:null,spEl=$("ssp"),sp=spEl&&spEl.value!==""?+spEl.value:null,lthEl=$("slth"),lth=lthEl&&lthEl.value!==""?+lthEl.value:null,wm=+($("swm")&&$("swm").value)||0,st=combinedStableStats();
+  let chainTitle="链上等待数据",chainText="链上指标仍在更新";
+  if(Number.isFinite(lth)){if(lth<0){chainTitle="长期持有者浮亏";chainText="长期持有者整体进入未实现亏损"}else if(lth<.1){chainTitle="长期利润接近警戒";chainText="长期持有者利润已接近盈亏警戒线"}else if(lth<.25){chainTitle="长期利润收窄";chainText="长期持有者仍盈利，但利润空间正在收窄"}else if(lth<.5){chainTitle="长期盈利健康";chainText="长期持有者维持健康盈利"}else{chainTitle="长期利润丰厚";chainText="长期持有者未实现利润处于高位"}}
+  else if(Number.isFinite(sp)){chainTitle=sp<1?"链上轻度投降":"链上获利兑现";chainText=sp<1?"SOPR 低于 1，链上出现亏损兑现":"SOPR 高于 1，链上以盈利兑现为主"}
+  const liqText=st?(st.d7>=1e9?"稳定币七日明显扩张":st.d7<=-1e9?"稳定币七日明显收缩":"稳定币七日变化温和"):"稳定币流动性等待更新",pbEl=$("spb"),pb=pbEl&&pbEl.value!==""?+pbEl.value:null,risk=pb==null?"待定":pb>=40?"高":pb>=25?"偏高":pb>=10?"中等":"低";
+  $("actionTitle").textContent=`${zone.t} · ${chainTitle}`;
+  $("actionSub").textContent=`BTC 当前处于${zone.t}区间；${chainText}。${liqText}${conf.key==="low"?"，部分数据源暂不可用。":"。"}`;
+  $("actionScore").textContent=sc;$("actionBtn").textContent="查看市场体温";
+  $("oppKpi").textContent=zone.t;$("oppKpi").style.color=zone.c;
+  $("riskKpi").textContent=risk;$("riskKpi").style.color=pb==null?"var(--tx3)":pb>=40?"var(--rd)":pb>=25?"var(--or)":pb>=10?"var(--yl)":"var(--gn)";
+  $("confKpi").textContent=conf.label;$("confKpi").style.color=conf.color;
+  const rs=[];if(conf.key==="low")rs.push(["部分指标缺失","warn"]);if(ahr!=null)rs.push([`AHR ${ahr.toFixed(3)} · ${ahr<.45?"深度低估":ahr<1.2?"低估":ahr<5?"偏热":"高估"}`,ahr>=5?"warn":""]);if(wm>0)rs.push([`价格/200WMA ${(S.price/wm).toFixed(2)}x`,S.price/wm>2.5?"warn":""]);if(Number.isFinite(sp))rs.push([`SOPR ${sp.toFixed(3)}`,sp>1.05?"warn":""]);if(Number.isFinite(lth))rs.push([`LTH-NUPL ${lth.toFixed(3)}`,lth<.1?"warn":""]);if(st)rs.push([st.d7>=0?`稳定币7日 ${fmtUsdB(st.d7)}`:`稳定币7日 ${fmtUsdB(st.d7)}`,st.d7<0?"warn":""]);const funding=+(S.raw&&S.raw.fundingRate);if(Number.isFinite(funding)&&Math.abs(funding)>.0003)rs.push(["永续杠杆拥挤","warn"]);if(!rs.length)rs.push(["等待更多有效数据","neutral"]);$("actionReasons").innerHTML=rs.slice(0,5).map(r=>`<span class="reason ${r[1]}">${r[0]}</span>`).join("");renderDailyChanges();
 }
 function prepareAction(){const plan=currentActionPlan();if(plan.kind==="trigger"){const t=plan.trigger;preparedTp=t.p;$("la").value=t.a;$("ltype").value=t.k;$("lp").value=S.price;$("buyForm").scrollIntoView({behavior:"smooth",block:"center"});ntf(`已填入跌${Math.round(t.p*100)}%档 ¥${t.a}`)}else if(plan.kind==="base"){preparedTp=null;$("la").value=plan.amount;$("ltype").value="base";$("lp").value=S.price;$("buyForm").scrollIntoView({behavior:"smooth",block:"center"});ntf(`已填入第 ${plan.pace.index}/${plan.pace.parts} 笔基础定投`)}else if(plan.kind==="health"){const p=$("healthPanel");p.open=true;p.scrollIntoView({behavior:"smooth",block:"center"});ntf("数据恢复前不提示回撤加仓")}else if(plan.kind==="wait"){$("plan").scrollIntoView({behavior:"smooth",block:"start"});ntf("当前基础定投节奏已完成")}else{$("lb2").scrollIntoView({behavior:"smooth"})}}
 function onP(){S.price=+$("bp").value||0;$("lp").value=S.price;clearTimeout(onPTimer);onPTimer=setTimeout(renderPriceDerived,300)}
 function trig(){const v=+$("rh").value,hi=v>0?v:(S.rh>0?S.rh:78000);S.rh=hi;$("rhd").textContent=hi.toLocaleString();const cur=S.price,dp=hi>0?(hi-cur)/hi*100:0;$("cp").textContent="现价 $"+cur.toLocaleString();$("dp2").textContent=dp>0?"-"+dp.toFixed(1)+"%":"+"+Math.abs(dp).toFixed(1)+"%";$("dp2").style.color=dp>0?"var(--rd)":"var(--gn)";$("tb").innerHTML=TR.map(t=>{const tp=Math.round(hi*(1-t.p)),fire=cur<=tp,done=triggerDone(t.p),pill=done?'<span class="pill done">已执行</span>':fire?'<span class="pill fire">触发</span>':'<span class="pill wait">等待</span>';return `<div class="trig"><div class="trig-pct">跌${Math.round(t.p*100)}%</div><div class="trig-price num" style="${fire&&!done?"color:var(--rd)":""}">$${tp.toLocaleString()}</div><div class="trig-amt num">¥${t.a}</div>${pill}</div>`}).join("");saveState();upB();renderAction()}
 function upB(){const b=S.bud;$("u0").textContent=b.base;$("u1").textContent=b.pull;$("u2").textContent=b.ext;$("b0").style.width=Math.min(100,b.base/10)+"%";$("b1").style.width=Math.min(100,b.pull/7)+"%";$("b2").style.width=Math.min(100,b.ext/3)+"%";const p=pendingTriggers();$("pendingPull").textContent="¥"+p.filter(t=>t.k==="pull").reduce((a,t)=>a+t.a,0);$("pendingExt").textContent="¥"+p.filter(t=>t.k==="ext").reduce((a,t)=>a+t.a,0)}
 function upH2(){const h=S.hd;$("hd").textContent=h.d.toFixed(4)+" BTC";const pnl=h.dc>0&&S.price>0?(S.price/h.dc-1)*100:null;$("hdc").innerHTML="均价 $"+Number(h.dc).toLocaleString()+(pnl==null?"":` · <span style="color:${pnl>=0?"var(--gn)":"var(--rd)"};font-weight:700">${pnl>=0?"+":""}${pnl.toFixed(1)}%</span>`);$("hl").textContent=h.l.toFixed(4)+" BTC";$("hlc").textContent="均价 $"+Number(h.lc).toLocaleString()}
-function renderAhr(a){if(!a||!a.v)return;const v=a.v,z=v<.45?{t:"抄底区 · 加倍囤",c:"var(--gn)"}:v<1.2?{t:"定投区 · 照常买",c:"var(--gn2)"}:v<5?{t:"观望区 · 降低投入",c:"var(--or)"}:{t:"高危区 · 分批止盈",c:"var(--rd)"};$("ahrBig").textContent=v.toFixed(3);$("ahrBig").style.color=z.c;$("ahrZone").textContent=z.t;$("ahrZone").style.color=z.c;if(a.c)$("ahrC").textContent=a.c.toFixed(3);if(a.pl)$("ahrPL").textContent="$"+Math.round(a.pl/1000)+"K";if(a.dma)$("ahrDMA").textContent="$"+Math.round(a.dma/1000)+"K";const lg=(Math.log(Math.min(12,Math.max(.2,v)))-Math.log(.2))/(Math.log(12)-Math.log(.2))*100;$("ahrCur").style.left=lg.toFixed(1)+"%";if(a.dma&&a.pl){const p045=Math.sqrt(.45*a.dma*a.pl),p1=a.p1||Math.sqrt(a.dma*a.pl),p12=Math.sqrt(1.2*a.dma*a.pl),cpv=S.price;const row=(lbl,px,desc)=>{const below=cpv<=px,dd=(cpv-px)/px*100,pill=below?'<span class="pill done">已低于</span>':`<span class="pill wait">上方 +${dd.toFixed(1)}%</span>`;return `<div class="trig"><div class="trig-pct" style="width:92px">${lbl}</div><div class="trig-price num">$${Math.round(px).toLocaleString()}<span style="font-size:11px;color:var(--tx3);font-weight:500"> ${desc}</span></div>${pill}</div>`};$("ahrLadder").innerHTML=row("AHR = 0.45",p045,"抄底线")+row("AHR = 1.00",p1,"锚点成分")+row("AHR = 1.20",p12,"定投区上沿")}}
+function renderAhr(a){if(!a||!a.v)return;const v=a.v,z=v<.45?{t:"深度低估",c:"var(--gn)"}:v<1.2?{t:"长期低估",c:"var(--gn2)"}:v<5?{t:"估值偏热",c:"var(--or)"}:{t:"高估风险",c:"var(--rd)"};$("ahrBig").textContent=v.toFixed(3);$("ahrBig").style.color=z.c;$("ahrZone").textContent=z.t;$("ahrZone").style.color=z.c;if(a.c)$("ahrC").textContent=a.c.toFixed(3);if(a.pl)$("ahrPL").textContent="$"+Math.round(a.pl/1000)+"K";if(a.dma)$("ahrDMA").textContent="$"+Math.round(a.dma/1000)+"K";const lg=(Math.log(Math.min(12,Math.max(.2,v)))-Math.log(.2))/(Math.log(12)-Math.log(.2))*100;$("ahrCur").style.left=lg.toFixed(1)+"%";if(a.dma&&a.pl){const p045=Math.sqrt(.45*a.dma*a.pl),p1=a.p1||Math.sqrt(a.dma*a.pl),p12=Math.sqrt(1.2*a.dma*a.pl),cpv=S.price;const row=(lbl,px,desc)=>{const below=cpv<=px,dd=(cpv-px)/px*100,pill=below?'<span class="pill done">已低于</span>':`<span class="pill wait">上方 +${dd.toFixed(1)}%</span>`;return `<div class="trig"><div class="trig-pct" style="width:92px">${lbl}</div><div class="trig-price num">$${Math.round(px).toLocaleString()}<span style="font-size:11px;color:var(--tx3);font-weight:500"> ${desc}</span></div>${pill}</div>`};$("ahrLadder").innerHTML=row("AHR = 0.45",p045,"深度低估线")+row("AHR = 1.00",p1,"周期中轴")+row("AHR = 1.20",p12,"低估区上沿")}}
 function chartTheme(){const c=getComputedStyle(document.documentElement),v=n=>c.getPropertyValue(n).trim();return{card:v("--card"),tx:v("--tx"),tx2:v("--tx2"),div:v("--div"),gn:v("--gn"),rd:v("--rd")}}
 function chartDay(ts){return new Date(ts*1000).toLocaleDateString("zh-CN",{year:"numeric",month:"2-digit",day:"2-digit"})}
 function shortCny(v){if(!(v>=0))return"--";return v>=1000000?"¥"+(v/1000000).toFixed(2)+"M":v>=10000?"¥"+(v/10000).toFixed(2)+"万":"¥"+Math.round(v).toLocaleString()}
@@ -1819,7 +1967,7 @@ function renderStableCombined(){
   renderAction()
 }
 function toggleTweak(){setTweak(!S.tweak,false)}function setTweak(on,silent){S.tweak=!!on;for(let i=0;i<DM.length;i++)$(`d${i}`).disabled=!S.tweak;document.querySelectorAll(".chips .chip").forEach(b=>b.disabled=!S.tweak);$("tweakBtn").textContent=S.tweak?"微调 ON":"微调 OFF";$("tweakBtn").classList.toggle("on",S.tweak);saveState();if(!silent)ntf(S.tweak?"已开启指标微调":"已锁定实时指标")}
-function renderMA(){const el=$("maList"),m=S.mas;if(!m||!m.m51){el.innerHTML='<div class="log-empty">刷新后自动计算</div>';return}const rows=[["MA51","快线·急行军",m.m51],["MA120","半年线",m.m120],["MA250","年线·锚点成分",m.m250],["MA850","三年线·压箱底",m.m850]];el.innerHTML=rows.map(r=>{const dd=(S.price-r[2])/r[2]*100;let pill,pc="";if(dd>2)pill=`<span class="pill wait">上方 +${dd.toFixed(1)}%</span>`;else if(dd>=-2){pill='<span class="pill fire">▶ 到位可买</span>';pc="color:var(--gn)"}else{pill=`<span class="pill done">已低于 ${Math.abs(dd).toFixed(1)}%</span>`;pc="color:var(--gn)"}return `<div class="trig"><div class="trig-pct">${r[0]}</div><div class="trig-price num" style="${pc}">$${Math.round(r[2]).toLocaleString()}<span style="font-size:11px;color:var(--tx3);font-weight:500"> ${r[1]}</span></div>${pill}</div>`}).join("")}
+function renderMA(){const el=$("maList"),m=S.mas;if(!m||!m.m51){el.innerHTML='<div class="log-empty">刷新后自动计算</div>';return}const rows=[["MA51","短期趋势",m.m51],["MA120","中期趋势",m.m120],["MA250","长期趋势·锚点成分",m.m250],["MA850","超长期趋势",m.m850]];el.innerHTML=rows.map(r=>{const dd=(S.price-r[2])/r[2]*100;let pill,pc="";if(dd>2)pill=`<span class="pill wait">上方 +${dd.toFixed(1)}%</span>`;else if(dd>=-2){pill='<span class="pill fire">接近均线</span>';pc="color:var(--gn)"}else{pill=`<span class="pill done">已跌破 ${Math.abs(dd).toFixed(1)}%</span>`;pc="color:var(--gn)"}return `<div class="trig"><div class="trig-pct">${r[0]}</div><div class="trig-price num" style="${pc}">$${Math.round(r[2]).toLocaleString()}<span style="font-size:11px;color:var(--tx3);font-weight:500"> ${r[1]}</span></div>${pill}</div>`}).join("")}
 function upG(){const p=S.price,g=300000,pct=Math.min(100,p/g*100);$("gb").style.width=pct+"%";$("gp").textContent=pct.toFixed(1)+"%";$("gr2").textContent="当前价格进度 · 距目标还差 $"+Math.max(0,g-p).toLocaleString();$("kp3").textContent="$"+p.toLocaleString()}
 function findTriggerForLog(type){if(preparedTp!=null){const t=TR.find(x=>x.p===preparedTp&&x.k===type);if(t&&!triggerDone(t.p)&&S.price<=S.rh*(1-t.p))return t.p}const t=TR.find(x=>x.k===type&&!triggerDone(x.p)&&S.price<=S.rh*(1-x.p));return t?t.p:null}
 function logB(){const a=+$("la").value,tp=$("ltype").value,pr=+$("lp").value||S.price;if(!a||a<=0){ntf("请输入金额");return}const lim={base:1000,pull:700,ext:300};if(S.bud[tp]+a>lim[tp]){ntf("超出预算上限");return}S.bud[tp]+=a;const btc=a/(S.fx||7.1)/pr,hitTp=tp==="base"?null:findTriggerForLog(tp),now=Date.now();S.log.unshift({ts:now,dt:new Date(now).toLocaleString("zh-CN",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}),t:tp,a,p:pr,b:btc,mo:S.month,tp:hitTp,cold:false});S.log=S.log.slice(0,500);const tot=S.hd.d+btc;S.hd.dc=tot>0?(S.hd.d*S.hd.dc+btc*pr)/tot:0;S.hd.d=tot;preparedTp=null;saveState();upB();upH2();rl2();renderPersonalChart();trig();$("la").value="";ntf("已记录买入 · 记得提至冷钱包")}
@@ -1874,6 +2022,8 @@ async function tickPrice(){
       if(Number.isFinite(c)){$("pc24").textContent=(c>=0?"+":"")+c.toFixed(2)+"%";$("pc24").className="chg-pill num "+(c>=0?"chg-up":"chg-dn")}
       lastTickAt=Date.now();
       renderPriceDerived();
+      if(S.raw&&S.raw.coinbasePrice>0)S.raw.coinbasePremium=(S.raw.coinbasePrice/S.price-1)*100;
+      renderFunds();commitStatusSnapshot();renderDailyChanges();
     }
   }catch(e){}finally{priceTickInFlight=false}
 }
@@ -1912,6 +2062,7 @@ function initSectionNav(){
 
   links.forEach(a=>{
     a.addEventListener("click",()=>{
+      const sec=document.getElementById(a.dataset.section);if(sec&&sec.tagName==="DETAILS")sec.open=true;
       setActive(a.dataset.section);
     });
   });
@@ -1942,13 +2093,14 @@ function initSectionNav(){
 }
 function init(){
   buildUI();
+  arrangeDashboard();
   $("buildBadge").textContent="V"+BUILD_ID.split("-")[0];
   const nowM=mstr();
   if(S.month!==nowM){S.month=nowM;S.bud={base:0,pull:0,ext:0};saveState();setTimeout(()=>ntf("新月份 "+nowM+" · 预算已自动重置"),600)}
   $("cm").textContent=S.month;$("bp").value=S.price;$("rh").value=S.rh;$("lp").value=S.price;
   S.dims.forEach((v,i)=>$(`d${i}`).value=v);
   if(!S.sigs.lo){S.sigs.lo=29132;S.sigs.hi=90461}
-  calc();upB();trig();upH2();upG();rl2();rSig();renderMA();if(S.ahr)renderAhr(S.ahr);renderPriceSpark();renderPersonalChart();updateAnchorMode();
+  calc();upB();trig();upH2();upG();rl2();rSig();renderMA();if(S.ahr)renderAhr(S.ahr);renderPriceSpark();renderPersonalChart();renderFunds();renderDailyChanges();updateAnchorMode();
   try{renderStableCombined()}catch(e){console.error("稳定币卡片初始化失败",e)}
   setTweak(!!S.tweak,true);initSectionNav();
   const c=readCache(false);
