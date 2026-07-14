@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BUILD: BTC-DCA-V11.0.1-MINER-UI-20260714 -->
+<!-- BUILD: BTC-DCA-V12.0.0-20260714 -->
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -8,9 +8,10 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="BTC定投" />
+  <meta name="btc-dca-build" content="12.0.0-20260714" />
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
-  <title>BTC 定投 · V11.0 专业定投版</title>
+  <title>BTC 定投 · V12.0 数据主权版</title>
   <style>
     :root{
       color-scheme:dark;
@@ -49,6 +50,7 @@
     .dot{width:7px;height:7px;border-radius:50%;background:var(--tx3);flex:none}.dot.on{background:var(--gn);box-shadow:0 0 8px rgba(0,200,5,.6)}
     .dot.spin{background:var(--or);animation:blink 1s infinite}@keyframes blink{50%{opacity:.4}}
     .refresh{margin-left:auto;background:transparent;border:0;color:var(--gn);font-weight:750;padding:6px 0;cursor:pointer}
+    .update-banner{display:none;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;padding:10px 12px;border-radius:12px;background:rgba(255,159,10,.12);color:var(--or);font-size:11px;font-weight:700}.update-banner.on{display:flex}.update-banner button{border:0;background:var(--or);color:#000;border-radius:999px;padding:5px 10px;font-size:10px;font-weight:850;white-space:nowrap}
     .hbadge,.pill{font-size:11px;font-weight:750;padding:4px 9px;border-radius:999px;white-space:nowrap}.hbadge{background:var(--card2);color:var(--tx2)}
     .hbadge.good{background:var(--gn-dim);color:var(--gn)}.hbadge.warn{background:rgba(255,159,10,.12);color:var(--or)}.hbadge.bad{background:var(--rd-dim);color:var(--rd)}
     .health{margin-top:8px;border:1px solid var(--div);border-radius:14px;background:var(--card);overflow:hidden}
@@ -97,7 +99,7 @@
     .liq-row{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--div)}.liq-row:last-child{border-bottom:0;padding-bottom:0}.liq-sym{font-size:14px;font-weight:760;width:52px}.liq-cap-sm{font-size:10px;color:var(--tx3)}
     .liq-spark{flex:1;height:26px;min-width:40px}.liq-alert{font-size:9px;font-weight:850;padding:2px 6px;border-radius:999px;margin-left:5px;background:currentColor;color:var(--bg);vertical-align:2px}.liq-nums{text-align:right;min-width:108px}.liq-d7{font-size:15px;font-weight:760}.liq-mc{font-size:10px;color:var(--tx2);margin-top:2px}
     .tiles{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}.tile{grid-column:span 2;background:var(--card);border-radius:14px;padding:14px;min-height:132px}.tile.halving{grid-column:span 4}.tile.prob{grid-column:span 3}.tile.lth-nupl{grid-column:span 6;min-height:154px}.tile-name{font-size:11px;color:var(--tx2);font-weight:650;margin-bottom:8px;display:flex;align-items:center;gap:5px}.tile-live{width:5px;height:5px;border-radius:50%;background:var(--gn)}
-    .tile input{width:100%;background:transparent;border:0;outline:0;color:var(--tx);font-size:24px;font-weight:840;letter-spacing:-.03em;-moz-appearance:textfield}.tile input::-webkit-inner-spin-button,.tile input::-webkit-outer-spin-button{-webkit-appearance:none}.tile-sep{text-align:center;color:var(--tx3);font-size:11px;font-weight:800;padding:5px 0}.tile-status{font-size:12px;font-weight:720;margin-top:8px;min-height:15px}.tile-hint{font-size:10px;color:var(--tx3);margin-top:3px;line-height:1.3}
+    .tile input{width:100%;background:transparent;border:0;outline:0;color:var(--tx);font-size:24px;font-weight:840;letter-spacing:-.03em;-moz-appearance:textfield}.tile input::-webkit-inner-spin-button,.tile input::-webkit-outer-spin-button{-webkit-appearance:none}.tile-status{font-size:12px;font-weight:720;margin-top:8px;min-height:15px}.tile-hint{font-size:10px;color:var(--tx3);margin-top:3px;line-height:1.3}
     .miner-tile{display:flex;flex-direction:column}.miner-head{display:flex;align-items:center;justify-content:space-between;gap:6px}.miner-head .tile-name{margin-bottom:0;white-space:nowrap}.miner-pressure{min-height:0;margin:0;padding:3px 6px;border-radius:999px;background:var(--card2);font-size:9px;font-weight:800;white-space:nowrap}.miner-values{display:flex;align-items:flex-start;gap:5px;margin-top:13px}.miner-end{display:block;min-width:0;flex:1;cursor:text}.miner-input-wrap{position:relative;display:block;height:27px}.miner-display{display:block;font-size:21px;font-weight:840;letter-spacing:-.04em;line-height:27px;white-space:nowrap}.miner-end.right{text-align:right}.tile .miner-input-wrap input{position:absolute;inset:0;width:100%;height:27px;padding:0;opacity:0;z-index:1;background:var(--card);font-size:17px;line-height:27px}.tile .miner-end.right input{text-align:right}.miner-end:focus-within .miner-display{opacity:0}.tile .miner-input-wrap input:focus{opacity:1}.miner-end small{display:block;margin-top:2px;color:var(--tx3);font-size:8px;font-weight:650;white-space:nowrap}.miner-dash{flex:none;color:var(--tx3);font-size:13px;font-weight:800;line-height:27px}.miner-scale{position:relative;margin-top:13px;padding-bottom:18px}.miner-track{position:relative;height:5px;border-radius:999px;background:linear-gradient(90deg,rgba(0,200,5,.72),rgba(255,159,10,.72))}.miner-dot{position:absolute;top:50%;left:50%;width:13px;height:13px;border:3px solid var(--card);border-radius:50%;background:var(--tx);box-shadow:0 1px 5px rgba(0,0,0,.4);transform:translate(-50%,-50%);transition:left .35s ease}.miner-now{position:absolute;top:9px;left:50%;transform:translateX(-50%);color:var(--gn);font-size:8px;font-weight:800;white-space:nowrap;transition:left .35s ease}.miner-tile .tile-hint{margin-top:auto}
     .halving-track{height:6px;background:var(--div);border-radius:999px;overflow:hidden;margin-top:12px}.halving-fill{height:100%;width:0;background:linear-gradient(90deg,var(--gn2),var(--gn));border-radius:999px;transition:width .4s ease}.halving-meta{display:flex;justify-content:space-between;gap:12px;margin-top:7px;color:var(--tx2);font-size:10px;font-weight:700}.halving-meta span:last-child{text-align:right}
     .lth-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px}.lth-head input{max-width:180px;font-size:30px}.lth-head .tile-status{text-align:right;margin:0;max-width:260px}.lth-scale{position:relative;height:14px;margin-top:16px}.lth-track{position:absolute;left:0;right:0;top:4px;height:6px;border-radius:999px;background:linear-gradient(90deg,var(--rd) 0 13.33%,var(--or) 13.33% 40%,var(--yl) 40% 66.67%,var(--gn2) 66.67% 100%);opacity:.82}.lth-line{position:absolute;top:0;width:1px;height:14px;background:var(--tx3);transform:translateX(-50%)}.lth-line.deep{left:13.33%;background:var(--rd)}.lth-line.zero{left:33.33%;width:2px;background:var(--tx)}.lth-line.early{left:40%;background:var(--or)}.lth-cursor{position:absolute;top:-2px;left:33.33%;width:18px;height:18px;border:3px solid var(--card);border-radius:50%;background:var(--tx);box-shadow:0 1px 7px rgba(0,0,0,.45);transform:translateX(-50%);transition:left .35s ease}.lth-labels{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:5px;color:var(--tx3);font-size:9px;font-weight:650}.lth-labels span:nth-child(2){text-align:center}.lth-labels span:last-child{text-align:right}
@@ -110,7 +112,7 @@
     .trig-hdr{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--tx2);padding:4px 0 12px}.trig-hdr input{background:var(--card);border:0;outline:0;color:var(--tx);padding:8px 11px;border-radius:10px;width:110px;font-weight:650}.drop-badge{font-weight:750}
     .holds{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hold{background:var(--card);border-radius:14px;padding:14px}.hold-lbl{font-size:11px;color:var(--tx2);font-weight:650;margin-bottom:5px}.hold-val{font-size:17px;font-weight:780}.hold-sub{font-size:11px;color:var(--tx3);margin-top:3px}.goal{padding:18px 0 4px}.goal-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}.goal-lbl{font-size:13px;color:var(--tx2)}.goal-pct{font-size:14px;font-weight:760;color:var(--gn)}
     .chart-card{position:relative;background:var(--card);border:1px solid var(--div);border-radius:18px;padding:14px;overflow:hidden}.chart-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}.chart-live{min-width:0;font-size:11px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chart-legend{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:3px 0 10px;color:var(--tx2);font-size:9px;font-weight:700}.legend-item{display:inline-flex;align-items:center;gap:4px}.legend-swatch{width:13px;height:2px;border-radius:2px;background:currentColor}.chart-shell{position:relative;min-height:360px}.personal-shell{min-height:286px}.personal-chart{width:100%;height:286px}.chart-empty{position:absolute;inset:0;display:none;place-items:center;text-align:center;color:var(--tx3);font-size:12px;line-height:1.5;background:var(--card);z-index:3}.chart-empty.on{display:grid}.personal-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}.personal-kpi{padding:10px;border-radius:12px;background:rgba(127,127,127,.08)}.personal-kpi small{display:block;color:var(--tx2);font-size:9px}.personal-kpi b{display:block;margin-top:3px;font-size:14px}.personal-note{font-size:10px;color:var(--tx3);margin-top:9px;line-height:1.45}
-    .log-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--div)}.log-icon{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:760;flex:none}.li-base{background:var(--gn-dim);color:var(--gn)}.li-pull{background:rgba(74,158,255,.12);color:var(--blue)}.li-ext{background:var(--rd-dim);color:var(--rd)}.log-main{flex:1}.log-t1{font-size:14px;font-weight:680}.log-t2{font-size:11px;color:var(--tx2);margin-top:2px}.log-amt{font-size:15px;font-weight:760}.log-empty{text-align:center;color:var(--tx3);font-size:13px;padding:28px 0}
+    .log-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--div)}.log-icon{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:760;flex:none}.li-base{background:var(--gn-dim);color:var(--gn)}.li-pull{background:rgba(74,158,255,.12);color:var(--blue)}.li-ext{background:var(--rd-dim);color:var(--rd)}.log-main{flex:1;min-width:0}.log-t1{font-size:14px;font-weight:680}.log-t2{font-size:11px;color:var(--tx2);margin-top:2px}.log-side{text-align:right;flex:none}.log-amt{font-size:15px;font-weight:760}.cold-btn{margin-top:4px;border:0;border-radius:999px;padding:4px 8px;background:rgba(255,159,10,.12);color:var(--or);font-size:9px;font-weight:820}.cold-btn.done{background:var(--gn-dim);color:var(--gn)}.cold-summary{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0 2px;padding:10px 12px;border-radius:12px;background:var(--card);font-size:11px;color:var(--tx2)}.cold-summary b{color:var(--or)}.cold-summary.ok b{color:var(--gn)}.log-empty{text-align:center;color:var(--tx3);font-size:13px;padding:28px 0}.data-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.data-tools .btn{padding:8px 13px;font-size:11px}.data-note{font-size:10px;color:var(--tx3);margin-top:7px;line-height:1.45}
     .rule{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--div)}.rule:last-child{border-bottom:0}.rule-n{width:28px;height:28px;border-radius:50%;background:var(--card2);color:var(--gn);display:grid;place-items:center;font-size:13px;font-weight:760;flex:none}.rule-tx{font-size:14px;line-height:1.5}.rule-tx span{display:block;color:var(--tx2);font-size:13px;margin-top:1px}
     .modal{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);align-items:flex-end;justify-content:center}.sheet{background:var(--card);width:100%;max-width:720px;border-radius:20px 20px 0 0;padding:24px 20px calc(34px + env(safe-area-inset-bottom))}.sheet-title{font-size:18px;font-weight:780;margin-bottom:18px}.sheet .field{margin-bottom:14px}.sheet .field input{width:100%;background:var(--card2)}
     .toast{position:fixed;bottom:calc(22px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(70px);z-index:1000;opacity:0;background:var(--card2);padding:12px 20px;border-radius:999px;font-size:13px;font-weight:680;white-space:nowrap;box-shadow:0 4px 24px rgba(0,0,0,.45);transition:.28s}.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -179,8 +181,10 @@
     <div class="dot" id="ldot"></div>
     <span id="lupdated" style="color:var(--tx3)">等待加载</span>
     <span class="hbadge" id="healthBadge">--</span>
+    <span class="hbadge num" id="buildBadge">V12.0</span>
     <button class="refresh" onclick="fetchLive(true)">刷新</button>
   </div>
+  <div class="update-banner" id="updateBanner"><span id="updateText">检测到新版本</span><button onclick="reloadLatest()">立即更新</button></div>
 
   <details class="health" id="healthPanel">
     <summary><span>数据可用性</span><span id="healthSummary">等待检查</span></summary>
@@ -433,8 +437,15 @@
   <div class="divider"></div>
   <section class="sec">
     <div class="sec-title">买入记录</div>
+    <div class="cold-summary" id="coldSummary"><span>冷钱包提币状态</span><b>暂无记录</b></div>
     <div id="lb2"></div>
-    <button class="btn danger sm" onclick="clr()" style="margin-top:12px">清空记录</button>
+    <div class="data-tools">
+      <button class="btn ghost sm" onclick="exportBackup()">导出 JSON 备份</button>
+      <button class="btn ghost sm" onclick="document.getElementById('backupInput').click()">导入备份</button>
+      <button class="btn danger sm" onclick="clr()">清空记录</button>
+      <input id="backupInput" type="file" accept="application/json,.json" onchange="importBackup(this)" hidden />
+    </div>
+    <div class="data-note" id="storageNote">记录仅保存在本机；V12 会主动申请持久存储，仍建议定期导出备份。</div>
   </section>
 
   <div class="divider"></div>
@@ -484,6 +495,7 @@ const DN=["AHR999 新拟","200周均线","MVRV","恐惧贪婪","Puell 矿工","R
 const DW=["20% · 26回归","15%","15%","15%","15% · BGeometrics","10% · BGeometrics","10% · BGeometrics"];
 const MB=[[0,.1],[30,.3],[50,.8],[70,1.2],[85,1.95],[100,3]];
 const TR=[{p:.1,a:200,k:"pull"},{p:.2,a:200,k:"pull"},{p:.3,a:300,k:"pull"},{p:.4,a:150,k:"ext"},{p:.5,a:150,k:"ext"}];
+const BUILD_ID="12.0.0-20260714";
 const CORE_HEALTH=["AHR999","200WMA","MVRV","FGI","Puell","RR","SOPR"];
 const SOURCE_ORDER=["价格","AHR999","200WMA","均线","FGI","减半","关机价","MVRV","均衡价","概率","USDT","USDC","LTH-NUPL","SOPR","Puell","RR"];
 const CACHE_KEY="btc_live_v9",STATE_KEY="btc_exec_v7",CACHE_TTL=30*60*1000,STABLE_FLOW_THRESHOLD=1e9;
@@ -509,6 +521,32 @@ if(!DAILY.length){try{const c=JSON.parse(localStorage.getItem(CACHE_KEY));if(c&&
 if(DAILY.length){try{localStorage.setItem(DAILY_KEY,JSON.stringify(DAILY))}catch(e){}}
 if(S.daily!==undefined){delete S.daily;saveState()}
 if(S.chartDays!==undefined){delete S.chartDays;saveState()}
+function exportBackup(){
+  try{
+    const payload={app:"BTC-DCA",schema:1,build:BUILD_ID,exportedAt:new Date().toISOString(),state:S,daily:DAILY,liveCache:readCache(true)},blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a"),day=new Date().toISOString().slice(0,10);
+    a.href=URL.createObjectURL(blob);a.download=`btc-dca-backup-${day}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);ntf("备份已导出")
+  }catch(e){ntf("导出失败，请检查浏览器存储权限")}
+}
+async function importBackup(input){
+  const file=input&&input.files&&input.files[0];if(!file)return;
+  try{
+    const payload=JSON.parse(await file.text()),state=payload&&payload.state;
+    if(!payload||payload.app!=="BTC-DCA"||!state||typeof state!=="object"||!Array.isArray(state.log))throw new Error("invalid backup");
+    if(!confirm(`导入 ${payload.exportedAt?new Date(payload.exportedAt).toLocaleString("zh-CN"):"未知时间"} 的备份？当前本机数据将被覆盖。`))return;
+    localStorage.setItem(STATE_KEY,JSON.stringify(state));
+    if(Array.isArray(payload.daily))localStorage.setItem(DAILY_KEY,JSON.stringify(payload.daily));
+    if(payload.liveCache)localStorage.setItem(CACHE_KEY,JSON.stringify(payload.liveCache));
+    ntf("导入成功，正在重载");setTimeout(()=>location.reload(),500)
+  }catch(e){ntf("备份文件无效或已损坏")}
+  finally{input.value=""}
+}
+async function requestPersistentStorage(){
+  const el=$("storageNote");if(!el)return;
+  try{
+    if(!navigator.storage||!navigator.storage.persist){el.textContent="当前浏览器不支持持久存储；请定期导出 JSON 备份。";return}
+    const ok=await navigator.storage.persist();el.textContent=ok?"本机持久存储已启用；仍建议换机前导出 JSON 备份。":"浏览器未授予持久存储；请定期导出 JSON 备份。"
+  }catch(e){el.textContent="无法确认持久存储状态；请定期导出 JSON 备份。"}
+}
 function buildUI(){
   $("dims").innerHTML=DN.map((n,i)=>`<div class="dim"><div class="dim-info"><div class="dim-name">${n}</div><div class="dim-meta"><span class="dim-live" id="ds${i}">LIVE</span> · ${DW[i]}</div></div><input class="dim-slider" type="range" min="0" max="100" value="${S.dims[i]}" id="d${i}" oninput="calc()"><div class="dim-raw num" id="r${i}"></div><div class="dim-val num" id="v${i}">${S.dims[i]}</div><div class="dim-hint" id="h${i}"></div></div>`).join("");
 }
@@ -531,6 +569,15 @@ function restoreCacheHealth(c){
   });
 }
 function setLiveStatus(state,msg){$("ldot").className="dot "+(state==="ok"?"on":state==="loading"?"spin":"");$("lupdated").textContent=msg}
+async function checkAppUpdate(){
+  if(!/^https?:$/.test(location.protocol))return;
+  try{
+    const u=new URL(location.href);u.searchParams.set("_build",Date.now());
+    const tx=await fetch(u.toString(),{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(r.status);return r.text()}),m=tx.match(/const BUILD_ID="([^"]+)"/);
+    if(m&&m[1]!==BUILD_ID){$("updateText").textContent=`发现新版本 ${m[1]} · 当前 ${BUILD_ID}`;$("updateBanner").classList.add("on")}
+  }catch(e){}
+}
+function reloadLatest(){const u=new URL(location.href);u.searchParams.set("v",Date.now());u.searchParams.delete("_build");location.replace(u.toString())}
 function progStart(){progActive=true;progN=0;$("fetchBar").style.opacity="1";$("fetchBar").style.width="4%"}
 function progStep(){if(!progActive)return;progN++;$("fetchBar").style.width=Math.min(90,progN/PROG_EST*90)+"%";$("lupdated").textContent=`正在更新 ${progN}/${PROG_EST}`}
 function progDone(){progActive=false;$("fetchBar").style.width="100%";setTimeout(()=>{$("fetchBar").style.opacity="0";setTimeout(()=>$("fetchBar").style.width="0",350)},300)}
@@ -638,6 +685,25 @@ async function binanceFetch(path,ms=7000){
     clearTimeout(timer);
     throw e;
   }
+}
+async function fetchSpotTicker(ms=6500){
+  const errors=[];
+  try{
+    const t=await binanceFetch("/api/v3/ticker/24hr?symbol=BTCUSDT",ms),price=+t.lastPrice,change24h=+t.priceChangePercent;
+    if(!(price>0))throw new Error("bad Binance ticker");
+    return{price,change24h,source:"Binance"};
+  }catch(e){errors.push(e)}
+  try{
+    const j=await tryFetch("https://www.okx.com/api/v5/market/ticker?instId=BTC-USDT",ms),t=j&&j.data&&j.data[0],price=+(t&&t.last),open=+(t&&t.open24h),change24h=open>0?(price/open-1)*100:null;
+    if(!(price>0))throw new Error("bad OKX ticker");
+    return{price,change24h,source:"OKX"};
+  }catch(e){errors.push(e)}
+  try{
+    const t=await tryFetch("https://api.exchange.coinbase.com/products/BTC-USD/stats",ms),price=+t.last,open=+t.open,change24h=open>0?(price/open-1)*100:null;
+    if(!(price>0))throw new Error("bad Coinbase ticker");
+    return{price,change24h,source:"Coinbase"};
+  }catch(e){errors.push(e)}
+  throw errors[errors.length-1]||new Error("all ticker sources failed");
 }
 function getFallbackData(){
   const c=readCache(true),d=c&&c.data?{...c.data}:{};
@@ -1097,17 +1163,17 @@ async function fetchLive(force=false){
   const tasks=[];
   const task=f=>tasks.push((async()=>{try{await f()}catch(e){}})());
 
-  // 核心行情：三类请求并行；每类内部由三个 Binance 官方节点竞速。
+  // 核心行情：价格按 Binance → OKX → Coinbase 降级；日线仍由 Binance 官方节点竞速。
   task(async()=>{
     try{
-      const t=await binanceFetch("/api/v3/ticker/24hr?symbol=BTCUSDT",6500);
-      const p=+t.lastPrice,c=+t.priceChangePercent;
+      const t=await fetchSpotTicker(6500),p=t.price,c=t.change24h;
       if(!(p>0))throw new Error("bad ticker");
       result.price=p;
       result.change24h=c;
-      markHealth("价格","ok","Binance竞速");
+      result.priceSource=t.source;
+      markHealth("价格","ok",t.source);
     }catch(e){
-      carryFields(result,fallback,"价格",["price","change24h"]);
+      carryFields(result,fallback,"价格",["price","change24h","priceSource"]);
     }
   });
 
@@ -1612,7 +1678,7 @@ function renderAction(){
   const opp=sc>=85?"极高":sc>=70?"高":sc>=50?"中性":"低";$("oppKpi").textContent=opp;$("oppKpi").style.color=sc>=70?"var(--gn)":sc<50?"var(--rd)":"var(--yl)";
   const pb=+($("spb")&&$("spb").value)||0,risk=pb>=40?"高":pb>=25?"偏高":pb>=10?"中等":"低";$("riskKpi").textContent=risk;$("riskKpi").style.color=pb>=40?"var(--rd)":pb>=25?"var(--or)":pb>=10?"var(--yl)":"var(--gn)";
   $("confKpi").textContent=plan.conf.label;$("confKpi").style.color=plan.conf.color;
-  const rs=[];if(plan.conf.key==="low")rs.push(["低置信度 · 加仓暂停","warn"]);if(S.ahr&&S.ahr.v<.45)rs.push(["AHR 抄底区",""]);else if(S.ahr&&S.ahr.v<1.2)rs.push(["AHR 定投区",""]);const sp=+($("ssp")&&$("ssp").value)||0,soprHealth=HEALTH["SOPR"];if(soprHealth&&soprHealth.status==="stale")rs.push(["SOPR 数据滞后","warn"]);else if(sp&&sp<1)rs.push(["SOPR 低于1",""]);const lthEl=$("slth"),lth=lthEl&&lthEl.value!==""?+lthEl.value:null,lthHealth=HEALTH["LTH-NUPL"];if(lthHealth&&lthHealth.status==="stale")rs.push(["LTH-NUPL 数据滞后","warn"]);else if(Number.isFinite(lth)){if(lth<0)rs.push(["LTH 整体浮亏","warn"]);else if(lth<.1)rs.push(["LTH-NUPL 警戒","warn"]);else if(lth<.25)rs.push(["LTH 利润收窄","warn"]);}const wm=+($("swm")&&$("swm").value)||0;if(wm&&S.price/wm<1.1)rs.push(["接近200WMA",""]);const dailyAlerts=stableDailyAlerts();if(dailyAlerts.length){const tx=dailyAlerts.map(a=>`${a.sym} ${fmtUsdB(a.d1)}`).join(" / ");rs.push([`最新日异动 ${tx}`,dailyAlerts.some(a=>a.d1<0)?"warn":""]);}else{const st=combinedStableStats();if(st)rs.push([st.d7>=0?"稳定币7日扩张":"稳定币7日收缩",st.d7>=0?"":"warn"]);}if(!rs.length)rs.push(["等待更多有效数据","neutral"]);$("actionReasons").innerHTML=rs.slice(0,4).map(r=>`<span class="reason ${r[1]}">${r[0]}</span>`).join("");
+  const rs=[],coldPending=S.log.filter(l=>l.cold!==true).length;if(coldPending)rs.push([`${coldPending}笔待确认提币`,"warn"]);if(plan.conf.key==="low")rs.push(["低置信度 · 加仓暂停","warn"]);if(S.ahr&&S.ahr.v<.45)rs.push(["AHR 抄底区",""]);else if(S.ahr&&S.ahr.v<1.2)rs.push(["AHR 定投区",""]);const sp=+($("ssp")&&$("ssp").value)||0,soprHealth=HEALTH["SOPR"];if(soprHealth&&soprHealth.status==="stale")rs.push(["SOPR 数据滞后","warn"]);else if(sp&&sp<1)rs.push(["SOPR 低于1",""]);const lthEl=$("slth"),lth=lthEl&&lthEl.value!==""?+lthEl.value:null,lthHealth=HEALTH["LTH-NUPL"];if(lthHealth&&lthHealth.status==="stale")rs.push(["LTH-NUPL 数据滞后","warn"]);else if(Number.isFinite(lth)){if(lth<0)rs.push(["LTH 整体浮亏","warn"]);else if(lth<.1)rs.push(["LTH-NUPL 警戒","warn"]);else if(lth<.25)rs.push(["LTH 利润收窄","warn"]);}const wm=+($("swm")&&$("swm").value)||0;if(wm&&S.price/wm<1.1)rs.push(["接近200WMA",""]);const dailyAlerts=stableDailyAlerts();if(dailyAlerts.length){const tx=dailyAlerts.map(a=>`${a.sym} ${fmtUsdB(a.d1)}`).join(" / ");rs.push([`最新日异动 ${tx}`,dailyAlerts.some(a=>a.d1<0)?"warn":""]);}else{const st=combinedStableStats();if(st)rs.push([st.d7>=0?"稳定币7日扩张":"稳定币7日收缩",st.d7>=0?"":"warn"]);}if(!rs.length)rs.push(["等待更多有效数据","neutral"]);$("actionReasons").innerHTML=rs.slice(0,4).map(r=>`<span class="reason ${r[1]}">${r[0]}</span>`).join("");
 }
 function prepareAction(){const plan=currentActionPlan();if(plan.kind==="trigger"){const t=plan.trigger;preparedTp=t.p;$("la").value=t.a;$("ltype").value=t.k;$("lp").value=S.price;$("buyForm").scrollIntoView({behavior:"smooth",block:"center"});ntf(`已填入跌${Math.round(t.p*100)}%档 ¥${t.a}`)}else if(plan.kind==="base"){preparedTp=null;$("la").value=plan.amount;$("ltype").value="base";$("lp").value=S.price;$("buyForm").scrollIntoView({behavior:"smooth",block:"center"});ntf(`已填入第 ${plan.pace.index}/${plan.pace.parts} 笔基础定投`)}else if(plan.kind==="health"){const p=$("healthPanel");p.open=true;p.scrollIntoView({behavior:"smooth",block:"center"});ntf("数据恢复前不提示回撤加仓")}else if(plan.kind==="wait"){$("plan").scrollIntoView({behavior:"smooth",block:"start"});ntf("当前基础定投节奏已完成")}else{$("lb2").scrollIntoView({behavior:"smooth"})}}
 function onP(){S.price=+$("bp").value||0;$("lp").value=S.price;clearTimeout(onPTimer);onPTimer=setTimeout(renderPriceDerived,300)}
@@ -1756,8 +1822,9 @@ function toggleTweak(){setTweak(!S.tweak,false)}function setTweak(on,silent){S.t
 function renderMA(){const el=$("maList"),m=S.mas;if(!m||!m.m51){el.innerHTML='<div class="log-empty">刷新后自动计算</div>';return}const rows=[["MA51","快线·急行军",m.m51],["MA120","半年线",m.m120],["MA250","年线·锚点成分",m.m250],["MA850","三年线·压箱底",m.m850]];el.innerHTML=rows.map(r=>{const dd=(S.price-r[2])/r[2]*100;let pill,pc="";if(dd>2)pill=`<span class="pill wait">上方 +${dd.toFixed(1)}%</span>`;else if(dd>=-2){pill='<span class="pill fire">▶ 到位可买</span>';pc="color:var(--gn)"}else{pill=`<span class="pill done">已低于 ${Math.abs(dd).toFixed(1)}%</span>`;pc="color:var(--gn)"}return `<div class="trig"><div class="trig-pct">${r[0]}</div><div class="trig-price num" style="${pc}">$${Math.round(r[2]).toLocaleString()}<span style="font-size:11px;color:var(--tx3);font-weight:500"> ${r[1]}</span></div>${pill}</div>`}).join("")}
 function upG(){const p=S.price,g=300000,pct=Math.min(100,p/g*100);$("gb").style.width=pct+"%";$("gp").textContent=pct.toFixed(1)+"%";$("gr2").textContent="当前价格进度 · 距目标还差 $"+Math.max(0,g-p).toLocaleString();$("kp3").textContent="$"+p.toLocaleString()}
 function findTriggerForLog(type){if(preparedTp!=null){const t=TR.find(x=>x.p===preparedTp&&x.k===type);if(t&&!triggerDone(t.p)&&S.price<=S.rh*(1-t.p))return t.p}const t=TR.find(x=>x.k===type&&!triggerDone(x.p)&&S.price<=S.rh*(1-x.p));return t?t.p:null}
-function logB(){const a=+$("la").value,tp=$("ltype").value,pr=+$("lp").value||S.price;if(!a||a<=0){ntf("请输入金额");return}const lim={base:1000,pull:700,ext:300};if(S.bud[tp]+a>lim[tp]){ntf("超出预算上限");return}S.bud[tp]+=a;const btc=a/(S.fx||7.1)/pr,hitTp=tp==="base"?null:findTriggerForLog(tp),now=Date.now();S.log.unshift({ts:now,dt:new Date(now).toLocaleString("zh-CN",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}),t:tp,a,p:pr,b:btc,mo:S.month,tp:hitTp});S.log=S.log.slice(0,500);const tot=S.hd.d+btc;S.hd.dc=tot>0?(S.hd.d*S.hd.dc+btc*pr)/tot:0;S.hd.d=tot;preparedTp=null;saveState();upB();upH2();rl2();renderPersonalChart();trig();$("la").value="";ntf("已记录买入 ¥"+a)}
-function rl2(){if(!S.log.length){$("lb2").innerHTML='<div class="log-empty">暂无记录</div>';return}const tm={base:["基","li-base","基础定投"],pull:["回","li-pull","回撤加仓"],ext:["极","li-ext","极端预备金"]};$("lb2").innerHTML=S.log.slice(0,30).map(l=>{const r=tm[l.t]||["·","",""];return `<div class="log-row"><div class="log-icon ${r[1]}">${r[0]}</div><div class="log-main"><div class="log-t1">${r[2]}${l.tp!=null?` · 跌${Math.round(l.tp*100)}%档`:""}</div><div class="log-t2 num">${l.dt} · $${Number(l.p).toLocaleString()} · ${(l.b*1000).toFixed(2)}‰ BTC</div></div><div class="log-amt num">¥${l.a}</div></div>`}).join("")}
+function logB(){const a=+$("la").value,tp=$("ltype").value,pr=+$("lp").value||S.price;if(!a||a<=0){ntf("请输入金额");return}const lim={base:1000,pull:700,ext:300};if(S.bud[tp]+a>lim[tp]){ntf("超出预算上限");return}S.bud[tp]+=a;const btc=a/(S.fx||7.1)/pr,hitTp=tp==="base"?null:findTriggerForLog(tp),now=Date.now();S.log.unshift({ts:now,dt:new Date(now).toLocaleString("zh-CN",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}),t:tp,a,p:pr,b:btc,mo:S.month,tp:hitTp,cold:false});S.log=S.log.slice(0,500);const tot=S.hd.d+btc;S.hd.dc=tot>0?(S.hd.d*S.hd.dc+btc*pr)/tot:0;S.hd.d=tot;preparedTp=null;saveState();upB();upH2();rl2();renderPersonalChart();trig();$("la").value="";ntf("已记录买入 · 记得提至冷钱包")}
+function rl2(){const summary=$("coldSummary");if(!S.log.length){$("lb2").innerHTML='<div class="log-empty">暂无记录</div>';summary.className="cold-summary ok";summary.innerHTML="<span>冷钱包提币状态</span><b>暂无记录</b>";return}const pending=S.log.filter(l=>l.cold!==true).length;summary.className="cold-summary "+(pending?"":"ok");summary.innerHTML=`<span>冷钱包提币状态</span><b>${pending?`${pending} 笔待确认`:"全部已确认"}</b>`;const tm={base:["基","li-base","基础定投"],pull:["回","li-pull","回撤加仓"],ext:["极","li-ext","极端预备金"]};$("lb2").innerHTML=S.log.slice(0,30).map((l,i)=>{const r=tm[l.t]||["·","",""];return `<div class="log-row"><div class="log-icon ${r[1]}">${r[0]}</div><div class="log-main"><div class="log-t1">${r[2]}${l.tp!=null?` · 跌${Math.round(l.tp*100)}%档`:""}</div><div class="log-t2 num">${l.dt} · $${Number(l.p).toLocaleString()} · ${(l.b*1000).toFixed(2)}‰ BTC</div></div><div class="log-side"><div class="log-amt num">¥${l.a}</div><button class="cold-btn ${l.cold===true?"done":""}" onclick="toggleCold(${i})">${l.cold===true?"✓ 已提冷钱包":"待确认提币"}</button></div></div>`}).join("")}
+function toggleCold(i){const l=S.log[i];if(!l)return;l.cold=l.cold===true?false:true;saveState();rl2();renderAction();ntf(l.cold?"已标记提至冷钱包":"已恢复为待确认提币")}
 function clr(){if(!confirm("确认清空所有买入记录、本月预算执行额和本月回撤档位状态？持仓数量不会回退，个人成本曲线会被清空。"))return;S.log=[];S.bud={base:0,pull:0,ext:0};saveState();upB();rl2();renderPersonalChart();trig();ntf("已清空")}
 function upHigh(){S.rh=S.price;S.rhManual=true;$("rh").value=S.price;updateAnchorMode();saveState();trig();ntf("锚点已锁定 $"+S.price.toLocaleString())}
 function nxtMo(){if(!confirm("切换下个月？本月预算执行额将重置，历史买入记录保留。"))return;const d=new Date();d.setMonth(d.getMonth()+1);S.month=d.getFullYear()+"年"+(d.getMonth()+1)+"月";S.bud={base:0,pull:0,ext:0};$("cm").textContent=S.month;saveState();upB();renderAction();ntf("已切换新月份")}
@@ -1799,14 +1866,12 @@ async function tickPrice(){
   if(S.month!==nowM){S.month=nowM;S.bud={base:0,pull:0,ext:0};$("cm").textContent=nowM;saveState();upB();renderAction();ntf("新月份 "+nowM+" · 预算已自动重置")}
   priceTickInFlight=true;
   try{
-    const t=await binanceFetch("/api/v3/ticker/24hr?symbol=BTCUSDT",6000),
-      p=+t.lastPrice,c=+t.priceChangePercent;
+    const t=await fetchSpotTicker(6000),p=t.price,c=t.change24h;
     if(p>0){
       S.price=Math.round(p);
       if(document.activeElement!==$("bp"))$("bp").value=S.price;
       if(document.activeElement!==$("lp"))$("lp").value=S.price;
-      $("pc24").textContent=(c>=0?"+":"")+c.toFixed(2)+"%";
-      $("pc24").className="chg-pill num "+(c>=0?"chg-up":"chg-dn");
+      if(Number.isFinite(c)){$("pc24").textContent=(c>=0?"+":"")+c.toFixed(2)+"%";$("pc24").className="chg-pill num "+(c>=0?"chg-up":"chg-dn")}
       lastTickAt=Date.now();
       renderPriceDerived();
     }
@@ -1877,6 +1942,7 @@ function initSectionNav(){
 }
 function init(){
   buildUI();
+  $("buildBadge").textContent="V"+BUILD_ID.split("-")[0];
   const nowM=mstr();
   if(S.month!==nowM){S.month=nowM;S.bud={base:0,pull:0,ext:0};saveState();setTimeout(()=>ntf("新月份 "+nowM+" · 预算已自动重置"),600)}
   $("cm").textContent=S.month;$("bp").value=S.price;$("rh").value=S.rh;$("lp").value=S.price;
@@ -1895,6 +1961,8 @@ function init(){
   setTimeout(()=>{if($("lupdated").textContent==="等待加载")fetchLive(true)},800);
   if(!priceTimer)priceTimer=setInterval(tickPrice,60000);
   document.addEventListener("visibilitychange",handleVisibilityChange,{passive:true});
+  requestPersistentStorage();
+  setTimeout(checkAppUpdate,1800);
   try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{
     if(personalChart){personalChart.remove();personalChart=null;personalSeries=null;personalMarkers=null;personalDataKey=""}
     renderPersonalChart();
