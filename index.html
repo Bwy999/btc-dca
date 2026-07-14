@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BUILD: BTC-DCA-V13.0.0-20260714 -->
+<!-- BUILD: BTC-INTELLIGENCE-V15.0.0-20260714 -->
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -7,11 +7,11 @@
   <meta name="color-scheme" content="dark light" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="BTC看板" />
-  <meta name="btc-dca-build" content="13.0.0-20260714" />
+  <meta name="apple-mobile-web-app-title" content="BTC情报" />
+  <meta name="btc-dca-build" content="15.0.0-20260714" />
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
-  <title>BTC 状态看板 · V13.0</title>
+  <title>BTC 情报终端 · V15.0</title>
   <style>
     :root{
       color-scheme:dark;
@@ -78,8 +78,11 @@
     .reason-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}.reason{font-size:10px;font-weight:700;padding:5px 9px;border-radius:999px;background:var(--gn-dim);color:var(--gn)}
     .reason.neutral{background:var(--card2);color:var(--tx2)}.reason.warn{background:rgba(255,159,10,.12);color:var(--or)}
     .today-actions{display:flex;gap:9px;margin-top:15px}.today-actions .btn{flex:1}.today-actions .btn.ghost{flex:0 0 auto}
+    .intel-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:13px}.intel-item{min-width:0;padding:9px;border-radius:12px;background:rgba(127,127,127,.07)}.intel-item small{display:block;color:var(--tx3);font-size:8px;font-weight:750}.intel-item b{display:block;margin-top:4px;color:var(--tx);font-size:11px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .fresh-badge{display:inline-flex;align-items:center;gap:4px;margin-left:auto;padding:3px 7px;border-radius:999px;background:var(--card2);color:var(--tx3);font-size:8px;font-weight:800;line-height:1;white-space:nowrap}.fresh-badge.good{background:var(--gn-dim);color:var(--gn)}.fresh-badge.warn{background:rgba(255,159,10,.12);color:var(--or)}.fresh-badge.bad{background:var(--rd-dim);color:var(--rd)}
     .delta-section{margin-top:24px}.delta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.delta-card{min-width:0;padding:12px;border-radius:14px;background:var(--card);border:1px solid var(--div)}.delta-card small{display:block;color:var(--tx2);font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.delta-card b{display:block;margin-top:5px;font-size:17px;font-weight:800}.delta-card span{display:block;margin-top:3px;color:var(--tx3);font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.delta-note{margin-top:9px;padding:10px 12px;border-radius:12px;background:rgba(127,127,127,.07);color:var(--tx2);font-size:10px;line-height:1.45}
+    .phase-card{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:16px;border-radius:17px;background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid var(--div);margin-bottom:10px}.phase-eyebrow{color:var(--tx2);font-size:10px;font-weight:750}.phase-name{margin-top:4px;font-size:23px;font-weight:840;letter-spacing:-.03em}.phase-desc{margin-top:4px;color:var(--tx2);font-size:10px;line-height:1.45}.phase-meta{text-align:right;flex:none}.phase-meta b{display:block;font-size:20px}.phase-meta span{display:block;margin-top:3px;color:var(--tx3);font-size:9px}
+    .radar-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.radar-card{min-width:0;padding:13px;border-radius:15px;background:var(--card);border:1px solid var(--div)}.radar-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.radar-name{color:var(--tx2);font-size:10px;font-weight:750}.radar-pct{font-size:8px;font-weight:800;padding:3px 6px;border-radius:999px;background:var(--card2);color:var(--tx2);white-space:nowrap}.radar-main{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;margin-top:8px}.radar-value{font-size:22px;font-weight:840;letter-spacing:-.03em}.radar-spark{width:68px;height:28px;overflow:visible;flex:none}.radar-change{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:9px}.radar-change span{display:block;padding:5px 4px;border-radius:8px;background:rgba(127,127,127,.06);text-align:center;color:var(--tx3);font-size:8px;line-height:1.3}.radar-change b{display:block;margin-top:2px;color:var(--tx2);font-size:9px}.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.insight-card{padding:14px;border-radius:15px;background:var(--card);border:1px solid var(--div)}.insight-title{font-size:12px;font-weight:800}.driver-list,.timeline-list{margin-top:9px}.driver-row,.timeline-row{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-top:1px solid var(--div)}.driver-row:first-child,.timeline-row:first-child{border-top:0}.driver-rank{width:18px;height:18px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--card2);color:var(--tx2);font-size:8px;font-weight:850;flex:none}.driver-copy,.timeline-copy{min-width:0;flex:1}.driver-copy b,.timeline-copy b{display:block;font-size:10px}.driver-copy span,.timeline-copy span{display:block;margin-top:2px;color:var(--tx3);font-size:8px;line-height:1.4}.driver-delta{font-size:10px;font-weight:850;white-space:nowrap}.timeline-dot{width:7px;height:7px;margin-top:4px;border-radius:50%;background:var(--gn);flex:none}.timeline-day{color:var(--tx3);font-size:8px;white-space:nowrap}.radar-empty{padding:16px;color:var(--tx3);font-size:10px;text-align:center;grid-column:1/-1}
     .fund-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}.fund-card{min-width:0;padding:14px;border-radius:14px;background:var(--card);border:1px solid var(--div)}.fund-head{display:flex;align-items:center;gap:5px;color:var(--tx2);font-size:10px;font-weight:700}.fund-value{margin-top:9px;font-size:23px;font-weight:820;letter-spacing:-.03em}.fund-state{margin-top:5px;font-size:11px;font-weight:720}.fund-hint{margin-top:3px;color:var(--tx3);font-size:9px;line-height:1.35}.subsection-title{display:flex;align-items:center;gap:8px;margin:18px 0 9px;font-size:14px;font-weight:780}
     .personal-zone{margin-top:34px;border:1px solid var(--div);border-radius:20px;background:var(--card);overflow:hidden;scroll-margin-top:20px}.personal-zone>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px;cursor:pointer}.personal-zone>summary::-webkit-details-marker{display:none}.personal-zone>summary b{display:block;font-size:17px}.personal-zone>summary small{display:block;margin-top:3px;color:var(--tx2);font-size:10px;font-weight:550}.personal-zone>summary>span:last-child{color:var(--gn);font-size:11px;font-weight:800;white-space:nowrap}.personal-zone[open]>summary{border-bottom:1px solid var(--div)}.personal-zone-inner{padding:0 18px 20px}.personal-zone .month-bar{margin-top:18px;background:var(--card2)}
     .sec{margin-top:30px;scroll-margin-top:20px}.divider{height:1px;background:var(--div);margin-top:26px}.sec-title{font-size:19px;font-weight:780;letter-spacing:-.02em}
@@ -161,14 +164,14 @@
       .section-nav a{transition:none}
     }
     @media(min-width:721px){.modal{align-items:center}.sheet{max-width:420px;border-radius:20px}}
-    @media(max-width:640px){.month-bar{gap:6px;padding:13px 12px}.month-tx{font-size:12px}.month-bar .btn.sm{padding:8px 12px;font-size:12px}.tiles{grid-template-columns:repeat(2,1fr)}.tile{grid-column:span 1}.tile.halving{grid-column:span 2}.tile.prob{grid-column:span 1}.tile.lth-nupl{grid-column:span 2}.lth-head{align-items:flex-start;flex-direction:column;gap:2px}.lth-head .tile-status{text-align:left}.dim-hint{display:none}.dim-raw{width:48px}.price-big,.price-big input{font-size:38px}.price-big input{width:200px}.price-spark-wrap{width:100%;height:34px;margin-left:0}.score-num{font-size:48px}.health-grid{grid-template-columns:repeat(2,1fr)}.today-title{font-size:22px}.delta-grid{grid-template-columns:repeat(2,1fr)}.fund-grid{grid-template-columns:1fr}.chart-card{padding:11px}.personal-shell,.personal-chart{height:260px;min-height:260px}.chart-legend{gap:7px}.personal-kpis{gap:6px}.personal-kpi{padding:9px 8px}.personal-kpi b{font-size:12px}.personal-zone-inner{padding-left:12px;padding-right:12px}}
+    @media(max-width:640px){.month-bar{gap:6px;padding:13px 12px}.month-tx{font-size:12px}.month-bar .btn.sm{padding:8px 12px;font-size:12px}.tiles{grid-template-columns:repeat(2,1fr)}.tile{grid-column:span 1}.tile.halving{grid-column:span 2}.tile.prob{grid-column:span 1}.tile.lth-nupl{grid-column:span 2}.lth-head{align-items:flex-start;flex-direction:column;gap:2px}.lth-head .tile-status{text-align:left}.dim-hint{display:none}.dim-raw{width:48px}.price-big,.price-big input{font-size:38px}.price-big input{width:200px}.price-spark-wrap{width:100%;height:34px;margin-left:0}.score-num{font-size:48px}.health-grid{grid-template-columns:repeat(2,1fr)}.today-title{font-size:22px}.delta-grid{grid-template-columns:repeat(2,1fr)}.fund-grid{grid-template-columns:1fr}.intel-strip{grid-template-columns:repeat(2,1fr)}.insight-grid{grid-template-columns:1fr}.radar-value{font-size:20px}.radar-spark{width:60px}.chart-card{padding:11px}.personal-shell,.personal-chart{height:260px;min-height:260px}.chart-legend{gap:7px}.personal-kpis{gap:6px}.personal-kpi{padding:9px 8px}.personal-kpi b{font-size:12px}.personal-zone-inner{padding-left:12px;padding-right:12px}}
   </style>
 </head>
 <body>
 <div class="bgfix"></div>
 <div class="w">
   <header class="hdr">
-    <div class="hdr-label">BTC 每日状态看板</div>
+    <div class="hdr-label">BTC 每日情报终端</div>
     <div class="price-row">
       <div class="price-big num">$<input id="bp" type="number" value="61800" oninput="onP()" /></div>
       <div class="chg-pill" id="pc24"></div>
@@ -185,7 +188,7 @@
     <div class="dot" id="ldot"></div>
     <span id="lupdated" style="color:var(--tx3)">等待加载</span>
     <span class="hbadge" id="healthBadge">--</span>
-    <span class="hbadge num" id="buildBadge">V13.0</span>
+    <span class="hbadge num" id="buildBadge">V15.0</span>
     <button class="refresh" onclick="fetchLive(true)">刷新</button>
   </div>
   <div class="update-banner" id="updateBanner"><span id="updateText">检测到新版本</span><button onclick="reloadLatest()">立即更新</button></div>
@@ -197,16 +200,16 @@
 
   <nav class="section-nav" aria-label="页面分区导航">
     <a href="#today" class="active" data-section="today" aria-current="page">今日</a>
+    <a href="#radar" data-section="radar">雷达</a>
     <a href="#market" data-section="market">体温</a>
     <a href="#valuation" data-section="valuation">估值</a>
     <a href="#liquidity" data-section="liquidity">资金</a>
-    <a href="#personal" data-section="personal">个人</a>
   </nav>
 
   <section class="today-card" id="today" aria-label="今日 BTC 状态">
     <div class="today-top">
       <div>
-        <div class="eyebrow">每日摘要</div>
+        <div class="eyebrow">今日情报</div>
         <div class="today-title" id="actionTitle">等待数据</div>
         <div class="today-sub" id="actionSub">系统会综合估值、链上、资金面与周期位置生成市场摘要。</div>
       </div>
@@ -217,16 +220,22 @@
       <div class="today-kpi"><small>下行风险</small><b id="riskKpi">--</b></div>
       <div class="today-kpi"><small>数据置信度</small><b id="confKpi">--</b></div>
     </div>
+    <div class="intel-strip" aria-label="今日情报要点">
+      <div class="intel-item"><small>阶段持续</small><b id="intelPhase">等待历史</b></div>
+      <div class="intel-item"><small>最大驱动</small><b id="intelDriver">等待对比</b></div>
+      <div class="intel-item"><small>资金状态</small><b id="intelFunds">等待数据</b></div>
+      <div class="intel-item"><small>最新事件</small><b id="intelEvent">暂无事件</b></div>
+    </div>
     <div class="reason-row" id="actionReasons"></div>
     <div class="today-actions">
-      <button class="btn" id="actionBtn" onclick="document.getElementById('market').scrollIntoView({behavior:'smooth'})">查看市场体温</button>
+      <button class="btn" id="actionBtn" onclick="copyDailyBrief()">复制今日情报</button>
       <button class="btn ghost" onclick="openHealthPanel()">数据状态</button>
     </div>
   </section>
 
   <section class="delta-section" id="changes" aria-label="和昨天相比">
     <div class="sec-head-row"><div class="sec-title">和昨天相比</div><span class="fresh-badge" id="freshChanges">日快照</span></div>
-    <div class="sec-sub">BTC 使用上一根日线，其余指标使用本机每日状态快照</div>
+    <div class="sec-sub">优先从现有日线与链上历史回填昨日值 · 本机每日快照作为后续兜底</div>
     <div class="delta-grid">
       <div class="delta-card"><small>BTC</small><b class="num" id="deltaPrice">--</b><span class="num" id="deltaPriceSub">等待日线</span></div>
       <div class="delta-card"><small>AHR999</small><b class="num" id="deltaAhr">--</b><span class="num" id="deltaAhrSub">等待快照</span></div>
@@ -236,6 +245,21 @@
       <div class="delta-card"><small>低估评分</small><b class="num" id="deltaScore">--</b><span class="num" id="deltaScoreSub">等待快照</span></div>
     </div>
     <div class="delta-note" id="deltaNote">首次使用会建立今日快照，明日起显示完整变化。</div>
+  </section>
+
+  <div class="divider"></div>
+  <section class="sec" id="radar" aria-label="BTC 周期雷达">
+    <div class="sec-head-row"><div class="sec-title">周期雷达</div><span class="fresh-badge" id="freshRadar">365日历史</span></div>
+    <div class="sec-sub">核心指标的 1日 / 7日 / 30日变化与本地365日历史分位，不增加新的外部依赖</div>
+    <div class="phase-card">
+      <div><div class="phase-eyebrow">当前市场阶段</div><div class="phase-name" id="phaseName">等待识别</div><div class="phase-desc" id="phaseDesc">历史序列建立后自动识别。</div></div>
+      <div class="phase-meta"><b class="num" id="phaseDays">--</b><span id="phasePrevious">持续天数</span></div>
+    </div>
+    <div class="radar-grid" id="radarGrid"><div class="radar-empty">正在建立指标历史…</div></div>
+    <div class="insight-grid">
+      <div class="insight-card"><div class="insight-title">评分变化归因</div><div class="driver-list" id="driverList"><div class="radar-empty">等待昨日数据</div></div></div>
+      <div class="insight-card"><div class="insight-title">近30天关键事件</div><div class="timeline-list" id="eventTimeline"><div class="radar-empty">暂无关键阈值切换</div></div></div>
+    </div>
   </section>
 
   <div class="divider" id="valuationDivider"></div>
@@ -488,7 +512,7 @@
       <button class="btn danger sm" onclick="clr()">清空记录</button>
       <input id="backupInput" type="file" accept="application/json,.json" onchange="importBackup(this)" hidden />
     </div>
-    <div class="data-note" id="storageNote">记录仅保存在本机；V13 会主动申请持久存储，仍建议定期导出备份。</div>
+    <div class="data-note" id="storageNote">记录仅保存在本机；V15 会主动申请持久存储，仍建议定期导出备份。</div>
   </section>
 
   <div class="divider"></div>
@@ -540,18 +564,18 @@ const DN=["AHR999 新拟","200周均线","MVRV","恐惧贪婪","Puell 矿工","R
 const DW=["20% · 26回归","15%","15%","15%","15% · BGeometrics","10% · BGeometrics","10% · BGeometrics"];
 const MB=[[0,.1],[30,.3],[50,.8],[70,1.2],[85,1.95],[100,3]];
 const TR=[{p:.1,a:200,k:"pull"},{p:.2,a:200,k:"pull"},{p:.3,a:300,k:"pull"},{p:.4,a:150,k:"ext"},{p:.5,a:150,k:"ext"}];
-const BUILD_ID="13.0.0-20260714";
+const BUILD_ID="15.0.0-20260714";
 const CORE_HEALTH=["AHR999","200WMA","MVRV","FGI","Puell","RR","SOPR"];
 const SOURCE_ORDER=["价格","AHR999","200WMA","均线","FGI","资金费率","Coinbase溢价","减半","关机价","MVRV","均衡价","概率","USDT","USDC","LTH-NUPL","SOPR","Puell","RR"];
 const CACHE_KEY="btc_live_v9",STATE_KEY="btc_exec_v7",CACHE_TTL=30*60*1000,STABLE_FLOW_THRESHOLD=1e9;
 const DAILY_KEY="btc_daily_v1";
-const STATUS_HISTORY_KEY="btc_status_history_v1";
+const LEGACY_STATUS_HISTORY_KEY="btc_status_history_v1",STATUS_HISTORY_KEY="btc_indicator_history_v2";
 const BINANCE_BASES=["https://data-api.binance.vision","https://api-gcp.binance.com","https://api.binance.com"];
 const SLOW_TTL=24*3600*1000,STABLE_TTL=12*3600*1000,STABLE_DATA_STALE_MS=3*86400000,CHAIN_STALE_MS=3*86400000,VALUATION_CACHE_KEY="btc_valuation_cache_v1";
 const POLYMARKET_EVENT_SLUG="what-price-will-bitcoin-hit-before-2027",POLYMARKET_EVENT_END=Date.parse("2027-01-01T00:00:00Z"),POLYMARKET_DOWN_PRICE=50000,POLYMARKET_UP_PRICE=90000,POLYMARKET_YEAR=2026,POLYMARKET_MARKET_KEY=`${POLYMARKET_EVENT_SLUG}|${POLYMARKET_DOWN_PRICE}|${POLYMARKET_UP_PRICE}`;
 const AHR_A=5.5856,AHR_B=-16.1567,AHR_A0=5.84,AHR_B0=-17.01,BAL_TP=14657,MINER_EFF_LO=12,MINER_EFF_HI=37.3,ELEC_KWH=.06;
-let HEALTH={},FALLBACK_HEALTH={},progActive=false,progN=0,PROG_EST=19,preparedTp=null,priceTimer=null,fetchInFlight=false,priceTickInFlight=false,lastTickAt=0,lastFullAt=0,personalChart=null,personalSeries=null,personalMarkers=null;
-let DAILY=[],STATUS_HISTORY=[],personalDataKey="",personalDefaultLabel="",onPTimer=null;
+let HEALTH={},FALLBACK_HEALTH={},METRIC_PREV={},METRIC_HISTORY={},progActive=false,progN=0,PROG_EST=24,preparedTp=null,priceTimer=null,fetchInFlight=false,priceTickInFlight=false,lastTickAt=0,lastFullAt=0,personalChart=null,personalSeries=null,personalMarkers=null;
+let DAILY=[],STATUS_HISTORY=[],personalDataKey="",personalDefaultLabel="",onPTimer=null,lastHistorySaveAt=0,intelligenceRaf=0;
 function mstr(){const d=new Date();return d.getFullYear()+"年"+(d.getMonth()+1)+"月"}
 function loadState(){try{return JSON.parse(localStorage.getItem(STATE_KEY))}catch(e){return null}}
 function saveState(){
@@ -566,12 +590,14 @@ if(!DAILY.length&&Array.isArray(S.daily)&&S.daily.length)DAILY=S.daily;
 if(!DAILY.length){try{const c=JSON.parse(localStorage.getItem(CACHE_KEY));if(c&&c.data&&Array.isArray(c.data.daily))DAILY=c.data.daily}catch(e){}}
 if(DAILY.length){try{localStorage.setItem(DAILY_KEY,JSON.stringify(DAILY))}catch(e){}}
 if(S.daily!==undefined){delete S.daily;saveState()}
-if(S.chartDays!==undefined){delete S.chartDays;saveState()}
 try{STATUS_HISTORY=JSON.parse(localStorage.getItem(STATUS_HISTORY_KEY))||[]}catch(e){STATUS_HISTORY=[]}
+if(!STATUS_HISTORY.length){try{STATUS_HISTORY=JSON.parse(localStorage.getItem(LEGACY_STATUS_HISTORY_KEY))||[]}catch(e){STATUS_HISTORY=[]}}
 if(!Array.isArray(STATUS_HISTORY))STATUS_HISTORY=[];
+STATUS_HISTORY=STATUS_HISTORY.filter(x=>x&&x.day).sort((a,b)=>String(a.day).localeCompare(String(b.day))).slice(-365);
+if(STATUS_HISTORY.length){try{localStorage.setItem(STATUS_HISTORY_KEY,JSON.stringify(STATUS_HISTORY))}catch(e){}}
 function exportBackup(){
   try{
-    const payload={app:"BTC-DCA",schema:2,build:BUILD_ID,exportedAt:new Date().toISOString(),state:S,daily:DAILY,statusHistory:STATUS_HISTORY,liveCache:readCache(true)},blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a"),day=new Date().toISOString().slice(0,10);
+    const payload={app:"BTC-DCA",schema:3,build:BUILD_ID,exportedAt:new Date().toISOString(),state:S,daily:DAILY,statusHistory:STATUS_HISTORY,liveCache:readCache(true)},blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a"),day=new Date().toISOString().slice(0,10);
     a.href=URL.createObjectURL(blob);a.download=`btc-status-backup-${day}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);ntf("备份已导出")
   }catch(e){ntf("导出失败，请检查浏览器存储权限")}
 }
@@ -693,6 +719,20 @@ function bgPoint(res){
   }
   return value==null?null:{v:value,dataTs};
 }
+function bgSeriesPoints(res){
+  let arr=res&&res.data?res.data:res;if(!Array.isArray(arr))return[];
+  const points=arr.map((row,i)=>{const p=bgPoint([row]);return p?{...p,i}:null}).filter(Boolean);
+  if(points.every(p=>p.dataTs))points.sort((a,b)=>a.dataTs-b.dataTs);
+  else points.sort((a,b)=>a.i-b.i);
+  return points;
+}
+function dayFromTs(ts){return ts?new Date(ts).toISOString().slice(0,10):null}
+function compactMetricSeries(points,lo=-Infinity,hi=Infinity){
+  const out=[];(points||[]).forEach(p=>{const day=dayFromTs(p&&p.dataTs),value=+(p&&p.v);if(!day||!Number.isFinite(value)||value<lo||value>hi)return;const row={day,value};if(out.length&&out.at(-1).day===day)out[out.length-1]=row;else out.push(row)});return out.slice(-366)
+}
+function dailyAverageSeries(rows,valueKey="fundingRate",timeKey="fundingTime"){
+  const by=new Map();(rows||[]).forEach(r=>{const ts=parseDataTs(r&&r[timeKey]||r&&r.ts),value=+(r&&r[valueKey]);if(!ts||!Number.isFinite(value))return;const day=dayFromTs(ts),a=by.get(day)||[];a.push(value);by.set(day,a)});return[...by.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([day,a])=>({day,value:a.reduce((x,y)=>x+y,0)/a.length})).slice(-366)
+}
 function formatDataDay(ts){
   if(!ts)return"日期未知";
   return new Date(ts).toLocaleDateString("zh-CN",{month:"2-digit",day:"2-digit"});
@@ -789,7 +829,7 @@ function getFallbackData(){
   if(d.usdcSeries==null&&S.stbC)d.usdcSeries=S.stbC;
   if(d.stableDataTs==null&&S.stbTs)d.stableDataTs=S.stbTs;
   if(S.raw){
-    ["fgi","fgiLabel","mvrv","puell","rr","lthNupl","fundingRate","fundingTime","coinbasePrice","coinbasePremium"].forEach(k=>{if(d[k]==null&&S.raw[k]!=null)d[k]=S.raw[k]});
+    ["fgi","fgiLabel","prevFgi","mvrv","prevMvrv","puell","prevPuell","rr","prevRr","lthNupl","prevLthNupl","prevSopr","fundingRate","fundingTime","coinbasePrice","coinbasePremium"].forEach(k=>{if(d[k]==null&&S.raw[k]!=null)d[k]=S.raw[k]});
   }
   const valuation=readValuationCache();
   if(d.mvrv==null&&valuation.mvrv!=null)d.mvrv=+valuation.mvrv;
@@ -825,13 +865,13 @@ function aggregateDailyLast(points){
   }
   const rows=[...byDay.values()]
     .sort((a,b)=>a.ts-b.ts)
-    .slice(-8);
-  return{values:rows.map(x=>x.v),dataTs:rows.length?rows.at(-1).ts:null};
+    .slice(-40);
+  return{values:rows.map(x=>x.v),dataTs:rows.length?rows.at(-1).ts:null,series:rows.map(x=>({day:dayFromTs(x.ts),value:x.v}))};
 }
 async function cgCapSeries(id){
   try{
     const r=await tryFetch(
-      `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=8`,
+      `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=40`,
       8000
     );
     return aggregateDailyLast(r.market_caps||[]);
@@ -851,6 +891,8 @@ async function llamaSeries(id){
 async function bgMetric(key,label,paths,lo,hi){
   let cached=null;
   try{cached=JSON.parse(localStorage.getItem("bg5_"+key))}catch(e){}
+  delete METRIC_PREV[key];
+  delete METRIC_HISTORY[key];
 
   const usePoint=(v,sourceTs,fromCache)=>{
     if(sourceTs&&Date.now()-sourceTs>CHAIN_STALE_MS){
@@ -863,17 +905,21 @@ async function bgMetric(key,label,paths,lo,hi){
     return v;
   };
 
-  if(cached&&Date.now()-cached.ts<SLOW_TTL&&cached.v!=null){
+  if(cached&&cached.prevV!=null)METRIC_PREV[key]={v:+cached.prevV,sourceTs:cached.prevSourceTs||null};
+  if(cached&&Array.isArray(cached.series)&&cached.series.length)METRIC_HISTORY[key]=cached.series.slice(-366);
+  if(cached&&Date.now()-cached.ts<SLOW_TTL&&cached.v!=null&&cached.prevV!=null&&METRIC_HISTORY[key]&&METRIC_HISTORY[key].length){
     return usePoint(cached.v,cached.sourceTs,true);
   }
 
   for(const url of paths){
     try{
-      const r=await tryFetch(url,7000),point=bgPoint(r);
+      const r=await tryFetch(url,7000),points=bgSeriesPoints(r),point=points.at(-1)||bgPoint(r),prev=points.length>1?points.at(-2):null,series=compactMetricSeries(points,lo,hi);
       if(point&&point.v>=lo&&point.v<=hi){
+        if(prev&&prev.v>=lo&&prev.v<=hi)METRIC_PREV[key]={v:prev.v,sourceTs:prev.dataTs||null};
+        if(series.length)METRIC_HISTORY[key]=series;
         localStorage.setItem(
           "bg5_"+key,
-          JSON.stringify({ts:Date.now(),v:point.v,sourceTs:point.dataTs||null})
+          JSON.stringify({ts:Date.now(),v:point.v,sourceTs:point.dataTs||null,prevV:prev&&prev.v>=lo&&prev.v<=hi?prev.v:null,prevSourceTs:prev&&prev.dataTs||null,series})
         );
         return usePoint(point.v,point.dataTs,false);
       }
@@ -1118,10 +1164,21 @@ async function fetchRealizedPriceFallback(){
   return null;
 }
 
+function datedStableSeries(values,series,lastTs){
+  if(Array.isArray(series)&&series.length)return series.filter(x=>x&&x.day&&finiteValue(x.value)!=null).map(x=>({day:x.day,value:+x.value}));
+  const a=Array.isArray(values)?values:[],end=lastTs?new Date(lastTs):new Date();return a.map((value,i)=>{const d=new Date(end);d.setUTCDate(d.getUTCDate()-(a.length-1-i));return{day:d.toISOString().slice(0,10),value:+value}}).filter(x=>Number.isFinite(x.value))
+}
+function setStableMetricHistory(u,c,dataTs,uSeries,cSeries){
+  const ua=datedStableSeries(u,uSeries,dataTs&&dataTs.u),ca=datedStableSeries(c,cSeries,dataTs&&dataTs.c),um=new Map(ua.map(x=>[x.day,x.value])),cm=new Map(ca.map(x=>[x.day,x.value])),days=[...new Set([...um.keys(),...cm.keys()])].sort(),caps=[];
+  days.forEach(day=>{const uv=um.get(day),cv=cm.get(day);if(Number.isFinite(uv)&&Number.isFinite(cv))caps.push({day,value:uv+cv})});
+  METRIC_HISTORY.stableCap=caps.slice(-40);METRIC_HISTORY.stableD1=caps.map((x,i)=>i?{day:x.day,value:x.value-caps[i-1].value}:null).filter(Boolean);METRIC_HISTORY.stable=caps.map((x,i)=>i>=7?{day:x.day,value:x.value-caps[i-7].value}:null).filter(Boolean)
+}
+
 async function stableSeriesCached(){
   let c=null;
   try{c=JSON.parse(localStorage.getItem("stable4_cache"))}catch(e){}
-  if(c&&Date.now()-c.ts<STABLE_TTL&&c.u&&c.c){
+  if(c&&Date.now()-c.ts<STABLE_TTL&&c.u&&c.c&&c.u.length>=32&&c.c.length>=32&&Array.isArray(c.uSeries)&&Array.isArray(c.cSeries)){
+    setStableMetricHistory(c.u,c.c,c.dataTs,c.uSeries,c.cSeries);
     return {u:c.u,c:c.c,cached:true,stale:false,cacheTs:c.ts,dataTs:c.dataTs||{u:null,c:null}};
   }
   let u=await llamaSeries(1),s=await llamaSeries(2);
@@ -1129,10 +1186,11 @@ async function stableSeriesCached(){
   if(!s.values.length)s=await cgCapSeries("usd-coin");
   if(u.values.length&&s.values.length){
     const ts=Date.now(),dataTs={u:u.dataTs||null,c:s.dataTs||null};
-    try{localStorage.setItem("stable4_cache",JSON.stringify({ts,u:u.values,c:s.values,dataTs}))}catch(e){}
+    setStableMetricHistory(u.values,s.values,dataTs,u.series,s.series);
+    try{localStorage.setItem("stable4_cache",JSON.stringify({ts,u:u.values,c:s.values,dataTs,uSeries:u.series||[],cSeries:s.series||[]}))}catch(e){}
     return {u:u.values,c:s.values,cached:false,stale:false,cacheTs:ts,dataTs};
   }
-  if(c&&c.u&&c.c)return {u:c.u,c:c.c,cached:true,stale:true,cacheTs:c.ts||null,dataTs:c.dataTs||{u:null,c:null}};
+  if(c&&c.u&&c.c){setStableMetricHistory(c.u,c.c,c.dataTs,c.uSeries,c.cSeries);return {u:c.u,c:c.c,cached:true,stale:true,cacheTs:c.ts||null,dataTs:c.dataTs||{u:null,c:null}}}
   return null;
 }
 function markHealth(name,status,detail="",ts=Date.now(),sourceDetail=detail){HEALTH[name]={status,detail,ts:ts>0?ts:null,sourceDetail}}
@@ -1216,8 +1274,8 @@ function renderFunds(){
   }else{fv.textContent="--";fs.textContent="等待数据";fs.style.color="var(--tx3)"}
   const funding=+S.raw.fundingRate,fr=$("fundingRate"),fst=$("fundingState"),fh=$("fundingHint");
   if(Number.isFinite(funding)){
-    const pct=funding*100,annual=pct*3*365,st=funding<-.0001?["空头拥挤","var(--blue)"]:funding<=.0001?["杠杆中性","var(--gn2)"]:funding<=.0003?["多头温和","var(--yl)"]:["多头拥挤","var(--rd)"];
-    fr.textContent=(pct>=0?"+":"")+pct.toFixed(4)+"%";fr.style.color=st[1];fst.textContent=st[0];fst.style.color=st[1];fh.textContent=`OKX 永续 · 年化约 ${annual>=0?"+":""}${annual.toFixed(1)}%`;
+    const pct=funding*100,annual=pct*3*365,st=funding<-.0001?["空头拥挤","var(--blue)"]:funding<=.0001?["杠杆中性","var(--gn2)"]:funding<=.0003?["多头温和","var(--yl)"]:["多头拥挤","var(--rd)"],source=HEALTH["资金费率"]&&HEALTH["资金费率"].status==="fallback"?"Binance备用":"OKX";
+    fr.textContent=(pct>=0?"+":"")+pct.toFixed(4)+"%";fr.style.color=st[1];fst.textContent=st[0];fst.style.color=st[1];fh.textContent=`${source} 永续 · 年化约 ${annual>=0?"+":""}${annual.toFixed(1)}%`;
   }else{fr.textContent="--";fst.textContent="等待数据";fst.style.color="var(--tx3)";fh.textContent="OKX BTC-USDT 永续 · 每8小时"}
   const premium=+S.raw.coinbasePremium,cp=$("coinbasePremium"),ps=$("premiumState"),ph=$("premiumHint");
   if(Number.isFinite(premium)){
@@ -1227,32 +1285,107 @@ function renderFunds(){
   renderFreshness();
 }
 function statusDay(){const d=new Date(),m=String(d.getMonth()+1).padStart(2,"0"),day=String(d.getDate()).padStart(2,"0");return`${d.getFullYear()}-${m}-${day}`}
-function finiteValue(v){const n=+v;return Number.isFinite(n)?n:null}
+function finiteValue(v){if(v==null||v==="")return null;const n=+v;return Number.isFinite(n)?n:null}
 function currentStatusSnapshot(){
   const stable=combinedStableStats(),wm=finiteValue($("swm")&&$("swm").value),soprRaw=$("ssp")&&$("ssp").value,sopr=soprRaw===""?null:finiteValue(soprRaw),lthRaw=$("slth")&&$("slth").value;
-  return{day:statusDay(),ts:Date.now(),price:finiteValue(S.price),score:finiteValue(S.score),ahr:S.ahr?finiteValue(S.ahr.v):null,sopr,lth:lthRaw===""?null:finiteValue(lthRaw),stableD1:stable?finiteValue(stable.d1):null,stableD7:stable?finiteValue(stable.d7):null,wmaRatio:wm>0&&S.price>0?S.price/wm:null,funding:finiteValue(S.raw&&S.raw.fundingRate),premium:finiteValue(S.raw&&S.raw.coinbasePremium)};
+  return{day:statusDay(),ts:Date.now(),price:finiteValue(S.price),score:finiteValue(S.score),ahr:S.ahr?finiteValue(S.ahr.v):null,mvrv:finiteValue(S.raw&&S.raw.mvrv),fgi:finiteValue(S.raw&&S.raw.fgi),puell:finiteValue(S.raw&&S.raw.puell),rr:finiteValue(S.raw&&S.raw.rr),sopr,lth:lthRaw===""?null:finiteValue(lthRaw),stableD1:stable?finiteValue(stable.d1):null,stableD7:stable?finiteValue(stable.d7):null,wmaRatio:wm>0&&S.price>0?S.price/wm:null,funding:finiteValue(S.raw&&S.raw.fundingRate),premium:finiteValue(S.raw&&S.raw.coinbasePremium)};
 }
-function commitStatusSnapshot(){
+function persistIndicatorHistory(force=false){
+  if(!force&&Date.now()-lastHistorySaveAt<300000)return;lastHistorySaveAt=Date.now();try{localStorage.setItem(STATUS_HISTORY_KEY,JSON.stringify(STATUS_HISTORY))}catch(e){}
+}
+function commitStatusSnapshot(force=false){
   const snap=currentStatusSnapshot();if(!(snap.price>0))return;
-  const i=STATUS_HISTORY.findIndex(x=>x&&x.day===snap.day);if(i>=0)STATUS_HISTORY[i]=snap;else STATUS_HISTORY.push(snap);
-  STATUS_HISTORY=STATUS_HISTORY.filter(x=>x&&x.day).sort((a,b)=>String(a.day).localeCompare(String(b.day))).slice(-14);
-  try{localStorage.setItem(STATUS_HISTORY_KEY,JSON.stringify(STATUS_HISTORY))}catch(e){}
+  const i=STATUS_HISTORY.findIndex(x=>x&&x.day===snap.day);if(i>=0){const merged={...STATUS_HISTORY[i]};Object.keys(snap).forEach(k=>{if(snap[k]!=null)merged[k]=snap[k]});STATUS_HISTORY[i]=merged}else STATUS_HISTORY.push(snap);
+  STATUS_HISTORY=STATUS_HISTORY.filter(x=>x&&x.day).sort((a,b)=>String(a.day).localeCompare(String(b.day))).slice(-365);
+  persistIndicatorHistory(force);renderIntelligence();
 }
 function previousStatusSnapshot(){const today=statusDay();return STATUS_HISTORY.filter(x=>x&&x.day<today).sort((a,b)=>String(a.day).localeCompare(String(b.day))).at(-1)||null}
-function previousDailyClose(){const d=normalizedDaily();if(!d.length)return null;const utcToday=Math.floor(Date.now()/86400000)*86400,last=d.at(-1);return last.time>=utcToday&&d.length>1?d.at(-2).close:last.close}
+function completedDailyRows(){const utcToday=Math.floor(Date.now()/86400000)*86400,rows=normalizedDaily();return rows.filter(r=>r.time<utcToday)}
+function ahrHistorySeries(){
+  const rows=normalizedDaily(),out=[];let inverse=0;rows.forEach((r,i)=>{inverse+=1/r.close;if(i>=200)inverse-=1/rows[i-200].close;if(i<199)return;const hm=200/inverse,dg=Math.floor((r.time*1000-new Date("2009-01-03").getTime())/864e5),pl=Math.pow(10,AHR_A*Math.log10(dg)+AHR_B),value=r.close*r.close/(hm*pl);if(Number.isFinite(value)&&value>0)out.push({day:new Date(r.time*1000).toISOString().slice(0,10),value})});return out.slice(-365)
+}
+function metricDayMap(key){return new Map((METRIC_HISTORY[key]||[]).filter(x=>x&&x.day&&finiteValue(x.value)!=null).map(x=>[x.day,+x.value]))}
+function scoreFromRecord(r){
+  const inputs=[[r.ahr,ahr999ToSc],[r.wmaRatio,wma200ToSc],[r.mvrv,mvrvToSc],[r.fgi,fgiToSc],[r.puell,puellToSc],[r.rr,rrToSc],[r.sopr,soprToSc]],available=inputs.filter(x=>finiteValue(x[0])!=null).length;if(available<4)return null;return Math.round(inputs.reduce((sum,x,i)=>sum+(finiteValue(x[0])!=null?x[1](+x[0]):50)*DM[i].w,0))
+}
+function calibratedScoreFromRecord(r){
+  const inputs=[[r.ahr,ahr999ToSc],[r.wmaRatio,wma200ToSc],[r.mvrv,mvrvToSc],[r.fgi,fgiToSc],[r.puell,puellToSc],[r.rr,rrToSc],[r.sopr,soprToSc]],available=inputs.filter(x=>finiteValue(x[0])!=null).length,hasHealth=CORE_HEALTH.some(n=>healthWeight(HEALTH[n])>0);if(available<4)return null;return Math.round(inputs.reduce((sum,x,i)=>{const mapped=finiteValue(x[0])!=null?x[1](+x[0]):50,q=!hasHealth?1:healthWeight(HEALTH[CORE_HEALTH[i]]);return sum+(50+(mapped-50)*q)*DM[i].w},0))
+}
+function rebuildIndicatorHistory(){
+  const old=new Map(STATUS_HISTORY.filter(x=>x&&x.day).map(x=>[x.day,x])),maps={ahr:new Map(ahrHistorySeries().map(x=>[x.day,x.value])),mvrv:metricDayMap("mvrv"),fgi:metricDayMap("fgi"),puell:metricDayMap("puell"),rr:metricDayMap("rr"),sopr:metricDayMap("sopr"),lth:metricDayMap("lthnupl"),stableD1:metricDayMap("stableD1"),stableD7:metricDayMap("stable"),funding:metricDayMap("funding")},rows=normalizedDaily().slice(-365).map(r=>{const day=new Date(r.time*1000).toISOString().slice(0,10),base={day,ts:r.time*1000,price:r.close};Object.keys(maps).forEach(k=>{const v=maps[k].get(day);if(Number.isFinite(v))base[k]=v});const saved=old.get(day);if(saved)Object.keys(saved).forEach(k=>{if(saved[k]!=null)base[k]=saved[k]});if(base.score==null)base.score=scoreFromRecord(base);return base});
+  old.forEach((v,day)=>{if(!rows.some(x=>x.day===day))rows.push(v)});STATUS_HISTORY=rows.filter(x=>x&&x.day).sort((a,b)=>String(a.day).localeCompare(String(b.day))).slice(-365);commitStatusSnapshot(true)
+}
+const PHASES={unknown:{name:"数据建立中",color:"var(--tx2)",desc:"有效历史不足，暂不判断市场阶段。"},capitulation:{name:"深度投降",color:"var(--gn)",desc:"估值与链上亏损兑现同时进入极端区。"},bottom:{name:"低估筑底",color:"var(--gn2)",desc:"长期估值偏低，市场仍在消化压力并构筑底部。"},recovery:{name:"复苏",color:"var(--yl)",desc:"估值修复中，链上状态开始从压力区回升。"},expansion:{name:"趋势扩张",color:"var(--blue)",desc:"价格与盈利趋势扩张，市场进入顺周期阶段。"},distribution:{name:"高位分配",color:"var(--or)",desc:"估值走高且获利兑现增强，需留意分配压力。"},overheat:{name:"过热风险",color:"var(--rd)",desc:"多项估值进入历史高位，回撤风险显著上升。"}};
+function phaseInfo(r){
+  const available=[r.ahr,r.mvrv,r.fgi,r.puell,r.rr,r.sopr,r.lth,r.wmaRatio].filter(x=>finiteValue(x)!=null).length,modelScore=scoreFromRecord(r),savedScore=finiteValue(r.score),sc=modelScore!=null?modelScore:savedScore!=null?savedScore:50,lth=finiteValue(r.lth),sopr=finiteValue(r.sopr),wma=finiteValue(r.wmaRatio);let key;if(available<4)key="unknown";else if((sc>=85&&(lth!=null&&lth<.1||sopr!=null&&sopr<.97))||(lth!=null&&lth<0&&sopr!=null&&sopr<1))key="capitulation";else if(sc>=70)key="bottom";else if(sc>=55)key="recovery";else if(sc>=35&&(wma==null||wma>=1))key="expansion";else if(sc>=20)key="distribution";else key="overheat";return{key,score:sc,...PHASES[key]}
+}
+function intelligenceRows(){const rows=STATUS_HISTORY.map(x=>({...x})),cur=currentStatusSnapshot(),i=rows.findIndex(x=>x.day===cur.day);if(i>=0)Object.keys(cur).forEach(k=>{if(cur[k]!=null)rows[i][k]=cur[k]});else if(cur.price>0)rows.push(cur);return rows.filter(x=>x&&x.day).sort((a,b)=>String(a.day).localeCompare(String(b.day))).slice(-365)}
+function phaseContext(){
+  const rows=intelligenceRows().filter(x=>finiteValue(x.score)!=null);if(!rows.length)return{phase:phaseInfo({score:S.score}),days:1,previous:null};const current=phaseInfo(rows.at(-1));let start=rows.length-1,previous=null;while(start>0&&phaseInfo(rows[start-1]).key===current.key)start--;if(start>0)previous=phaseInfo(rows[start-1]);const days=Math.max(1,Math.round((Date.parse(rows.at(-1).day)-Date.parse(rows[start].day))/86400000)+1);return{phase:current,days,previous}
+}
+const RADAR_METRICS=[
+  {key:"ahr",name:"AHR999",digits:3,goodDown:true},
+  {key:"mvrv",name:"MVRV",digits:3,goodDown:true},
+  {key:"sopr",name:"SOPR",digits:3},
+  {key:"lth",name:"LTH-NUPL",digits:4},
+  {key:"puell",name:"Puell",digits:3,goodDown:true},
+  {key:"rr",name:"Reserve Risk",digits:4,goodDown:true},
+  {key:"stableD7",name:"稳定币7日",money:true},
+  {key:"funding",name:"资金费率",funding:true,goodDown:true}
+];
+function radarSeries(key){return intelligenceRows().map(x=>({day:x.day,value:finiteValue(x[key])})).filter(x=>x.value!=null)}
+function radarReference(series,days){if(series.length<2)return null;const target=Date.parse(series.at(-1).day)-days*86400000;for(let i=series.length-2;i>=0;i--)if(Date.parse(series[i].day)<=target)return series[i];return null}
+function radarValue(m,v){if(v==null)return"--";if(m.money)return fmtUsdB(v);if(m.funding)return(v>=0?"+":"")+(v*100).toFixed(4)+"%";return v.toFixed(m.digits)}
+function radarDelta(m,d){if(d==null)return"--";if(m.money)return fmtUsdB(d);if(m.funding)return signed(d*100,4,"%");return signed(d,m.digits)}
+function radarColor(m,v){if(v==null)return"var(--tx3)";if(m.key==="ahr")return v<1.2?"var(--gn)":v<5?"var(--or)":"var(--rd)";if(m.key==="mvrv")return v<1.2?"var(--gn)":v<2.5?"var(--yl)":"var(--rd)";if(m.key==="lth")return v<.1?"var(--or)":v<.5?"var(--gn2)":"var(--gn)";if(m.money)return v>=0?"var(--gn)":"var(--rd)";if(m.funding)return Math.abs(v)>.0003?"var(--rd)":"var(--gn2)";return"var(--tx)"}
+function renderRadar(){
+  const el=$("radarGrid");if(!el)return;el.innerHTML=RADAR_METRICS.map(m=>{const ser=radarSeries(m.key),cur=ser.at(-1)&&ser.at(-1).value,refs=[1,7,30].map(d=>radarReference(ser,d)),deltas=refs.map(r=>r?cur-r.value:null),pct=cur==null||!ser.length?null:Math.round(ser.filter(x=>x.value<=cur).length/ser.length*100),spark=ser.slice(-30).map(x=>x.value),col=radarColor(m,cur);return`<div class="radar-card"><div class="radar-head"><span class="radar-name">${m.name}</span><span class="radar-pct">${pct==null?"历史不足":`${pct}%分位 · ${ser.length}日`}</span></div><div class="radar-main"><b class="radar-value num" style="color:${col}">${radarValue(m,cur)}</b><svg class="radar-spark" viewBox="0 0 74 28" preserveAspectRatio="none" aria-hidden="true"><polyline points="${sparkPath(spark,74,28)}" fill="none" stroke="${col}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg></div><div class="radar-change">${["1日","7日","30日"].map((n,i)=>`<span>${n}<b style="color:${deltas[i]==null?"var(--tx3)":deltas[i]>=0?(m.goodDown?"var(--or)":"var(--gn)"):(m.goodDown?"var(--gn)":"var(--or)")}">${radarDelta(m,deltas[i])}</b></span>`).join("")}</div></div>`}).join("");const n=Math.max(...RADAR_METRICS.map(m=>radarSeries(m.key).length),0),b=$("freshRadar");b.textContent=n?`${n}日历史`:"正在建立";b.className="fresh-badge "+(n>=30?"good":"warn")
+}
+function scoreDrivers(){
+  const rows=intelligenceRows(),cur=rows.at(-1),prev=rows.slice(0,-1).at(-1);if(!cur||!prev)return[];const defs=[["AHR999","ahr",ahr999ToSc],["200WMA","wmaRatio",wma200ToSc],["MVRV","mvrv",mvrvToSc],["恐惧贪婪","fgi",fgiToSc],["Puell","puell",puellToSc],["Reserve Risk","rr",rrToSc],["SOPR","sopr",soprToSc]],hasHealth=CORE_HEALTH.some(n=>healthWeight(HEALTH[n])>0);return defs.map((d,i)=>{const a=finiteValue(cur[d[1]]),b=finiteValue(prev[d[1]]);if(a==null||b==null)return null;const q=!hasHealth?1:healthWeight(HEALTH[CORE_HEALTH[i]]),delta=(d[2](a)-d[2](b))*DM[i].w*q;return{name:d[0],delta,current:a,previous:b}}).filter(Boolean).sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta))
+}
+function renderDrivers(){
+  const list=$("driverList"),drivers=scoreDrivers().slice(0,3);if(!list)return;if(!drivers.length){list.innerHTML='<div class="radar-empty">等待连续两日指标</div>';$("intelDriver").textContent="等待对比";return}list.innerHTML=drivers.map((d,i)=>`<div class="driver-row"><span class="driver-rank">${i+1}</span><span class="driver-copy"><b>${d.name}</b><span>${d.previous.toFixed(3)} → ${d.current.toFixed(3)}</span></span><span class="driver-delta" style="color:${d.delta>=0?"var(--gn)":"var(--rd)"}">${signed(d.delta,1,"分")}</span></div>`).join("");$("intelDriver").textContent=`${drivers[0].name} ${signed(drivers[0].delta,1,"分")}`
+}
+function eventHistory(){
+  const rows=intelligenceRows().filter(x=>Date.now()-Date.parse(x.day)<=31*86400000),events=[],cross=(a,b,key,t,label)=>{const x=finiteValue(a[key]),y=finiteValue(b[key]);if(x==null||y==null||x===y)return;if(x<t&&y>=t)events.push({day:b.day,text:`${label}上穿 ${t}`});else if(x>=t&&y<t)events.push({day:b.day,text:`${label}下穿 ${t}`})};for(let i=1;i<rows.length;i++){const a=rows[i-1],b=rows[i],pa=phaseInfo(a),pb=phaseInfo(b);if(finiteValue(a.score)!=null&&finiteValue(b.score)!=null&&pa.key!==pb.key)events.push({day:b.day,text:`阶段：${pa.name} → ${pb.name}`});cross(a,b,"ahr",.45,"AHR ");cross(a,b,"ahr",1.2,"AHR ");cross(a,b,"sopr",1,"SOPR ");cross(a,b,"lth",.1,"LTH-NUPL ");cross(a,b,"mvrv",1,"MVRV ");cross(a,b,"wmaRatio",1,"价格/200WMA ");const sa=Math.abs(finiteValue(a.stableD1)||0),sb=Math.abs(finiteValue(b.stableD1)||0);if(sa<1e9&&sb>=1e9)events.push({day:b.day,text:"稳定币最新日异动超过 $1B"});const fa=Math.abs(finiteValue(a.funding)||0),fb=Math.abs(finiteValue(b.funding)||0);if(fa<=.0003&&fb>.0003)events.push({day:b.day,text:"永续资金费率进入拥挤区"})}return events.sort((a,b)=>b.day.localeCompare(a.day)).slice(0,8)
+}
+function renderTimeline(){const el=$("eventTimeline"),events=eventHistory();if(!el)return;if(!events.length){el.innerHTML='<div class="radar-empty">近30天无关键阈值切换</div>';$("intelEvent").textContent="30天无切换";return}el.innerHTML=events.map(e=>`<div class="timeline-row"><span class="timeline-dot"></span><span class="timeline-copy"><b>${e.text}</b><span>关键阈值或市场阶段发生变化</span></span><span class="timeline-day">${e.day.slice(5).replace("-","/")}</span></div>`).join("");$("intelEvent").textContent=events[0].text
+}
+function renderIntelligenceNow(){
+  if(!$("phaseName"))return;const ctx=phaseContext(),st=combinedStableStats(),funding=finiteValue(S.raw&&S.raw.fundingRate);$("phaseName").textContent=ctx.phase.name;$("phaseName").style.color=ctx.phase.color;$("phaseDesc").textContent=ctx.phase.desc;$("phaseDays").textContent=ctx.days+"天";$("phaseDays").style.color=ctx.phase.color;$("phasePrevious").textContent=ctx.previous?`此前：${ctx.previous.name}`:"本机历史内未切换";$("intelPhase").textContent=`${ctx.phase.name} · ${ctx.days}天`;$("intelFunds").textContent=st?(st.d7>=1e9?"稳定币扩张":st.d7<=-1e9?"稳定币收缩":funding!=null&&Math.abs(funding)>.0003?"杠杆拥挤":"资金中性"):"等待资金面";renderRadar();renderDrivers();renderTimeline()
+}
+function renderIntelligence(){if(intelligenceRaf)return;intelligenceRaf=requestAnimationFrame(()=>{intelligenceRaf=0;renderIntelligenceNow()})}
+async function copyDailyBrief(){
+  const ctx=phaseContext(),cur=currentStatusSnapshot(),drivers=scoreDrivers().slice(0,3),events=eventHistory(),st=combinedStableStats(),conf=confidenceInfo(),line=(name,v)=>`${name}：${v}`,text=[`BTC 今日情报 · ${statusDay()}`,line("现价",cur.price?`$${Math.round(cur.price).toLocaleString()} ${$("pc24").textContent||""}`:"--"),line("市场阶段",`${ctx.phase.name}（持续 ${ctx.days} 天${ctx.previous?`，此前 ${ctx.previous.name}`:""}）`),line("低估评分",`${Math.round(cur.score||0)} · 数据置信度${conf.label}`),line("AHR999",cur.ahr!=null?cur.ahr.toFixed(3):"--"),line("MVRV",cur.mvrv!=null?cur.mvrv.toFixed(3):"--"),line("SOPR",cur.sopr!=null?cur.sopr.toFixed(3):"--"),line("LTH-NUPL",cur.lth!=null?cur.lth.toFixed(4):"--"),line("稳定币7日",st?fmtUsdB(st.d7):"--"),line("资金费率",cur.funding!=null?(cur.funding*100).toFixed(4)+"%":"--"),line("主要变化",drivers.length?drivers.map(d=>`${d.name}${signed(d.delta,1,"分")}`).join("、"):"暂无连续对比"),line("最新事件",events[0]?`${events[0].day} ${events[0].text}`:"近30天无关键阈值切换")].join("\n");try{if(navigator.clipboard&&navigator.clipboard.writeText)await navigator.clipboard.writeText(text);else{const t=document.createElement("textarea");t.value=text;t.style.position="fixed";t.style.opacity="0";document.body.appendChild(t);t.select();document.execCommand("copy");t.remove()}ntf("今日情报已复制")}catch(e){ntf("复制失败，请长按手动选择")}
+}
+function previousDailyClose(){const done=completedDailyRows();if(done.length)return done.at(-1).close;const d=normalizedDaily();return d.length?d.at(-1).close:null}
+function previousAhrValue(){const rows=completedDailyRows(),closes=rows.slice(-200).map(r=>r.close).filter(v=>v>0);if(closes.length<200)return null;const last=rows.at(-1),hm=closes.length/closes.reduce((a,b)=>a+1/b,0),dg=Math.floor((last.time*1000-new Date("2009-01-03").getTime())/864e5),pl=Math.pow(10,AHR_A*Math.log10(dg)+AHR_B);return hm>0&&pl>0?last.close*last.close/(hm*pl):null}
+function previousStableDaily(){const one=ser=>Array.isArray(ser)&&ser.length>=3?ser.at(-2)-ser.at(-3):null,u=one(S.stbU),c=one(S.stbC);return u==null&&c==null?null:(u||0)+(c||0)}
+function previousScoreBootstrap(){
+  if(S.tweak)return null;const prevPrice=previousDailyClose(),wm=+($("swm")&&$("swm").value)||0,raw=S.raw||{},inputs=[[previousAhrValue(),ahr999ToSc],[prevPrice>0&&wm>0?prevPrice/wm:null,wma200ToSc],[raw.prevMvrv,mvrvToSc],[raw.prevFgi,fgiToSc],[raw.prevPuell,puellToSc],[raw.prevRr,rrToSc],[raw.prevSopr,soprToSc]],available=inputs.filter(x=>x[0]!=null&&Number.isFinite(+x[0])).length,hasHealth=CORE_HEALTH.some(n=>healthWeight(HEALTH[n])>0);
+  if(available<4)return null;return Math.round(inputs.reduce((sum,x,i)=>{const mapped=x[0]!=null&&Number.isFinite(+x[0])?x[1](+x[0]):50,q=!hasHealth?1:healthWeight(HEALTH[CORE_HEALTH[i]]);return sum+(50+(mapped-50)*q)*DM[i].w},0));
+}
+function historicalPreviousStatus(){
+  const rows=completedDailyRows(),last=rows.at(-1),prevPrice=last&&last.close||null,wm=+($("swm")&&$("swm").value)||0,raw=S.raw||{},stableD1=previousStableDaily();
+  return{day:last?new Date(last.time*1000).toISOString().slice(0,10):"昨日",price:prevPrice,score:previousScoreBootstrap(),ahr:previousAhrValue(),sopr:finiteValue(raw.prevSopr),lth:finiteValue(raw.prevLthNupl),stableD1,wmaRatio:prevPrice>0&&wm>0?prevPrice/wm:null,funding:null,premium:null};
+}
+function comparisonPrevious(){
+  const history=historicalPreviousStatus(),snap=previousStatusSnapshot(),out={...history};if(snap)Object.keys(snap).forEach(k=>{if(snap[k]!=null)out[k]=snap[k]});out.score=S.tweak?null:calibratedScoreFromRecord(out)??out.score;out._source=snap?"snapshot":"history";return out;
+}
 function setDelta(id,subId,value,sub,color){const el=$(id),subEl=$(subId);el.textContent=value;el.style.color=color||"var(--tx)";subEl.textContent=sub}
 function signed(n,d=2,suffix=""){return(n>=0?"+":"")+n.toFixed(d)+suffix}
 function renderDailyChanges(){
-  if(!$("deltaPrice"))return;const prev=previousStatusSnapshot(),cur=currentStatusSnapshot(),prevClose=previousDailyClose()||(prev&&prev.price>0?prev.price:null);
+  if(!$("deltaPrice"))return;const prev=comparisonPrevious(),cur=currentStatusSnapshot(),prevClose=previousDailyClose()||(prev&&prev.price>0?prev.price:null),hasPrev=prev&&[prev.ahr,prev.sopr,prev.lth,prev.stableD1,prev.score].some(v=>v!=null);
   if(cur.price>0&&prevClose>0){const d=(cur.price/prevClose-1)*100;setDelta("deltaPrice","deltaPriceSub",signed(d,2,"%"),`现价 $${Math.round(cur.price).toLocaleString()} · 对比 $${Math.round(prevClose).toLocaleString()}`,d>=0?"var(--gn)":"var(--rd)")}else setDelta("deltaPrice","deltaPriceSub","--","等待日线");
-  const metric=(key,id,digits,label,downGood=false)=>{const v=cur[key],p=prev&&prev[key];if(v!=null&&p!=null){const d=v-p;setDelta(id,id+"Sub",signed(d,digits),`当前 ${v.toFixed(digits)}`,downGood?(d<=0?"var(--gn)":"var(--or)"):(d>=0?"var(--gn)":"var(--or)"))}else setDelta(id,id+"Sub","--",v!=null?`当前 ${v.toFixed(digits)} · 明日可比`:"等待快照")};
+  const metric=(key,id,digits,label,downGood=false)=>{const v=cur[key],p=prev&&prev[key];if(v!=null&&p!=null){const d=v-p;setDelta(id,id+"Sub",signed(d,digits),`当前 ${v.toFixed(digits)} · 昨日 ${p.toFixed(digits)}`,downGood?(d<=0?"var(--gn)":"var(--or)"):(d>=0?"var(--gn)":"var(--or)"))}else setDelta(id,id+"Sub","--",v!=null?`当前 ${v.toFixed(digits)} · 暂无昨日值`:"等待数据")};
   metric("ahr","deltaAhr",3,"AHR",true);metric("sopr","deltaSopr",3,"SOPR");metric("lth","deltaLth",4,"LTH");
-  if(cur.stableD1!=null&&prev&&prev.stableD1!=null){const d=cur.stableD1-prev.stableD1;setDelta("deltaStable","deltaStableSub",fmtUsdB(d),`当前 ${fmtUsdB(cur.stableD1)}`,d>=0?"var(--gn)":"var(--rd)")}else setDelta("deltaStable","deltaStableSub","--",cur.stableD1!=null?`当前 ${fmtUsdB(cur.stableD1)} · 明日可比`:"等待快照");
-  if(cur.score!=null&&prev&&prev.score!=null){const d=cur.score-prev.score;setDelta("deltaScore","deltaScoreSub",signed(d,0),`当前 ${Math.round(cur.score)} 分`,d>=0?"var(--gn)":"var(--rd)")}else setDelta("deltaScore","deltaScoreSub","--",cur.score!=null?`当前 ${Math.round(cur.score)} 分 · 明日可比`:"等待快照");
+  if(cur.stableD1!=null&&prev&&prev.stableD1!=null){const d=cur.stableD1-prev.stableD1;setDelta("deltaStable","deltaStableSub",fmtUsdB(d),`当前 ${fmtUsdB(cur.stableD1)} · 昨日 ${fmtUsdB(prev.stableD1)}`,d>=0?"var(--gn)":"var(--rd)")}else setDelta("deltaStable","deltaStableSub","--",cur.stableD1!=null?`当前 ${fmtUsdB(cur.stableD1)} · 暂无昨日值`:"等待数据");
+  if(cur.score!=null&&prev&&prev.score!=null){const d=cur.score-prev.score;setDelta("deltaScore","deltaScoreSub",signed(d,0),`当前 ${Math.round(cur.score)} 分 · 昨日 ${Math.round(prev.score)} 分`,d>=0?"var(--gn)":"var(--rd)")}else setDelta("deltaScore","deltaScoreSub","--",cur.score!=null?`当前 ${Math.round(cur.score)} 分 · 暂无昨日值`:"等待数据");
   const events=[],cross=(p,v,t,name)=>{if(p==null||v==null)return;if(p<t&&v>=t)events.push(`${name}上穿 ${t}`);else if(p>=t&&v<t)events.push(`${name}下穿 ${t}`)};
-  if(prev){cross(prev.ahr,cur.ahr,.45,"AHR ");cross(prev.ahr,cur.ahr,1.2,"AHR ");cross(prev.sopr,cur.sopr,1,"SOPR ");cross(prev.lth,cur.lth,.1,"LTH-NUPL ");cross(prev.wmaRatio,cur.wmaRatio,1,"价格/200WMA ");if(Math.abs(cur.stableD1||0)>=1e9&&Math.abs(prev.stableD1||0)<1e9)events.push("稳定币最新日异动超过 $1B");if((cur.funding||0)>.0003&&(prev.funding||0)<=.0003)events.push("永续资金费率进入拥挤区")}
-  $("deltaNote").textContent=events.length?`今日阈值变化：${events.join(" · ")}`:prev?"今日暂无关键阈值切换 · 继续观察结构变化":"BTC 已与上一根日线比较；其余指标已开始建立本机日快照。";
-  $("freshChanges").textContent=prev?`对比 ${prev.day.slice(5).replace("-","/")}`:"从今日记录";$("freshChanges").className="fresh-badge "+(prev?"good":"warn");
+  if(hasPrev){cross(prev.ahr,cur.ahr,.45,"AHR ");cross(prev.ahr,cur.ahr,1.2,"AHR ");cross(prev.sopr,cur.sopr,1,"SOPR ");cross(prev.lth,cur.lth,.1,"LTH-NUPL ");cross(prev.wmaRatio,cur.wmaRatio,1,"价格/200WMA ");if(Math.abs(cur.stableD1||0)>=1e9&&Math.abs(prev.stableD1||0)<1e9)events.push("稳定币最新日异动超过 $1B");if((cur.funding||0)>.0003&&(prev.funding||0)<=.0003)events.push("永续资金费率进入拥挤区")}
+  $("deltaNote").textContent=events.length?`今日阈值变化：${events.join(" · ")}`:hasPrev?(prev._source==="snapshot"?"今日暂无关键阈值切换 · 使用本机昨日快照":"昨日值已由现有历史序列回填 · 后续由本机快照连续记录"):"BTC 已与上一根日线比较；暂无历史的指标会继续建立本机日快照。";
+  $("freshChanges").textContent=hasPrev?`对比 ${String(prev.day).slice(5).replace("-","/")}`:"部分回填";$("freshChanges").className="fresh-badge "+(hasPrev?"good":"warn");
 }
 function openHealthPanel(){const p=$("healthPanel");p.open=true;p.scrollIntoView({behavior:"smooth",block:"start"})}
 function arrangeDashboard(){const market=$("market"),marketDivider=$("marketDivider"),valuationDivider=$("valuationDivider");if(market&&marketDivider&&valuationDivider){valuationDivider.parentNode.insertBefore(marketDivider,valuationDivider);valuationDivider.parentNode.insertBefore(market,valuationDivider)}}
@@ -1330,13 +1463,15 @@ async function fetchLive(force=false){
 
   task(async()=>{
     try{
-      const fg=await tryFetch("https://api.alternative.me/fng/?limit=1",7000);
-      if(!fg.data||!fg.data[0])throw new Error("empty");
-      result.fgi=+fg.data[0].value;
-      result.fgiLabel=fg.data[0].value_classification;
+      const fg=await tryFetch("https://api.alternative.me/fng/?limit=366",7000),rows=(fg.data||[]).slice().sort((a,b)=>(+a.timestamp||0)-(+b.timestamp||0)),latest=rows.at(-1),prev=rows.at(-2);
+      if(!latest)throw new Error("empty");
+      METRIC_HISTORY.fgi=rows.map(x=>({day:dayFromTs((+x.timestamp||0)*1000),value:+x.value})).filter(x=>x.day&&Number.isFinite(x.value)).slice(-366);
+      result.fgi=+latest.value;
+      result.fgiLabel=latest.value_classification;
+      if(prev&&Number.isFinite(+prev.value))result.prevFgi=+prev.value;
       markHealth("FGI","ok","已更新");
     }catch(e){
-      carryFields(result,fallback,"FGI",["fgi","fgiLabel"]);
+      carryFields(result,fallback,"FGI",["fgi","fgiLabel","prevFgi"]);
     }
   });
 
@@ -1348,8 +1483,13 @@ async function fetchLive(force=false){
       result.fundingTime=+(t&&t.fundingTime)||null;
       markHealth("资金费率","ok","OKX BTC-USDT-SWAP",+(t&&t.ts)||Date.now());
     }catch(e){
-      carryFields(result,fallback,"资金费率",["fundingRate","fundingTime"]);
+      try{const t=await tryFetch("https://fapi.binance.com/fapi/v1/premiumIndex?symbol=BTCUSDT",7000),rate=+t.lastFundingRate;if(!Number.isFinite(rate))throw new Error("bad fallback rate");result.fundingRate=rate;result.fundingTime=+t.nextFundingTime||null;markHealth("资金费率","fallback","Binance永续备用",+t.time||Date.now())}catch(e2){carryFields(result,fallback,"资金费率",["fundingRate","fundingTime"])}
     }
+
+    try{
+      let series=[];for(const url of ["https://www.okx.com/api/v5/public/funding-rate-history?instId=BTC-USDT-SWAP&limit=100","https://fapi.binance.com/fapi/v1/fundingRate?symbol=BTCUSDT&limit=1000"]){try{const h=await tryFetch(url,7000),rows=Array.isArray(h)?h:h&&h.data||[];series=dailyAverageSeries(rows);if(series.length)break}catch(e){}}
+      if(series.length)METRIC_HISTORY.funding=series;
+    }catch(e){}
 
     try{
       const t=await tryFetch("https://api.exchange.coinbase.com/products/BTC-USD/ticker",7000),price=+t.price;
@@ -1397,12 +1537,14 @@ async function fetchLive(force=false){
 
     // 一级：保持旧版 Coin Metrics 主链。
     try{
-      const mv=await tryFetch(
-        "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=CapMVRVCur,CapRealUSD,SplyCur&frequency=1d&limit_per_asset=1",
+      let mv=await tryFetch(
+        "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=CapMVRVCur&frequency=1d&limit_per_asset=366",
         12000
-      );
-      const row=mv.data&&mv.data[0];
+      ),all=(mv.data||[]).slice();
+      for(let page=1;page<4&&mv.next_page_url&&all.length<366;page++){mv=await tryFetch(mv.next_page_url,12000);all.push(...(mv.data||[]))}
+      const rows=all.sort((a,b)=>(parseDataTs(a.time||a.timestamp||a.date)||0)-(parseDataTs(b.time||b.timestamp||b.date)||0)).slice(-366),row=rows.at(-1),prevRow=rows.at(-2);
       if(!row)throw new Error("Coin Metrics empty");
+      METRIC_HISTORY.mvrv=rows.map(x=>({day:dayFromTs(parseDataTs(x.time||x.timestamp||x.date)),value:+x.CapMVRVCur})).filter(x=>x.day&&x.value>0).slice(-366);
 
       primaryTs=parseDataTs(
         row.time||row.timestamp||row.date
@@ -1410,6 +1552,7 @@ async function fetchLive(force=false){
 
       if(row.CapMVRVCur!=null&&+row.CapMVRVCur>0){
         result.mvrv=+row.CapMVRVCur;
+        if(prevRow&&prevRow.CapMVRVCur!=null&&+prevRow.CapMVRVCur>0)result.prevMvrv=+prevRow.CapMVRVCur;
         primaryMvrv=true;
         const state=valuationStatus(primaryTs,"主源");
         markHealth("MVRV",state.status,state.detail);
@@ -1527,7 +1670,7 @@ async function fetchLive(force=false){
     }
 
     if(result.mvrv==null){
-      carryFields(result,fallback,"MVRV",["mvrv"]);
+      carryFields(result,fallback,"MVRV",["mvrv","prevMvrv"]);
     }
     if(result.balanced==null){
       carryFields(
@@ -1634,39 +1777,41 @@ async function fetchLive(force=false){
       "https://bitcoin-data.com/v1/sopr",
       "https://api.bgeometrics.com/v1/sopr"
     ],.5,2);
-    if(sopr!=null)result.sopr=sopr;
-    else carryFields(result,fallback,"SOPR",["sopr"]);
+    if(sopr!=null){result.sopr=sopr;if(METRIC_PREV.sopr)result.prevSopr=METRIC_PREV.sopr.v}
+    else carryFields(result,fallback,"SOPR",["sopr","prevSopr"]);
 
     const puell=await bgMetric("puell","Puell",[
       "https://bitcoin-data.com/v1/puell-multiple",
       "https://api.bgeometrics.com/v1/puell-multiple",
       "https://bitcoin-data.com/v1/puell_multiple"
     ],.05,20);
-    if(puell!=null)result.puell=puell;
-    else carryFields(result,fallback,"Puell",["puell"]);
+    if(puell!=null){result.puell=puell;if(METRIC_PREV.puell)result.prevPuell=METRIC_PREV.puell.v}
+    else carryFields(result,fallback,"Puell",["puell","prevPuell"]);
 
     const rr=await bgMetric("rr","RR",[
       "https://bitcoin-data.com/v1/reserve-risk",
       "https://api.bgeometrics.com/v1/reserve-risk",
       "https://bitcoin-data.com/v1/reserve_risk"
     ],.00005,.2);
-    if(rr!=null)result.rr=rr;
-    else carryFields(result,fallback,"RR",["rr"]);
+    if(rr!=null){result.rr=rr;if(METRIC_PREV.rr)result.prevRr=METRIC_PREV.rr.v}
+    else carryFields(result,fallback,"RR",["rr","prevRr"]);
   });
 
   // 免费接口调用额度较低，bgMetric 会缓存 24 小时；独立任务避免拖慢其他链上指标。
   task(async()=>{
     const lthNupl=await bgMetric("lthnupl","LTH-NUPL",[
+      "https://bitcoin-data.com/v1/nupl-lth",
       "https://bitcoin-data.com/v1/nupl-lth/last"
     ],-.8,1.1);
-    if(lthNupl!=null)result.lthNupl=lthNupl;
-    else carryFields(result,fallback,"LTH-NUPL",["lthNupl"]);
+    if(lthNupl!=null){result.lthNupl=lthNupl;if(METRIC_PREV.lthnupl)result.prevLthNupl=METRIC_PREV.lthnupl.v}
+    else carryFields(result,fallback,"LTH-NUPL",["lthNupl","prevLthNupl"]);
   });
 
   await Promise.all(tasks);
 
   // 统一使用本轮最终价格重算所有价格派生指标，避免并行任务先后造成旧价格。
   const latestPrice=result.price||fallback.price||S.price;
+  if(result.prevMvrv==null&&result.realized>0){const prevPrice=previousDailyClose();if(prevPrice>0)result.prevMvrv=prevPrice/result.realized}
   if(result.coinbasePrice>0&&latestPrice>0)result.coinbasePremium=(result.coinbasePrice/latestPrice-1)*100;
   if(latestPrice>0&&result.dma200>0){
     const dg=Math.floor((new Date()-new Date("2009-01-03"))/864e5),
@@ -1725,7 +1870,7 @@ async function fetchLive(force=false){
 function applyLive(d){
   if(!d)return;
   S.raw=S.raw||{};
-  ["fgi","fgiLabel","mvrv","puell","rr","lthNupl","fundingRate","fundingTime","coinbasePrice","coinbasePremium"].forEach(k=>{if(d[k]!=null)S.raw[k]=d[k]});
+  ["fgi","fgiLabel","prevFgi","mvrv","prevMvrv","puell","prevPuell","rr","prevRr","lthNupl","prevLthNupl","prevSopr","fundingRate","fundingTime","coinbasePrice","coinbasePremium"].forEach(k=>{if(d[k]!=null)S.raw[k]=d[k]});
   if(d.mvrv!=null||d.realized!=null||d.balanced!=null)saveValuationCache({...(d.mvrv!=null?{mvrv:d.mvrv}:{}),...(d.realized!=null?{realized:d.realized}:{}),...(d.balanced!=null?{balanced:d.balanced}:{})});
   if(d.price>0){
     S.price=Math.round(d.price);
@@ -1756,7 +1901,7 @@ function applyLive(d){
   renderPriceDerived();
   renderStableCombined();
   renderFunds();
-  commitStatusSnapshot();
+  rebuildIndicatorHistory();
   renderDailyChanges();
 }
 function s2m(s){for(let i=0;i<MB.length-1;i++){const a=MB[i],b=MB[i+1];if(s>=a[0]&&s<=b[0]){const t=(s-a[0])/(b[0]-a[0]);return Math.round((a[1]+t*(b[1]-a[1]))*100)/100}}return s<=0?.1:3}
@@ -1770,14 +1915,14 @@ function basePace(sc){
 }
 function calc(){
   S.dims=DM.map((_,i)=>{const v=+$(`d${i}`).value;$(`v${i}`).textContent=v;$(`h${i}`).textContent=dh2(i,v);return v});
-  const hasHealth=Object.keys(HEALTH).length>0;
+  const hasHealth=CORE_HEALTH.some(n=>healthWeight(HEALTH[n])>0);
   const raw=S.dims.reduce((a,v,i)=>a+v*DM[i].w,0),adjusted=S.dims.reduce((a,v,i)=>{const q=(S.tweak||!hasHealth)?1:healthWeight(HEALTH[CORE_HEALTH[i]]),neutralized=50+(v-50)*q;return a+neutralized*DM[i].w},0),sc=Math.round(adjusted),ml=s2m(sc),z=s2z(sc),cover=healthCoverage(),pace=basePace(sc);
   S.score=sc;S.scoreRaw=Math.round(raw);S.mult=ml;
   $("scoreNum").textContent=sc;$("sz").textContent=z.t;$("sz").style.color=z.c;$("scoreMult").textContent=S.scoreRaw;$("bm").textContent=` · ${ml.toFixed(2)}x · ${pace.parts}次/月`;$("cur").style.left=sc+"%";$("scoreCoverage").textContent=S.tweak
     ?"微调模式 · 未校准"
     :(hasHealth&&Math.abs(S.scoreRaw-sc)>=1
       ?`有效 ${cover.toFixed(1)}/7 · 原始${S.scoreRaw}→校准${sc}`
-      :`有效 ${cover.toFixed(1)}/7 · 健康校准`);
+      :hasHealth?`有效 ${cover.toFixed(1)}/7 · 健康校准`:`有效 0.0/7 · 未校准`);
   saveState();renderAction();return sc;
 }
 function triggerDone(p){return S.log.some(l=>l.tp===p&&l.mo===S.month)}
@@ -1815,18 +1960,18 @@ function currentActionPlan(){
   return{kind:"done",title:"本月基础定投已完成",sub:next?`下一回撤档位：$${Math.round(S.rh*(1-next.p)).toLocaleString()}，触发后执行 ¥${next.a}。`:"所有回撤档位均已执行。",btn:"查看买入记录",conf,pace,pending};
 }
 function renderAction(){
-  const sc=Number.isFinite(+S.score)?+S.score:50,conf=confidenceInfo(),zone=s2z(sc),ahr=S.ahr&&Number.isFinite(+S.ahr.v)?+S.ahr.v:null,spEl=$("ssp"),sp=spEl&&spEl.value!==""?+spEl.value:null,lthEl=$("slth"),lth=lthEl&&lthEl.value!==""?+lthEl.value:null,wm=+($("swm")&&$("swm").value)||0,st=combinedStableStats();
+  const sc=Number.isFinite(+S.score)?+S.score:50,conf=confidenceInfo(),zone=s2z(sc),phase=phaseContext().phase,ahr=S.ahr&&Number.isFinite(+S.ahr.v)?+S.ahr.v:null,spEl=$("ssp"),sp=spEl&&spEl.value!==""?+spEl.value:null,lthEl=$("slth"),lth=lthEl&&lthEl.value!==""?+lthEl.value:null,wm=+($("swm")&&$("swm").value)||0,st=combinedStableStats();
   let chainTitle="链上等待数据",chainText="链上指标仍在更新";
   if(Number.isFinite(lth)){if(lth<0){chainTitle="长期持有者浮亏";chainText="长期持有者整体进入未实现亏损"}else if(lth<.1){chainTitle="长期利润接近警戒";chainText="长期持有者利润已接近盈亏警戒线"}else if(lth<.25){chainTitle="长期利润收窄";chainText="长期持有者仍盈利，但利润空间正在收窄"}else if(lth<.5){chainTitle="长期盈利健康";chainText="长期持有者维持健康盈利"}else{chainTitle="长期利润丰厚";chainText="长期持有者未实现利润处于高位"}}
   else if(Number.isFinite(sp)){chainTitle=sp<1?"链上轻度投降":"链上获利兑现";chainText=sp<1?"SOPR 低于 1，链上出现亏损兑现":"SOPR 高于 1，链上以盈利兑现为主"}
   const liqText=st?(st.d7>=1e9?"稳定币七日明显扩张":st.d7<=-1e9?"稳定币七日明显收缩":"稳定币七日变化温和"):"稳定币流动性等待更新",pbEl=$("spb"),pb=pbEl&&pbEl.value!==""?+pbEl.value:null,risk=pb==null?"待定":pb>=40?"高":pb>=25?"偏高":pb>=10?"中等":"低";
-  $("actionTitle").textContent=`${zone.t} · ${chainTitle}`;
+  $("actionTitle").textContent=`${phase.name} · ${chainTitle}`;
   $("actionSub").textContent=`BTC 当前处于${zone.t}区间；${chainText}。${liqText}${conf.key==="low"?"，部分数据源暂不可用。":"。"}`;
-  $("actionScore").textContent=sc;$("actionBtn").textContent="查看市场体温";
+  $("actionScore").textContent=sc;$("actionBtn").textContent="复制今日情报";
   $("oppKpi").textContent=zone.t;$("oppKpi").style.color=zone.c;
   $("riskKpi").textContent=risk;$("riskKpi").style.color=pb==null?"var(--tx3)":pb>=40?"var(--rd)":pb>=25?"var(--or)":pb>=10?"var(--yl)":"var(--gn)";
   $("confKpi").textContent=conf.label;$("confKpi").style.color=conf.color;
-  const rs=[];if(conf.key==="low")rs.push(["部分指标缺失","warn"]);if(ahr!=null)rs.push([`AHR ${ahr.toFixed(3)} · ${ahr<.45?"深度低估":ahr<1.2?"低估":ahr<5?"偏热":"高估"}`,ahr>=5?"warn":""]);if(wm>0)rs.push([`价格/200WMA ${(S.price/wm).toFixed(2)}x`,S.price/wm>2.5?"warn":""]);if(Number.isFinite(sp))rs.push([`SOPR ${sp.toFixed(3)}`,sp>1.05?"warn":""]);if(Number.isFinite(lth))rs.push([`LTH-NUPL ${lth.toFixed(3)}`,lth<.1?"warn":""]);if(st)rs.push([st.d7>=0?`稳定币7日 ${fmtUsdB(st.d7)}`:`稳定币7日 ${fmtUsdB(st.d7)}`,st.d7<0?"warn":""]);const funding=+(S.raw&&S.raw.fundingRate);if(Number.isFinite(funding)&&Math.abs(funding)>.0003)rs.push(["永续杠杆拥挤","warn"]);if(!rs.length)rs.push(["等待更多有效数据","neutral"]);$("actionReasons").innerHTML=rs.slice(0,5).map(r=>`<span class="reason ${r[1]}">${r[0]}</span>`).join("");renderDailyChanges();
+  const rs=[];if(conf.key==="low")rs.push(["部分指标缺失","warn"]);if(ahr!=null)rs.push([`AHR ${ahr.toFixed(3)} · ${ahr<.45?"深度低估":ahr<1.2?"低估":ahr<5?"偏热":"高估"}`,ahr>=5?"warn":""]);if(wm>0)rs.push([`价格/200WMA ${(S.price/wm).toFixed(2)}x`,S.price/wm>2.5?"warn":""]);if(Number.isFinite(sp))rs.push([`SOPR ${sp.toFixed(3)}`,sp>1.05?"warn":""]);if(Number.isFinite(lth))rs.push([`LTH-NUPL ${lth.toFixed(3)}`,lth<.1?"warn":""]);if(st)rs.push([st.d7>=0?`稳定币7日 ${fmtUsdB(st.d7)}`:`稳定币7日 ${fmtUsdB(st.d7)}`,st.d7<0?"warn":""]);const funding=+(S.raw&&S.raw.fundingRate);if(Number.isFinite(funding)&&Math.abs(funding)>.0003)rs.push(["永续杠杆拥挤","warn"]);if(!rs.length)rs.push(["等待更多有效数据","neutral"]);$("actionReasons").innerHTML=rs.slice(0,5).map(r=>`<span class="reason ${r[1]}">${r[0]}</span>`).join("");renderDailyChanges();renderIntelligence();
 }
 function prepareAction(){const plan=currentActionPlan();if(plan.kind==="trigger"){const t=plan.trigger;preparedTp=t.p;$("la").value=t.a;$("ltype").value=t.k;$("lp").value=S.price;$("buyForm").scrollIntoView({behavior:"smooth",block:"center"});ntf(`已填入跌${Math.round(t.p*100)}%档 ¥${t.a}`)}else if(plan.kind==="base"){preparedTp=null;$("la").value=plan.amount;$("ltype").value="base";$("lp").value=S.price;$("buyForm").scrollIntoView({behavior:"smooth",block:"center"});ntf(`已填入第 ${plan.pace.index}/${plan.pace.parts} 笔基础定投`)}else if(plan.kind==="health"){const p=$("healthPanel");p.open=true;p.scrollIntoView({behavior:"smooth",block:"center"});ntf("数据恢复前不提示回撤加仓")}else if(plan.kind==="wait"){$("plan").scrollIntoView({behavior:"smooth",block:"start"});ntf("当前基础定投节奏已完成")}else{$("lb2").scrollIntoView({behavior:"smooth"})}}
 function onP(){S.price=+$("bp").value||0;$("lp").value=S.price;clearTimeout(onPTimer);onPTimer=setTimeout(renderPriceDerived,300)}
