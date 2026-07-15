@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BUILD: BTC-INTELLIGENCE-V15.0.0-20260714 -->
+<!-- BUILD: BTC-INTELLIGENCE-V16.0.0-20260715 -->
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -8,10 +8,10 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="BTC情报" />
-  <meta name="btc-dca-build" content="15.0.0-20260714" />
+  <meta name="btc-dca-build" content="16.0.0-20260715" />
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
-  <title>BTC 情报终端 · V15.0</title>
+  <title>BTC 情报终端 · V16.0</title>
   <style>
     :root{
       color-scheme:dark;
@@ -57,6 +57,8 @@
     .health summary{list-style:none;padding:11px 13px;font-size:12px;color:var(--tx2);display:flex;justify-content:space-between;cursor:pointer}
     .health summary::-webkit-details-marker{display:none}.health-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--div);border-top:1px solid var(--div)}
     .health-item{background:var(--card);padding:9px 10px}.health-name{font-size:11px;font-weight:700}.health-state{font-size:10px;color:var(--tx3);margin-top:2px}
+    .api-settings{padding:11px 12px;border-top:1px solid var(--div);background:var(--card2)}.api-settings-head{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px}.api-settings-head b{font-size:12px}.api-key-state{color:var(--or);font-weight:750}.api-key-state.ok{color:var(--gn)}
+    .api-settings-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:7px;margin-top:9px}.api-settings input{min-width:0;border:1px solid var(--div);border-radius:10px;background:var(--card);color:var(--tx);padding:8px 10px;font-size:11px;outline:0}.api-settings input:focus{border-color:var(--gn)}.api-settings .btn{padding:8px 12px;font-size:11px}.api-key-note{font-size:9px;color:var(--tx3);line-height:1.45;margin-top:7px}.api-key-note a{color:var(--gn);text-decoration:none;font-weight:750}
     .month-bar{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:8px;padding:14px 14px;background:var(--card);border-radius:14px;margin-top:18px}
     .month-tx{min-width:0;font-size:13px;color:var(--tx2);line-height:1.42}
     .month-line1,.month-line2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -188,13 +190,22 @@
     <div class="dot" id="ldot"></div>
     <span id="lupdated" style="color:var(--tx3)">等待加载</span>
     <span class="hbadge" id="healthBadge">--</span>
-    <span class="hbadge num" id="buildBadge">V15.0</span>
+    <span class="hbadge num" id="buildBadge">V16.0</span>
     <button class="refresh" onclick="fetchLive(true)">刷新</button>
   </div>
   <div class="update-banner" id="updateBanner"><span id="updateText">检测到新版本</span><button onclick="reloadLatest()">立即更新</button></div>
 
   <details class="health" id="healthPanel">
     <summary><span>数据可用性</span><span id="healthSummary">等待检查</span></summary>
+    <div class="api-settings">
+      <div class="api-settings-head"><b>BGeometrics 链上数据</b><span class="api-key-state" id="bgKeyState">未配置 API Key</span></div>
+      <div class="api-settings-row">
+        <input id="bgApiKey" type="password" autocomplete="off" placeholder="输入个人 API Key" aria-label="BGeometrics API Key" />
+        <button class="btn" onclick="saveBgApiKey()">保存</button>
+        <button class="btn ghost" onclick="clearBgApiKey()">清除</button>
+      </div>
+      <div class="api-key-note">Key 只保存在当前设备，不写入 HTML 或备份。用于 SOPR、Puell、Reserve Risk 与 LTH-NUPL；<a href="https://portal.bgeometrics.com/login" target="_blank" rel="noopener noreferrer">申请免费 Key</a>。</div>
+    </div>
     <div class="health-grid" id="healthGrid"></div>
   </details>
 
@@ -213,7 +224,7 @@
         <div class="today-title" id="actionTitle">等待数据</div>
         <div class="today-sub" id="actionSub">系统会综合估值、链上、资金面与周期位置生成市场摘要。</div>
       </div>
-      <div class="today-score"><b id="actionScore">--</b><span>低估评分</span></div>
+      <div class="today-score"><b id="actionScore">--</b><span>估值评分</span></div>
     </div>
     <div class="today-kpis">
       <div class="today-kpi"><small>估值状态</small><b id="oppKpi">--</b></div>
@@ -242,15 +253,15 @@
       <div class="delta-card"><small>SOPR</small><b class="num" id="deltaSopr">--</b><span class="num" id="deltaSoprSub">等待快照</span></div>
       <div class="delta-card"><small>LTH-NUPL</small><b class="num" id="deltaLth">--</b><span class="num" id="deltaLthSub">等待快照</span></div>
       <div class="delta-card"><small>稳定币最新日</small><b class="num" id="deltaStable">--</b><span class="num" id="deltaStableSub">等待快照</span></div>
-      <div class="delta-card"><small>低估评分</small><b class="num" id="deltaScore">--</b><span class="num" id="deltaScoreSub">等待快照</span></div>
+      <div class="delta-card"><small>估值评分</small><b class="num" id="deltaScore">--</b><span class="num" id="deltaScoreSub">等待快照</span></div>
     </div>
     <div class="delta-note" id="deltaNote">首次使用会建立今日快照，明日起显示完整变化。</div>
   </section>
 
   <div class="divider"></div>
   <section class="sec" id="radar" aria-label="BTC 周期雷达">
-    <div class="sec-head-row"><div class="sec-title">周期雷达</div><span class="fresh-badge" id="freshRadar">365日历史</span></div>
-    <div class="sec-sub">核心指标的 1日 / 7日 / 30日变化与本地365日历史分位，不增加新的外部依赖</div>
+    <div class="sec-head-row"><div class="sec-title">周期雷达</div><span class="fresh-badge" id="freshRadar">真实数据日</span></div>
+    <div class="sec-sub">核心指标的 1日 / 7日 / 30日变化；历史分位仅在真实数据日达到 90 天后显示</div>
     <div class="phase-card">
       <div><div class="phase-eyebrow">当前市场阶段</div><div class="phase-name" id="phaseName">等待识别</div><div class="phase-desc" id="phaseDesc">历史序列建立后自动识别。</div></div>
       <div class="phase-meta"><b class="num" id="phaseDays">--</b><span id="phasePrevious">持续天数</span></div>
@@ -391,8 +402,8 @@
         <div class="tile-hint">2026年内市场隐含概率 %</div>
       </div>
       <div class="tile prob">
-        <div class="tile-name"><span class="tile-live"></span>突破 $90K 概率<span class="fresh-badge" id="freshProb90">--</span></div>
-        <input id="spu" type="number" inputmode="decimal" step="0.1" placeholder="--" oninput="sig()" aria-label="突破九万美元概率" />
+        <div class="tile-name"><span class="tile-live"></span>突破 $100K 概率<span class="fresh-badge" id="freshProb90">--</span></div>
+        <input id="spu" type="number" inputmode="decimal" step="0.1" placeholder="--" oninput="sig()" aria-label="突破十万美元概率" />
         <div class="tile-status" id="ss6"></div>
         <div class="tile-hint">2026年内 · 未关闭市场 %</div>
       </div>
@@ -438,7 +449,7 @@
       <div class="month-line2"><span id="rhMode">(MA250 + AHR₁) / 2</span> <b class="num">$<span id="rhd">78,000</span></b><button class="anchor-auto" id="anchorAuto" onclick="useAutoAnchor()" hidden>恢复自动</button></div>
     </div>
     <button class="btn ghost sm" onclick="upHigh()">更新高点</button>
-    <button class="btn sm" onclick="nxtMo()">下月</button>
+    <button class="btn sm" onclick="resetMonthBudget()">重置本月预算</button>
   </div>
 
   <section class="sec" id="plan">
@@ -512,7 +523,7 @@
       <button class="btn danger sm" onclick="clr()">清空记录</button>
       <input id="backupInput" type="file" accept="application/json,.json" onchange="importBackup(this)" hidden />
     </div>
-    <div class="data-note" id="storageNote">记录仅保存在本机；V15 会主动申请持久存储，仍建议定期导出备份。</div>
+    <div class="data-note" id="storageNote">记录仅保存在本机；V16 会主动申请持久存储，仍建议定期导出备份。</div>
   </section>
 
   <div class="divider"></div>
@@ -552,29 +563,33 @@
 <script>
 const $=id=>document.getElementById(id);
 const DM=[
-  {w:.2,h:["<0.45 深度低估","0.45-1.2 低估","1.2-5 偏热",">5 高估"],t:[30,55,75]},
-  {w:.15,h:["低于均线","1-1.5x 正常","1.5-2.5x 偏高",">2.5x 高估"],t:[30,55,75]},
-  {w:.15,h:["<1 低估","1-2x 合理","2-3x 偏高",">3x 泡沫"],t:[30,55,75]},
+  {w:.2,h:["<0.45 深度低估","0.45-1.2 低估","1.2-5 偏热",">5 高估"],t:[20,70,90]},
+  {w:.15,h:["低于均线","1-1.5x 正常","1.5-2.5x 偏高",">2.5x 高估"],t:[20,40,75]},
+  {w:.15,h:["<1 低估","1-2x 合理","2-3x 偏高",">3x 泡沫"],t:[25,60,80]},
   {w:.15,h:["极度恐惧","恐惧","贪婪","极度贪婪"],t:[30,50,70]},
-  {w:.15,h:["<0.5 矿工底","0.5-1 正常","1-2 偏高",">2 高危"],t:[30,55,75]},
-  {w:.1,h:["<0.002 买入","正常范围",">0.01 高危","--"],t:[30,60,80]},
-  {w:.1,h:["<0.97 投降","≈1 临界","1-1.05 获利",">1.05 顶部"],t:[30,55,75]}
+  {w:.15,h:["<0.5 矿工底","0.5-1 正常","1-2 偏高",">2 高危"],t:[22,50,75]},
+  {w:.1,h:["<0.002 买入","正常范围","0.004-0.015 偏高",">0.015 高危"],t:[22,50,80]},
+  {w:.1,h:["<0.97 投降","≈1 临界","1-1.05 获利",">1.05 顶部"],t:[25,55,80]}
 ];
 const DN=["AHR999 新拟","200周均线","MVRV","恐惧贪婪","Puell 矿工","Reserve Risk","SOPR"];
 const DW=["20% · 26回归","15%","15%","15%","15% · BGeometrics","10% · BGeometrics","10% · BGeometrics"];
 const MB=[[0,.1],[30,.3],[50,.8],[70,1.2],[85,1.95],[100,3]];
 const TR=[{p:.1,a:200,k:"pull"},{p:.2,a:200,k:"pull"},{p:.3,a:300,k:"pull"},{p:.4,a:150,k:"ext"},{p:.5,a:150,k:"ext"}];
-const BUILD_ID="15.0.0-20260714";
+const BUILD_ID="16.0.0-20260715";
 const CORE_HEALTH=["AHR999","200WMA","MVRV","FGI","Puell","RR","SOPR"];
 const SOURCE_ORDER=["价格","AHR999","200WMA","均线","FGI","资金费率","Coinbase溢价","减半","关机价","MVRV","均衡价","概率","USDT","USDC","LTH-NUPL","SOPR","Puell","RR"];
-const CACHE_KEY="btc_live_v9",STATE_KEY="btc_exec_v7",CACHE_TTL=30*60*1000,STABLE_FLOW_THRESHOLD=1e9;
+const CACHE_KEY="btc_live_v9",STATE_KEY="btc_exec_v7",UPDATE_META_KEY="btc_update_meta_v1",BG_API_KEY_KEY="btc_bg_api_key_v1",CACHE_TTL=30*60*1000,STABLE_FLOW_THRESHOLD=1e9;
 const DAILY_KEY="btc_daily_v1";
-const LEGACY_STATUS_HISTORY_KEY="btc_status_history_v1",STATUS_HISTORY_KEY="btc_indicator_history_v2";
+const LEGACY_STATUS_HISTORY_KEY="btc_status_history_v1",PREV_STATUS_HISTORY_KEY="btc_indicator_history_v2",STATUS_HISTORY_KEY="btc_indicator_history_v3";
 const BINANCE_BASES=["https://data-api.binance.vision","https://api-gcp.binance.com","https://api.binance.com"];
-const SLOW_TTL=24*3600*1000,STABLE_TTL=12*3600*1000,STABLE_DATA_STALE_MS=3*86400000,CHAIN_STALE_MS=3*86400000,VALUATION_CACHE_KEY="btc_valuation_cache_v1";
-const POLYMARKET_EVENT_SLUG="what-price-will-bitcoin-hit-before-2027",POLYMARKET_EVENT_END=Date.parse("2027-01-01T00:00:00Z"),POLYMARKET_DOWN_PRICE=50000,POLYMARKET_UP_PRICE=90000,POLYMARKET_YEAR=2026,POLYMARKET_MARKET_KEY=`${POLYMARKET_EVENT_SLUG}|${POLYMARKET_DOWN_PRICE}|${POLYMARKET_UP_PRICE}`;
+const SLOW_TTL=24*3600*1000,BG_FAILURE_TTL=60*60*1000,STABLE_TTL=12*3600*1000,STABLE_DATA_STALE_MS=3*86400000,CHAIN_STALE_MS=3*86400000,VALUATION_CACHE_KEY="btc_valuation_cache_v1";
+const POLYMARKET_EVENT_SLUG="what-price-will-bitcoin-hit-before-2027",POLYMARKET_EVENT_END=Date.parse("2027-01-01T00:00:00Z"),POLYMARKET_DOWN_PRICE=50000,POLYMARKET_UP_PRICE=100000,POLYMARKET_YEAR=2026,POLYMARKET_MARKET_KEY=`${POLYMARKET_EVENT_SLUG}|${POLYMARKET_DOWN_PRICE}|${POLYMARKET_UP_PRICE}`;
 const AHR_A=5.5856,AHR_B=-16.1567,AHR_A0=5.84,AHR_B0=-17.01,BAL_TP=14657,MINER_EFF_LO=12,MINER_EFF_HI=37.3,ELEC_KWH=.06;
-let HEALTH={},FALLBACK_HEALTH={},METRIC_PREV={},METRIC_HISTORY={},progActive=false,progN=0,PROG_EST=24,preparedTp=null,priceTimer=null,fetchInFlight=false,priceTickInFlight=false,lastTickAt=0,lastFullAt=0,personalChart=null,personalSeries=null,personalMarkers=null;
+const MODEL_MIN_RELIABLE=4,MODEL_MIN_COVERAGE=3.5,RADAR_MIN_SAMPLES=90;
+const SCORE_FIELDS=["ahr","wmaRatio","mvrv","fgi","puell","rr","sopr"];
+const SCORE_MAPPERS=[ahr999ToSc,wma200ToSc,mvrvToSc,fgiToSc,puellToSc,rrToSc,soprToSc];
+const SOURCE_STALE_MS={"价格":30*60*1000,"资金费率":16*3600*1000,"Coinbase溢价":2*3600*1000,"200WMA":10*86400000,"概率":2*86400000,"FGI":2*86400000,"均线":3*86400000,"AHR999":3*86400000,"MVRV":3*86400000,"均衡价":3*86400000,"USDT":3*86400000,"USDC":3*86400000,"LTH-NUPL":3*86400000,"SOPR":3*86400000,"Puell":3*86400000,"RR":3*86400000,"关机价":3*86400000,"减半":3*86400000};
+let HEALTH={},FALLBACK_HEALTH={},METRIC_PREV={},METRIC_HISTORY={},progActive=false,progN=0,PROG_EST=24,priceTimer=null,fetchInFlight=false,priceTickInFlight=false,lastTickAt=0,lastFullAt=0,personalChart=null,personalSeries=null,personalMarkers=null;
 let DAILY=[],STATUS_HISTORY=[],personalDataKey="",personalDefaultLabel="",onPTimer=null,lastHistorySaveAt=0,intelligenceRaf=0;
 function mstr(){const d=new Date();return d.getFullYear()+"年"+(d.getMonth()+1)+"月"}
 function loadState(){try{return JSON.parse(localStorage.getItem(STATE_KEY))}catch(e){return null}}
@@ -582,6 +597,14 @@ function saveState(){
   try{localStorage.setItem(STATE_KEY,JSON.stringify(S))}
   catch(e){console.warn("状态保存不可用",e)}
 }
+function getBgApiKey(){try{return(localStorage.getItem(BG_API_KEY_KEY)||"").trim()}catch(e){return""}}
+function withBgToken(url){const key=getBgApiKey();if(!key)return url;try{const u=new URL(url);u.searchParams.set("token",key);return u.toString()}catch(e){return url}}
+function invalidateBgMetricCache(){["sopr","puell","rr","lthnupl"].forEach(k=>{try{const key="bg5_"+k,c=JSON.parse(localStorage.getItem(key)||"null");if(c){c.ts=0;delete c.failTs;localStorage.setItem(key,JSON.stringify(c))}}catch(e){}})}
+function renderBgKeyState(){const el=$("bgKeyState"),input=$("bgApiKey"),has=!!getBgApiKey();if(!el)return;el.textContent=has?"已配置 · 仅存本机":"未配置 API Key";el.className="api-key-state"+(has?" ok":"");if(input){input.value="";input.placeholder=has?"输入新 Key 可替换":"输入个人 API Key"}}
+function saveBgApiKey(){const input=$("bgApiKey"),key=(input&&input.value||"").trim();if(!key){ntf("请输入 API Key");return}try{localStorage.setItem(BG_API_KEY_KEY,key);invalidateBgMetricCache();renderBgKeyState();ntf("API Key 已保存 · 正在更新链上数据");if(!fetchInFlight)setTimeout(()=>fetchLive(true),80)}catch(e){ntf("API Key 保存失败")}}
+function clearBgApiKey(){if(!getBgApiKey()){ntf("当前未配置 API Key");return}if(!confirm("清除本机保存的 BGeometrics API Key？现有指标缓存不会删除。"))return;try{localStorage.removeItem(BG_API_KEY_KEY);renderBgKeyState();ntf("API Key 已从本机清除")}catch(e){ntf("清除失败")}}
+function metricCacheBackup(){const out={};["bg5_sopr","bg5_puell","bg5_rr","bg5_lthnupl","stable4_cache",VALUATION_CACHE_KEY].forEach(k=>{try{const v=localStorage.getItem(k);if(v)out[k]=JSON.parse(v)}catch(e){}});return out}
+function restoreMetricCaches(box){if(!box||typeof box!=="object")return;["bg5_sopr","bg5_puell","bg5_rr","bg5_lthnupl","stable4_cache",VALUATION_CACHE_KEY].forEach(k=>{if(box[k]!=null)try{localStorage.setItem(k,JSON.stringify(box[k]))}catch(e){}})}
 let S=loadState()||{price:61800,rh:78000,rhManual:false,month:mstr(),dims:[65,60,62,68,60,70,55],bud:{base:0,pull:0,ext:0},log:[],hd:{d:.26,dc:30000,l:0,lc:0},sigs:{},spark30:[],fx:7.1};
 if(!S.bud)S.bud={base:0,pull:0,ext:0};if(!S.log)S.log=[];if(!S.hd)S.hd={d:0,dc:0,l:0,lc:0};if(!S.sigs)S.sigs={};if(typeof S.rhManual!=="boolean")S.rhManual=false;if(!Array.isArray(S.spark30))S.spark30=[];if(S.probMarket!==POLYMARKET_MARKET_KEY){S.probMarket=POLYMARKET_MARKET_KEY;S.sigs.pb=0;S.sigs.pu=0;saveState();}
 try{DAILY=JSON.parse(localStorage.getItem(DAILY_KEY))||[]}catch(e){DAILY=[]}
@@ -591,13 +614,14 @@ if(!DAILY.length){try{const c=JSON.parse(localStorage.getItem(CACHE_KEY));if(c&&
 if(DAILY.length){try{localStorage.setItem(DAILY_KEY,JSON.stringify(DAILY))}catch(e){}}
 if(S.daily!==undefined){delete S.daily;saveState()}
 try{STATUS_HISTORY=JSON.parse(localStorage.getItem(STATUS_HISTORY_KEY))||[]}catch(e){STATUS_HISTORY=[]}
+if(!STATUS_HISTORY.length){try{STATUS_HISTORY=JSON.parse(localStorage.getItem(PREV_STATUS_HISTORY_KEY))||[]}catch(e){STATUS_HISTORY=[]}}
 if(!STATUS_HISTORY.length){try{STATUS_HISTORY=JSON.parse(localStorage.getItem(LEGACY_STATUS_HISTORY_KEY))||[]}catch(e){STATUS_HISTORY=[]}}
 if(!Array.isArray(STATUS_HISTORY))STATUS_HISTORY=[];
 STATUS_HISTORY=STATUS_HISTORY.filter(x=>x&&x.day).sort((a,b)=>String(a.day).localeCompare(String(b.day))).slice(-365);
 if(STATUS_HISTORY.length){try{localStorage.setItem(STATUS_HISTORY_KEY,JSON.stringify(STATUS_HISTORY))}catch(e){}}
 function exportBackup(){
   try{
-    const payload={app:"BTC-DCA",schema:3,build:BUILD_ID,exportedAt:new Date().toISOString(),state:S,daily:DAILY,statusHistory:STATUS_HISTORY,liveCache:readCache(true)},blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a"),day=new Date().toISOString().slice(0,10);
+    const payload={app:"BTC-DCA",schema:4,build:BUILD_ID,exportedAt:new Date().toISOString(),state:S,daily:DAILY,statusHistory:STATUS_HISTORY,metricCaches:metricCacheBackup(),liveCache:readCache(true)},blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a"),day=new Date().toISOString().slice(0,10);
     a.href=URL.createObjectURL(blob);a.download=`btc-status-backup-${day}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);ntf("备份已导出")
   }catch(e){ntf("导出失败，请检查浏览器存储权限")}
 }
@@ -610,6 +634,7 @@ async function importBackup(input){
     localStorage.setItem(STATE_KEY,JSON.stringify(state));
     if(Array.isArray(payload.daily))localStorage.setItem(DAILY_KEY,JSON.stringify(payload.daily));
     if(Array.isArray(payload.statusHistory))localStorage.setItem(STATUS_HISTORY_KEY,JSON.stringify(payload.statusHistory));
+    restoreMetricCaches(payload.metricCaches);
     if(payload.liveCache)localStorage.setItem(CACHE_KEY,JSON.stringify(payload.liveCache));
     ntf("导入成功，正在重载");setTimeout(()=>location.reload(),500)
   }catch(e){ntf("备份文件无效或已损坏")}
@@ -627,6 +652,9 @@ function buildUI(){
 }
 function readCache(allowStale=false){try{const c=JSON.parse(localStorage.getItem(CACHE_KEY));if(!c)return null;if(allowStale||Date.now()-c.ts<CACHE_TTL)return c}catch(e){}return null}
 function cacheAge(ts){if(!(ts>0))return"时间未知";const ms=Math.max(0,Date.now()-ts);if(ms<60000)return"刚刚";if(ms<3600000)return Math.floor(ms/60000)+"分钟前";if(ms<86400000)return Math.floor(ms/3600000)+"小时前";return Math.floor(ms/86400000)+"天前"}
+function staleLimit(name){return SOURCE_STALE_MS[name]||CHAIN_STALE_MS}
+function effectiveHealthStatus(name,status,dataAt){if(status==="fail")return"fail";if(status==="stale")return"stale";if(!(dataAt>0))return"stale";return Date.now()-dataAt>staleLimit(name)?"stale":status}
+function refreshHealthAges(){Object.entries(HEALTH).forEach(([name,h])=>{if(!h)return;h.name=name;h.dataAt=h.dataAt||h.ts||null;h.fetchedAt=h.fetchedAt||null;h.status=effectiveHealthStatus(name,h.status,h.dataAt)})}
 function saveCache(data,successAt=lastFullAt||null){try{localStorage.setItem(CACHE_KEY,JSON.stringify({ts:Date.now(),successAt,data,health:HEALTH}))}catch(e){}}
 function restoreCacheHealth(c){
   HEALTH={};
@@ -634,12 +662,12 @@ function restoreCacheHealth(c){
   SOURCE_ORDER.forEach(name=>{
     const h=saved[name];
     if(h){
-      const ts=Object.prototype.hasOwnProperty.call(h,"ts")?h.ts:c.ts||null,
-        status=h.status==="stale"?"stale":h.status==="fail"?"fail":"cache",
+      const ts=h.dataAt||Object.prototype.hasOwnProperty.call(h,"ts")&&h.ts||c.ts||null,
+        baseStatus=h.status==="stale"?"stale":h.status==="fail"?"fail":"cache",status=effectiveHealthStatus(name,baseStatus,ts),
         sourceDetail=h.sourceDetail||h.detail||"";
-      HEALTH[name]={status,detail:`缓存 ${cacheAge(ts)}${sourceDetail?" · "+sourceDetail:""}`,ts,sourceDetail};
+      HEALTH[name]={name,status,detail:`缓存 ${cacheAge(ts)}${sourceDetail?" · "+sourceDetail:""}`,ts,dataAt:ts,fetchedAt:h.fetchedAt||c.ts||null,sourceDetail};
     }else{
-      HEALTH[name]={status:"cache",detail:`快照 ${cacheAge(c&&c.ts)}`,ts:c&&c.ts||null,sourceDetail:""};
+      const ts=c&&c.ts||null,status=effectiveHealthStatus(name,"cache",ts);HEALTH[name]={name,status,detail:`快照 ${cacheAge(ts)}`,ts,dataAt:ts,fetchedAt:ts,sourceDetail:""};
     }
   });
 }
@@ -647,9 +675,16 @@ function setLiveStatus(state,msg){$("ldot").className="dot "+(state==="ok"?"on":
 async function checkAppUpdate(){
   if(!/^https?:$/.test(location.protocol))return;
   try{
-    const u=new URL(location.href);u.searchParams.set("_build",Date.now());
-    const tx=await fetch(u.toString(),{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(r.status);return r.text()}),m=tx.match(/const BUILD_ID="([^"]+)"/);
-    if(m&&m[1]!==BUILD_ID){$("updateText").textContent=`发现新版本 ${m[1]} · 当前 ${BUILD_ID}`;$("updateBanner").classList.add("on")}
+    const base=new URL(location.href);base.searchParams.delete("_build");base.searchParams.delete("_head");base.searchParams.delete("v");
+    const urlKey=base.origin+base.pathname,headUrl=new URL(base),known=(()=>{try{return JSON.parse(localStorage.getItem(UPDATE_META_KEY))}catch(e){return null}})();
+    headUrl.searchParams.set("_head",Date.now());
+    let fingerprint="";
+    try{const h=await fetch(headUrl.toString(),{method:"HEAD",cache:"no-store"});if(h.ok){const etag=h.headers.get("etag")||"",modified=h.headers.get("last-modified")||"";if(etag||modified)fingerprint=etag+"|"+modified}}catch(e){}
+    if(fingerprint&&known&&known.url===urlKey&&known.fingerprint===fingerprint&&known.build===BUILD_ID)return;
+    const getUrl=new URL(base);getUrl.searchParams.set("_build",Date.now());
+    const tx=await fetch(getUrl.toString(),{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(r.status);return r.text()}),m=tx.match(/const BUILD_ID="([^"]+)"/);
+    if(m&&m[1]!==BUILD_ID){$("updateText").textContent=`发现新版本 ${m[1]} · 当前 ${BUILD_ID}`;$("updateBanner").classList.add("on");return}
+    if(fingerprint){try{localStorage.setItem(UPDATE_META_KEY,JSON.stringify({url:urlKey,fingerprint,build:BUILD_ID,checkedAt:Date.now()}))}catch(e){}}
   }catch(e){}
 }
 function reloadLatest(){const u=new URL(location.href);u.searchParams.set("v",Date.now());u.searchParams.delete("_build");location.replace(u.toString())}
@@ -657,7 +692,6 @@ function progStart(){progActive=true;progN=0;$("fetchBar").style.opacity="1";$("
 function progStep(){if(!progActive)return;progN++;$("fetchBar").style.width=Math.min(90,progN/PROG_EST*90)+"%";$("lupdated").textContent=`正在更新 ${progN}/${PROG_EST}`}
 function progDone(){progActive=false;$("fetchBar").style.width="100%";setTimeout(()=>{$("fetchBar").style.opacity="0";setTimeout(()=>$("fetchBar").style.width="0",350)},300)}
 async function tryFetch(url,ms=8000){progStep();const ctl=new AbortController(),tid=setTimeout(()=>ctl.abort(),ms);try{const r=await fetch(url,{mode:"cors",cache:"no-store",signal:ctl.signal});clearTimeout(tid);if(!r.ok)throw new Error(r.status);const ct=r.headers.get("content-type")||"";return ct.includes("json")?r.json():r.text()}catch(e){clearTimeout(tid);throw e}}
-function lastVal(arr){if(!arr||!arr.length)return null;const x=arr[arr.length-1];if(typeof x==="number")return x;if(Array.isArray(x))return x[1];return x.value||x.y||x.close||x.price||null}
 function ahr999ToSc(v){if(!v)return 65;if(v<.45)return 95;if(v<.7)return 88;if(v<1)return 78;if(v<1.5)return 62;if(v<2.5)return 42;if(v<5)return 25;return 12}
 function wma200ToSc(r){if(!r)return 60;if(r<.7)return 95;if(r<.85)return 82;if(r<1.1)return 67;if(r<1.5)return 47;if(r<2.2)return 30;return 15}
 function mvrvToSc(v){if(!v)return 62;if(v<.8)return 95;if(v<1.2)return 85;if(v<1.8)return 72;if(v<2.5)return 52;if(v<3.5)return 32;return 15}
@@ -729,6 +763,9 @@ function bgSeriesPoints(res){
 function dayFromTs(ts){return ts?new Date(ts).toISOString().slice(0,10):null}
 function compactMetricSeries(points,lo=-Infinity,hi=Infinity){
   const out=[];(points||[]).forEach(p=>{const day=dayFromTs(p&&p.dataTs),value=+(p&&p.v);if(!day||!Number.isFinite(value)||value<lo||value>hi)return;const row={day,value};if(out.length&&out.at(-1).day===day)out[out.length-1]=row;else out.push(row)});return out.slice(-366)
+}
+function mergeMetricSeries(a,b){
+  const by=new Map();[...(a||[]),...(b||[])].forEach(x=>{if(x&&x.day&&Number.isFinite(+x.value))by.set(x.day,{day:x.day,value:+x.value})});return[...by.values()].sort((x,y)=>x.day.localeCompare(y.day)).slice(-366)
 }
 function dailyAverageSeries(rows,valueKey="fundingRate",timeKey="fundingTime"){
   const by=new Map();(rows||[]).forEach(r=>{const ts=parseDataTs(r&&r[timeKey]||r&&r.ts),value=+(r&&r[valueKey]);if(!ts||!Number.isFinite(value))return;const day=dayFromTs(ts),a=by.get(day)||[];a.push(value);by.set(day,a)});return[...by.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([day,a])=>({day,value:a.reduce((x,y)=>x+y,0)/a.length})).slice(-366)
@@ -829,7 +866,7 @@ function getFallbackData(){
   if(d.usdcSeries==null&&S.stbC)d.usdcSeries=S.stbC;
   if(d.stableDataTs==null&&S.stbTs)d.stableDataTs=S.stbTs;
   if(S.raw){
-    ["fgi","fgiLabel","prevFgi","mvrv","prevMvrv","puell","prevPuell","rr","prevRr","lthNupl","prevLthNupl","prevSopr","fundingRate","fundingTime","coinbasePrice","coinbasePremium"].forEach(k=>{if(d[k]==null&&S.raw[k]!=null)d[k]=S.raw[k]});
+    ["fgi","fgiLabel","prevFgi","mvrv","prevMvrv","puell","prevPuell","rr","prevRr","lthNupl","prevLthNupl","prevSopr","fundingRate","fundingTime","fundingSource","coinbasePrice","coinbasePremium","coinbaseSpread"].forEach(k=>{if(d[k]==null&&S.raw[k]!=null)d[k]=S.raw[k]});
   }
   const valuation=readValuationCache();
   if(d.mvrv==null&&valuation.mvrv!=null)d.mvrv=+valuation.mvrv;
@@ -846,8 +883,8 @@ function carryFields(result,fallback,name,fields,detail="沿用上次成功值")
     }
   });
   if(used){
-    const old=FALLBACK_HEALTH[name],ts=old&&old.ts||null,
-      status=old&&old.status==="stale"?"stale":"cache",
+    const old=FALLBACK_HEALTH[name],ts=old&&(old.dataAt||old.ts)||null,
+      status=effectiveHealthStatus(name,old&&old.status==="stale"?"stale":"cache",ts),
       sourceDetail=old&&(old.sourceDetail||old.detail)||"",
       oldDetail=sourceDetail?" · "+sourceDetail:"";
     markHealth(name,status,`${detail} · ${cacheAge(ts)}${oldDetail}`,ts,sourceDetail);
@@ -855,6 +892,7 @@ function carryFields(result,fallback,name,fields,detail="沿用上次成功值")
   else markHealth(name,"fail","暂无可用值");
   return used;
 }
+function carryBgFields(result,fallback,name,fields){const has=!!getBgApiKey(),used=carryFields(result,fallback,name,fields,has?"授权源失败 · 沿用上次成功值":"未配置 API Key · 沿用上次成功值");if(!used&&!has)markHealth(name,"fail","未配置 BGeometrics API Key");return used}
 function aggregateDailyLast(points){
   const byDay=new Map();
   for(const p of points||[]){
@@ -889,43 +927,50 @@ async function llamaSeries(id){
   }catch(e){return{values:[],dataTs:null}}
 }
 async function bgMetric(key,label,paths,lo,hi){
-  let cached=null;
+  let cached=null;const apiKey=getBgApiKey(),authNote=apiKey?"个人Key":"公开兼容";
   try{cached=JSON.parse(localStorage.getItem("bg5_"+key))}catch(e){}
-  delete METRIC_PREV[key];
-  delete METRIC_HISTORY[key];
 
   const usePoint=(v,sourceTs,fromCache)=>{
     if(sourceTs&&Date.now()-sourceTs>CHAIN_STALE_MS){
-      markHealth(label,"stale",staleDetail(sourceTs));
+      markHealth(label,"stale",`${staleDetail(sourceTs)} · ${authNote}`,sourceTs);
     }else if(!sourceTs){
       markHealth(label,"stale","沿用 · 数据日期未知");
     }else{
-      markHealth(label,fromCache?"cache":"ok",fromCache?"24小时慢指标":`数据日 ${formatDataDay(sourceTs)}`);
+      markHealth(label,fromCache?"cache":"ok",fromCache?`24小时慢指标 · ${authNote}`:`数据日 ${formatDataDay(sourceTs)} · ${authNote}`,sourceTs);
     }
     return v;
   };
 
   if(cached&&cached.prevV!=null)METRIC_PREV[key]={v:+cached.prevV,sourceTs:cached.prevSourceTs||null};
-  if(cached&&Array.isArray(cached.series)&&cached.series.length)METRIC_HISTORY[key]=cached.series.slice(-366);
-  if(cached&&Date.now()-cached.ts<SLOW_TTL&&cached.v!=null&&cached.prevV!=null&&METRIC_HISTORY[key]&&METRIC_HISTORY[key].length){
+  if(cached&&Array.isArray(cached.series)&&cached.series.length)METRIC_HISTORY[key]=mergeMetricSeries(METRIC_HISTORY[key],cached.series);
+  if(cached&&Date.now()-cached.ts<SLOW_TTL&&cached.v!=null){
     return usePoint(cached.v,cached.sourceTs,true);
   }
+  if(cached&&cached.failTs&&Date.now()-cached.failTs<BG_FAILURE_TTL){
+    if(cached.v!=null)return usePoint(cached.v,cached.sourceTs,true);
+    return null;
+  }
 
-  for(const url of paths){
+  for(const url of (apiKey?paths.slice(0,1):paths)){
     try{
-      const r=await tryFetch(url,7000),points=bgSeriesPoints(r),point=points.at(-1)||bgPoint(r),prev=points.length>1?points.at(-2):null,series=compactMetricSeries(points,lo,hi);
+      const r=await tryFetch(withBgToken(url),7000),points=bgSeriesPoints(r),point=points.at(-1)||bgPoint(r),prev=points.length>1?points.at(-2):null,series=compactMetricSeries(points,lo,hi);
       if(point&&point.v>=lo&&point.v<=hi){
-        if(prev&&prev.v>=lo&&prev.v<=hi)METRIC_PREV[key]={v:prev.v,sourceTs:prev.dataTs||null};
-        if(series.length)METRIC_HISTORY[key]=series;
+        const cachedDay=dayFromTs(cached&&cached.sourceTs),pointDay=dayFromTs(point.dataTs),oldPoint=cached&&cached.v>=lo&&cached.v<=hi&&cachedDay&&pointDay&&cachedDay<pointDay?{v:+cached.v,sourceTs:cached.sourceTs||null}:null,
+          prior=prev&&prev.v>=lo&&prev.v<=hi?{v:prev.v,sourceTs:prev.dataTs||null}:oldPoint,
+          cachedPoint=cachedDay&&cached&&cached.v>=lo&&cached.v<=hi?[{day:cachedDay,value:+cached.v}]:[],current=point.dataTs?[{day:pointDay,value:point.v}]:[],mergedSeries=mergeMetricSeries(METRIC_HISTORY[key],cachedPoint.concat(series,current));
+        if(prior)METRIC_PREV[key]=prior;
+        if(mergedSeries.length)METRIC_HISTORY[key]=mergedSeries;
+        const savedPrev=METRIC_PREV[key]||null;
         localStorage.setItem(
           "bg5_"+key,
-          JSON.stringify({ts:Date.now(),v:point.v,sourceTs:point.dataTs||null,prevV:prev&&prev.v>=lo&&prev.v<=hi?prev.v:null,prevSourceTs:prev&&prev.dataTs||null,series})
+          JSON.stringify({ts:Date.now(),v:point.v,sourceTs:point.dataTs||null,prevV:savedPrev?savedPrev.v:null,prevSourceTs:savedPrev?savedPrev.sourceTs:null,series:mergedSeries})
         );
         return usePoint(point.v,point.dataTs,false);
       }
     }catch(e){}
   }
 
+  try{localStorage.setItem("bg5_"+key,JSON.stringify({...cached,failTs:Date.now()}))}catch(e){}
   if(cached&&cached.v!=null){
     return usePoint(cached.v,cached.sourceTs,true);
   }
@@ -1193,10 +1238,10 @@ async function stableSeriesCached(){
   if(c&&c.u&&c.c){setStableMetricHistory(c.u,c.c,c.dataTs,c.uSeries,c.cSeries);return {u:c.u,c:c.c,cached:true,stale:true,cacheTs:c.ts||null,dataTs:c.dataTs||{u:null,c:null}}}
   return null;
 }
-function markHealth(name,status,detail="",ts=Date.now(),sourceDetail=detail){HEALTH[name]={status,detail,ts:ts>0?ts:null,sourceDetail}}
+function markHealth(name,status,detail="",ts=Date.now(),sourceDetail=detail){const dataAt=status==="fail"?null:ts>0?ts:null;HEALTH[name]={name,status:effectiveHealthStatus(name,status,dataAt),detail,ts:dataAt,dataAt,fetchedAt:Date.now(),sourceDetail}}
 function healthWeight(h){
   if(!h)return 0;
-  return h.status==="ok"?1:h.status==="fallback"?.85:h.status==="cache"?.75:h.status==="stale"?.25:0;
+  const status=effectiveHealthStatus(h.name||"",h.status,h.dataAt||h.ts);return status==="ok"?1:status==="fallback"?.85:status==="cache"?.75:status==="stale"?.25:0;
 }
 function updateDimSourceLabels(){
   const map=["AHR999","200WMA","MVRV","FGI","Puell","RR","SOPR"];
@@ -1209,6 +1254,7 @@ function updateDimSourceLabels(){
   });
 }
 function renderHealth(){
+  refreshHealthAges();renderBgKeyState();
   const items=SOURCE_ORDER.filter(n=>HEALTH[n]),
     ok=items.filter(n=>HEALTH[n].status==="ok").length,
     fallback=items.filter(n=>HEALTH[n].status==="fallback").length,
@@ -1224,8 +1270,8 @@ function renderHealth(){
   $("healthGrid").innerHTML=items.map(n=>{
     const h=HEALTH[n],
       tx=h.status==="ok"?"实时":h.status==="fallback"?"备用":h.status==="cache"?"沿用":h.status==="stale"?"滞后":"缺失",
-      c=h.status==="ok"?"var(--gn)":h.status==="fallback"?"var(--yl)":h.status==="cache"?"var(--yl)":h.status==="stale"?"var(--or)":"var(--rd)";
-    return `<div class="health-item"><div class="health-name">${n}</div><div class="health-state" style="color:${c}">${tx}${h.detail?" · "+h.detail:""}</div></div>`
+      c=h.status==="ok"?"var(--gn)":h.status==="fallback"?"var(--yl)":h.status==="cache"?"var(--yl)":h.status==="stale"?"var(--or)":"var(--rd)",age=h.dataAt?cacheAge(h.dataAt):"日期未知";
+    return `<div class="health-item"><div class="health-name">${n}</div><div class="health-state" style="color:${c}">${tx}${h.detail?" · "+h.detail:""} · 数据${age}</div></div>`
   }).join("");
 
   const badge=$("healthBadge");
@@ -1260,6 +1306,7 @@ function setFresh(id,names){
   el.title=h.detail||"";
 }
 function renderFreshness(){
+  refreshHealthAges();
   setFresh("freshScore",CORE_HEALTH);setFresh("freshAhr","AHR999");setFresh("freshStable",["USDT","USDC"]);
   setFresh("freshFgi","FGI");setFresh("freshFunding","资金费率");setFresh("freshPremium","Coinbase溢价");
   setFresh("freshMarket",["关机价","均衡价","200WMA","SOPR","减半","概率","LTH-NUPL"]);
@@ -1274,30 +1321,36 @@ function renderFunds(){
   }else{fv.textContent="--";fs.textContent="等待数据";fs.style.color="var(--tx3)"}
   const funding=+S.raw.fundingRate,fr=$("fundingRate"),fst=$("fundingState"),fh=$("fundingHint");
   if(Number.isFinite(funding)){
-    const pct=funding*100,annual=pct*3*365,st=funding<-.0001?["空头拥挤","var(--blue)"]:funding<=.0001?["杠杆中性","var(--gn2)"]:funding<=.0003?["多头温和","var(--yl)"]:["多头拥挤","var(--rd)"],source=HEALTH["资金费率"]&&HEALTH["资金费率"].status==="fallback"?"Binance备用":"OKX";
+    const pct=funding*100,annual=pct*3*365,st=funding<-.0001?["空头拥挤","var(--blue)"]:funding<=.0001?["杠杆中性","var(--gn2)"]:funding<=.0003?["多头温和","var(--yl)"]:["多头拥挤","var(--rd)"],health=HEALTH["资金费率"]||{},hint=String(S.raw.fundingSource||health.sourceDetail||health.detail||""),source=/binance/i.test(hint)?"Binance备用":/okx/i.test(hint)?"OKX":"永续";
     fr.textContent=(pct>=0?"+":"")+pct.toFixed(4)+"%";fr.style.color=st[1];fst.textContent=st[0];fst.style.color=st[1];fh.textContent=`${source} 永续 · 年化约 ${annual>=0?"+":""}${annual.toFixed(1)}%`;
   }else{fr.textContent="--";fst.textContent="等待数据";fst.style.color="var(--tx3)";fh.textContent="OKX BTC-USDT 永续 · 每8小时"}
   const premium=+S.raw.coinbasePremium,cp=$("coinbasePremium"),ps=$("premiumState"),ph=$("premiumHint");
   if(Number.isFinite(premium)){
-    const st=premium>.1?["美国现货需求偏强","var(--gn)"]:premium<-.1?["美国现货需求偏弱","var(--or)"]:["现货需求中性","var(--tx2)"],diff=S.raw.coinbasePrice>0&&S.price>0?S.raw.coinbasePrice-S.price:null;
+    const st=premium>.1?["美国现货需求偏强","var(--gn)"]:premium<-.1?["美国现货需求偏弱","var(--or)"]:["现货需求中性","var(--tx2)"],diff=finiteValue(S.raw.coinbaseSpread);
     cp.textContent=(premium>=0?"+":"")+premium.toFixed(3)+"%";cp.style.color=st[1];ps.textContent=st[0];ps.style.color=st[1];ph.textContent=diff==null?"Coinbase USD − 主行情":`价差 ${diff>=0?"+":""}$${Math.round(diff).toLocaleString()} · Coinbase USD`;
   }else{cp.textContent="--";ps.textContent="等待数据";ps.style.color="var(--tx3)";ph.textContent="Coinbase USD − 主行情"}
   renderFreshness();
 }
-function statusDay(){const d=new Date(),m=String(d.getMonth()+1).padStart(2,"0"),day=String(d.getDate()).padStart(2,"0");return`${d.getFullYear()}-${m}-${day}`}
+function statusDay(){return new Date().toISOString().slice(0,10)}
 function finiteValue(v){if(v==null||v==="")return null;const n=+v;return Number.isFinite(n)?n:null}
+function healthQuality(name){const h=HEALTH[name],dataAt=h&&(h.dataAt||h.ts)||null,status=h?effectiveHealthStatus(name,h.status,dataAt):"fail";return{weight:healthWeight(h),status,dataAt,dataDay:dayFromTs(dataAt),source:h&&(h.sourceDetail||h.detail)||""}}
+function combinedHealthQuality(names){const a=names.map(healthQuality),valid=a.filter(x=>x.dataAt>0),weight=a.length?Math.min(...a.map(x=>x.weight)):0,dataAt=valid.length?Math.min(...valid.map(x=>x.dataAt)):null,status=weight>=1?"ok":weight>=.85?"fallback":weight>=.75?"cache":weight>0?"stale":"fail";return{weight,status,dataAt,dataDay:dayFromTs(dataAt),source:names.join("+")}}
+function snapshotQuality(){return{ahr:healthQuality("AHR999"),wmaRatio:healthQuality("200WMA"),mvrv:healthQuality("MVRV"),fgi:healthQuality("FGI"),puell:healthQuality("Puell"),rr:healthQuality("RR"),sopr:healthQuality("SOPR"),lth:healthQuality("LTH-NUPL"),stableD1:combinedHealthQuality(["USDT","USDC"]),stableD7:combinedHealthQuality(["USDT","USDC"]),funding:healthQuality("资金费率"),premium:healthQuality("Coinbase溢价")}}
+function recordQualityWeight(r,key,value){const q=r&&r.quality&&r.quality[key],w=q&&finiteValue(q.weight);if(w!=null)return Math.max(0,Math.min(1,w));return r&&r.quality?0:value!=null?1:0}
+function evaluateRecord(r){const values=SCORE_FIELDS.map(k=>finiteValue(r&&r[k]));let available=0,reliable=0,coverage=0,raw=0,adjusted=0;values.forEach((v,i)=>{const mapped=v!=null?SCORE_MAPPERS[i](v):50,q=v!=null?recordQualityWeight(r,SCORE_FIELDS[i],v):0;if(v!=null)available++;if(v!=null&&q>=.5)reliable++;coverage+=q;raw+=mapped*DM[i].w;adjusted+=(50+(mapped-50)*q)*DM[i].w});const ready=available>=MODEL_MIN_RELIABLE&&reliable>=MODEL_MIN_RELIABLE&&coverage>=MODEL_MIN_COVERAGE;return{ready,available,reliable,coverage,rawScore:Math.round(raw),referenceScore:Math.round(adjusted),score:ready?Math.round(adjusted):null}}
 function currentStatusSnapshot(){
   const stable=combinedStableStats(),wm=finiteValue($("swm")&&$("swm").value),soprRaw=$("ssp")&&$("ssp").value,sopr=soprRaw===""?null:finiteValue(soprRaw),lthRaw=$("slth")&&$("slth").value;
-  return{day:statusDay(),ts:Date.now(),price:finiteValue(S.price),score:finiteValue(S.score),ahr:S.ahr?finiteValue(S.ahr.v):null,mvrv:finiteValue(S.raw&&S.raw.mvrv),fgi:finiteValue(S.raw&&S.raw.fgi),puell:finiteValue(S.raw&&S.raw.puell),rr:finiteValue(S.raw&&S.raw.rr),sopr,lth:lthRaw===""?null:finiteValue(lthRaw),stableD1:stable?finiteValue(stable.d1):null,stableD7:stable?finiteValue(stable.d7):null,wmaRatio:wm>0&&S.price>0?S.price/wm:null,funding:finiteValue(S.raw&&S.raw.fundingRate),premium:finiteValue(S.raw&&S.raw.coinbasePremium)};
+  const snap={day:statusDay(),ts:Date.now(),price:finiteValue(S.price),score:null,ahr:S.ahr?finiteValue(S.ahr.v):null,mvrv:finiteValue(S.raw&&S.raw.mvrv),fgi:finiteValue(S.raw&&S.raw.fgi),puell:finiteValue(S.raw&&S.raw.puell),rr:finiteValue(S.raw&&S.raw.rr),sopr,lth:lthRaw===""?null:finiteValue(lthRaw),stableD1:stable?finiteValue(stable.d1):null,stableD7:stable?finiteValue(stable.d7):null,wmaRatio:wm>0&&S.price>0?S.price/wm:null,funding:finiteValue(S.raw&&S.raw.fundingRate),premium:finiteValue(S.raw&&S.raw.coinbasePremium),quality:snapshotQuality()};
+  snap.score=evaluateRecord(snap).score;return snap;
 }
 function persistIndicatorHistory(force=false){
   if(!force&&Date.now()-lastHistorySaveAt<300000)return;lastHistorySaveAt=Date.now();try{localStorage.setItem(STATUS_HISTORY_KEY,JSON.stringify(STATUS_HISTORY))}catch(e){}
 }
-function commitStatusSnapshot(force=false){
-  const snap=currentStatusSnapshot();if(!(snap.price>0))return;
-  const i=STATUS_HISTORY.findIndex(x=>x&&x.day===snap.day);if(i>=0){const merged={...STATUS_HISTORY[i]};Object.keys(snap).forEach(k=>{if(snap[k]!=null)merged[k]=snap[k]});STATUS_HISTORY[i]=merged}else STATUS_HISTORY.push(snap);
+function commitStatusSnapshot(force=false,render=true){
+  const snap=currentStatusSnapshot();if(!(snap.price>0))return;const snapModel=evaluateRecord(snap);
+  const i=STATUS_HISTORY.findIndex(x=>x&&x.day===snap.day);if(i>=0){const old=STATUS_HISTORY[i],oldReady=evaluateRecord(old).ready,merged={...old};if(snapModel.ready||!oldReady)Object.keys(snap).forEach(k=>{if(snap[k]!=null)merged[k]=snap[k]});else{merged.ts=snap.ts;merged.price=snap.price}STATUS_HISTORY[i]=merged}else STATUS_HISTORY.push(snap);
   STATUS_HISTORY=STATUS_HISTORY.filter(x=>x&&x.day).sort((a,b)=>String(a.day).localeCompare(String(b.day))).slice(-365);
-  persistIndicatorHistory(force);renderIntelligence();
+  persistIndicatorHistory(force);if(render)renderIntelligence();
 }
 function previousStatusSnapshot(){const today=statusDay();return STATUS_HISTORY.filter(x=>x&&x.day<today).sort((a,b)=>String(a.day).localeCompare(String(b.day))).at(-1)||null}
 function completedDailyRows(){const utcToday=Math.floor(Date.now()/86400000)*86400,rows=normalizedDaily();return rows.filter(r=>r.time<utcToday)}
@@ -1305,23 +1358,21 @@ function ahrHistorySeries(){
   const rows=normalizedDaily(),out=[];let inverse=0;rows.forEach((r,i)=>{inverse+=1/r.close;if(i>=200)inverse-=1/rows[i-200].close;if(i<199)return;const hm=200/inverse,dg=Math.floor((r.time*1000-new Date("2009-01-03").getTime())/864e5),pl=Math.pow(10,AHR_A*Math.log10(dg)+AHR_B),value=r.close*r.close/(hm*pl);if(Number.isFinite(value)&&value>0)out.push({day:new Date(r.time*1000).toISOString().slice(0,10),value})});return out.slice(-365)
 }
 function metricDayMap(key){return new Map((METRIC_HISTORY[key]||[]).filter(x=>x&&x.day&&finiteValue(x.value)!=null).map(x=>[x.day,+x.value]))}
-function scoreFromRecord(r){
-  const inputs=[[r.ahr,ahr999ToSc],[r.wmaRatio,wma200ToSc],[r.mvrv,mvrvToSc],[r.fgi,fgiToSc],[r.puell,puellToSc],[r.rr,rrToSc],[r.sopr,soprToSc]],available=inputs.filter(x=>finiteValue(x[0])!=null).length;if(available<4)return null;return Math.round(inputs.reduce((sum,x,i)=>sum+(finiteValue(x[0])!=null?x[1](+x[0]):50)*DM[i].w,0))
-}
-function calibratedScoreFromRecord(r){
-  const inputs=[[r.ahr,ahr999ToSc],[r.wmaRatio,wma200ToSc],[r.mvrv,mvrvToSc],[r.fgi,fgiToSc],[r.puell,puellToSc],[r.rr,rrToSc],[r.sopr,soprToSc]],available=inputs.filter(x=>finiteValue(x[0])!=null).length,hasHealth=CORE_HEALTH.some(n=>healthWeight(HEALTH[n])>0);if(available<4)return null;return Math.round(inputs.reduce((sum,x,i)=>{const mapped=finiteValue(x[0])!=null?x[1](+x[0]):50,q=!hasHealth?1:healthWeight(HEALTH[CORE_HEALTH[i]]);return sum+(50+(mapped-50)*q)*DM[i].w},0))
-}
+function scoreFromRecord(r){return evaluateRecord(r).score}
+function calibratedScoreFromRecord(r){return evaluateRecord(r).score}
+function historyQuality(day){const dataAt=Date.parse(day+"T00:00:00Z");return{weight:1,status:"history",dataAt,dataDay:day,source:"历史序列"}}
 function rebuildIndicatorHistory(){
-  const old=new Map(STATUS_HISTORY.filter(x=>x&&x.day).map(x=>[x.day,x])),maps={ahr:new Map(ahrHistorySeries().map(x=>[x.day,x.value])),mvrv:metricDayMap("mvrv"),fgi:metricDayMap("fgi"),puell:metricDayMap("puell"),rr:metricDayMap("rr"),sopr:metricDayMap("sopr"),lth:metricDayMap("lthnupl"),stableD1:metricDayMap("stableD1"),stableD7:metricDayMap("stable"),funding:metricDayMap("funding")},rows=normalizedDaily().slice(-365).map(r=>{const day=new Date(r.time*1000).toISOString().slice(0,10),base={day,ts:r.time*1000,price:r.close};Object.keys(maps).forEach(k=>{const v=maps[k].get(day);if(Number.isFinite(v))base[k]=v});const saved=old.get(day);if(saved)Object.keys(saved).forEach(k=>{if(saved[k]!=null)base[k]=saved[k]});if(base.score==null)base.score=scoreFromRecord(base);return base});
-  old.forEach((v,day)=>{if(!rows.some(x=>x.day===day))rows.push(v)});STATUS_HISTORY=rows.filter(x=>x&&x.day).sort((a,b)=>String(a.day).localeCompare(String(b.day))).slice(-365);commitStatusSnapshot(true)
+  const old=new Map(STATUS_HISTORY.filter(x=>x&&x.day).map(x=>[x.day,x])),maps={ahr:new Map(ahrHistorySeries().map(x=>[x.day,x.value])),mvrv:metricDayMap("mvrv"),fgi:metricDayMap("fgi"),puell:metricDayMap("puell"),rr:metricDayMap("rr"),sopr:metricDayMap("sopr"),lth:metricDayMap("lthnupl"),stableD1:metricDayMap("stableD1"),stableD7:metricDayMap("stable"),funding:metricDayMap("funding")},rows=normalizedDaily().slice(-365).map(r=>{const day=new Date(r.time*1000).toISOString().slice(0,10),saved=old.get(day),base=saved?{...saved,quality:{...(saved.quality||{})}}:{day,quality:{}};base.day=day;base.ts=r.time*1000;base.price=r.close;Object.keys(maps).forEach(k=>{const v=maps[k].get(day);if(Number.isFinite(v)){base[k]=v;base.quality[k]=historyQuality(day)}});const model=evaluateRecord(base);if(model.ready)base.score=model.score;else delete base.score;return base});
+  old.forEach((v,day)=>{if(day<=statusDay()&&!rows.some(x=>x.day===day)){const base={...v,quality:{...(v.quality||{})}},model=evaluateRecord(base);if(model.ready)base.score=model.score;else delete base.score;rows.push(base)}});STATUS_HISTORY=rows.filter(x=>x&&x.day&&x.day<=statusDay()).sort((a,b)=>String(a.day).localeCompare(String(b.day))).slice(-365);commitStatusSnapshot(true)
 }
 const PHASES={unknown:{name:"数据建立中",color:"var(--tx2)",desc:"有效历史不足，暂不判断市场阶段。"},capitulation:{name:"深度投降",color:"var(--gn)",desc:"估值与链上亏损兑现同时进入极端区。"},bottom:{name:"低估筑底",color:"var(--gn2)",desc:"长期估值偏低，市场仍在消化压力并构筑底部。"},recovery:{name:"复苏",color:"var(--yl)",desc:"估值修复中，链上状态开始从压力区回升。"},expansion:{name:"趋势扩张",color:"var(--blue)",desc:"价格与盈利趋势扩张，市场进入顺周期阶段。"},distribution:{name:"高位分配",color:"var(--or)",desc:"估值走高且获利兑现增强，需留意分配压力。"},overheat:{name:"过热风险",color:"var(--rd)",desc:"多项估值进入历史高位，回撤风险显著上升。"}};
 function phaseInfo(r){
-  const available=[r.ahr,r.mvrv,r.fgi,r.puell,r.rr,r.sopr,r.lth,r.wmaRatio].filter(x=>finiteValue(x)!=null).length,modelScore=scoreFromRecord(r),savedScore=finiteValue(r.score),sc=modelScore!=null?modelScore:savedScore!=null?savedScore:50,lth=finiteValue(r.lth),sopr=finiteValue(r.sopr),wma=finiteValue(r.wmaRatio);let key;if(available<4)key="unknown";else if((sc>=85&&(lth!=null&&lth<.1||sopr!=null&&sopr<.97))||(lth!=null&&lth<0&&sopr!=null&&sopr<1))key="capitulation";else if(sc>=70)key="bottom";else if(sc>=55)key="recovery";else if(sc>=35&&(wma==null||wma>=1))key="expansion";else if(sc>=20)key="distribution";else key="overheat";return{key,score:sc,...PHASES[key]}
+  const model=evaluateRecord(r||{});if(!model.ready)return{key:"unknown",score:null,model,...PHASES.unknown};const sc=model.score,lth=finiteValue(r.lth),sopr=finiteValue(r.sopr),wma=finiteValue(r.wmaRatio);let key;if((sc>=85&&(lth!=null&&lth<.1||sopr!=null&&sopr<.97))||(lth!=null&&lth<0&&sopr!=null&&sopr<1))key="capitulation";else if(sc>=70)key="bottom";else if(sc>=55)key="recovery";else if(sc>=35&&(wma==null||wma>=1))key="expansion";else if(sc>=20)key="distribution";else key="overheat";return{key,score:sc,model,...PHASES[key]}
 }
 function intelligenceRows(){const rows=STATUS_HISTORY.map(x=>({...x})),cur=currentStatusSnapshot(),i=rows.findIndex(x=>x.day===cur.day);if(i>=0)Object.keys(cur).forEach(k=>{if(cur[k]!=null)rows[i][k]=cur[k]});else if(cur.price>0)rows.push(cur);return rows.filter(x=>x&&x.day).sort((a,b)=>String(a.day).localeCompare(String(b.day))).slice(-365)}
 function phaseContext(){
-  const rows=intelligenceRows().filter(x=>finiteValue(x.score)!=null);if(!rows.length)return{phase:phaseInfo({score:S.score}),days:1,previous:null};const current=phaseInfo(rows.at(-1));let start=rows.length-1,previous=null;while(start>0&&phaseInfo(rows[start-1]).key===current.key)start--;if(start>0)previous=phaseInfo(rows[start-1]);const days=Math.max(1,Math.round((Date.parse(rows.at(-1).day)-Date.parse(rows[start].day))/86400000)+1);return{phase:current,days,previous}
+  const rows=intelligenceRows(),latest=rows.at(-1),reliable=rows.filter(x=>evaluateRecord(x).ready);if(!latest||!evaluateRecord(latest).ready){const previous=reliable.length?phaseInfo(reliable.at(-1)):null;return{phase:phaseInfo(latest||{}),days:0,previous}}
+  const current=phaseInfo(latest);let start=reliable.length-1,previous=null;while(start>0&&phaseInfo(reliable[start-1]).key===current.key)start--;if(start>0)previous=phaseInfo(reliable[start-1]);const days=Math.max(1,Math.round((Date.parse(latest.day)-Date.parse(reliable[start].day))/86400000)+1);return{phase:current,days,previous}
 }
 const RADAR_METRICS=[
   {key:"ahr",name:"AHR999",digits:3,goodDown:true},
@@ -1333,31 +1384,31 @@ const RADAR_METRICS=[
   {key:"stableD7",name:"稳定币7日",money:true},
   {key:"funding",name:"资金费率",funding:true,goodDown:true}
 ];
-function radarSeries(key){return intelligenceRows().map(x=>({day:x.day,value:finiteValue(x[key])})).filter(x=>x.value!=null)}
-function radarReference(series,days){if(series.length<2)return null;const target=Date.parse(series.at(-1).day)-days*86400000;for(let i=series.length-2;i>=0;i--)if(Date.parse(series[i].day)<=target)return series[i];return null}
+function radarSeries(key){const byDay=new Map();intelligenceRows().forEach(x=>{const value=finiteValue(x[key]),q=x.quality&&x.quality[key];if(value==null||recordQualityWeight(x,key,value)<=0)return;const day=q&&q.dataDay||x.day;if(day)byDay.set(day,{day,value})});return[...byDay.values()].sort((a,b)=>String(a.day).localeCompare(String(b.day))).slice(-365)}
+function radarReference(series,days){if(series.length<2)return null;const lastTs=Date.parse(series.at(-1).day),target=lastTs-days*86400000,maxGap=days+Math.max(2,Math.ceil(days*.25));for(let i=series.length-2;i>=0;i--){const ts=Date.parse(series[i].day);if(ts<=target)return(lastTs-ts)/86400000<=maxGap?series[i]:null}return null}
 function radarValue(m,v){if(v==null)return"--";if(m.money)return fmtUsdB(v);if(m.funding)return(v>=0?"+":"")+(v*100).toFixed(4)+"%";return v.toFixed(m.digits)}
 function radarDelta(m,d){if(d==null)return"--";if(m.money)return fmtUsdB(d);if(m.funding)return signed(d*100,4,"%");return signed(d,m.digits)}
 function radarColor(m,v){if(v==null)return"var(--tx3)";if(m.key==="ahr")return v<1.2?"var(--gn)":v<5?"var(--or)":"var(--rd)";if(m.key==="mvrv")return v<1.2?"var(--gn)":v<2.5?"var(--yl)":"var(--rd)";if(m.key==="lth")return v<.1?"var(--or)":v<.5?"var(--gn2)":"var(--gn)";if(m.money)return v>=0?"var(--gn)":"var(--rd)";if(m.funding)return Math.abs(v)>.0003?"var(--rd)":"var(--gn2)";return"var(--tx)"}
 function renderRadar(){
-  const el=$("radarGrid");if(!el)return;el.innerHTML=RADAR_METRICS.map(m=>{const ser=radarSeries(m.key),cur=ser.at(-1)&&ser.at(-1).value,refs=[1,7,30].map(d=>radarReference(ser,d)),deltas=refs.map(r=>r?cur-r.value:null),pct=cur==null||!ser.length?null:Math.round(ser.filter(x=>x.value<=cur).length/ser.length*100),spark=ser.slice(-30).map(x=>x.value),col=radarColor(m,cur);return`<div class="radar-card"><div class="radar-head"><span class="radar-name">${m.name}</span><span class="radar-pct">${pct==null?"历史不足":`${pct}%分位 · ${ser.length}日`}</span></div><div class="radar-main"><b class="radar-value num" style="color:${col}">${radarValue(m,cur)}</b><svg class="radar-spark" viewBox="0 0 74 28" preserveAspectRatio="none" aria-hidden="true"><polyline points="${sparkPath(spark,74,28)}" fill="none" stroke="${col}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg></div><div class="radar-change">${["1日","7日","30日"].map((n,i)=>`<span>${n}<b style="color:${deltas[i]==null?"var(--tx3)":deltas[i]>=0?(m.goodDown?"var(--or)":"var(--gn)"):(m.goodDown?"var(--gn)":"var(--or)")}">${radarDelta(m,deltas[i])}</b></span>`).join("")}</div></div>`}).join("");const n=Math.max(...RADAR_METRICS.map(m=>radarSeries(m.key).length),0),b=$("freshRadar");b.textContent=n?`${n}日历史`:"正在建立";b.className="fresh-badge "+(n>=30?"good":"warn")
+  const el=$("radarGrid");if(!el)return;let qualified=0;el.innerHTML=RADAR_METRICS.map(m=>{const ser=radarSeries(m.key),cur=ser.at(-1)&&ser.at(-1).value,refs=[1,7,30].map(d=>radarReference(ser,d)),deltas=refs.map(r=>r?cur-r.value:null),enough=ser.length>=RADAR_MIN_SAMPLES,pct=cur==null||!enough?null:Math.round(ser.filter(x=>x.value<=cur).length/ser.length*100),spark=ser.slice(-30).map(x=>x.value),col=radarColor(m,cur);if(enough)qualified++;return`<div class="radar-card"><div class="radar-head"><span class="radar-name">${m.name}</span><span class="radar-pct">${pct==null?`样本 ${ser.length}日`:`${pct}%分位 · ${ser.length}日`}</span></div><div class="radar-main"><b class="radar-value num" style="color:${col}">${radarValue(m,cur)}</b><svg class="radar-spark" viewBox="0 0 74 28" preserveAspectRatio="none" aria-hidden="true"><polyline points="${sparkPath(spark,74,28)}" fill="none" stroke="${col}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg></div><div class="radar-change">${["1日","7日","30日"].map((n,i)=>`<span>${n}<b style="color:${deltas[i]==null?"var(--tx3)":deltas[i]>=0?(m.goodDown?"var(--or)":"var(--gn)"):(m.goodDown?"var(--gn)":"var(--or)")}">${radarDelta(m,deltas[i])}</b></span>`).join("")}</div></div>`}).join("");const b=$("freshRadar");b.textContent=qualified?`${qualified}/${RADAR_METRICS.length}具备分位`:"建立真实历史";b.className="fresh-badge "+(qualified===RADAR_METRICS.length?"good":"warn")
 }
 function scoreDrivers(){
-  const rows=intelligenceRows(),cur=rows.at(-1),prev=rows.slice(0,-1).at(-1);if(!cur||!prev)return[];const defs=[["AHR999","ahr",ahr999ToSc],["200WMA","wmaRatio",wma200ToSc],["MVRV","mvrv",mvrvToSc],["恐惧贪婪","fgi",fgiToSc],["Puell","puell",puellToSc],["Reserve Risk","rr",rrToSc],["SOPR","sopr",soprToSc]],hasHealth=CORE_HEALTH.some(n=>healthWeight(HEALTH[n])>0);return defs.map((d,i)=>{const a=finiteValue(cur[d[1]]),b=finiteValue(prev[d[1]]);if(a==null||b==null)return null;const q=!hasHealth?1:healthWeight(HEALTH[CORE_HEALTH[i]]),delta=(d[2](a)-d[2](b))*DM[i].w*q;return{name:d[0],delta,current:a,previous:b}}).filter(Boolean).sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta))
+  const rows=intelligenceRows(),cur=rows.at(-1),prev=rows.slice(0,-1).at(-1);if(!cur||!prev||!evaluateRecord(cur).ready||!evaluateRecord(prev).ready)return[];const defs=[["AHR999","ahr",ahr999ToSc],["200WMA","wmaRatio",wma200ToSc],["MVRV","mvrv",mvrvToSc],["恐惧贪婪","fgi",fgiToSc],["Puell","puell",puellToSc],["Reserve Risk","rr",rrToSc],["SOPR","sopr",soprToSc]];return defs.map((d,i)=>{const key=d[1],a=finiteValue(cur[key]),b=finiteValue(prev[key]),qa=cur.quality&&cur.quality[key],qb=prev.quality&&prev.quality[key];if(a==null||b==null||qa&&qb&&qa.dataDay&&qa.dataDay===qb.dataDay)return null;const q=Math.min(recordQualityWeight(cur,key,a),recordQualityWeight(prev,key,b));if(q<=0)return null;const delta=(d[2](a)-d[2](b))*DM[i].w*q;return{name:d[0],delta,current:a,previous:b}}).filter(Boolean).sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta))
 }
 function renderDrivers(){
   const list=$("driverList"),drivers=scoreDrivers().slice(0,3);if(!list)return;if(!drivers.length){list.innerHTML='<div class="radar-empty">等待连续两日指标</div>';$("intelDriver").textContent="等待对比";return}list.innerHTML=drivers.map((d,i)=>`<div class="driver-row"><span class="driver-rank">${i+1}</span><span class="driver-copy"><b>${d.name}</b><span>${d.previous.toFixed(3)} → ${d.current.toFixed(3)}</span></span><span class="driver-delta" style="color:${d.delta>=0?"var(--gn)":"var(--rd)"}">${signed(d.delta,1,"分")}</span></div>`).join("");$("intelDriver").textContent=`${drivers[0].name} ${signed(drivers[0].delta,1,"分")}`
 }
 function eventHistory(){
-  const rows=intelligenceRows().filter(x=>Date.now()-Date.parse(x.day)<=31*86400000),events=[],cross=(a,b,key,t,label)=>{const x=finiteValue(a[key]),y=finiteValue(b[key]);if(x==null||y==null||x===y)return;if(x<t&&y>=t)events.push({day:b.day,text:`${label}上穿 ${t}`});else if(x>=t&&y<t)events.push({day:b.day,text:`${label}下穿 ${t}`})};for(let i=1;i<rows.length;i++){const a=rows[i-1],b=rows[i],pa=phaseInfo(a),pb=phaseInfo(b);if(finiteValue(a.score)!=null&&finiteValue(b.score)!=null&&pa.key!==pb.key)events.push({day:b.day,text:`阶段：${pa.name} → ${pb.name}`});cross(a,b,"ahr",.45,"AHR ");cross(a,b,"ahr",1.2,"AHR ");cross(a,b,"sopr",1,"SOPR ");cross(a,b,"lth",.1,"LTH-NUPL ");cross(a,b,"mvrv",1,"MVRV ");cross(a,b,"wmaRatio",1,"价格/200WMA ");const sa=Math.abs(finiteValue(a.stableD1)||0),sb=Math.abs(finiteValue(b.stableD1)||0);if(sa<1e9&&sb>=1e9)events.push({day:b.day,text:"稳定币最新日异动超过 $1B"});const fa=Math.abs(finiteValue(a.funding)||0),fb=Math.abs(finiteValue(b.funding)||0);if(fa<=.0003&&fb>.0003)events.push({day:b.day,text:"永续资金费率进入拥挤区"})}return events.sort((a,b)=>b.day.localeCompare(a.day)).slice(0,8)
+  const rows=intelligenceRows().filter(x=>Date.now()-Date.parse(x.day)<=31*86400000),events=[],sameSourceDay=(a,b,key)=>{const qa=a.quality&&a.quality[key],qb=b.quality&&b.quality[key];return!!(qa&&qb&&qa.dataDay&&qa.dataDay===qb.dataDay)},cross=(a,b,key,t,label)=>{const x=finiteValue(a[key]),y=finiteValue(b[key]);if(x==null||y==null||x===y||sameSourceDay(a,b,key))return;if(x<t&&y>=t)events.push({day:b.day,text:`${label}上穿 ${t}`});else if(x>=t&&y<t)events.push({day:b.day,text:`${label}下穿 ${t}`})};for(let i=1;i<rows.length;i++){const a=rows[i-1],b=rows[i],pa=phaseInfo(a),pb=phaseInfo(b);if(pa.key!=="unknown"&&pb.key!=="unknown"&&pa.key!==pb.key)events.push({day:b.day,text:`阶段：${pa.name} → ${pb.name}`});cross(a,b,"ahr",.45,"AHR ");cross(a,b,"ahr",1.2,"AHR ");cross(a,b,"sopr",1,"SOPR ");cross(a,b,"lth",.1,"LTH-NUPL ");cross(a,b,"mvrv",1,"MVRV ");cross(a,b,"wmaRatio",1,"价格/200WMA ");const sa=Math.abs(finiteValue(a.stableD1)||0),sb=Math.abs(finiteValue(b.stableD1)||0);if(!sameSourceDay(a,b,"stableD1")&&sa<1e9&&sb>=1e9)events.push({day:b.day,text:"稳定币最新日异动超过 $1B"});const fa=Math.abs(finiteValue(a.funding)||0),fb=Math.abs(finiteValue(b.funding)||0);if(!sameSourceDay(a,b,"funding")&&fa<=.0003&&fb>.0003)events.push({day:b.day,text:"永续资金费率进入拥挤区"})}return events.sort((a,b)=>b.day.localeCompare(a.day)).slice(0,8)
 }
 function renderTimeline(){const el=$("eventTimeline"),events=eventHistory();if(!el)return;if(!events.length){el.innerHTML='<div class="radar-empty">近30天无关键阈值切换</div>';$("intelEvent").textContent="30天无切换";return}el.innerHTML=events.map(e=>`<div class="timeline-row"><span class="timeline-dot"></span><span class="timeline-copy"><b>${e.text}</b><span>关键阈值或市场阶段发生变化</span></span><span class="timeline-day">${e.day.slice(5).replace("-","/")}</span></div>`).join("");$("intelEvent").textContent=events[0].text
 }
 function renderIntelligenceNow(){
-  if(!$("phaseName"))return;const ctx=phaseContext(),st=combinedStableStats(),funding=finiteValue(S.raw&&S.raw.fundingRate);$("phaseName").textContent=ctx.phase.name;$("phaseName").style.color=ctx.phase.color;$("phaseDesc").textContent=ctx.phase.desc;$("phaseDays").textContent=ctx.days+"天";$("phaseDays").style.color=ctx.phase.color;$("phasePrevious").textContent=ctx.previous?`此前：${ctx.previous.name}`:"本机历史内未切换";$("intelPhase").textContent=`${ctx.phase.name} · ${ctx.days}天`;$("intelFunds").textContent=st?(st.d7>=1e9?"稳定币扩张":st.d7<=-1e9?"稳定币收缩":funding!=null&&Math.abs(funding)>.0003?"杠杆拥挤":"资金中性"):"等待资金面";renderRadar();renderDrivers();renderTimeline()
+  if(!$("phaseName"))return;const ctx=phaseContext(),st=combinedHealthQuality(["USDT","USDC"]).weight>=.5?combinedStableStats():null,funding=healthWeight(HEALTH["资金费率"])>=.5?finiteValue(S.raw&&S.raw.fundingRate):null,known=ctx.phase.key!=="unknown";$("phaseName").textContent=ctx.phase.name;$("phaseName").style.color=ctx.phase.color;$("phaseDesc").textContent=ctx.phase.desc;$("phaseDays").textContent=known?ctx.days+"天":"--";$("phaseDays").style.color=ctx.phase.color;$("phasePrevious").textContent=ctx.previous?(known?`此前：${ctx.previous.name}`:`最近完整阶段：${ctx.previous.name}`):"尚无完整阶段历史";$("intelPhase").textContent=known?`${ctx.phase.name} · ${ctx.days}天`:ctx.phase.name;$("intelFunds").textContent=st?(st.d7>=1e9?"稳定币扩张":st.d7<=-1e9?"稳定币收缩":funding!=null&&Math.abs(funding)>.0003?"杠杆拥挤":"资金中性"):funding!=null&&Math.abs(funding)>.0003?"杠杆拥挤":"等待资金面";renderRadar();renderDrivers();renderTimeline()
 }
 function renderIntelligence(){if(intelligenceRaf)return;intelligenceRaf=requestAnimationFrame(()=>{intelligenceRaf=0;renderIntelligenceNow()})}
 async function copyDailyBrief(){
-  const ctx=phaseContext(),cur=currentStatusSnapshot(),drivers=scoreDrivers().slice(0,3),events=eventHistory(),st=combinedStableStats(),conf=confidenceInfo(),line=(name,v)=>`${name}：${v}`,text=[`BTC 今日情报 · ${statusDay()}`,line("现价",cur.price?`$${Math.round(cur.price).toLocaleString()} ${$("pc24").textContent||""}`:"--"),line("市场阶段",`${ctx.phase.name}（持续 ${ctx.days} 天${ctx.previous?`，此前 ${ctx.previous.name}`:""}）`),line("低估评分",`${Math.round(cur.score||0)} · 数据置信度${conf.label}`),line("AHR999",cur.ahr!=null?cur.ahr.toFixed(3):"--"),line("MVRV",cur.mvrv!=null?cur.mvrv.toFixed(3):"--"),line("SOPR",cur.sopr!=null?cur.sopr.toFixed(3):"--"),line("LTH-NUPL",cur.lth!=null?cur.lth.toFixed(4):"--"),line("稳定币7日",st?fmtUsdB(st.d7):"--"),line("资金费率",cur.funding!=null?(cur.funding*100).toFixed(4)+"%":"--"),line("主要变化",drivers.length?drivers.map(d=>`${d.name}${signed(d.delta,1,"分")}`).join("、"):"暂无连续对比"),line("最新事件",events[0]?`${events[0].day} ${events[0].text}`:"近30天无关键阈值切换")].join("\n");try{if(navigator.clipboard&&navigator.clipboard.writeText)await navigator.clipboard.writeText(text);else{const t=document.createElement("textarea");t.value=text;t.style.position="fixed";t.style.opacity="0";document.body.appendChild(t);t.select();document.execCommand("copy");t.remove()}ntf("今日情报已复制")}catch(e){ntf("复制失败，请长按手动选择")}
+  const ctx=phaseContext(),cur=currentStatusSnapshot(),model=evaluateRecord(cur),reliable=key=>recordQualityWeight(cur,key,cur[key])>=.5,drivers=scoreDrivers().slice(0,3),events=eventHistory(),st=reliable("stableD7")?combinedStableStats():null,conf=confidenceInfo(),line=(name,v)=>`${name}：${v}`,phaseText=ctx.phase.key==="unknown"?`${ctx.phase.name}${ctx.previous?`（最近完整阶段 ${ctx.previous.name}）`:""}`:`${ctx.phase.name}（持续 ${ctx.days} 天${ctx.previous?`，此前 ${ctx.previous.name}`:""}）`,text=[`BTC 今日情报 · ${statusDay()}`,line("现价",cur.price?`$${Math.round(cur.price).toLocaleString()} ${$("pc24").textContent||""}`:"--"),line("市场阶段",phaseText),line("估值评分",model.ready?`${model.score} · 数据置信度${conf.label}`:`数据不足（可靠 ${model.reliable}/7 · 有效 ${model.coverage.toFixed(1)}/7）`),line("AHR999",reliable("ahr")&&cur.ahr!=null?cur.ahr.toFixed(3):"--"),line("MVRV",reliable("mvrv")&&cur.mvrv!=null?cur.mvrv.toFixed(3):"--"),line("SOPR",reliable("sopr")&&cur.sopr!=null?cur.sopr.toFixed(3):"--"),line("LTH-NUPL",reliable("lth")&&cur.lth!=null?cur.lth.toFixed(4):"--"),line("稳定币7日",st?fmtUsdB(st.d7):"--"),line("资金费率",reliable("funding")&&cur.funding!=null?(cur.funding*100).toFixed(4)+"%":"--"),line("主要变化",drivers.length?drivers.map(d=>`${d.name}${signed(d.delta,1,"分")}`).join("、"):"暂无可靠连续对比"),line("最新事件",events[0]?`${events[0].day} ${events[0].text}`:"近30天无关键阈值切换")].join("\n");try{if(navigator.clipboard&&navigator.clipboard.writeText)await navigator.clipboard.writeText(text);else{const t=document.createElement("textarea");t.value=text;t.style.position="fixed";t.style.opacity="0";document.body.appendChild(t);t.select();document.execCommand("copy");t.remove()}ntf("今日情报已复制")}catch(e){ntf("复制失败，请长按手动选择")}
 }
 function previousDailyClose(){const done=completedDailyRows();if(done.length)return done.at(-1).close;const d=normalizedDaily();return d.length?d.at(-1).close:null}
 function previousAhrValue(){const rows=completedDailyRows(),closes=rows.slice(-200).map(r=>r.close).filter(v=>v>0);if(closes.length<200)return null;const last=rows.at(-1),hm=closes.length/closes.reduce((a,b)=>a+1/b,0),dg=Math.floor((last.time*1000-new Date("2009-01-03").getTime())/864e5),pl=Math.pow(10,AHR_A*Math.log10(dg)+AHR_B);return hm>0&&pl>0?last.close*last.close/(hm*pl):null}
@@ -1376,14 +1427,14 @@ function comparisonPrevious(){
 function setDelta(id,subId,value,sub,color){const el=$(id),subEl=$(subId);el.textContent=value;el.style.color=color||"var(--tx)";subEl.textContent=sub}
 function signed(n,d=2,suffix=""){return(n>=0?"+":"")+n.toFixed(d)+suffix}
 function renderDailyChanges(){
-  if(!$("deltaPrice"))return;const prev=comparisonPrevious(),cur=currentStatusSnapshot(),prevClose=previousDailyClose()||(prev&&prev.price>0?prev.price:null),hasPrev=prev&&[prev.ahr,prev.sopr,prev.lth,prev.stableD1,prev.score].some(v=>v!=null);
+  if(!$("deltaPrice"))return;const prev=comparisonPrevious(),cur=currentStatusSnapshot(),prevClose=previousDailyClose()||(prev&&prev.price>0?prev.price:null),hasPrev=prev&&["ahr","sopr","lth","stableD1"].some(k=>cur[k]!=null&&prev[k]!=null&&recordQualityWeight(cur,k,cur[k])>=.5&&recordQualityWeight(prev,k,prev[k])>=.5);
   if(cur.price>0&&prevClose>0){const d=(cur.price/prevClose-1)*100;setDelta("deltaPrice","deltaPriceSub",signed(d,2,"%"),`现价 $${Math.round(cur.price).toLocaleString()} · 对比 $${Math.round(prevClose).toLocaleString()}`,d>=0?"var(--gn)":"var(--rd)")}else setDelta("deltaPrice","deltaPriceSub","--","等待日线");
-  const metric=(key,id,digits,label,downGood=false)=>{const v=cur[key],p=prev&&prev[key];if(v!=null&&p!=null){const d=v-p;setDelta(id,id+"Sub",signed(d,digits),`当前 ${v.toFixed(digits)} · 昨日 ${p.toFixed(digits)}`,downGood?(d<=0?"var(--gn)":"var(--or)"):(d>=0?"var(--gn)":"var(--or)"))}else setDelta(id,id+"Sub","--",v!=null?`当前 ${v.toFixed(digits)} · 暂无昨日值`:"等待数据")};
+  const sameSourceDay=key=>{const a=cur.quality&&cur.quality[key],b=prev&&prev.quality&&prev.quality[key];return!!(a&&b&&a.dataDay&&a.dataDay===b.dataDay)},reliablePair=key=>recordQualityWeight(cur,key,cur[key])>=.5&&recordQualityWeight(prev,key,prev&&prev[key])>=.5,metric=(key,id,digits,label,downGood=false)=>{const v=cur[key],p=prev&&prev[key];if(v!=null&&recordQualityWeight(cur,key,v)<.5){setDelta(id,id+"Sub","--",`当前 ${v.toFixed(digits)} · 数据滞后`);return}if(sameSourceDay(key)){setDelta(id,id+"Sub","--",v!=null?`当前 ${v.toFixed(digits)} · 数据日未更新`:"等待数据");return}if(v!=null&&p!=null&&reliablePair(key)){const d=v-p;setDelta(id,id+"Sub",signed(d,digits),`当前 ${v.toFixed(digits)} · 对比 ${String(prev.day).slice(5).replace("-","/")} ${p.toFixed(digits)}`,downGood?(d<=0?"var(--gn)":"var(--or)"):(d>=0?"var(--gn)":"var(--or)"))}else setDelta(id,id+"Sub","--",v!=null?`当前 ${v.toFixed(digits)} · 暂无可靠对比`:"等待数据")};
   metric("ahr","deltaAhr",3,"AHR",true);metric("sopr","deltaSopr",3,"SOPR");metric("lth","deltaLth",4,"LTH");
-  if(cur.stableD1!=null&&prev&&prev.stableD1!=null){const d=cur.stableD1-prev.stableD1;setDelta("deltaStable","deltaStableSub",fmtUsdB(d),`当前 ${fmtUsdB(cur.stableD1)} · 昨日 ${fmtUsdB(prev.stableD1)}`,d>=0?"var(--gn)":"var(--rd)")}else setDelta("deltaStable","deltaStableSub","--",cur.stableD1!=null?`当前 ${fmtUsdB(cur.stableD1)} · 暂无昨日值`:"等待数据");
+  if(cur.stableD1!=null&&recordQualityWeight(cur,"stableD1",cur.stableD1)<.5)setDelta("deltaStable","deltaStableSub","--",`当前 ${fmtUsdB(cur.stableD1)} · 数据滞后`);else if(sameSourceDay("stableD1"))setDelta("deltaStable","deltaStableSub","--",cur.stableD1!=null?`当前 ${fmtUsdB(cur.stableD1)} · 数据日未更新`:"等待数据");else if(cur.stableD1!=null&&prev&&prev.stableD1!=null&&reliablePair("stableD1")){const d=cur.stableD1-prev.stableD1;setDelta("deltaStable","deltaStableSub",fmtUsdB(d),`当前 ${fmtUsdB(cur.stableD1)} · 对比 ${String(prev.day).slice(5).replace("-","/")} ${fmtUsdB(prev.stableD1)}`,d>=0?"var(--gn)":"var(--rd)")}else setDelta("deltaStable","deltaStableSub","--",cur.stableD1!=null?`当前 ${fmtUsdB(cur.stableD1)} · 暂无可靠对比`:"等待数据");
   if(cur.score!=null&&prev&&prev.score!=null){const d=cur.score-prev.score;setDelta("deltaScore","deltaScoreSub",signed(d,0),`当前 ${Math.round(cur.score)} 分 · 昨日 ${Math.round(prev.score)} 分`,d>=0?"var(--gn)":"var(--rd)")}else setDelta("deltaScore","deltaScoreSub","--",cur.score!=null?`当前 ${Math.round(cur.score)} 分 · 暂无昨日值`:"等待数据");
   const events=[],cross=(p,v,t,name)=>{if(p==null||v==null)return;if(p<t&&v>=t)events.push(`${name}上穿 ${t}`);else if(p>=t&&v<t)events.push(`${name}下穿 ${t}`)};
-  if(hasPrev){cross(prev.ahr,cur.ahr,.45,"AHR ");cross(prev.ahr,cur.ahr,1.2,"AHR ");cross(prev.sopr,cur.sopr,1,"SOPR ");cross(prev.lth,cur.lth,.1,"LTH-NUPL ");cross(prev.wmaRatio,cur.wmaRatio,1,"价格/200WMA ");if(Math.abs(cur.stableD1||0)>=1e9&&Math.abs(prev.stableD1||0)<1e9)events.push("稳定币最新日异动超过 $1B");if((cur.funding||0)>.0003&&(prev.funding||0)<=.0003)events.push("永续资金费率进入拥挤区")}
+  if(hasPrev){if(reliablePair("ahr")){cross(prev.ahr,cur.ahr,.45,"AHR ");cross(prev.ahr,cur.ahr,1.2,"AHR ")}if(reliablePair("sopr"))cross(prev.sopr,cur.sopr,1,"SOPR ");if(reliablePair("lth"))cross(prev.lth,cur.lth,.1,"LTH-NUPL ");if(reliablePair("wmaRatio"))cross(prev.wmaRatio,cur.wmaRatio,1,"价格/200WMA ");if(reliablePair("stableD1")&&Math.abs(cur.stableD1||0)>=1e9&&Math.abs(prev.stableD1||0)<1e9)events.push("稳定币最新日异动超过 $1B");if(reliablePair("funding")&&(cur.funding||0)>.0003&&(prev.funding||0)<=.0003)events.push("永续资金费率进入拥挤区")}
   $("deltaNote").textContent=events.length?`今日阈值变化：${events.join(" · ")}`:hasPrev?(prev._source==="snapshot"?"今日暂无关键阈值切换 · 使用本机昨日快照":"昨日值已由现有历史序列回填 · 后续由本机快照连续记录"):"BTC 已与上一根日线比较；暂无历史的指标会继续建立本机日快照。";
   $("freshChanges").textContent=hasPrev?`对比 ${String(prev.day).slice(5).replace("-","/")}`:"部分回填";$("freshChanges").className="fresh-badge "+(hasPrev?"good":"warn");
 }
@@ -1395,9 +1446,9 @@ async function fetchLive(force=false){
     if(c){
       restoreCacheHealth(c);
       applyLive(c.data);
-      lastFullAt=c.successAt||c.ts||0;
+      const core=coreHealthInfo();lastFullAt=core.ready?c.successAt||c.ts||0:0;
       renderHealth();
-      setLiveStatus("ok",`缓存 ${cacheAge(c.ts)} · 后台更新`);
+      setLiveStatus(core.ready?"ok":"",`缓存 ${cacheAge(c.ts)} · 核心 ${core.reliable}/7 · 后台更新`);
       setTimeout(()=>fetchLive(true),450);
       return;
     }
@@ -1442,7 +1493,7 @@ async function fetchLive(force=false){
       if(!result.ma51||!result.ma850)throw new Error("bad daily klines");
       DAILY=daily;
       try{localStorage.setItem(DAILY_KEY,JSON.stringify(daily))}catch(e){}
-      markHealth("均线","ok","Binance日线竞速");
+      markHealth("均线","ok","Binance日线竞速",daily.at(-1)[0]*1000);
     }catch(e){
       carryFields(result,fallback,"均线",["ma51","ma120","ma250","ma850","dma200"]);
       carryFields(result,fallback,"AHR999",["ahr999","ahr999c","ahr1price","plNew","dma200"]);
@@ -1455,7 +1506,7 @@ async function fetchLive(force=false){
       const wc=wk.map(k=>+k[4]).filter(Number.isFinite),w=wc.slice(-200);
       if(w.length<190)throw new Error("bad weekly klines");
       result.wma200=w.reduce((a,b)=>a+b,0)/w.length;
-      markHealth("200WMA","ok","Binance周线竞速");
+      markHealth("200WMA","ok","Binance周线竞速",+wk.at(-1)[0]||Date.now());
     }catch(e){
       carryFields(result,fallback,"200WMA",["wma200","wma200ratio"]);
     }
@@ -1469,7 +1520,7 @@ async function fetchLive(force=false){
       result.fgi=+latest.value;
       result.fgiLabel=latest.value_classification;
       if(prev&&Number.isFinite(+prev.value))result.prevFgi=+prev.value;
-      markHealth("FGI","ok","已更新");
+      markHealth("FGI","ok","已更新",(+latest.timestamp||0)*1000||Date.now());
     }catch(e){
       carryFields(result,fallback,"FGI",["fgi","fgiLabel","prevFgi"]);
     }
@@ -1481,9 +1532,10 @@ async function fetchLive(force=false){
       if(!Number.isFinite(rate))throw new Error("bad funding rate");
       result.fundingRate=rate;
       result.fundingTime=+(t&&t.fundingTime)||null;
+      result.fundingSource="OKX";
       markHealth("资金费率","ok","OKX BTC-USDT-SWAP",+(t&&t.ts)||Date.now());
     }catch(e){
-      try{const t=await tryFetch("https://fapi.binance.com/fapi/v1/premiumIndex?symbol=BTCUSDT",7000),rate=+t.lastFundingRate;if(!Number.isFinite(rate))throw new Error("bad fallback rate");result.fundingRate=rate;result.fundingTime=+t.nextFundingTime||null;markHealth("资金费率","fallback","Binance永续备用",+t.time||Date.now())}catch(e2){carryFields(result,fallback,"资金费率",["fundingRate","fundingTime"])}
+      try{const t=await tryFetch("https://fapi.binance.com/fapi/v1/premiumIndex?symbol=BTCUSDT",7000),rate=+t.lastFundingRate;if(!Number.isFinite(rate))throw new Error("bad fallback rate");result.fundingRate=rate;result.fundingTime=+t.nextFundingTime||null;result.fundingSource="Binance";markHealth("资金费率","fallback","Binance永续备用",+t.time||Date.now())}catch(e2){carryFields(result,fallback,"资金费率",["fundingRate","fundingTime","fundingSource"])}
     }
 
     try{
@@ -1497,7 +1549,7 @@ async function fetchLive(force=false){
       result.coinbasePrice=price;
       markHealth("Coinbase溢价","ok","Coinbase Exchange",parseDataTs(t.time)||Date.now());
     }catch(e){
-      carryFields(result,fallback,"Coinbase溢价",["coinbasePrice","coinbasePremium"]);
+      carryFields(result,fallback,"Coinbase溢价",["coinbasePrice","coinbasePremium","coinbaseSpread"]);
     }
   });
 
@@ -1555,7 +1607,7 @@ async function fetchLive(force=false){
         if(prevRow&&prevRow.CapMVRVCur!=null&&+prevRow.CapMVRVCur>0)result.prevMvrv=+prevRow.CapMVRVCur;
         primaryMvrv=true;
         const state=valuationStatus(primaryTs,"主源");
-        markHealth("MVRV",state.status,state.detail);
+        markHealth("MVRV",state.status,state.detail,primaryTs||null);
       }
 
       if(
@@ -1567,7 +1619,7 @@ async function fetchLive(force=false){
         result.balanced=Math.round(result.realized-BAL_TP);
         primaryRp=true;
         const state=valuationStatus(primaryTs,"主源");
-        markHealth("均衡价",state.status,state.detail);
+        markHealth("均衡价",state.status,state.detail,primaryTs||null);
       }
 
       if(primaryMvrv||primaryRp){
@@ -1602,7 +1654,8 @@ async function fetchLive(force=false){
           markHealth(
             "均衡价",
             state.status,
-            `${rp.source} · ${state.detail}`
+            `${rp.source} · ${state.detail}`,
+            rp.sourceTs||null
           );
         }
 
@@ -1618,7 +1671,8 @@ async function fetchLive(force=false){
             markHealth(
               "MVRV",
               state.status,
-              `${rp.source} · 现价÷RP · ${state.detail}`
+              `${rp.source} · 现价÷RP · ${state.detail}`,
+              rp.sourceTs||null
             );
           }
         }
@@ -1644,7 +1698,8 @@ async function fetchLive(force=false){
       markHealth(
         "MVRV",
         state.status,
-        `${vc.source||"估值缓存"} · ${state.detail}`
+        `${vc.source||"估值缓存"} · ${state.detail}`,
+        vc.sourceTs||null
       );
     }
 
@@ -1664,7 +1719,8 @@ async function fetchLive(force=false){
         markHealth(
           "均衡价",
           state.status,
-          `${vc.source||"估值缓存"} · ${state.detail}`
+          `${vc.source||"估值缓存"} · ${state.detail}`,
+          vc.sourceTs||null
         );
       }
     }
@@ -1762,7 +1818,7 @@ async function fetchLive(force=false){
           status=st.stale||!dataTs||tooOld?"stale":st.cached?"cache":"ok",
           source=st.stale?"过期日线缓存":st.cached?"日线缓存":"日线更新",
           detail=`${source} · ${dataTs?"数据日 "+formatDataDay(dataTs):"数据日期未知"}`;
-        markHealth(name,status,detail,st.cacheTs||null);
+        markHealth(name,status,detail,dataTs||null);
       };
       markStable("USDT","u");
       markStable("USDC","c");
@@ -1778,7 +1834,7 @@ async function fetchLive(force=false){
       "https://api.bgeometrics.com/v1/sopr"
     ],.5,2);
     if(sopr!=null){result.sopr=sopr;if(METRIC_PREV.sopr)result.prevSopr=METRIC_PREV.sopr.v}
-    else carryFields(result,fallback,"SOPR",["sopr","prevSopr"]);
+    else carryBgFields(result,fallback,"SOPR",["sopr","prevSopr"]);
 
     const puell=await bgMetric("puell","Puell",[
       "https://bitcoin-data.com/v1/puell-multiple",
@@ -1786,7 +1842,7 @@ async function fetchLive(force=false){
       "https://bitcoin-data.com/v1/puell_multiple"
     ],.05,20);
     if(puell!=null){result.puell=puell;if(METRIC_PREV.puell)result.prevPuell=METRIC_PREV.puell.v}
-    else carryFields(result,fallback,"Puell",["puell","prevPuell"]);
+    else carryBgFields(result,fallback,"Puell",["puell","prevPuell"]);
 
     const rr=await bgMetric("rr","RR",[
       "https://bitcoin-data.com/v1/reserve-risk",
@@ -1794,7 +1850,7 @@ async function fetchLive(force=false){
       "https://bitcoin-data.com/v1/reserve_risk"
     ],.00005,.2);
     if(rr!=null){result.rr=rr;if(METRIC_PREV.rr)result.prevRr=METRIC_PREV.rr.v}
-    else carryFields(result,fallback,"RR",["rr","prevRr"]);
+    else carryBgFields(result,fallback,"RR",["rr","prevRr"]);
   });
 
   // 免费接口调用额度较低，bgMetric 会缓存 24 小时；独立任务避免拖慢其他链上指标。
@@ -1804,7 +1860,7 @@ async function fetchLive(force=false){
       "https://bitcoin-data.com/v1/nupl-lth/last"
     ],-.8,1.1);
     if(lthNupl!=null){result.lthNupl=lthNupl;if(METRIC_PREV.lthnupl)result.prevLthNupl=METRIC_PREV.lthnupl.v}
-    else carryFields(result,fallback,"LTH-NUPL",["lthNupl","prevLthNupl"]);
+    else carryBgFields(result,fallback,"LTH-NUPL",["lthNupl","prevLthNupl"]);
   });
 
   await Promise.all(tasks);
@@ -1812,7 +1868,7 @@ async function fetchLive(force=false){
   // 统一使用本轮最终价格重算所有价格派生指标，避免并行任务先后造成旧价格。
   const latestPrice=result.price||fallback.price||S.price;
   if(result.prevMvrv==null&&result.realized>0){const prevPrice=previousDailyClose();if(prevPrice>0)result.prevMvrv=prevPrice/result.realized}
-  if(result.coinbasePrice>0&&latestPrice>0)result.coinbasePremium=(result.coinbasePrice/latestPrice-1)*100;
+  if(result.coinbasePrice>0&&latestPrice>0&&HEALTH["Coinbase溢价"]&&HEALTH["Coinbase溢价"].status==="ok"){result.coinbasePremium=(result.coinbasePrice/latestPrice-1)*100;result.coinbaseSpread=result.coinbasePrice-latestPrice}
   if(latestPrice>0&&result.dma200>0){
     const dg=Math.floor((new Date()-new Date("2009-01-03"))/864e5),
       pl=Math.pow(10,AHR_A*Math.log10(dg)+AHR_B),
@@ -1825,7 +1881,8 @@ async function fetchLive(force=false){
     markHealth(
       "AHR999",
       maHealth&&maHealth.status==="ok"?"ok":"cache",
-      maHealth&&maHealth.status==="ok"?"日线本地计算":"沿用200日成本重算"
+      maHealth&&maHealth.status==="ok"?"日线本地计算":"沿用200日成本重算",
+      maHealth&&(maHealth.dataAt||maHealth.ts)||null
     );
   }else if(!HEALTH["AHR999"]){
     carryFields(result,fallback,"AHR999",["ahr999","ahr999c","ahr1price","plNew","dma200"]);
@@ -1850,8 +1907,8 @@ async function fetchLive(force=false){
   const merged={...fallback,...result};
   const got=Object.keys(merged).length>0;
   if(got){
-    const refreshed=Object.values(HEALTH).some(h=>h.status==="ok"||h.status==="fallback");
-    if(refreshed)lastFullAt=Date.now();
+    refreshHealthAges();const core=coreHealthInfo();
+    if(core.live>=MODEL_MIN_RELIABLE)lastFullAt=Date.now();
     delete merged.daily;
     saveCache(merged,lastFullAt);
     if(HEALTH["价格"]&&HEALTH["价格"].status==="ok")lastTickAt=Date.now();
@@ -1859,7 +1916,7 @@ async function fetchLive(force=false){
     const fail=SOURCE_ORDER.filter(n=>HEALTH[n]&&HEALTH[n].status==="fail").length;
     setLiveStatus("ok",
       new Date().toLocaleTimeString("zh-CN",{hour:"2-digit",minute:"2-digit"})+
-      (fail?` · ${fail}项暂无数据`:" · 数据可用")
+      ` · 核心 ${core.reliable}/7`+(fail?` · ${fail}项暂无数据`:core.ready?" · 数据可用":" · 暂不判断")
     );
   }else{
     setLiveStatus("","暂无可用数据");
@@ -1870,7 +1927,7 @@ async function fetchLive(force=false){
 function applyLive(d){
   if(!d)return;
   S.raw=S.raw||{};
-  ["fgi","fgiLabel","prevFgi","mvrv","prevMvrv","puell","prevPuell","rr","prevRr","lthNupl","prevLthNupl","prevSopr","fundingRate","fundingTime","coinbasePrice","coinbasePremium"].forEach(k=>{if(d[k]!=null)S.raw[k]=d[k]});
+  ["fgi","fgiLabel","prevFgi","mvrv","prevMvrv","puell","prevPuell","rr","prevRr","lthNupl","prevLthNupl","prevSopr","fundingRate","fundingTime","fundingSource","coinbasePrice","coinbasePremium","coinbaseSpread"].forEach(k=>{if(d[k]!=null)S.raw[k]=d[k]});
   if(d.mvrv!=null||d.realized!=null||d.balanced!=null)saveValuationCache({...(d.mvrv!=null?{mvrv:d.mvrv}:{}),...(d.realized!=null?{realized:d.realized}:{}),...(d.balanced!=null?{balanced:d.balanced}:{})});
   if(d.price>0){
     S.price=Math.round(d.price);
@@ -1906,34 +1963,37 @@ function applyLive(d){
 }
 function s2m(s){for(let i=0;i<MB.length-1;i++){const a=MB[i],b=MB[i+1];if(s>=a[0]&&s<=b[0]){const t=(s-a[0])/(b[0]-a[0]);return Math.round((a[1]+t*(b[1]-a[1]))*100)/100}}return s<=0?.1:3}
 function s2z(s){if(s<30)return{t:"高估风险",c:"var(--rd)"};if(s<50)return{t:"估值偏热",c:"var(--or)"};if(s<70)return{t:"估值合理",c:"var(--yl)"};if(s<85)return{t:"长期低估",c:"var(--gn2)"};return{t:"深度低估",c:"var(--gn)"}}
-function dh2(i,v){const m=DM[i],t=m.t;return v<t[0]?m.h[0]:v<t[1]?m.h[1]:v<t[2]?m.h[2]:m.h[3]}
+function dh2(i,v){const m=DM[i],t=m.t;return v<t[0]?m.h[3]:v<t[1]?m.h[2]:v<t[2]?m.h[1]:m.h[0]}
 function healthCoverage(){return CORE_HEALTH.reduce((a,n)=>a+healthWeight(HEALTH[n]),0)}
+function coreHealthInfo(){const reliable=CORE_HEALTH.filter(n=>healthWeight(HEALTH[n])>=.5).length,live=CORE_HEALTH.filter(n=>{const h=HEALTH[n],s=h&&effectiveHealthStatus(n,h.status,h.dataAt||h.ts);return s==="ok"||s==="fallback"}).length,coverage=healthCoverage();return{reliable,live,coverage,ready:reliable>=MODEL_MIN_RELIABLE&&coverage>=MODEL_MIN_COVERAGE}}
 function confidenceInfo(){const value=healthCoverage(),key=value>=5.5?"high":value>=3.5?"mid":"low";return{value,key,label:key==="high"?"高":key==="mid"?"中":"低",color:key==="high"?"var(--gn)":key==="mid"?"var(--or)":"var(--rd)"}}
 function basePace(sc){
   const parts=sc>=85?1:sc>=60?2:4,days=parts===1?[1]:parts===2?[1,15]:[1,8,15,22],step=1000/parts,spent=Math.max(0,Math.min(1000,+S.bud.base||0)),baseLeft=1000-spent,now=new Date(),today=S.month===mstr()?now.getDate():1,dueCount=days.filter(d=>d<=today).length,dueTarget=Math.min(1000,dueCount*step),remainder=spent%step,finishCurrent=remainder>0?step-remainder:step,dueAmount=dueTarget>spent?Math.round(Math.min(baseLeft,dueTarget-spent,finishCurrent)):0,nextDay=days.find((d,i)=>d>today&&(i+1)*step>spent)||null,index=Math.min(parts,Math.floor(spent/step)+1),label=parts===1?"月初一次":parts===2?"上、下半月各一次":"每周一次";
   return{parts,days,step,spent,baseLeft,dueAmount,nextDay,index,label};
 }
-function calc(){
+function calc(persist=true,render=true){
+  refreshHealthAges();
   S.dims=DM.map((_,i)=>{const v=+$(`d${i}`).value;$(`v${i}`).textContent=v;$(`h${i}`).textContent=dh2(i,v);return v});
   const hasHealth=CORE_HEALTH.some(n=>healthWeight(HEALTH[n])>0);
   const raw=S.dims.reduce((a,v,i)=>a+v*DM[i].w,0),adjusted=S.dims.reduce((a,v,i)=>{const q=(S.tweak||!hasHealth)?1:healthWeight(HEALTH[CORE_HEALTH[i]]),neutralized=50+(v-50)*q;return a+neutralized*DM[i].w},0),sc=Math.round(adjusted),ml=s2m(sc),z=s2z(sc),cover=healthCoverage(),pace=basePace(sc);
   S.score=sc;S.scoreRaw=Math.round(raw);S.mult=ml;
-  $("scoreNum").textContent=sc;$("sz").textContent=z.t;$("sz").style.color=z.c;$("scoreMult").textContent=S.scoreRaw;$("bm").textContent=` · ${ml.toFixed(2)}x · ${pace.parts}次/月`;$("cur").style.left=sc+"%";$("scoreCoverage").textContent=S.tweak
+  const core=coreHealthInfo();$("scoreNum").textContent=sc;$("sz").textContent=core.ready||S.tweak?z.t:"参考分";$("sz").style.color=core.ready||S.tweak?z.c:"var(--tx2)";$("scoreMult").textContent=S.scoreRaw;$("bm").textContent=` · ${ml.toFixed(2)}x · ${pace.parts}次/月`;$("cur").style.left=sc+"%";$("scoreCoverage").textContent=S.tweak
     ?"微调模式 · 未校准"
+    :!core.ready
+      ?`数据不足 · 可靠 ${core.reliable}/7 · 有效 ${core.coverage.toFixed(1)}/7`
     :(hasHealth&&Math.abs(S.scoreRaw-sc)>=1
       ?`有效 ${cover.toFixed(1)}/7 · 原始${S.scoreRaw}→校准${sc}`
       :hasHealth?`有效 ${cover.toFixed(1)}/7 · 健康校准`:`有效 0.0/7 · 未校准`);
-  saveState();renderAction();return sc;
+  if(persist)saveState();if(render)renderAction();return sc;
 }
 function triggerDone(p){return S.log.some(l=>l.tp===p&&l.mo===S.month)}
 function pendingTriggers(){return TR.filter(t=>S.price<=S.rh*(1-t.p)&&!triggerDone(t.p))}
-function nextWaitingTrigger(){return TR.find(t=>!triggerDone(t.p)&&S.price>S.rh*(1-t.p))||null}
 function autoAnchorValue(){const a=[];if(S.mas&&S.mas.m250)a.push(S.mas.m250);if(S.ahr&&S.ahr.p1)a.push(S.ahr.p1);return a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):null}
 function updateAnchorMode(){const mode=$("rhMode"),source=$("rhSourceLabel"),reset=$("anchorAuto");if(mode)mode.textContent=S.rhManual?"手动锚点":"(MA250 + AHR₁) / 2";if(source)source.textContent=S.rhManual?"手动锁定":"MA250·AHR999 均值";if(reset)reset.hidden=!S.rhManual}
 function syncAutoAnchor(){if(!S.rhManual){const v=autoAnchorValue();if(v>0){S.rh=v;if(document.activeElement!==$("rh"))$("rh").value=v}}updateAnchorMode()}
 function setManualAnchor(){S.rhManual=true;updateAnchorMode();trig()}
 function useAutoAnchor(){S.rhManual=false;syncAutoAnchor();trig();saveState();ntf("已恢复自动锚点")}
-function renderPriceDerived(){
+function recalcPriceModels(){
   if(S.price>0&&S.ahr&&S.ahr.dma>0){
     const dg=Math.floor((new Date()-new Date("2009-01-03"))/864e5),
       pl=Math.pow(10,AHR_A*Math.log10(dg)+AHR_B),
@@ -1944,38 +2004,32 @@ function renderPriceDerived(){
   }
   const wm=+($("swm")&&$("swm").value)||S.sigs&&S.sigs.wm||0;
   if(S.price>0&&wm>0){const ratio=S.price/wm,sc=wma200ToSc(ratio);$("d1").value=sc;$("r1").textContent=ratio.toFixed(2)+"x";S.dims[1]=sc}
-  syncAutoAnchor();
-  calc();trig();upG();sig();upH2();renderMA();if(S.ahr)renderAhr(S.ahr);renderPriceSpark();renderPersonalChart();saveState();
 }
-function currentActionPlan(){
-  const sc=Number.isFinite(+S.score)?+S.score:50,conf=confidenceInfo(),pace=basePace(sc),pending=pendingTriggers(),first=pending[0],pullPending=pending.filter(t=>t.k==="pull").reduce((a,t)=>a+t.a,0),extPending=pending.filter(t=>t.k==="ext").reduce((a,t)=>a+t.a,0),next=nextWaitingTrigger(),mult=s2m(sc).toFixed(2);
-  if(conf.key==="low"){
-    if(pace.dueAmount>0)return{kind:"base",amount:pace.dueAmount,title:`基础定投 ¥${pace.dueAmount}`,sub:`数据置信度低，仅执行基础定投；回撤加仓暂停。当前为 ${pace.parts} 次/月节奏（${pace.label}），第 ${pace.index}/${pace.parts} 笔。`,btn:`记录 ¥${pace.dueAmount}`,conf,pace,pending};
-    if(pace.baseLeft>0)return{kind:"wait",title:"基础定投按节奏等待",sub:`数据置信度低，不提示回撤加仓。${pace.nextDay?`下一笔基础定投：本月 ${pace.nextDay} 日 ¥${Math.min(pace.step,pace.baseLeft)}。`:`本月基础预算还剩 ¥${pace.baseLeft}，等待下一节奏点。`}`,btn:"查看本月节奏",conf,pace,pending};
-    return{kind:"health",title:"本月基础定投已完成",sub:`数据置信度低${pending.length?`，虽有 ${pending.length} 档回撤触发，仍暂不推加仓。`:"，暂不生成额外加仓建议。"}`,btn:"查看数据状态",conf,pace,pending};
-  }
-  if(first)return{kind:"trigger",trigger:first,title:`执行下一档 ¥${first.a}`,sub:`共 ${pending.length} 档已触发，待执行 ¥${pullPending+extPending}。本次按顺序执行跌${Math.round(first.p*100)}%档。`,btn:`执行 ¥${first.a}`,conf,pace,pending};
-  if(pace.dueAmount>0)return{kind:"base",amount:pace.dueAmount,title:`基础定投 ¥${pace.dueAmount}`,sub:`校准后评分 ${sc}，估值倍数 ${mult}x；采用 ${pace.parts} 次/月节奏（${pace.label}），这是第 ${pace.index}/${pace.parts} 笔。`,btn:`记录 ¥${pace.dueAmount}`,conf,pace,pending};
-  if(pace.baseLeft>0)return{kind:"wait",title:"基础定投按计划",sub:pace.nextDay?`本月已完成当前节奏，下一笔：${pace.nextDay} 日 ¥${Math.min(pace.step,pace.baseLeft)}。未触发的回撤资金保持不动。`:`本月基础预算还剩 ¥${pace.baseLeft}，等待下一节奏点。`,btn:"查看本月节奏",conf,pace,pending};
-  return{kind:"done",title:"本月基础定投已完成",sub:next?`下一回撤档位：$${Math.round(S.rh*(1-next.p)).toLocaleString()}，触发后执行 ¥${next.a}。`:"所有回撤档位均已执行。",btn:"查看买入记录",conf,pace,pending};
+function renderPriceDerived(){
+  recalcPriceModels();syncAutoAnchor();
+  calc(false,false);trig(false,false);upG();sig(false,false);upH2();renderMA();if(S.ahr)renderAhr(S.ahr);renderPriceSpark();renderPersonalChart();saveState();renderAction();
+}
+function renderPriceTick(){
+  recalcPriceModels();syncAutoAnchor();calc(false,false);upG();sig(false,false);if(S.ahr)renderAhr(S.ahr);renderPriceSpark();
+  const personal=$("personal");if(personal&&personal.open){trig(false,false);upH2();renderPersonalChart()}
+  saveState();renderAction();
 }
 function renderAction(){
-  const sc=Number.isFinite(+S.score)?+S.score:50,conf=confidenceInfo(),zone=s2z(sc),phase=phaseContext().phase,ahr=S.ahr&&Number.isFinite(+S.ahr.v)?+S.ahr.v:null,spEl=$("ssp"),sp=spEl&&spEl.value!==""?+spEl.value:null,lthEl=$("slth"),lth=lthEl&&lthEl.value!==""?+lthEl.value:null,wm=+($("swm")&&$("swm").value)||0,st=combinedStableStats();
+  const snap=currentStatusSnapshot(),model=evaluateRecord(snap),ready=model.ready,sc=model.score,conf=confidenceInfo(),zone=ready?s2z(sc):null,phase=phaseInfo(snap),ahr=S.ahr&&Number.isFinite(+S.ahr.v)&&healthWeight(HEALTH["AHR999"])>=.5?+S.ahr.v:null,spEl=$("ssp"),sp=spEl&&spEl.value!==""&&healthWeight(HEALTH["SOPR"])>=.5?+spEl.value:null,lthEl=$("slth"),lth=lthEl&&lthEl.value!==""&&healthWeight(HEALTH["LTH-NUPL"])>=.5?+lthEl.value:null,wm=healthWeight(HEALTH["200WMA"])>=.5?+($("swm")&&$("swm").value)||0:0,stableQuality=combinedHealthQuality(["USDT","USDC"]),st=stableQuality.weight>=.5?combinedStableStats():null;
   let chainTitle="链上等待数据",chainText="链上指标仍在更新";
   if(Number.isFinite(lth)){if(lth<0){chainTitle="长期持有者浮亏";chainText="长期持有者整体进入未实现亏损"}else if(lth<.1){chainTitle="长期利润接近警戒";chainText="长期持有者利润已接近盈亏警戒线"}else if(lth<.25){chainTitle="长期利润收窄";chainText="长期持有者仍盈利，但利润空间正在收窄"}else if(lth<.5){chainTitle="长期盈利健康";chainText="长期持有者维持健康盈利"}else{chainTitle="长期利润丰厚";chainText="长期持有者未实现利润处于高位"}}
   else if(Number.isFinite(sp)){chainTitle=sp<1?"链上轻度投降":"链上获利兑现";chainText=sp<1?"SOPR 低于 1，链上出现亏损兑现":"SOPR 高于 1，链上以盈利兑现为主"}
-  const liqText=st?(st.d7>=1e9?"稳定币七日明显扩张":st.d7<=-1e9?"稳定币七日明显收缩":"稳定币七日变化温和"):"稳定币流动性等待更新",pbEl=$("spb"),pb=pbEl&&pbEl.value!==""?+pbEl.value:null,risk=pb==null?"待定":pb>=40?"高":pb>=25?"偏高":pb>=10?"中等":"低";
-  $("actionTitle").textContent=`${phase.name} · ${chainTitle}`;
-  $("actionSub").textContent=`BTC 当前处于${zone.t}区间；${chainText}。${liqText}${conf.key==="low"?"，部分数据源暂不可用。":"。"}`;
-  $("actionScore").textContent=sc;$("actionBtn").textContent="复制今日情报";
-  $("oppKpi").textContent=zone.t;$("oppKpi").style.color=zone.c;
+  const liqText=st?(st.d7>=1e9?"稳定币七日明显扩张":st.d7<=-1e9?"稳定币七日明显收缩":"稳定币七日变化温和"):"稳定币流动性等待更新",pbEl=$("spb"),pb=pbEl&&pbEl.value!==""&&healthWeight(HEALTH["概率"])>=.5?+pbEl.value:null,risk=pb==null?"待定":pb>=40?"高":pb>=25?"偏高":pb>=10?"中等":"低";
+  $("actionTitle").textContent=ready?`${phase.name} · ${chainTitle}`:"数据不足 · 暂不判断";
+  $("actionSub").textContent=ready?`BTC 当前处于${zone.t}区间；${chainText}。${liqText}${conf.key==="low"?"，部分数据源暂不可用。":"。"}`:`可靠核心指标 ${model.reliable}/7，有效权重 ${model.coverage.toFixed(1)}/7；达到至少 ${MODEL_MIN_RELIABLE} 项可靠数据后再生成估值与阶段结论。`;
+  $("actionScore").textContent=ready?sc:"--";$("actionBtn").textContent="复制今日情报";
+  $("oppKpi").textContent=ready?zone.t:"待确认";$("oppKpi").style.color=ready?zone.c:"var(--tx3)";
   $("riskKpi").textContent=risk;$("riskKpi").style.color=pb==null?"var(--tx3)":pb>=40?"var(--rd)":pb>=25?"var(--or)":pb>=10?"var(--yl)":"var(--gn)";
   $("confKpi").textContent=conf.label;$("confKpi").style.color=conf.color;
-  const rs=[];if(conf.key==="low")rs.push(["部分指标缺失","warn"]);if(ahr!=null)rs.push([`AHR ${ahr.toFixed(3)} · ${ahr<.45?"深度低估":ahr<1.2?"低估":ahr<5?"偏热":"高估"}`,ahr>=5?"warn":""]);if(wm>0)rs.push([`价格/200WMA ${(S.price/wm).toFixed(2)}x`,S.price/wm>2.5?"warn":""]);if(Number.isFinite(sp))rs.push([`SOPR ${sp.toFixed(3)}`,sp>1.05?"warn":""]);if(Number.isFinite(lth))rs.push([`LTH-NUPL ${lth.toFixed(3)}`,lth<.1?"warn":""]);if(st)rs.push([st.d7>=0?`稳定币7日 ${fmtUsdB(st.d7)}`:`稳定币7日 ${fmtUsdB(st.d7)}`,st.d7<0?"warn":""]);const funding=+(S.raw&&S.raw.fundingRate);if(Number.isFinite(funding)&&Math.abs(funding)>.0003)rs.push(["永续杠杆拥挤","warn"]);if(!rs.length)rs.push(["等待更多有效数据","neutral"]);$("actionReasons").innerHTML=rs.slice(0,5).map(r=>`<span class="reason ${r[1]}">${r[0]}</span>`).join("");renderDailyChanges();renderIntelligence();
+  const rs=[];if(!ready)rs.push([`可靠 ${model.reliable}/7 · 有效 ${model.coverage.toFixed(1)}/7`,"warn"]);else if(conf.key==="low")rs.push(["部分指标缺失","warn"]);if(ahr!=null)rs.push([`AHR ${ahr.toFixed(3)} · ${ahr<.45?"深度低估":ahr<1.2?"低估":ahr<5?"偏热":"高估"}`,ahr>=5?"warn":""]);if(wm>0)rs.push([`价格/200WMA ${(S.price/wm).toFixed(2)}x`,S.price/wm>2.5?"warn":""]);if(Number.isFinite(sp))rs.push([`SOPR ${sp.toFixed(3)}`,sp>1.05?"warn":""]);if(Number.isFinite(lth))rs.push([`LTH-NUPL ${lth.toFixed(3)}`,lth<.1?"warn":""]);if(st)rs.push([st.d7>=0?`稳定币7日 ${fmtUsdB(st.d7)}`:`稳定币7日 ${fmtUsdB(st.d7)}`,st.d7<0?"warn":""]);const funding=healthWeight(HEALTH["资金费率"])>=.5?+(S.raw&&S.raw.fundingRate):null;if(Number.isFinite(funding)&&Math.abs(funding)>.0003)rs.push(["永续杠杆拥挤","warn"]);if(!rs.length)rs.push(["等待更多有效数据","neutral"]);$("actionReasons").innerHTML=rs.slice(0,5).map(r=>`<span class="reason ${r[1]}">${r[0]}</span>`).join("");renderDailyChanges();renderIntelligence();
 }
-function prepareAction(){const plan=currentActionPlan();if(plan.kind==="trigger"){const t=plan.trigger;preparedTp=t.p;$("la").value=t.a;$("ltype").value=t.k;$("lp").value=S.price;$("buyForm").scrollIntoView({behavior:"smooth",block:"center"});ntf(`已填入跌${Math.round(t.p*100)}%档 ¥${t.a}`)}else if(plan.kind==="base"){preparedTp=null;$("la").value=plan.amount;$("ltype").value="base";$("lp").value=S.price;$("buyForm").scrollIntoView({behavior:"smooth",block:"center"});ntf(`已填入第 ${plan.pace.index}/${plan.pace.parts} 笔基础定投`)}else if(plan.kind==="health"){const p=$("healthPanel");p.open=true;p.scrollIntoView({behavior:"smooth",block:"center"});ntf("数据恢复前不提示回撤加仓")}else if(plan.kind==="wait"){$("plan").scrollIntoView({behavior:"smooth",block:"start"});ntf("当前基础定投节奏已完成")}else{$("lb2").scrollIntoView({behavior:"smooth"})}}
 function onP(){S.price=+$("bp").value||0;$("lp").value=S.price;clearTimeout(onPTimer);onPTimer=setTimeout(renderPriceDerived,300)}
-function trig(){const v=+$("rh").value,hi=v>0?v:(S.rh>0?S.rh:78000);S.rh=hi;$("rhd").textContent=hi.toLocaleString();const cur=S.price,dp=hi>0?(hi-cur)/hi*100:0;$("cp").textContent="现价 $"+cur.toLocaleString();$("dp2").textContent=dp>0?"-"+dp.toFixed(1)+"%":"+"+Math.abs(dp).toFixed(1)+"%";$("dp2").style.color=dp>0?"var(--rd)":"var(--gn)";$("tb").innerHTML=TR.map(t=>{const tp=Math.round(hi*(1-t.p)),fire=cur<=tp,done=triggerDone(t.p),pill=done?'<span class="pill done">已执行</span>':fire?'<span class="pill fire">触发</span>':'<span class="pill wait">等待</span>';return `<div class="trig"><div class="trig-pct">跌${Math.round(t.p*100)}%</div><div class="trig-price num" style="${fire&&!done?"color:var(--rd)":""}">$${tp.toLocaleString()}</div><div class="trig-amt num">¥${t.a}</div>${pill}</div>`}).join("");saveState();upB();renderAction()}
+function trig(persist=true,render=true){const v=+$("rh").value,hi=v>0?v:(S.rh>0?S.rh:78000);S.rh=hi;$("rhd").textContent=hi.toLocaleString();const cur=S.price,dp=hi>0?(hi-cur)/hi*100:0;$("cp").textContent="现价 $"+cur.toLocaleString();$("dp2").textContent=dp>0?"-"+dp.toFixed(1)+"%":"+"+Math.abs(dp).toFixed(1)+"%";$("dp2").style.color=dp>0?"var(--rd)":"var(--gn)";$("tb").innerHTML=TR.map(t=>{const tp=Math.round(hi*(1-t.p)),fire=cur<=tp,done=triggerDone(t.p),pill=done?'<span class="pill done">已执行</span>':fire?'<span class="pill fire">触发</span>':'<span class="pill wait">等待</span>';return `<div class="trig"><div class="trig-pct">跌${Math.round(t.p*100)}%</div><div class="trig-price num" style="${fire&&!done?"color:var(--rd)":""}">$${tp.toLocaleString()}</div><div class="trig-amt num">¥${t.a}</div>${pill}</div>`}).join("");if(persist)saveState();upB();if(render)renderAction()}
 function upB(){const b=S.bud;$("u0").textContent=b.base;$("u1").textContent=b.pull;$("u2").textContent=b.ext;$("b0").style.width=Math.min(100,b.base/10)+"%";$("b1").style.width=Math.min(100,b.pull/7)+"%";$("b2").style.width=Math.min(100,b.ext/3)+"%";const p=pendingTriggers();$("pendingPull").textContent="¥"+p.filter(t=>t.k==="pull").reduce((a,t)=>a+t.a,0);$("pendingExt").textContent="¥"+p.filter(t=>t.k==="ext").reduce((a,t)=>a+t.a,0)}
 function upH2(){const h=S.hd;$("hd").textContent=h.d.toFixed(4)+" BTC";const pnl=h.dc>0&&S.price>0?(S.price/h.dc-1)*100:null;$("hdc").innerHTML="均价 $"+Number(h.dc).toLocaleString()+(pnl==null?"":` · <span style="color:${pnl>=0?"var(--gn)":"var(--rd)"};font-weight:700">${pnl>=0?"+":""}${pnl.toFixed(1)}%</span>`);$("hl").textContent=h.l.toFixed(4)+" BTC";$("hlc").textContent="均价 $"+Number(h.lc).toLocaleString()}
 function renderAhr(a){if(!a||!a.v)return;const v=a.v,z=v<.45?{t:"深度低估",c:"var(--gn)"}:v<1.2?{t:"长期低估",c:"var(--gn2)"}:v<5?{t:"估值偏热",c:"var(--or)"}:{t:"高估风险",c:"var(--rd)"};$("ahrBig").textContent=v.toFixed(3);$("ahrBig").style.color=z.c;$("ahrZone").textContent=z.t;$("ahrZone").style.color=z.c;if(a.c)$("ahrC").textContent=a.c.toFixed(3);if(a.pl)$("ahrPL").textContent="$"+Math.round(a.pl/1000)+"K";if(a.dma)$("ahrDMA").textContent="$"+Math.round(a.dma/1000)+"K";const lg=(Math.log(Math.min(12,Math.max(.2,v)))-Math.log(.2))/(Math.log(12)-Math.log(.2))*100;$("ahrCur").style.left=lg.toFixed(1)+"%";if(a.dma&&a.pl){const p045=Math.sqrt(.45*a.dma*a.pl),p1=a.p1||Math.sqrt(a.dma*a.pl),p12=Math.sqrt(1.2*a.dma*a.pl),cpv=S.price;const row=(lbl,px,desc)=>{const below=cpv<=px,dd=(cpv-px)/px*100,pill=below?'<span class="pill done">已低于</span>':`<span class="pill wait">上方 +${dd.toFixed(1)}%</span>`;return `<div class="trig"><div class="trig-pct" style="width:92px">${lbl}</div><div class="trig-price num">$${Math.round(px).toLocaleString()}<span style="font-size:11px;color:var(--tx3);font-weight:500"> ${desc}</span></div>${pill}</div>`};$("ahrLadder").innerHTML=row("AHR = 0.45",p045,"深度低估线")+row("AHR = 1.00",p1,"周期中轴")+row("AHR = 1.20",p12,"低估区上沿")}}
@@ -2001,7 +2055,7 @@ function makePersonalChart(){
   if(personalChart||!window.LightweightCharts)return;const LC=LightweightCharts,t=chartTheme();personalChart=LC.createChart($("personalChart"),{autoSize:true,layout:{background:{type:LC.ColorType.Solid,color:t.card},textColor:t.tx2,fontFamily:getComputedStyle(document.body).fontFamily,attributionLogo:true},grid:{vertLines:{color:t.div},horzLines:{color:t.div}},rightPriceScale:{borderColor:t.div,scaleMargins:{top:.12,bottom:.12}},timeScale:{borderColor:t.div,timeVisible:false,secondsVisible:false,rightOffset:2,barSpacing:8,minBarSpacing:1,lockVisibleTimeRangeOnResize:true},crosshair:{mode:LC.CrosshairMode.Normal},localization:{locale:"zh-CN",priceFormatter:v=>shortCny(v)}});personalSeries={value:personalChart.addSeries(LC.AreaSeries,{lineColor:t.gn,topColor:"rgba(0,200,5,.28)",bottomColor:"rgba(0,200,5,.02)",lineWidth:2,priceLineVisible:true,lastValueVisible:true}),invest:personalChart.addSeries(LC.LineSeries,{color:t.tx2,lineWidth:2,lineStyle:LC.LineStyle.Dashed,priceLineVisible:false,lastValueVisible:true})};personalChart.subscribeCrosshairMove(p=>{if(!p.time){$("personalChartLive").textContent=personalDefaultLabel;return}const v=p.seriesData.get(personalSeries.value),i=p.seriesData.get(personalSeries.invest);if(v&&i)$("personalChartLive").textContent=`${chartDay(+p.time)} · 市值 ${shortCny(v.value)} · 投入 ${shortCny(i.value)}`})
 }
 function renderPersonalChart(){
-  const d=personalCurveData(),empty=$("personalChartEmpty");if(!d){personalDataKey="";if(personalMarkers)personalMarkers.setMarkers([]);empty.classList.add("on");$("personalInvest").textContent=$("personalValue").textContent=$("personalPnl").textContent="--";personalDefaultLabel="记录买入后生成";$("personalChartLive").textContent=personalDefaultLabel;return}if(!window.LightweightCharts){empty.classList.add("on");empty.textContent="图表组件加载失败";return}empty.classList.remove("on");makePersonalChart();personalSeries.value.setData(d.value);personalSeries.invest.setData(d.invest);if(!personalMarkers)personalMarkers=LightweightCharts.createSeriesMarkers(personalSeries.value,d.markers);else personalMarkers.setMarkers(d.markers);const key=`${d.logs.length}|${d.value.length}|${(d.value[0]||{}).time||0}`;if(key!==personalDataKey){personalDataKey=key;personalChart.timeScale().fitContent()}const pnl=d.invested>0?(d.market/d.invested-1)*100:0;$("personalInvest").textContent=shortCny(d.invested);$("personalValue").textContent=shortCny(d.market);$("personalPnl").textContent=(pnl>=0?"+":"")+pnl.toFixed(1)+"%";$("personalPnl").style.color=pnl>=0?"var(--gn)":"var(--rd)";personalDefaultLabel=`${d.logs.length} 笔 · ${d.btc.toFixed(5)} BTC`;$("personalChartLive").textContent=personalDefaultLabel;
+  const zone=$("personal");if(zone&&!zone.open)return;const d=personalCurveData(),empty=$("personalChartEmpty");if(!d){personalDataKey="";if(personalMarkers)personalMarkers.setMarkers([]);empty.classList.add("on");$("personalInvest").textContent=$("personalValue").textContent=$("personalPnl").textContent="--";personalDefaultLabel="记录买入后生成";$("personalChartLive").textContent=personalDefaultLabel;return}if(!window.LightweightCharts){empty.classList.add("on");empty.textContent="图表组件加载失败";return}empty.classList.remove("on");makePersonalChart();personalSeries.value.setData(d.value);personalSeries.invest.setData(d.invest);if(!personalMarkers)personalMarkers=LightweightCharts.createSeriesMarkers(personalSeries.value,d.markers);else personalMarkers.setMarkers(d.markers);const key=`${d.logs.length}|${d.value.length}|${(d.value[0]||{}).time||0}`;if(key!==personalDataKey){personalDataKey=key;personalChart.timeScale().fitContent()}const pnl=d.invested>0?(d.market/d.invested-1)*100:0;$("personalInvest").textContent=shortCny(d.invested);$("personalValue").textContent=shortCny(d.market);$("personalPnl").textContent=(pnl>=0?"+":"")+pnl.toFixed(1)+"%";$("personalPnl").style.color=pnl>=0?"var(--gn)":"var(--rd)";personalDefaultLabel=`${d.logs.length} 笔 · ${d.btc.toFixed(5)} BTC`;$("personalChartLive").textContent=personalDefaultLabel;
 }
 function fmtUsdB(n){if(n==null||!isFinite(n))return"--";return(n>=0?"+":"-")+"$"+(Math.abs(n)/1e9>=10?(Math.abs(n)/1e9).toFixed(1):(Math.abs(n)/1e9).toFixed(2))+"B"}
 function stableStats(ser){
@@ -2114,13 +2168,13 @@ function renderStableCombined(){
 function toggleTweak(){setTweak(!S.tweak,false)}function setTweak(on,silent){S.tweak=!!on;for(let i=0;i<DM.length;i++)$(`d${i}`).disabled=!S.tweak;document.querySelectorAll(".chips .chip").forEach(b=>b.disabled=!S.tweak);$("tweakBtn").textContent=S.tweak?"微调 ON":"微调 OFF";$("tweakBtn").classList.toggle("on",S.tweak);saveState();if(!silent)ntf(S.tweak?"已开启指标微调":"已锁定实时指标")}
 function renderMA(){const el=$("maList"),m=S.mas;if(!m||!m.m51){el.innerHTML='<div class="log-empty">刷新后自动计算</div>';return}const rows=[["MA51","短期趋势",m.m51],["MA120","中期趋势",m.m120],["MA250","长期趋势·锚点成分",m.m250],["MA850","超长期趋势",m.m850]];el.innerHTML=rows.map(r=>{const dd=(S.price-r[2])/r[2]*100;let pill,pc="";if(dd>2)pill=`<span class="pill wait">上方 +${dd.toFixed(1)}%</span>`;else if(dd>=-2){pill='<span class="pill fire">接近均线</span>';pc="color:var(--gn)"}else{pill=`<span class="pill done">已跌破 ${Math.abs(dd).toFixed(1)}%</span>`;pc="color:var(--gn)"}return `<div class="trig"><div class="trig-pct">${r[0]}</div><div class="trig-price num" style="${pc}">$${Math.round(r[2]).toLocaleString()}<span style="font-size:11px;color:var(--tx3);font-weight:500"> ${r[1]}</span></div>${pill}</div>`}).join("")}
 function upG(){const p=S.price,g=300000,pct=Math.min(100,p/g*100);$("gb").style.width=pct+"%";$("gp").textContent=pct.toFixed(1)+"%";$("gr2").textContent="当前价格进度 · 距目标还差 $"+Math.max(0,g-p).toLocaleString();$("kp3").textContent="$"+p.toLocaleString()}
-function findTriggerForLog(type){if(preparedTp!=null){const t=TR.find(x=>x.p===preparedTp&&x.k===type);if(t&&!triggerDone(t.p)&&S.price<=S.rh*(1-t.p))return t.p}const t=TR.find(x=>x.k===type&&!triggerDone(x.p)&&S.price<=S.rh*(1-x.p));return t?t.p:null}
-function logB(){const a=+$("la").value,tp=$("ltype").value,pr=+$("lp").value||S.price;if(!a||a<=0){ntf("请输入金额");return}const lim={base:1000,pull:700,ext:300};if(S.bud[tp]+a>lim[tp]){ntf("超出预算上限");return}S.bud[tp]+=a;const btc=a/(S.fx||7.1)/pr,hitTp=tp==="base"?null:findTriggerForLog(tp),now=Date.now();S.log.unshift({ts:now,dt:new Date(now).toLocaleString("zh-CN",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}),t:tp,a,p:pr,b:btc,mo:S.month,tp:hitTp,cold:false});S.log=S.log.slice(0,500);const tot=S.hd.d+btc;S.hd.dc=tot>0?(S.hd.d*S.hd.dc+btc*pr)/tot:0;S.hd.d=tot;preparedTp=null;saveState();upB();upH2();rl2();renderPersonalChart();trig();$("la").value="";ntf("已记录买入 · 记得提至冷钱包")}
+function findTriggerForLog(type){const t=TR.find(x=>x.k===type&&!triggerDone(x.p)&&S.price<=S.rh*(1-x.p));return t?t.p:null}
+function logB(){const a=+$("la").value,tp=$("ltype").value,pr=+$("lp").value||S.price;if(!a||a<=0){ntf("请输入金额");return}const lim={base:1000,pull:700,ext:300};if(S.bud[tp]+a>lim[tp]){ntf("超出预算上限");return}S.bud[tp]+=a;const btc=a/(S.fx||7.1)/pr,hitTp=tp==="base"?null:findTriggerForLog(tp),now=Date.now();S.log.unshift({ts:now,dt:new Date(now).toLocaleString("zh-CN",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}),t:tp,a,p:pr,b:btc,mo:S.month,tp:hitTp,cold:false});S.log=S.log.slice(0,500);const tot=S.hd.d+btc;S.hd.dc=tot>0?(S.hd.d*S.hd.dc+btc*pr)/tot:0;S.hd.d=tot;saveState();upB();upH2();rl2();renderPersonalChart();trig();$("la").value="";ntf("已记录买入 · 记得提至冷钱包")}
 function rl2(){const summary=$("coldSummary");if(!S.log.length){$("lb2").innerHTML='<div class="log-empty">暂无记录</div>';summary.className="cold-summary ok";summary.innerHTML="<span>冷钱包提币状态</span><b>暂无记录</b>";return}const pending=S.log.filter(l=>l.cold!==true).length;summary.className="cold-summary "+(pending?"":"ok");summary.innerHTML=`<span>冷钱包提币状态</span><b>${pending?`${pending} 笔待确认`:"全部已确认"}</b>`;const tm={base:["基","li-base","基础定投"],pull:["回","li-pull","回撤加仓"],ext:["极","li-ext","极端预备金"]};$("lb2").innerHTML=S.log.slice(0,30).map((l,i)=>{const r=tm[l.t]||["·","",""];return `<div class="log-row"><div class="log-icon ${r[1]}">${r[0]}</div><div class="log-main"><div class="log-t1">${r[2]}${l.tp!=null?` · 跌${Math.round(l.tp*100)}%档`:""}</div><div class="log-t2 num">${l.dt} · $${Number(l.p).toLocaleString()} · ${(l.b*1000).toFixed(2)}‰ BTC</div></div><div class="log-side"><div class="log-amt num">¥${l.a}</div><button class="cold-btn ${l.cold===true?"done":""}" onclick="toggleCold(${i})">${l.cold===true?"✓ 已提冷钱包":"待确认提币"}</button></div></div>`}).join("")}
 function toggleCold(i){const l=S.log[i];if(!l)return;l.cold=l.cold===true?false:true;saveState();rl2();renderAction();ntf(l.cold?"已标记提至冷钱包":"已恢复为待确认提币")}
 function clr(){if(!confirm("确认清空所有买入记录、本月预算执行额和本月回撤档位状态？持仓数量不会回退，个人成本曲线会被清空。"))return;S.log=[];S.bud={base:0,pull:0,ext:0};saveState();upB();rl2();renderPersonalChart();trig();ntf("已清空")}
 function upHigh(){S.rh=S.price;S.rhManual=true;$("rh").value=S.price;updateAnchorMode();saveState();trig();ntf("锚点已锁定 $"+S.price.toLocaleString())}
-function nxtMo(){if(!confirm("切换下个月？本月预算执行额将重置，历史买入记录保留。"))return;const d=new Date();d.setMonth(d.getMonth()+1);S.month=d.getFullYear()+"年"+(d.getMonth()+1)+"月";S.bud={base:0,pull:0,ext:0};$("cm").textContent=S.month;saveState();upB();renderAction();ntf("已切换新月份")}
+function resetMonthBudget(){if(!confirm("重置本月预算执行额？历史买入记录与已执行回撤档位保留。"))return;S.month=mstr();S.bud={base:0,pull:0,ext:0};$("cm").textContent=S.month;saveState();upB();renderAction();ntf("本月预算已重置")}
 function oe(){const h=S.hd;[$("ed0").value,$("ed1").value,$("ed2").value,$("ed3").value]=[h.d,h.dc,h.l,h.lc];$("ed4").value=S.fx||7.1;$("em").style.display="flex"}function ce(){$("em").style.display="none"}function se(){S.hd={d:+$("ed0").value||0,dc:+$("ed1").value||0,l:+$("ed2").value||0,lc:+$("ed3").value||0};S.fx=+$("ed4").value||7.1;saveState();upH2();renderPersonalChart();ce();ntf("持仓已更新")}
 function sst(id,tx,cl){const e=$(id);if(e){e.textContent=tx;e.style.color=cl}}
 function fmtPriceK(v){if(!(v>0))return"--";return v>=1000000?"$"+(v/1000000).toFixed(2)+"M":"$"+(v/1000).toFixed(1)+"K"}
@@ -2137,7 +2191,7 @@ function renderLthNupl(v){
   sst("ss7",state[0],state[1]);
   if(cursor){const pos=(Math.max(-.5,Math.min(1,v))+.5)/1.5*100;cursor.style.left=pos.toFixed(2)+"%";cursor.style.background=state[1]}
 }
-function sig(){
+function sig(persist=true,render=true){
   const lthRaw=$("slth").value,lth=lthRaw===""?null:+lthRaw,curp=S.price,lo=+$("slo").value||0,hi=+$("shi").value||0,bl=+$("sbl").value||0,wm=+$("swm").value||0,sp=+$("ssp").value||0,hv=+$("shv").value||0,pb=+$("spb").value||0,pu=+$("spu").value||0;
   if(lo&&hi){const bel=curp<lo,abv=curp>hi,span=Math.max(1,hi-lo),pos=Math.min(100,Math.max(0,(curp-lo)/span*100)),labelPos=Math.min(78,Math.max(22,pos)),pcm=Math.round(Math.min(100,Math.max(0,(hi-curp)/span*100)));sst("ss0",bel?"全网亏损":abv?"全面盈利":`约${pcm}%承压`,bel?"var(--gn)":abv?"var(--tx2)":pcm>60?"var(--rd)":"var(--or)");$("sloFmt").textContent=fmtPriceK(lo);$("shiFmt").textContent=fmtPriceK(hi);$("minerDot").style.left=pos.toFixed(1)+"%";$("minerNow").style.left=labelPos.toFixed(1)+"%";$("minerNow").textContent="当前 "+fmtPriceK(curp);$("kp0").textContent="$"+(lo/1000).toFixed(0)+"K"}
   if(bl){const r=curp/bl;sst("ss1",r<1?"极低估":r<1.5?`${r.toFixed(2)}x 合理`:r<2.5?`${r.toFixed(2)}x 偏高`:`${r.toFixed(2)}x 高估`,r<1?"var(--gn)":r<1.5?"var(--yl)":r<2.5?"var(--or)":"var(--rd)");$("kp1").textContent="$"+(bl/1000).toFixed(0)+"K"}
@@ -2148,7 +2202,7 @@ function sig(){
   if(pu)sst("ss6",pu<15?"突破渺茫":pu<35?"低概率":pu<55?"五五开":"看涨升温",pu<15?"var(--rd)":pu<35?"var(--or)":pu<55?"var(--yl)":"var(--gn)");
   renderLthNupl(lth);
   $("kp3").textContent="$"+curp.toLocaleString();const all=[lo,bl,wm,curp].filter(v=>v>0);if(all.length>1){const mn=Math.min(...all)*.92,mx=Math.max(...all)*1.05;$("pd").style.left=Math.min(100,Math.max(0,(curp-mn)/(mx-mn)*100))+"%"}
-  S.sigs={lo,hi,bl,wm,sp,hv,hb,pb,pu,lth};saveState();renderAction();
+  S.sigs={lo,hi,bl,wm,sp,hv,hb,pb,pu,lth};if(persist)saveState();if(render)renderAction();
 }
 function rSig(){const m={lo:"slo",hi:"shi",bl:"sbl",wm:"swm",sp:"ssp",hv:"shv",pb:"spb",pu:"spu",lth:"slth"};Object.keys(m).forEach(k=>{const e=$(m[k]);if(e&&S.sigs&&S.sigs[k]!=null)e.value=S.sigs[k]});sig()}
 function pre(t){DM.forEach((_,i)=>$(`d${i}`).value=Math.max(0,Math.min(100,t+Math.round((Math.random()-.5)*10))));calc()}
@@ -2166,9 +2220,8 @@ async function tickPrice(){
       if(document.activeElement!==$("lp"))$("lp").value=S.price;
       if(Number.isFinite(c)){$("pc24").textContent=(c>=0?"+":"")+c.toFixed(2)+"%";$("pc24").className="chg-pill num "+(c>=0?"chg-up":"chg-dn")}
       lastTickAt=Date.now();
-      renderPriceDerived();
-      if(S.raw&&S.raw.coinbasePrice>0)S.raw.coinbasePremium=(S.raw.coinbasePrice/S.price-1)*100;
-      renderFunds();commitStatusSnapshot();renderDailyChanges();
+      renderPriceTick();
+      renderFunds();commitStatusSnapshot(false,false);renderDailyChanges();
     }
   }catch(e){}finally{priceTickInFlight=false}
 }
@@ -2236,23 +2289,28 @@ function initSectionNav(){
   window.addEventListener("resize",update,{passive:true});
   update();
 }
+function initPersonalLazy(){
+  const zone=$("personal");if(!zone||zone.dataset.lazyReady)return;zone.dataset.lazyReady="1";
+  zone.addEventListener("toggle",()=>{if(!zone.open)return;trig(false,false);upH2();rl2();renderPersonalChart()});
+  if(zone.open){trig(false,false);upH2();rl2();renderPersonalChart()}
+}
 function init(){
   buildUI();
   arrangeDashboard();
+  renderBgKeyState();
   $("buildBadge").textContent="V"+BUILD_ID.split("-")[0];
   const nowM=mstr();
   if(S.month!==nowM){S.month=nowM;S.bud={base:0,pull:0,ext:0};saveState();setTimeout(()=>ntf("新月份 "+nowM+" · 预算已自动重置"),600)}
   $("cm").textContent=S.month;$("bp").value=S.price;$("rh").value=S.rh;$("lp").value=S.price;
   S.dims.forEach((v,i)=>$(`d${i}`).value=v);
   if(!S.sigs.lo){S.sigs.lo=29132;S.sigs.hi=90461}
-  calc();upB();trig();upH2();upG();rl2();rSig();renderMA();if(S.ahr)renderAhr(S.ahr);renderPriceSpark();renderPersonalChart();renderFunds();renderDailyChanges();updateAnchorMode();
+  calc();upB();trig();upH2();upG();rl2();rSig();renderMA();if(S.ahr)renderAhr(S.ahr);renderPriceSpark();renderFunds();renderDailyChanges();updateAnchorMode();initPersonalLazy();
   try{renderStableCombined()}catch(e){console.error("稳定币卡片初始化失败",e)}
   setTweak(!!S.tweak,true);initSectionNav();
   const c=readCache(false);
   if(c){
-    lastFullAt=c.successAt||c.ts||0;lastTickAt=c.ts||0;
-    restoreCacheHealth(c);applyLive(c.data);renderHealth();
-    setLiveStatus("ok",`缓存 ${cacheAge(c.ts)} · 后台更新`);
+    lastTickAt=c.ts||0;restoreCacheHealth(c);const core=coreHealthInfo();lastFullAt=core.ready?c.successAt||c.ts||0:0;applyLive(c.data);renderHealth();
+    setLiveStatus(core.ready?"ok":"",`缓存 ${cacheAge(c.ts)} · 核心 ${core.reliable}/7 · 后台更新`);
     setTimeout(()=>fetchLive(true),350);
   }else fetchLive(true);
   setTimeout(()=>{if($("lupdated").textContent==="等待加载")fetchLive(true)},800);
@@ -2262,7 +2320,7 @@ function init(){
   setTimeout(checkAppUpdate,1800);
   try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{
     if(personalChart){personalChart.remove();personalChart=null;personalSeries=null;personalMarkers=null;personalDataKey=""}
-    renderPersonalChart();
+    if($("personal")&&$("personal").open)renderPersonalChart();
   })}catch(e){}
 }
 init();
