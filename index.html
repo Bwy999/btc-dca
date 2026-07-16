@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BUILD: BTC-INTELLIGENCE-V16.0.0-20260715 -->
+<!-- BUILD: BTC-INTELLIGENCE-V16.0.1-20260716 -->
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -8,10 +8,10 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="BTC情报" />
-  <meta name="btc-dca-build" content="16.0.0-20260715" />
+  <meta name="btc-dca-build" content="16.0.1-20260716" />
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
-  <title>BTC 情报终端 · V16.0</title>
+  <title>BTC 情报终端 · V16.0.1</title>
   <style>
     :root{
       color-scheme:dark;
@@ -190,7 +190,7 @@
     <div class="dot" id="ldot"></div>
     <span id="lupdated" style="color:var(--tx3)">等待加载</span>
     <span class="hbadge" id="healthBadge">--</span>
-    <span class="hbadge num" id="buildBadge">V16.0</span>
+    <span class="hbadge num" id="buildBadge">V16.0.1</span>
     <button class="refresh" onclick="fetchLive(true)">刷新</button>
   </div>
   <div class="update-banner" id="updateBanner"><span id="updateText">检测到新版本</span><button onclick="reloadLatest()">立即更新</button></div>
@@ -244,6 +244,23 @@
     </div>
   </section>
 
+  <section class="sec">
+    <div class="sec-head-row"><div class="sec-title">AHR999 周期估值</div><span class="fresh-badge" id="freshAhr">待检查</span></div>
+    <div class="sec-sub">2026 重拟合幂律 · R²=0.958 · 观察价格相对长期成本与幂律趋势的位置</div>
+    <div class="ahr-wrap">
+      <div><div class="ahr-big num" id="ahrBig">--</div><div class="ahr-zone" id="ahrZone">等待数据</div></div>
+      <div class="ahr-side">
+        <div class="ahr-kv"><span class="ahr-k">经典 2018 值</span><span class="ahr-v num" id="ahrC">--</span></div>
+        <div class="ahr-kv"><span class="ahr-k">幂律估值</span><span class="ahr-v num" id="ahrPL">--</span></div>
+        <div class="ahr-kv"><span class="ahr-k">200日定投成本</span><span class="ahr-v num" id="ahrDMA">--</span></div>
+      </div>
+    </div>
+    <div class="ahr-bar"><div style="flex:35;background:var(--gn)"></div><div style="flex:43;background:var(--gn2);opacity:.85"></div><div style="flex:62;background:var(--or);opacity:.8"></div><div style="flex:38;background:var(--rd);opacity:.85"></div></div>
+    <div class="zcursor-track"><div class="zcursor" id="ahrCur"></div></div>
+    <div class="ahr-lbls"><span>深度低估 &lt;0.45</span><span>低估 0.45–1.2</span><span>偏热 1.2–5</span><span>高估 &gt;5</span></div>
+    <div id="ahrLadder"></div>
+  </section>
+
   <section class="delta-section" id="changes" aria-label="和昨天相比">
     <div class="sec-head-row"><div class="sec-title">和昨天相比</div><span class="fresh-badge" id="freshChanges">日快照</span></div>
     <div class="sec-sub">优先从现有日线与链上历史回填昨日值 · 本机每日快照作为后续兜底</div>
@@ -289,23 +306,6 @@
   </section>
 
   <div class="divider"></div>
-  <section class="sec">
-    <div class="sec-head-row"><div class="sec-title">AHR999 周期估值</div><span class="fresh-badge" id="freshAhr">待检查</span></div>
-    <div class="sec-sub">2026 重拟合幂律 · R²=0.958 · 观察价格相对长期成本与幂律趋势的位置</div>
-    <div class="ahr-wrap">
-      <div><div class="ahr-big num" id="ahrBig">--</div><div class="ahr-zone" id="ahrZone">等待数据</div></div>
-      <div class="ahr-side">
-        <div class="ahr-kv"><span class="ahr-k">经典 2018 值</span><span class="ahr-v num" id="ahrC">--</span></div>
-        <div class="ahr-kv"><span class="ahr-k">幂律估值</span><span class="ahr-v num" id="ahrPL">--</span></div>
-        <div class="ahr-kv"><span class="ahr-k">200日定投成本</span><span class="ahr-v num" id="ahrDMA">--</span></div>
-      </div>
-    </div>
-    <div class="ahr-bar"><div style="flex:35;background:var(--gn)"></div><div style="flex:43;background:var(--gn2);opacity:.85"></div><div style="flex:62;background:var(--or);opacity:.8"></div><div style="flex:38;background:var(--rd);opacity:.85"></div></div>
-    <div class="zcursor-track"><div class="zcursor" id="ahrCur"></div></div>
-    <div class="ahr-lbls"><span>深度低估 &lt;0.45</span><span>低估 0.45–1.2</span><span>偏热 1.2–5</span><span>高估 &gt;5</span></div>
-    <div id="ahrLadder"></div>
-  </section>
-
   <section class="sec" id="liquidity">
     <div class="sec-title">资金与情绪</div>
     <div class="sec-sub">现货需求、永续杠杆、市场情绪与稳定币流动性</div>
@@ -575,7 +575,7 @@ const DN=["AHR999 新拟","200周均线","MVRV","恐惧贪婪","Puell 矿工","R
 const DW=["20% · 26回归","15%","15%","15%","15% · BGeometrics","10% · BGeometrics","10% · BGeometrics"];
 const MB=[[0,.1],[30,.3],[50,.8],[70,1.2],[85,1.95],[100,3]];
 const TR=[{p:.1,a:200,k:"pull"},{p:.2,a:200,k:"pull"},{p:.3,a:300,k:"pull"},{p:.4,a:150,k:"ext"},{p:.5,a:150,k:"ext"}];
-const BUILD_ID="16.0.0-20260715";
+const BUILD_ID="16.0.1-20260716";
 const CORE_HEALTH=["AHR999","200WMA","MVRV","FGI","Puell","RR","SOPR"];
 const SOURCE_ORDER=["价格","AHR999","200WMA","均线","FGI","资金费率","Coinbase溢价","减半","关机价","MVRV","均衡价","概率","USDT","USDC","LTH-NUPL","SOPR","Puell","RR"];
 const CACHE_KEY="btc_live_v9",STATE_KEY="btc_exec_v7",UPDATE_META_KEY="btc_update_meta_v1",BG_API_KEY_KEY="btc_bg_api_key_v1",CACHE_TTL=30*60*1000,STABLE_FLOW_THRESHOLD=1e9;
