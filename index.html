@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BUILD: BTC-INTELLIGENCE-V16.1.2-20260716 -->
+<!-- BUILD: BTC-INTELLIGENCE-V17.0.0-AURUM-20260716 -->
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -8,13 +8,13 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="BTC情报" />
-  <meta name="btc-dca-build" content="16.1.2-20260716" />
+  <meta name="btc-dca-build" content="17.0.0-20260716" />
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
   <link rel="manifest" id="pwaManifest" />
-  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000" />
-  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
-  <title>BTC 情报终端 · V16.1</title>
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0b0d" />
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f6f8" />
+  <title>BTC 情报终端 · V17 Aurum</title>
   <style>
     :root{
       color-scheme:dark;
@@ -170,13 +170,105 @@
     }
     @media(min-width:721px){.modal{align-items:center}.sheet{max-width:420px;border-radius:20px}}
     @media(max-width:640px){.month-bar{gap:6px;padding:13px 12px}.month-tx{font-size:12px}.month-bar .btn.sm{padding:8px 12px;font-size:12px}.tiles{grid-template-columns:repeat(2,1fr)}.tile{grid-column:span 1}.tile.halving{grid-column:span 2}.tile.prob{grid-column:span 1}.tile.lth-nupl{grid-column:span 2}.lth-head{align-items:flex-start;flex-direction:column;gap:2px}.lth-head .tile-status{text-align:left}.dim-hint{display:none}.dim-raw{width:48px}.price-big,.price-big input{font-size:38px}.price-big input{width:245px}.price-spark-wrap{width:100%;height:34px;margin-left:0}.score-num{font-size:48px}.health-grid{grid-template-columns:repeat(2,1fr)}.today-title{font-size:22px}.fund-grid{grid-template-columns:1fr}.intel-strip{grid-template-columns:repeat(2,1fr)}.insight-grid{grid-template-columns:1fr}.radar-value{font-size:20px}.radar-spark{width:60px}.chart-card{padding:11px}.personal-shell,.personal-chart{height:260px;min-height:260px}.chart-legend{gap:7px}.personal-kpis{gap:6px}.personal-kpi{padding:9px 8px}.personal-kpi b{font-size:12px}.personal-zone-inner{padding-left:12px;padding-right:12px}}
+
+    /* V17 · Aurum Intelligence — 仅重塑展示层，不改变数据与模型 */
+    :root{
+      --btc:#f7931a;--btc2:#ffb547;--btc-action:#f7931a;--btc-dim:rgba(247,147,26,.13);
+      --bg:#0b0b0d;--card:#17171a;--card2:#202024;--div:rgba(255,255,255,.075);
+      --tx:#f5f5f7;--tx2:#aaaab1;--tx3:#8f8f98;
+      --shadow:0 18px 48px rgba(0,0,0,.28);--soft-shadow:0 10px 30px rgba(0,0,0,.16);
+    }
+    @media(prefers-color-scheme:light){
+      :root{--bg:#f6f6f8;--card:#fff;--card2:#f0f1f4;--div:rgba(10,10,12,.08);
+        --tx:#111114;--tx2:#5d5d64;--tx3:#707078;--btc:#ad5700;--btc2:#d87a00;--btc-action:#f7931a;
+        --btc-dim:rgba(173,87,0,.10);--shadow:0 18px 48px rgba(24,24,32,.09);--soft-shadow:0 8px 24px rgba(24,24,32,.06)}
+    }
+    body{padding-left:18px;padding-right:18px;background:var(--bg)}
+    .bgfix{background:
+      radial-gradient(circle at 50% -8%,rgba(247,147,26,.09),transparent 28%),
+      radial-gradient(circle at 110% 36%,rgba(74,158,255,.035),transparent 26%),var(--bg)}
+    .w{max-width:760px}
+    .aurum-hero{position:relative;margin-top:max(14px,env(safe-area-inset-top,0px));border:1px solid var(--div);border-radius:28px;background:
+      linear-gradient(145deg,rgba(255,255,255,.035),transparent 38%),
+      linear-gradient(180deg,var(--card),color-mix(in srgb,var(--card2) 76%,var(--bg)));
+      box-shadow:var(--shadow);overflow:hidden;isolation:isolate}
+    .aurum-hero::before{content:"";position:absolute;z-index:-1;width:330px;height:330px;right:-150px;top:-185px;border-radius:50%;background:radial-gradient(circle,rgba(247,147,26,.20),rgba(247,147,26,.055) 42%,transparent 70%);pointer-events:none}
+    .aurum-hero::after{content:"";position:absolute;z-index:-1;left:-90px;bottom:-160px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(74,158,255,.07),transparent 68%);pointer-events:none}
+    .aurum-hero .hdr{padding:22px 22px 8px}
+    .brand-row{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:25px}
+    .brand-lockup{display:flex;align-items:center;gap:10px;min-width:0}
+    .brand-mark{width:34px;height:34px;display:grid;place-items:center;border-radius:11px;background:linear-gradient(145deg,var(--btc2),var(--btc-action));color:#17100a;font-size:20px;font-weight:900;box-shadow:0 8px 22px rgba(247,147,26,.24)}
+    .brand-copy{min-width:0}.brand-copy b{display:block;font-size:12px;font-weight:850;letter-spacing:.12em}.brand-copy small{display:block;margin-top:3px;color:var(--tx3);font-size:10.5px;font-weight:650;letter-spacing:.04em}
+    .hero-date{text-align:right;flex:none}.hero-date small{display:block;color:var(--tx3);font-size:9.5px;font-weight:800;letter-spacing:.12em}.hero-date b{display:block;margin-top:3px;color:var(--tx2);font-size:11px;font-weight:750}
+    .aurum-hero .price-row{align-items:center;padding-bottom:5px}.price-big,.price-big input{font-size:54px;font-weight:780}.price-big input{width:315px}
+    .aurum-hero .chg-pill{font-size:16px}.aurum-hero .price-spark-wrap{width:150px;height:46px}
+    .aurum-hero .hdr-sub{font-size:12px;color:var(--tx3);margin-top:9px}
+    .fetchbar{background:linear-gradient(90deg,var(--btc),var(--btc2));box-shadow:0 0 12px rgba(247,147,26,.55)}
+    .aurum-hero .live-row{margin:0 22px;padding:9px 0 7px;border-top:1px solid var(--div);font-size:11.5px}
+    .aurum-hero .update-banner{margin:8px 22px 0}.refresh{color:var(--btc)}
+    .aurum-hero .today-card{position:relative;margin:8px 10px 10px;padding:21px;border:1px solid rgba(255,255,255,.055);border-radius:22px;background:rgba(127,127,127,.075);box-shadow:none;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+    .today-title{font-size:30px;font-weight:840;line-height:1.14}.today-sub{max-width:540px;font-size:13px;line-height:1.58}.eyebrow{color:var(--btc);font-size:10.5px;letter-spacing:.14em}
+    .today-score{min-width:68px;padding:10px 9px;border:1px solid var(--div);border-radius:16px;background:rgba(127,127,127,.07)}.today-score b{font-size:30px}.today-score span{font-size:10.5px}
+    .today-kpis{gap:9px;margin-top:18px}.today-kpi{padding:12px 13px;border:1px solid rgba(127,127,127,.08);border-radius:14px;background:rgba(127,127,127,.065)}.today-kpi small{font-size:11px}.today-kpi b{font-size:16px}
+    .intel-strip{gap:8px;margin-top:14px}.intel-item{padding:10px 11px;border-radius:13px;background:rgba(127,127,127,.055)}.intel-item small{font-size:10.5px}.intel-item b{font-size:12px}
+    .reason{font-size:10.5px;background:rgba(127,127,127,.07);color:var(--tx2)}.reason.warn{background:rgba(255,159,10,.11)}
+    .btn{background:var(--btc-action);color:#17100a;box-shadow:0 8px 20px rgba(247,147,26,.13)}.btn.ghost{box-shadow:none;background:rgba(127,127,127,.06)}.btn.danger{box-shadow:none}
+    .today-actions .btn{min-height:45px}.today-actions .btn:first-child{font-weight:840}
+    .section-nav{position:sticky;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:80;margin-top:16px;padding:5px;border-color:var(--div);border-radius:17px;background:color-mix(in srgb,var(--card) 82%,transparent);box-shadow:var(--soft-shadow);backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%)}
+    .section-nav a{height:40px;border-radius:12px;font-size:11.5px}.section-nav a.active{color:var(--btc);background:var(--btc-dim);box-shadow:inset 0 0 0 1px rgba(247,147,26,.12)}
+    .health{margin-top:12px;border-radius:16px;background:color-mix(in srgb,var(--card) 92%,transparent);scroll-margin-top:78px}.health:not([open]){display:none}.health summary{padding:12px 14px;font-size:11.5px}
+    .sec{margin-top:42px;scroll-margin-top:78px}.divider{height:1px;margin-top:38px;background:linear-gradient(90deg,transparent,var(--div) 12%,var(--div) 88%,transparent)}
+    .sec-title{font-size:22px;font-weight:820;letter-spacing:-.025em}.sec-sub{font-size:13px;line-height:1.55;margin-top:5px;margin-bottom:17px}
+    .fresh-badge{gap:5px;padding:0;background:transparent!important;color:var(--tx3);font-size:10.5px}.fresh-badge::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.7;flex:none}.fresh-badge.good{color:var(--gn)}.fresh-badge.warn{color:var(--or)}.fresh-badge.bad{color:var(--rd)}
+    #ahr{position:relative;padding:22px;margin-top:30px;border:1px solid rgba(247,147,26,.15);border-radius:24px;background:linear-gradient(145deg,var(--card),color-mix(in srgb,var(--card2) 74%,var(--bg)));box-shadow:var(--soft-shadow);overflow:hidden}
+    #ahr::after{content:"";position:absolute;right:-70px;top:-90px;width:210px;height:210px;border-radius:50%;background:radial-gradient(circle,rgba(247,147,26,.10),transparent 70%);pointer-events:none}
+    #ahr .sec-title{font-size:23px}.ahr-big{font-size:58px}.ahr-zone{font-size:14px}.ahr-kv{font-size:13.5px}.ahr-bar{height:7px;border-radius:999px}.ahr-lbls{font-size:10.5px}
+    .phase-card{position:relative;flex-wrap:wrap;padding:20px;border-radius:22px;background:linear-gradient(145deg,var(--card),color-mix(in srgb,var(--card2) 72%,var(--bg)));box-shadow:var(--soft-shadow);overflow:hidden}.phase-eyebrow{font-size:10.5px;letter-spacing:.08em}.phase-name{font-size:28px}.phase-desc{font-size:12px;line-height:1.55}.phase-meta b{font-size:23px}.phase-meta span{font-size:10.5px}
+    .cycle-spectrum{width:100%;padding-top:18px;border-top:1px solid var(--div)}
+    .cycle-track{position:relative;height:7px;border-radius:999px;background:linear-gradient(90deg,#00a86b 0%,#72c78a 19%,#ffd60a 40%,#4a9eff 60%,#ff9f0a 81%,#ff5000 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+    .cycle-marker{position:absolute;left:50%;top:50%;width:16px;height:16px;border:3px solid var(--card);border-radius:50%;background:var(--tx);box-shadow:0 0 0 1px rgba(255,255,255,.22),0 4px 14px currentColor;transform:translate(-50%,-50%);transition:left .55s cubic-bezier(.2,.8,.2,1),background-color .3s}
+    .cycle-labels{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;margin-top:9px}.cycle-label{color:var(--tx3);font-size:9.5px;font-weight:700;text-align:center;transition:color .25s,transform .25s}.cycle-label:first-child{text-align:left}.cycle-label:last-child{text-align:right}.cycle-label.active{color:var(--tx);transform:translateY(1px)}
+    .delta-note{font-size:11px;line-height:1.5;border-radius:13px}.radar-grid{gap:10px}.radar-card{padding:15px;border-radius:18px;background:linear-gradient(155deg,var(--card),color-mix(in srgb,var(--card2) 48%,var(--card)));box-shadow:0 8px 22px rgba(0,0,0,.08)}.radar-card:nth-child(-n+2){border-color:rgba(247,147,26,.12);background:linear-gradient(145deg,color-mix(in srgb,var(--card) 92%,var(--btc)),var(--card))}.radar-name,.radar-pct,.radar-change span,.radar-change b{font-size:10.5px}.radar-value{font-size:25px}.insight-card{padding:16px;border-radius:18px;background:var(--card)}.insight-title{font-size:13px}.driver-copy b,.timeline-copy b,.driver-copy span,.timeline-copy span,.driver-delta,.timeline-day{font-size:10.5px}
+    .fund-grid{gap:11px}.fund-card{padding:16px;border-radius:18px;background:linear-gradient(155deg,var(--card),color-mix(in srgb,var(--card2) 42%,var(--card)));box-shadow:0 8px 22px rgba(0,0,0,.07)}.fund-head{font-size:10.5px}.fund-value{font-size:25px}.fund-hint{font-size:10.5px}.subsection-title{font-size:15px}
+    .liq-card{border-radius:22px;padding:18px;box-shadow:var(--soft-shadow)}.liq-big{font-size:38px}.liq-cap,.liq-cap-sm,.liq-mc{font-size:10.5px}
+    .tiles{gap:11px}.tile{padding:16px;border:1px solid var(--div);border-radius:18px;background:linear-gradient(155deg,var(--card),color-mix(in srgb,var(--card2) 38%,var(--card)));box-shadow:0 8px 22px rgba(0,0,0,.065)}.tile:nth-child(3),.tile.lth-nupl{border-color:rgba(74,158,255,.15)}.tile-name{font-size:11.5px}.tile input{font-size:27px}.tile-status{font-size:12.5px}.tile-hint,.miner-end small,.halving-meta,.lth-labels{font-size:10.5px}
+    .personal-zone{margin-top:44px;border-radius:24px;background:linear-gradient(155deg,var(--card),color-mix(in srgb,var(--card2) 38%,var(--card)));box-shadow:var(--soft-shadow)}.personal-zone>summary{padding:20px}.personal-zone>summary b{font-size:18px}.personal-zone>summary small{font-size:11px}.personal-zone>summary>span:last-child{color:var(--btc)}
+    .chart-card{border-radius:20px}.toast{border:1px solid var(--div);box-shadow:var(--shadow)}
+    @keyframes aurumRise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+    .aurum-hero{animation:aurumRise .55s cubic-bezier(.2,.8,.2,1) both}.section-nav{animation:aurumRise .55s .06s cubic-bezier(.2,.8,.2,1) both}#ahr{animation:aurumRise .55s .12s cubic-bezier(.2,.8,.2,1) both}
+    @media(prefers-color-scheme:light){
+      .aurum-hero{background:linear-gradient(145deg,rgba(247,147,26,.045),transparent 40%),linear-gradient(180deg,#fff,#fafafc)}
+      .aurum-hero .today-card{border-color:rgba(10,10,12,.055);background:rgba(246,246,248,.84)}
+      .section-nav{background:rgba(255,255,255,.82)}
+      .radar-card,.fund-card,.tile{box-shadow:0 8px 24px rgba(24,24,32,.045)}
+    }
+    @media(max-width:640px){
+      body{padding-left:15px;padding-right:15px}.aurum-hero{margin-top:max(10px,env(safe-area-inset-top,0px));border-radius:24px}.aurum-hero .hdr{padding:18px 16px 7px}.brand-row{margin-bottom:21px}.brand-mark{width:32px;height:32px;border-radius:10px}.brand-copy b{font-size:11px}.brand-copy small{font-size:9.5px}.hero-date small{font-size:9px}.hero-date b{font-size:10.5px}
+      .price-big,.price-big input{font-size:47px}.price-big input{width:min(258px,calc(100vw - 170px))}.aurum-hero .price-spark-wrap{width:100%;height:38px;margin-top:3px}.aurum-hero .live-row{margin:0 16px}.aurum-hero .update-banner{margin-left:16px;margin-right:16px}.aurum-hero .today-card{margin:7px;padding:17px;border-radius:20px}.today-title{font-size:26px}.today-sub{font-size:12.5px}.today-score{min-width:62px;padding:9px 7px}.today-score b{font-size:27px}.today-kpi{padding:11px 9px}.today-kpi small{font-size:10.5px}.today-kpi b{font-size:14px}.intel-item small{font-size:10px}.intel-item b{font-size:11.5px}.today-actions{gap:8px}.today-actions .btn{padding-left:15px;padding-right:15px}
+      .section-nav{top:calc(env(safe-area-inset-top,0px) + 6px);margin-left:-1px;margin-right:-1px}.section-nav a{height:39px;font-size:11px}.sec{margin-top:38px}.divider{margin-top:34px}.sec-title{font-size:21px}.sec-sub{font-size:12.5px}
+      #ahr{padding:18px;margin-left:-1px;margin-right:-1px;border-radius:22px}.ahr-big{font-size:52px}.ahr-wrap{gap:20px}.ahr-side{min-width:155px}.ahr-kv{font-size:12.5px}.ahr-lbls{font-size:9.5px;gap:5px}
+      .phase-card{padding:17px}.phase-name{font-size:25px}.phase-desc{font-size:11.5px}.cycle-label{font-size:9.5px}.radar-card{padding:14px}.radar-value{font-size:22px}.radar-pct{max-width:100%;overflow:hidden;text-overflow:ellipsis}.insight-grid{gap:10px}
+      .fund-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.fund-card:first-child{grid-column:1/-1}.fund-card{padding:14px}.fund-value{font-size:22px}.fund-head{align-items:flex-start;flex-wrap:wrap}.fund-head .fresh-badge{margin-left:0}.liq-card{padding:16px}.liq-big{font-size:33px}
+      .tile{padding:14px;border-radius:17px}.tile input{font-size:25px}.tile-name{font-size:11px}.personal-zone{border-radius:22px}.personal-zone>summary{padding:18px}
+    }
+    @media(max-width:390px){
+      .brand-copy small{display:none}.hero-date small{display:none}.price-big,.price-big input{font-size:44px}.price-big input{width:calc(100vw - 170px)}.section-nav{grid-template-columns:repeat(6,minmax(48px,1fr));overflow-x:auto;scrollbar-width:none}.section-nav::-webkit-scrollbar{display:none}.today-title{font-size:24px}.today-top{gap:9px}.today-score{min-width:57px}.today-score b{font-size:25px}.cycle-label{font-size:9px}.fund-grid{grid-template-columns:1fr}.fund-card:first-child{grid-column:auto}
+    }
+    @media(prefers-reduced-motion:reduce){.aurum-hero,.section-nav,#ahr{animation:none}.cycle-marker{transition:none}}
   </style>
 </head>
 <body>
 <div class="bgfix"></div>
 <div class="w">
+  <div class="aurum-hero" id="today">
   <header class="hdr">
-    <div class="hdr-label">BTC 每日情报终端</div>
+    <div class="brand-row">
+      <div class="brand-lockup">
+        <span class="brand-mark" aria-hidden="true">₿</span>
+        <span class="brand-copy"><b>BTC INTELLIGENCE</b><small>AURUM DAILY TERMINAL</small></span>
+      </div>
+      <div class="hero-date"><small>UTC MARKET DAY</small><b class="num" id="heroDate">--</b></div>
+    </div>
     <div class="price-row">
       <div class="price-big num">$<input id="bp" type="number" value="61800" oninput="onP()" /></div>
       <div class="chg-pill" id="pc24"></div>
@@ -193,35 +285,12 @@
     <div class="dot" id="ldot"></div>
     <span id="lupdated" style="color:var(--tx3)">等待加载</span>
     <span class="hbadge" id="healthBadge">--</span>
-    <span class="hbadge num" id="buildBadge">V16.1</span>
+    <span class="hbadge num" id="buildBadge">V17.0</span>
     <button class="refresh" onclick="fetchLive(true)">刷新</button>
   </div>
   <div class="update-banner" id="updateBanner"><span id="updateText">检测到新版本</span><button onclick="reloadLatest()">立即更新</button></div>
 
-  <details class="health" id="healthPanel">
-    <summary><span>数据可用性</span><span id="healthSummary">等待检查</span></summary>
-    <div class="api-settings">
-      <div class="api-settings-head"><b>BGeometrics 链上数据</b><span class="api-key-state" id="bgKeyState">未配置 API Key</span></div>
-      <div class="api-settings-row">
-        <input id="bgApiKey" type="password" autocomplete="off" placeholder="输入个人 API Key" aria-label="BGeometrics API Key" />
-        <button class="btn" onclick="saveBgApiKey()">保存</button>
-        <button class="btn ghost" onclick="clearBgApiKey()">清除</button>
-      </div>
-      <div class="api-key-note">Key 只保存在当前设备，不写入 HTML 或备份。用于 SOPR、Puell、Reserve Risk 与 LTH-NUPL；<a href="https://portal.bgeometrics.com/login" target="_blank" rel="noopener noreferrer">申请免费 Key</a>。</div>
-    </div>
-    <div class="health-grid" id="healthGrid"></div>
-  </details>
-
-  <nav class="section-nav" aria-label="页面分区导航">
-    <a href="#today" class="active" data-section="today" aria-current="page">今日</a>
-    <a href="#ahr" data-section="ahr">AHR</a>
-    <a href="#radar" data-section="radar">雷达</a>
-    <a href="#market" data-section="market">体温</a>
-    <a href="#valuation" data-section="valuation">估值</a>
-    <a href="#liquidity" data-section="liquidity">资金</a>
-  </nav>
-
-  <section class="today-card" id="today" aria-label="今日 BTC 状态">
+  <section class="today-card" id="todayCard" aria-label="今日 BTC 状态">
     <div class="today-top">
       <div>
         <div class="eyebrow">今日情报</div>
@@ -247,6 +316,30 @@
       <button class="btn ghost" onclick="openHealthPanel()">数据状态</button>
     </div>
   </section>
+  </div>
+
+  <nav class="section-nav" aria-label="页面分区导航">
+    <a href="#today" class="active" data-section="today" aria-current="page">今日</a>
+    <a href="#ahr" data-section="ahr">周期</a>
+    <a href="#radar" data-section="radar">雷达</a>
+    <a href="#market" data-section="market">体温</a>
+    <a href="#valuation" data-section="valuation">估值</a>
+    <a href="#liquidity" data-section="liquidity">资金</a>
+  </nav>
+
+  <details class="health" id="healthPanel">
+    <summary><span>数据可用性</span><span id="healthSummary">等待检查</span></summary>
+    <div class="api-settings">
+      <div class="api-settings-head"><b>BGeometrics 链上数据</b><span class="api-key-state" id="bgKeyState">未配置 API Key</span></div>
+      <div class="api-settings-row">
+        <input id="bgApiKey" type="password" autocomplete="off" placeholder="输入个人 API Key" aria-label="BGeometrics API Key" />
+        <button class="btn" onclick="saveBgApiKey()">保存</button>
+        <button class="btn ghost" onclick="clearBgApiKey()">清除</button>
+      </div>
+      <div class="api-key-note">Key 只保存在当前设备，不写入 HTML 或备份。用于 SOPR、Puell、Reserve Risk 与 LTH-NUPL；<a href="https://portal.bgeometrics.com/login" target="_blank" rel="noopener noreferrer">申请免费 Key</a>。</div>
+    </div>
+    <div class="health-grid" id="healthGrid"></div>
+  </details>
 
   <section class="sec" id="ahr">
     <div class="sec-head-row"><div class="sec-title">AHR999 周期估值</div><span class="fresh-badge" id="freshAhr">待检查</span></div>
@@ -272,6 +365,17 @@
     <div class="phase-card">
       <div><div class="phase-eyebrow">当前市场阶段</div><div class="phase-name" id="phaseName">等待识别</div><div class="phase-desc" id="phaseDesc">历史序列建立后自动识别。</div></div>
       <div class="phase-meta"><b class="num" id="phaseDays">--</b><span id="phasePrevious">持续天数</span></div>
+      <div class="cycle-spectrum" id="cycleSpectrum" aria-label="BTC 周期阶段光谱">
+        <div class="cycle-track"><span class="cycle-marker" id="cycleMarker" hidden></span></div>
+        <div class="cycle-labels">
+          <span class="cycle-label" data-phase="capitulation">投降</span>
+          <span class="cycle-label" data-phase="bottom">筑底</span>
+          <span class="cycle-label" data-phase="recovery">复苏</span>
+          <span class="cycle-label" data-phase="expansion">扩张</span>
+          <span class="cycle-label" data-phase="distribution">分配</span>
+          <span class="cycle-label" data-phase="overheat">过热</span>
+        </div>
+      </div>
     </div>
     <div class="delta-note" id="deltaNote">UTC 日快照正在建立；各卡的“1日”即与上一有效数据日相比。</div>
     <div class="radar-grid" id="radarGrid"><div class="radar-empty">正在建立指标历史…</div></div>
@@ -514,7 +618,7 @@
       <button class="btn danger sm" onclick="clr()">清空记录</button>
       <input id="backupInput" type="file" accept="application/json,.json" onchange="importBackup(this)" hidden />
     </div>
-    <div class="data-note" id="storageNote">记录仅保存在本机；V16 会主动申请持久存储，仍建议定期导出备份。</div>
+    <div class="data-note" id="storageNote">记录仅保存在本机；V17 会主动申请持久存储，仍建议定期导出备份。</div>
   </section>
 
   <div class="divider"></div>
@@ -560,7 +664,7 @@ const $=id=>document.getElementById(id);
 const esc=v=>String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function setInputIfIdle(id,value){const el=$(id);if(el&&document.activeElement!==el)el.value=value}
 function ensureVendor(){if(window.LightweightCharts)return true;const el=document.getElementById("lwcVendor");if(!el)return false;try{const s=document.createElement("script");s.textContent=el.textContent;document.head.appendChild(s);el.remove()}catch(e){console.warn("图表组件注入失败",e)}return!!window.LightweightCharts}
-function injectManifest(){try{if(!/^https?:$/.test(location.protocol))return;const dir=location.href.replace(/[?#].*$/,"").replace(/[^/]*$/,""),man={name:"BTC 情报终端",short_name:"BTC情报",start_url:location.href.split("#")[0],scope:dir,display:"standalone",background_color:"#000000",theme_color:"#000000",icons:[{src:dir+"apple-touch-icon.png",sizes:"180x180",type:"image/png"}]},l=document.getElementById("pwaManifest");if(l)l.href="data:application/manifest+json;charset=utf-8,"+encodeURIComponent(JSON.stringify(man))}catch(e){}}
+function injectManifest(){try{if(!/^https?:$/.test(location.protocol))return;const dir=location.href.replace(/[?#].*$/,"").replace(/[^/]*$/,""),man={name:"BTC Aurum 情报终端",short_name:"BTC情报",start_url:location.href.split("#")[0],scope:dir,display:"standalone",background_color:"#0b0b0d",theme_color:"#0b0b0d",icons:[{src:dir+"apple-touch-icon.png",sizes:"180x180",type:"image/png"}]},l=document.getElementById("pwaManifest");if(l)l.href="data:application/manifest+json;charset=utf-8,"+encodeURIComponent(JSON.stringify(man))}catch(e){}}
 injectManifest();
 const DM=[
   {w:.2,h:["<0.45 深度低估","0.45-1.2 低估","1.2-5 偏热",">5 高估"],t:[20,70,90]},
@@ -575,7 +679,7 @@ const DN=["AHR999 新拟","200周均线","MVRV","恐惧贪婪","Puell 矿工","R
 const DW=["20% · 26回归","15%","15%","15%","15% · BGeometrics","10% · BGeometrics","10% · BGeometrics"];
 const MB=[[0,.1],[30,.3],[50,.8],[70,1.2],[85,1.95],[100,3]];
 const TR=[{p:.1,a:200,k:"pull"},{p:.2,a:200,k:"pull"},{p:.3,a:300,k:"pull"},{p:.4,a:150,k:"ext"},{p:.5,a:150,k:"ext"}];
-const BUILD_ID="16.1.2-20260716";
+const BUILD_ID="17.0.0-20260716";
 const CORE_HEALTH=["AHR999","200WMA","MVRV","FGI","Puell","RR","SOPR"];
 const SOURCE_ORDER=["价格","AHR999","200WMA","均线","FGI","资金费率","Coinbase溢价","减半","关机价","MVRV","均衡价","概率","USDT","USDC","LTH-NUPL","SOPR","Puell","RR"];
 const CACHE_KEY="btc_live_v9",STATE_KEY="btc_exec_v7",UPDATE_META_KEY="btc_update_meta_v1",BG_API_KEY_KEY="btc_bg_api_key_v1",CACHE_TTL=30*60*1000,STABLE_FLOW_THRESHOLD=1e9;
@@ -1393,7 +1497,7 @@ function radarValue(m,v){if(v==null)return"--";if(m.money)return fmtUsdB(v);if(m
 function radarDelta(m,d){if(d==null)return"--";if(m.money)return fmtUsdB(d);if(m.funding)return signed(d*100,4,"%");return signed(d,m.digits)}
 function radarColor(m,v){if(v==null)return"var(--tx3)";if(m.key==="ahr")return v<1.2?"var(--gn)":v<5?"var(--or)":"var(--rd)";if(m.key==="mvrv")return v<1.2?"var(--gn)":v<2.5?"var(--yl)":"var(--rd)";if(m.key==="lth")return v<.1?"var(--or)":v<.5?"var(--gn2)":"var(--gn)";if(m.money)return v>=0?"var(--gn)":"var(--rd)";if(m.funding)return Math.abs(v)>.0003?"var(--rd)":"var(--gn2)";return"var(--tx)"}
 function renderRadar(){
-  const el=$("radarGrid");if(!el)return;let qualified=0;el.innerHTML=RADAR_METRICS.map(m=>{const ser=radarSeries(m.key),cur=ser.at(-1)&&ser.at(-1).value,refs=[1,7,30].map(d=>radarReference(ser,d)),deltas=refs.map(r=>r?cur-r.value:null),enough=ser.length>=RADAR_MIN_SAMPLES,pct=cur==null||!enough?null:Math.round(ser.filter(x=>x.value<=cur).length/ser.length*100),spark=ser.slice(-30).map(x=>x.value),col=radarColor(m,cur);if(enough)qualified++;return`<div class="radar-card"><div class="radar-head"><span class="radar-name">${m.name}</span><span class="radar-pct">${pct==null?`样本 ${ser.length}日`:`${pct}%分位 · ${ser.length}日`}</span></div><div class="radar-main"><b class="radar-value num" style="color:${col}">${radarValue(m,cur)}</b><svg class="radar-spark" viewBox="0 0 74 28" preserveAspectRatio="none" aria-hidden="true"><polyline points="${sparkPath(spark,74,28)}" fill="none" stroke="${col}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg></div><div class="radar-change">${["1日","7日","30日"].map((n,i)=>`<span>${n}<b style="color:${deltas[i]==null?"var(--tx3)":deltas[i]>=0?(m.goodDown?"var(--or)":"var(--gn)"):(m.goodDown?"var(--gn)":"var(--or)")}">${radarDelta(m,deltas[i])}</b></span>`).join("")}</div></div>`}).join("");const b=$("freshRadar");b.textContent=qualified?`${qualified}/${RADAR_METRICS.length}具备分位`:"建立真实历史";b.className="fresh-badge "+(qualified===RADAR_METRICS.length?"good":"warn")
+  const el=$("radarGrid");if(!el)return;let qualified=0;el.innerHTML=RADAR_METRICS.map(m=>{const ser=radarSeries(m.key),cur=ser.at(-1)&&ser.at(-1).value,refs=[1,7,30].map(d=>radarReference(ser,d)),deltas=refs.map(r=>r?cur-r.value:null),enough=ser.length>=RADAR_MIN_SAMPLES,pct=cur==null||!enough?null:Math.round(ser.filter(x=>x.value<=cur).length/ser.length*100),spark=ser.slice(-30).map(x=>x.value),col=radarColor(m,cur);if(enough)qualified++;return`<div class="radar-card radar-${m.key}"><div class="radar-head"><span class="radar-name">${m.name}</span><span class="radar-pct">${pct==null?`样本 ${ser.length}日`:`${pct}%分位 · ${ser.length}日`}</span></div><div class="radar-main"><b class="radar-value num" style="color:${col}">${radarValue(m,cur)}</b><svg class="radar-spark" viewBox="0 0 74 28" preserveAspectRatio="none" aria-hidden="true"><polyline points="${sparkPath(spark,74,28)}" fill="none" stroke="${col}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg></div><div class="radar-change">${["1日","7日","30日"].map((n,i)=>`<span>${n}<b style="color:${deltas[i]==null?"var(--tx3)":deltas[i]>=0?(m.goodDown?"var(--or)":"var(--gn)"):(m.goodDown?"var(--gn)":"var(--or)")}">${radarDelta(m,deltas[i])}</b></span>`).join("")}</div></div>`}).join("");const b=$("freshRadar");b.textContent=qualified?`${qualified}/${RADAR_METRICS.length}具备分位`:"建立真实历史";b.className="fresh-badge "+(qualified===RADAR_METRICS.length?"good":"warn")
 }
 function scoreDrivers(){
   const rows=intelligenceRows(),cur=rows.at(-1),prev=rows.slice(0,-1).at(-1);if(!cur||!prev||!evaluateRecord(cur).ready||!evaluateRecord(prev).ready)return[];const defs=[["AHR999","ahr",ahr999ToSc],["200WMA","wmaRatio",wma200ToSc],["MVRV","mvrv",mvrvToSc],["恐惧贪婪","fgi",fgiToSc],["Puell","puell",puellToSc],["Reserve Risk","rr",rrToSc],["SOPR","sopr",soprToSc]];return defs.map((d,i)=>{const key=d[1],a=finiteValue(cur[key]),b=finiteValue(prev[key]),qa=qDay(cur.quality&&cur.quality[key]),qb=qDay(prev.quality&&prev.quality[key]);if(a==null||b==null||qa&&qb&&qa===qb)return null;const q=Math.min(recordQualityWeight(cur,key,a),recordQualityWeight(prev,key,b));if(q<=0)return null;const delta=(d[2](a)-d[2](b))*DM[i].w*q;return{name:d[0],delta,current:a,previous:b}}).filter(Boolean).sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta))
@@ -1407,7 +1511,15 @@ function eventHistory(){
 function renderTimeline(){const el=$("eventTimeline"),events=eventHistory();if(!el)return;if(!events.length){el.innerHTML='<div class="radar-empty">近30天无关键阈值切换</div>';$("intelEvent").textContent="30天无切换";return}el.innerHTML=events.map(e=>`<div class="timeline-row"><span class="timeline-dot"></span><span class="timeline-copy"><b>${e.text}</b><span>关键阈值或市场阶段发生变化</span></span><span class="timeline-day">${e.day.slice(5).replace("-","/")}</span></div>`).join("");$("intelEvent").textContent=events[0].text
 }
 function renderIntelligenceNow(){
-  if(!$("phaseName"))return;const ctx=phaseContext(),st=combinedHealthQuality(["USDT","USDC"]).weight>=.5?combinedStableStats():null,funding=healthWeight(HEALTH["资金费率"])>=.5?finiteValue(S.raw&&S.raw.fundingRate):null,known=ctx.phase.key!=="unknown";$("phaseName").textContent=ctx.phase.name;$("phaseName").style.color=ctx.phase.color;$("phaseDesc").textContent=ctx.phase.desc;$("phaseDays").textContent=known?ctx.days+"天":"--";$("phaseDays").style.color=ctx.phase.color;$("phasePrevious").textContent=ctx.previous?(known?`此前：${ctx.previous.name}`:`最近完整阶段：${ctx.previous.name}`):"尚无完整阶段历史";$("intelPhase").textContent=known?`${ctx.phase.name} · ${ctx.days}天`:ctx.phase.name;$("intelFunds").textContent=st?(st.d7>=1e9?"稳定币扩张":st.d7<=-1e9?"稳定币收缩":funding!=null&&Math.abs(funding)>.0003?"杠杆拥挤":"资金中性"):funding!=null&&Math.abs(funding)>.0003?"杠杆拥挤":"等待资金面";renderRadar();renderDrivers();renderTimeline()
+  if(!$("phaseName"))return;
+  const ctx=phaseContext(),st=combinedHealthQuality(["USDT","USDC"]).weight>=.5?combinedStableStats():null,funding=healthWeight(HEALTH["资金费率"])>=.5?finiteValue(S.raw&&S.raw.fundingRate):null,known=ctx.phase.key!=="unknown";
+  $("phaseName").textContent=ctx.phase.name;$("phaseName").style.color=ctx.phase.color;$("phaseDesc").textContent=ctx.phase.desc;$("phaseDays").textContent=known?ctx.days+"天":"--";$("phaseDays").style.color=ctx.phase.color;$("phasePrevious").textContent=ctx.previous?(known?`此前：${ctx.previous.name}`:`最近完整阶段：${ctx.previous.name}`):"尚无完整阶段历史";$("intelPhase").textContent=known?`${ctx.phase.name} · ${ctx.days}天`:ctx.phase.name;$("intelFunds").textContent=st?(st.d7>=1e9?"稳定币扩张":st.d7<=-1e9?"稳定币收缩":funding!=null&&Math.abs(funding)>.0003?"杠杆拥挤":"资金中性"):funding!=null&&Math.abs(funding)>.0003?"杠杆拥挤":"等待资金面";
+  const phasePosition={capitulation:8,bottom:25,recovery:42,expansion:58,distribution:75,overheat:92},marker=$("cycleMarker"),spectrum=$("cycleSpectrum");
+  if(marker){marker.hidden=!known;if(known){marker.style.left=phasePosition[ctx.phase.key]+"%";marker.style.background=ctx.phase.color;marker.style.color=ctx.phase.color}}
+  if(spectrum){spectrum.dataset.phase=ctx.phase.key;spectrum.setAttribute("aria-label",known?`BTC 当前周期阶段：${ctx.phase.name}`:"BTC 周期阶段等待识别")}
+  document.querySelectorAll(".cycle-label[data-phase]").forEach(el=>el.classList.toggle("active",known&&el.dataset.phase===ctx.phase.key));
+  if($("heroDate"))$("heroDate").textContent=statusDay().replace(/-/g," · ");
+  renderRadar();renderDrivers();renderTimeline()
 }
 function renderIntelligence(){if(intelligenceRaf)return;intelligenceRaf=requestAnimationFrame(()=>{intelligenceRaf=0;renderIntelligenceNow()})}
 async function copyDailyBrief(){
@@ -2296,6 +2408,7 @@ function initPersonalLazy(){
 function init(){
   buildUI();
   arrangeDashboard();
+  if($("heroDate"))$("heroDate").textContent=statusDay().replace(/-/g," · ");
   renderBgKeyState();
   $("buildBadge").textContent="V"+BUILD_ID.split("-")[0];
   const monthChanged=ensureMonth(false);if(monthChanged)setTimeout(()=>ntf("新月份 "+S.month+" · 预算已自动重置"),600);
