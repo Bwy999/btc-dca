@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BUILD: BTC-INTELLIGENCE-V17.1.0-AURUM-EDITORIAL-20260716 -->
+<!-- BUILD: BTC-INTELLIGENCE-V17.0.0-AURUM-20260716 -->
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -8,13 +8,13 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="BTC情报" />
-  <meta name="btc-dca-build" content="17.1.0-20260716" />
+  <meta name="btc-dca-build" content="17.0.0-20260716" />
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
   <link rel="manifest" id="pwaManifest" />
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0b0d" />
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f6f8" />
-  <title>BTC 情报终端 · V17.1 Aurum Editorial</title>
+  <title>BTC 情报终端 · V17 Aurum</title>
   <style>
     :root{
       color-scheme:dark;
@@ -255,57 +255,6 @@
       .brand-copy small{display:none}.hero-date small{display:none}.price-big,.price-big input{font-size:44px}.price-big input{width:calc(100vw - 170px)}.section-nav{grid-template-columns:repeat(6,minmax(48px,1fr));overflow-x:auto;scrollbar-width:none}.section-nav::-webkit-scrollbar{display:none}.today-title{font-size:24px}.today-top{gap:9px}.today-score{min-width:57px}.today-score b{font-size:25px}.cycle-label{font-size:9px}.fund-grid{grid-template-columns:1fr}.fund-card:first-child{grid-column:auto}
     }
     @media(prefers-reduced-motion:reduce){.aurum-hero,.section-nav,#ahr{animation:none}.cycle-marker{transition:none}}
-
-    /* V17.1 · Aurum Editorial — Apple 式减法与滚动叙事 */
-    .bgfix{background:var(--bg)}
-    .w{max-width:780px}
-    .aurum-hero{min-height:clamp(650px,82svh,760px);margin-top:0;border:0;border-radius:0 0 36px 36px;background:linear-gradient(180deg,#070708 0%,#0d0d10 70%,#111115 100%);box-shadow:none;display:flex;flex-direction:column;animation:none}
-    .aurum-hero::before,.aurum-hero::after{display:none}
-    .aurum-hero .hdr{flex:1;display:flex;flex-direction:column;padding:calc(env(safe-area-inset-top,0px) + 24px) 28px 8px}
-    .brand-row{margin-bottom:54px}.brand-lockup{gap:7px}.brand-mark{width:24px;height:24px;border-radius:0;background:transparent;color:var(--btc-action);font-size:22px;box-shadow:none}.brand-copy b{font-size:13px;font-weight:650;letter-spacing:-.01em}.brand-copy small{display:none}.hero-date small{font-size:9.5px}.hero-date b{font-size:11px;font-weight:600}
-    .hero-market-label{color:var(--tx3);font-size:10px;font-weight:750;letter-spacing:.14em}
-    .aurum-hero .price-row{align-items:baseline;gap:16px;margin-top:8px;padding:0}.price-big,.price-big input{font-size:76px;font-weight:720;letter-spacing:-.055em}.price-big input{width:420px}.aurum-hero .chg-pill{font-size:17px;font-weight:650}
-    .hero-verdict{margin-top:34px;max-width:620px}.hero-verdict .eyebrow{margin-bottom:9px}.hero-verdict .today-title{font-size:42px;font-weight:720;line-height:1.12;letter-spacing:-.045em}.hero-verdict .today-sub{max-width:590px;margin-top:12px;color:var(--tx2);font-size:15px;line-height:1.58}
-    .aurum-hero .price-spark-wrap{position:relative;flex:1;width:100%;height:auto;min-height:150px;margin:38px 0 0;align-self:stretch}.aurum-hero .price-spark{position:absolute;inset:0;width:100%;height:100%;overflow:visible}.aurum-hero .price-spark-label{right:0;bottom:8px;font-size:11px;font-weight:650}.aurum-hero .hdr-sub{margin-top:10px;font-size:11px}.aurum-hero .fetchbar-track{margin-top:10px}
-    .aurum-hero .price-spark-wrap.empty::after{content:"正在建立30日价格序列";position:absolute;left:0;top:50%;color:var(--tx3);font-size:11px;transform:translateY(-50%)}
-    .aurum-hero .live-row{margin:0 28px;padding:13px 0 17px;border-top:1px solid var(--div);font-size:11.5px}.aurum-hero #buildBadge{display:none}.aurum-hero .hbadge{padding:3px 8px;background:transparent}.aurum-hero .refresh{color:var(--tx2);font-weight:650}
-    .section-nav{grid-template-columns:repeat(4,1fr);top:env(safe-area-inset-top,0px);height:50px;margin-top:0;padding:0 8px;border:0;border-bottom:1px solid var(--div);border-radius:0;background:color-mix(in srgb,var(--bg) 88%,transparent);box-shadow:none;animation:none}
-    .section-nav a{position:relative;height:49px;border-radius:0;color:var(--tx3);font-size:12px;font-weight:650}.section-nav a.active{color:var(--tx);background:transparent;box-shadow:none}.section-nav a.active::after{content:"";position:absolute;left:32%;right:32%;bottom:-1px;height:2px;border-radius:2px;background:var(--btc-action)}
-    .today-card{margin-top:86px;padding:0 4px;border:0;border-radius:0;background:transparent;box-shadow:none;scroll-margin-top:72px}.today-editorial-head{max-width:620px}.today-editorial-title{margin-top:10px;font-size:42px;font-weight:720;line-height:1.08;letter-spacing:-.045em}.today-editorial-sub{margin-top:14px;color:var(--tx2);font-size:14px;line-height:1.55}
-    .today-card>.eyebrow,.today-editorial-head .eyebrow{color:var(--btc)}.today-kpis{margin-top:34px;gap:0;border:1px solid var(--div);border-radius:28px;background:var(--card);overflow:hidden}.today-kpi{min-height:128px;padding:25px 22px;border:0;border-left:1px solid var(--div);border-radius:0;background:transparent}.today-kpi:first-child{border-left:0}.today-kpi small{font-size:12px;font-weight:600}.today-kpi b{margin-top:13px;font-size:24px;font-weight:700;line-height:1.2}
-    .today-evidence{margin-top:15px;border-top:1px solid var(--div);border-bottom:1px solid var(--div)}.today-evidence summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:65px;padding:10px 4px;color:var(--tx2);font-size:13px;font-weight:650;cursor:pointer}.today-evidence summary::-webkit-details-marker{display:none}.today-evidence summary>span:first-child::after{content:"＋";display:inline-block;margin-left:8px;color:var(--tx3);transition:transform .25s}.today-evidence[open] summary>span:first-child::after{transform:rotate(45deg)}.today-evidence[open] summary{border-bottom:1px solid var(--div)}.today-score{min-width:0;padding:0;border:0;border-radius:0;background:transparent;display:flex;align-items:baseline;gap:7px}.today-score b{font-size:20px}.today-score small{color:var(--tx3);font-size:10px;font-weight:600}.today-evidence-body{padding:6px 0 18px}.today-evidence .intel-strip{margin-top:10px}.today-evidence .reason-row{margin-top:14px}
-    .today-actions{justify-content:flex-start;margin-top:18px}.today-actions .btn{flex:0 0 auto;min-height:0;padding:10px 17px;box-shadow:none}.today-actions .btn:first-child{background:var(--tx);color:var(--bg)}.today-actions .btn.ghost{border:0;background:transparent;color:var(--btc);padding-left:10px;padding-right:10px}
-    .health{scroll-margin-top:62px}
-    .sec{margin-top:92px;scroll-margin-top:62px}.divider{margin-top:72px;background:linear-gradient(90deg,transparent,var(--div) 16%,var(--div) 84%,transparent)}.sec-title{font-size:34px;font-weight:720;letter-spacing:-.04em}.sec-sub{max-width:660px;margin-top:9px;margin-bottom:25px;font-size:14px;line-height:1.6}
-    #ahr{margin-top:94px;padding:0 4px 66px;border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible;animation:none}#ahr::after{display:none}#ahr .sec-title{font-size:36px}.ahr-wrap{gap:48px;margin-top:32px;padding-bottom:24px}.ahr-big{font-size:76px;font-weight:700}.ahr-zone{font-size:15px}.ahr-side{gap:11px;min-width:210px}.ahr-kv{font-size:14px}.ahr-bar{height:5px;filter:saturate(.7)}.ahr-lbls{font-size:10.5px}#ahrLadder{margin-top:18px;border-top:1px solid var(--div)}
-    .phase-card{padding:30px;border:0;border-radius:30px;background:var(--card);box-shadow:none}.phase-name{font-size:36px;font-weight:700}.phase-desc{max-width:520px;margin-top:8px;font-size:13px}.phase-meta b{font-size:27px}.cycle-spectrum{margin-top:8px;padding-top:24px}.cycle-track{height:5px;background:var(--card2);box-shadow:inset 0 0 0 1px var(--div)}.cycle-marker{width:15px;height:15px}.cycle-labels{margin-top:11px}.cycle-label{font-size:10px}.cycle-label.active{color:var(--tx);font-weight:800}
-    .delta-note{margin-bottom:14px;background:transparent;border-left:2px solid var(--div);border-radius:0;padding-left:12px}.radar-grid{gap:0;padding:0;border:1px solid var(--div);border-radius:28px;background:var(--card);overflow:hidden}.radar-grid .radar-card{padding:22px;border:0;border-right:1px solid var(--div);border-bottom:1px solid var(--div);border-radius:0;background:transparent;box-shadow:none}.radar-grid .radar-card:nth-child(even){border-right:0}.radar-grid .radar-card:nth-last-child(-n+2){border-bottom:0}.radar-value{font-size:28px}.radar-main{margin-top:12px}.radar-change{margin-top:13px}.radar-change span{background:transparent}
-    .insight-grid{gap:0;border:1px solid var(--div);border-radius:28px;background:var(--card);overflow:hidden}.insight-card{padding:22px;border:0;border-radius:0;background:transparent}.insight-card:first-child{border-right:1px solid var(--div)}.insight-title{font-size:14px}
-    .fund-grid{gap:0;border:1px solid var(--div);border-radius:28px;background:var(--card);overflow:hidden}.fund-card{padding:23px;border:0;border-left:1px solid var(--div);border-radius:0;background:transparent;box-shadow:none}.fund-card:first-child{border-left:0}.fund-value{font-size:28px}.fund-state{font-size:12px}.liq-card{padding:24px;border:1px solid var(--div);border-radius:28px;box-shadow:none}.liq-big{font-size:43px}
-    .tiles{gap:0;padding:8px;border:1px solid var(--div);border-radius:30px;background:var(--card);overflow:hidden}.tiles .tile{padding:21px;border:0!important;border-radius:20px;background:transparent;box-shadow:none}.tiles .tile:hover{background:rgba(127,127,127,.035)}.tiles .tile.lth-nupl{margin-top:4px;border-top:1px solid var(--div)!important;border-radius:0}.tile input{font-size:30px}.tile-name{font-size:12px}.klevel-row{padding-top:24px}
-    .personal-zone{margin-top:86px;border:1px solid var(--div);border-radius:28px;background:var(--card);box-shadow:none}
-    @keyframes editorialReveal{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-    @keyframes sparkReveal{from{stroke-dashoffset:1;opacity:.15}to{stroke-dashoffset:0;opacity:1}}
-    .brand-row{animation:editorialReveal .55s .03s both}.hero-market-label{animation:editorialReveal .55s .11s both}.aurum-hero .price-row{animation:editorialReveal .62s .17s both}.hero-verdict{animation:editorialReveal .62s .27s both}#priceSparkLine.draw-once{stroke-dasharray:1;stroke-dashoffset:1;animation:sparkReveal .9s .38s cubic-bezier(.25,.75,.2,1) forwards}
-    @media(prefers-color-scheme:light){
-      .aurum-hero{background:linear-gradient(180deg,#fff 0%,#fafafc 72%,#f3f3f6 100%)}
-      .today-kpis,.phase-card,.radar-grid,.insight-grid,.fund-grid,.tiles,.liq-card{background:#fff}
-      .section-nav{background:rgba(246,246,248,.9)}
-    }
-    @media(max-width:640px){
-      .aurum-hero{min-height:clamp(620px,86svh,720px);margin-left:-15px;margin-right:-15px;border-radius:0 0 30px 30px}.aurum-hero .hdr{padding:calc(env(safe-area-inset-top,0px) + 18px) 22px 7px}.brand-row{margin-bottom:46px}.brand-mark{width:22px;height:22px;font-size:20px}.brand-copy b{font-size:12px}.hero-date small{font-size:9px}.hero-date b{font-size:10px}
-      .price-big,.price-big input{font-size:64px}.price-big input{width:min(240px,calc(100vw - 145px))}.aurum-hero .chg-pill{font-size:15px}.hero-verdict{margin-top:30px}.hero-verdict .today-title{font-size:35px}.hero-verdict .today-sub{font-size:14px}.aurum-hero .price-spark-wrap{min-height:145px;margin-top:32px}.aurum-hero .live-row{margin:0 22px;padding-bottom:15px}
-      .section-nav{margin-left:-15px;margin-right:-15px;padding:0 15px}.section-nav a{font-size:12px}
-      .today-card{margin-top:74px;padding:0}.today-editorial-title{font-size:36px}.today-editorial-sub{font-size:13.5px}.today-kpis{margin-top:28px;border-radius:24px}.today-kpi{min-height:112px;padding:21px 14px}.today-kpi small{font-size:11px}.today-kpi b{font-size:19px}.today-evidence .intel-strip{grid-template-columns:repeat(2,1fr)}
-      .sec{margin-top:80px}.divider{margin-top:62px}.sec-title{font-size:30px}.sec-sub{font-size:13.5px}#ahr{margin-top:82px;padding-left:0;padding-right:0;padding-bottom:54px}#ahr .sec-title{font-size:31px}.ahr-wrap{gap:28px;margin-top:26px}.ahr-big{font-size:64px}.ahr-side{min-width:165px}.ahr-kv{font-size:12.5px}
-      .phase-card{padding:23px;border-radius:26px}.phase-name{font-size:31px}.phase-desc{font-size:12.5px}.cycle-label{font-size:9.5px}.radar-grid{border-radius:24px}.radar-grid .radar-card{padding:17px}.radar-value{font-size:23px}.insight-grid{grid-template-columns:1fr;border-radius:24px}.insight-card:first-child{border-right:0;border-bottom:1px solid var(--div)}
-      .fund-grid{grid-template-columns:repeat(2,minmax(0,1fr));border-radius:24px}.fund-card:first-child{grid-column:1/-1;border-bottom:1px solid var(--div)}.fund-card:nth-child(2){border-left:0}.fund-card{padding:18px}.fund-value{font-size:24px}.liq-card{padding:20px;border-radius:25px}.liq-big{font-size:36px}
-      .tiles{border-radius:25px;padding:5px}.tiles .tile{padding:17px}.tile input{font-size:27px}.personal-zone{margin-top:76px;border-radius:25px}
-    }
-    @media(max-width:390px){
-      .price-big,.price-big input{font-size:60px}.price-big input{width:calc(100vw - 145px)}.hero-verdict .today-title{font-size:33px}.today-editorial-title{font-size:34px}.today-kpi{padding-left:11px;padding-right:11px}.today-kpi b{font-size:17px}.fund-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.fund-card:first-child{grid-column:1/-1}.cycle-label{font-size:9px}
-    }
-    @media(prefers-reduced-motion:reduce){.brand-row,.hero-market-label,.aurum-hero .price-row,.hero-verdict,#priceSparkLine.draw-once{animation:none}}
   </style>
 </head>
 <body>
@@ -316,23 +265,17 @@
     <div class="brand-row">
       <div class="brand-lockup">
         <span class="brand-mark" aria-hidden="true">₿</span>
-        <span class="brand-copy"><b>Bitcoin Intelligence</b></span>
+        <span class="brand-copy"><b>BTC INTELLIGENCE</b><small>AURUM DAILY TERMINAL</small></span>
       </div>
       <div class="hero-date"><small>UTC MARKET DAY</small><b class="num" id="heroDate">--</b></div>
     </div>
-    <div class="hero-market-label">BITCOIN / USD</div>
     <div class="price-row">
       <div class="price-big num">$<input id="bp" type="number" value="61800" oninput="onP()" /></div>
       <div class="chg-pill" id="pc24"></div>
-    </div>
-    <div class="hero-verdict">
-      <div class="eyebrow">TODAY</div>
-      <div class="today-title" id="actionTitle">等待数据</div>
-      <div class="today-sub" id="actionSub">系统会综合估值、链上、资金面与周期位置生成市场摘要。</div>
-    </div>
-    <div class="price-spark-wrap" aria-label="BTC 近30日价格走势">
-      <svg class="price-spark" viewBox="0 0 136 42" preserveAspectRatio="none" aria-hidden="true"><polyline id="priceSparkLine" pathLength="1" points="" fill="none" stroke="var(--gn)" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" /></svg>
-      <span class="price-spark-label" id="priceSparkLabel">30D</span>
+      <div class="price-spark-wrap" aria-label="BTC 近30日价格走势">
+        <svg class="price-spark" viewBox="0 0 136 42" preserveAspectRatio="none" aria-hidden="true"><polyline id="priceSparkLine" points="" fill="none" stroke="var(--gn)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" /></svg>
+        <span class="price-spark-label" id="priceSparkLabel">30D</span>
+      </div>
     </div>
     <div class="hdr-sub">点击价格可临时校正 · 每60秒自动同步</div>
     <div class="fetchbar-track"><div class="fetchbar" id="fetchBar"></div></div>
@@ -342,48 +285,47 @@
     <div class="dot" id="ldot"></div>
     <span id="lupdated" style="color:var(--tx3)">等待加载</span>
     <span class="hbadge" id="healthBadge">--</span>
-    <span class="hbadge num" id="buildBadge">V17.1</span>
+    <span class="hbadge num" id="buildBadge">V17.0</span>
     <button class="refresh" onclick="fetchLive(true)">刷新</button>
   </div>
   <div class="update-banner" id="updateBanner"><span id="updateText">检测到新版本</span><button onclick="reloadLatest()">立即更新</button></div>
 
-  </div>
-
-  <nav class="section-nav" aria-label="页面分区导航">
-    <a href="#today" class="active" data-section="today" aria-current="page">今天</a>
-    <a href="#ahr" data-section="ahr">周期</a>
-    <a href="#market" data-section="market">市场</a>
-    <a href="#liquidity" data-section="liquidity">资金</a>
-  </nav>
-
-  <section class="today-card" id="todayCard" aria-label="今日 BTC 三项结论">
-    <div class="today-editorial-head">
-      <div class="eyebrow">DAILY BRIEF</div>
-      <div class="today-editorial-title">今天需要知道的<br>三件事。</div>
-      <div class="today-editorial-sub">先看结论，再按需要展开模型依据。</div>
+  <section class="today-card" id="todayCard" aria-label="今日 BTC 状态">
+    <div class="today-top">
+      <div>
+        <div class="eyebrow">今日情报</div>
+        <div class="today-title" id="actionTitle">等待数据</div>
+        <div class="today-sub" id="actionSub">系统会综合估值、链上、资金面与周期位置生成市场摘要。</div>
+      </div>
+      <div class="today-score"><b id="actionScore">--</b><span>估值评分</span></div>
     </div>
     <div class="today-kpis">
-      <div class="today-kpi"><small>估值</small><b id="oppKpi">--</b></div>
-      <div class="today-kpi"><small>风险</small><b id="riskKpi">--</b></div>
-      <div class="today-kpi"><small>数据</small><b id="confKpi">--</b></div>
+      <div class="today-kpi"><small>估值状态</small><b id="oppKpi">--</b></div>
+      <div class="today-kpi"><small>下行风险</small><b id="riskKpi">--</b></div>
+      <div class="today-kpi"><small>数据置信度</small><b id="confKpi">--</b></div>
     </div>
-    <details class="today-evidence">
-      <summary><span>查看判断依据</span><span class="today-score"><b id="actionScore">--</b><small>估值评分</small></span></summary>
-      <div class="today-evidence-body">
-        <div class="intel-strip" aria-label="今日情报要点">
-          <div class="intel-item"><small>阶段持续</small><b id="intelPhase">等待历史</b></div>
-          <div class="intel-item"><small>最大驱动</small><b id="intelDriver">等待对比</b></div>
-          <div class="intel-item"><small>资金状态</small><b id="intelFunds">等待数据</b></div>
-          <div class="intel-item"><small>最新事件</small><b id="intelEvent">暂无事件</b></div>
-        </div>
-        <div class="reason-row" id="actionReasons"></div>
-      </div>
-    </details>
+    <div class="intel-strip" aria-label="今日情报要点">
+      <div class="intel-item"><small>阶段持续</small><b id="intelPhase">等待历史</b></div>
+      <div class="intel-item"><small>最大驱动</small><b id="intelDriver">等待对比</b></div>
+      <div class="intel-item"><small>资金状态</small><b id="intelFunds">等待数据</b></div>
+      <div class="intel-item"><small>最新事件</small><b id="intelEvent">暂无事件</b></div>
+    </div>
+    <div class="reason-row" id="actionReasons"></div>
     <div class="today-actions">
       <button class="btn" id="actionBtn" onclick="copyDailyBrief()">复制今日情报</button>
       <button class="btn ghost" onclick="openHealthPanel()">数据状态</button>
     </div>
   </section>
+  </div>
+
+  <nav class="section-nav" aria-label="页面分区导航">
+    <a href="#today" class="active" data-section="today" aria-current="page">今日</a>
+    <a href="#ahr" data-section="ahr">周期</a>
+    <a href="#radar" data-section="radar">雷达</a>
+    <a href="#market" data-section="market">体温</a>
+    <a href="#valuation" data-section="valuation">估值</a>
+    <a href="#liquidity" data-section="liquidity">资金</a>
+  </nav>
 
   <details class="health" id="healthPanel">
     <summary><span>数据可用性</span><span id="healthSummary">等待检查</span></summary>
@@ -737,7 +679,7 @@ const DN=["AHR999 新拟","200周均线","MVRV","恐惧贪婪","Puell 矿工","R
 const DW=["20% · 26回归","15%","15%","15%","15% · BGeometrics","10% · BGeometrics","10% · BGeometrics"];
 const MB=[[0,.1],[30,.3],[50,.8],[70,1.2],[85,1.95],[100,3]];
 const TR=[{p:.1,a:200,k:"pull"},{p:.2,a:200,k:"pull"},{p:.3,a:300,k:"pull"},{p:.4,a:150,k:"ext"},{p:.5,a:150,k:"ext"}];
-const BUILD_ID="17.1.0-20260716";
+const BUILD_ID="17.0.0-20260716";
 const CORE_HEALTH=["AHR999","200WMA","MVRV","FGI","Puell","RR","SOPR"];
 const SOURCE_ORDER=["价格","AHR999","200WMA","均线","FGI","资金费率","Coinbase溢价","减半","关机价","MVRV","均衡价","概率","USDT","USDC","LTH-NUPL","SOPR","Puell","RR"];
 const CACHE_KEY="btc_live_v9",STATE_KEY="btc_exec_v7",UPDATE_META_KEY="btc_update_meta_v1",BG_API_KEY_KEY="btc_bg_api_key_v1",CACHE_TTL=30*60*1000,STABLE_FLOW_THRESHOLD=1e9;
@@ -2268,13 +2210,11 @@ function sparkPath(ser,w,h){
   return ser.map((v,i)=>`${(i/(ser.length-1)*w).toFixed(1)},${(h-2-(v-mn)/rng*(h-4)).toFixed(1)}`).join(" ")
 }
 function renderPriceSpark(){
-  const line=$("priceSparkLine"),label=$("priceSparkLabel"),wrap=line&&line.closest(".price-spark-wrap"),base=(S.spark30||[]).filter(v=>v>0).slice(-30);
-  if(!line||base.length<2){if(line)line.setAttribute("points","");if(label)label.textContent="30D";if(wrap)wrap.classList.add("empty");return}
-  if(wrap)wrap.classList.remove("empty");
+  const line=$("priceSparkLine"),label=$("priceSparkLabel"),base=(S.spark30||[]).filter(v=>v>0).slice(-30);
+  if(!line||base.length<2){if(line)line.setAttribute("points","");if(label)label.textContent="30D";return}
   const ser=base.slice();if(S.price>0)ser[ser.length-1]=S.price;
   const up=ser.at(-1)>=ser[0],pct=(ser.at(-1)/ser[0]-1)*100;
   line.setAttribute("points",sparkPath(ser,136,42));line.style.stroke=up?"var(--gn)":"var(--rd)";
-  if(!line.dataset.drawn){line.dataset.drawn="1";line.classList.add("draw-once")}
   if(label){label.textContent=`30D ${pct>=0?"+":""}${pct.toFixed(1)}%`;label.style.color=up?"var(--gn)":"var(--rd)"}
 }
 function renderStableAlert(){
