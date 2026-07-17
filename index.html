@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BUILD: BTC-INTELLIGENCE-V17.4.1-AURUM-20260717 -->
+<!-- BUILD: BTC-INTELLIGENCE-V17.5.0-AURUM-20260717 -->
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="BTC情报" />
-  <meta name="btc-dca-build" content="17.4.1-20260717" />
+  <meta name="btc-dca-build" content="17.5.0-20260717" />
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
   <link rel="manifest" id="pwaManifest" />
@@ -262,15 +262,11 @@
       .brand-copy small{display:none}.hero-date small{display:none}.price-big,.price-big input{font-size:44px}.price-big input{width:calc(100vw - 170px)}.section-nav{grid-template-columns:repeat(6,minmax(48px,1fr));overflow-x:auto;scrollbar-width:none}.section-nav::-webkit-scrollbar{display:none}.today-title{font-size:24px}.today-top{gap:9px}.today-score{min-width:57px}.today-score b{font-size:25px}.fund-grid{grid-template-columns:1fr}.fund-card:first-child{grid-column:auto}
     }
     @media(prefers-reduced-motion:reduce){.aurum-hero,.section-nav,#ahr{animation:none}.cycle-marker{transition:none}}
-    /* ===== V17.3 Flat · 盘面化：拆除卡片，光与噪点归于页面 ===== */
-    html{background:var(--bg)}
-    body{background:transparent;position:relative}
-    .bgfix{background:transparent}
-    body::before{content:"";position:absolute;top:-120px;right:-140px;width:420px;height:420px;border-radius:50%;pointer-events:none;z-index:-1;background:radial-gradient(circle,rgba(216,172,92,.10),rgba(216,172,92,.03) 45%,transparent 70%)}
-    body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.04;mix-blend-mode:overlay;z-index:-1;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E")}
-    @media(prefers-color-scheme:light){body::after{opacity:0}body::before{opacity:.55}}
-    .aurum-hero,.today-card,.phase-card,.radar-card,.liq-card,.chart-card,.fund-card,.health,.personal-zone{border:0;border-radius:0;background:none;box-shadow:none;padding-left:0;padding-right:0}
-    .aurum-hero::before{content:none}
+    /* ===== V17.2 Aurum+ 材质与动效层 ===== */
+    .today-card,.phase-card,.radar-card,.liq-card,.chart-card,.fund-card,.health,.personal-zone{background:var(--card-grad);box-shadow:inset 0 1px 0 var(--edge),0 1px 0 var(--contact),var(--shadow)}
+    .aurum-hero{box-shadow:inset 0 1px 0 var(--edge),0 1px 0 var(--contact),var(--shadow)}
+    .aurum-hero::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;opacity:.05;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E")}
+    @media(prefers-color-scheme:light){.aurum-hero::after{opacity:0}}
     .brand-mark{box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
     .brand-mark b{font-weight:800;background:linear-gradient(160deg,var(--au-hi) 10%,var(--au) 45%,var(--au-lo) 90%);-webkit-background-clip:text;background-clip:text;color:transparent}
     .price-big input{transition:color var(--t2) var(--ease)}
@@ -292,21 +288,6 @@
     .radar-change b,.radar-change span{white-space:nowrap}
     .radar-funding .radar-change{gap:4px}
     .radar-funding .radar-change b{font-size:10px;letter-spacing:-.03em}
-    /* ===== V17.3 Flat · 结构线网与字阶 ===== */
-    .sec{border-top:1px solid var(--div);padding-top:18px}
-    .radar-grid{gap:0}
-    .radar-card{padding-top:14px;padding-bottom:13px;border-bottom:1px solid var(--div)}
-    .radar-card:nth-child(odd){border-right:1px solid var(--div);padding-right:16px}
-    .radar-card:nth-child(even){padding-left:16px}
-    .radar-card:nth-last-child(-n+2){border-bottom:0}
-    .radar-value{font-size:26px}
-    .radar-pct{background:none;padding:0}
-    .radar-change span{background:none;padding:0;border-radius:0;text-align:left}
-    .chg-pill{background:none;padding:0;border-radius:0}
-    .chg-pill.chg-up,.chg-pill.chg-dn{background:none}
-    .score-num{font-size:58px}
-    .brand-mark{width:auto;height:auto;background:none;box-shadow:none;border-radius:0;font-size:19px}
-    @media(max-width:390px){.score-num{font-size:54px}.radar-value{font-size:24px}}
     /* ===== V17.4 Fluid · 按压反馈 / 分级字距 / 浮层材质 / 弹层动线 / 无障碍通道 ===== */
     .btn:active,.chip:active,.refresh:active,.mini-toggle:active,.cold-btn:active,.section-nav a:active,summary:active{transform:scale(.97)}
     .num{letter-spacing:0}
@@ -758,7 +739,9 @@ function fadeSwap(el,text,color){if(!el)return;if(color!==undefined)el.style.col
   el.style.opacity=0;setTimeout(()=>{el.textContent=text;el.style.opacity=1},240)}
 const SWEEP_MAP={"价格":"hero","均线":"#ahr","减半":"#ahr","AHR999":"#ahr","MVRV":"#valuation","均衡价":"#valuation","FGI":"#valuation","200WMA":"#valuation","Puell":"#radar","RR":"#radar","SOPR":"#radar","LTH-NUPL":"#radar","稳定币":"#liquidity","概率":"#liquidity","资金费率":"#liquidity","Coinbase溢价":"#market","关机价":"#market"};
 const SWEEP_ORDER=["hero","#ahr","#valuation","#radar","#liquidity","#market"];
-function sweepTarget(k){if(k==="hero")return document.querySelector(".aurum-hero");return document.querySelector(k)}
+function sweepTarget(k){if(k==="hero")return document.querySelector(".aurum-hero");
+  const s=document.querySelector(k);if(!s)return null;
+  return s.querySelector(".today-card,.chart-card,.radar-card,.liq-card,.phase-card,.fund-card,.health")||s}
 function fireSweep(card){if(!card||stillMode())return;
   let w=card.querySelector(":scope>.au-sweepwrap");
   if(!w){w=document.createElement("span");w.className="au-sweepwrap";w.innerHTML='<span class="au-sweep"></span>';
@@ -784,7 +767,7 @@ const DN=["AHR999 新拟","200周均线","MVRV","恐惧贪婪","Puell 矿工","R
 const DW=["20% · 26回归","15%","15%","15%","15% · BGeometrics","10% · BGeometrics","10% · BGeometrics"];
 const MB=[[0,.1],[30,.3],[50,.8],[70,1.2],[85,1.95],[100,3]];
 const TR=[{p:.1,a:200,k:"pull"},{p:.2,a:200,k:"pull"},{p:.3,a:300,k:"pull"},{p:.4,a:150,k:"ext"},{p:.5,a:150,k:"ext"}];
-const BUILD_ID="17.4.1-20260717";
+const BUILD_ID="17.5.0-20260717";
 const CORE_HEALTH=["AHR999","200WMA","MVRV","FGI","Puell","RR","SOPR"];
 const SOURCE_ORDER=["价格","AHR999","200WMA","均线","FGI","资金费率","Coinbase溢价","减半","关机价","MVRV","均衡价","概率","USDT","USDC","LTH-NUPL","SOPR","Puell","RR"];
 const CACHE_KEY="btc_live_v9",STATE_KEY="btc_exec_v7",UPDATE_META_KEY="btc_update_meta_v1",BG_API_KEY_KEY="btc_bg_api_key_v1",CACHE_TTL=30*60*1000,STABLE_FLOW_THRESHOLD=1e9;
