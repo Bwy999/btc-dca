@@ -1,231 +1,119 @@
 <div align="center">
 
-# ₿ BTC DCA Dashboard
+# ₿ BTC Intelligence
 
-### BTC Intelligence · Aurum V21
+### AURUM V21
 
-**为长期比特币定投者设计的本地优先情报与执行终端**
+**A Local-First Bitcoin Accumulation Terminal**
 
-纪律驱动 · 数据说话 · 长期积累 · 拒绝情绪交易
+周期判断 · 定投纪律 · 长期积累
 
-[**打开实时网站 →**](https://bwy999.github.io/btc-dca/)
+[**Live Terminal →**](https://9992100.xyz/btc/) · [**AHR999 Tribute →**](https://9992100.xyz/btc/ahr999.html)
 
-![Version](https://img.shields.io/badge/version-V21.0.1-F7931A?style=flat-square)
-![Pure HTML](https://img.shields.io/badge/core-HTML%2FCSS%2FJS-111111?style=flat-square)
-![No Build](https://img.shields.io/badge/build-none-00c805?style=flat-square)
-![Local First](https://img.shields.io/badge/data-local--first-4A9EFF?style=flat-square)
-![iPhone](https://img.shields.io/badge/iPhone-home%20screen-000000?style=flat-square)
-![License](https://img.shields.io/badge/license-MIT-8c8c8e?style=flat-square)
+![Version](https://img.shields.io/badge/version-V21.1.1-F7931A?style=flat-square)
+![Vanilla](https://img.shields.io/badge/vanilla-HTML%20%2F%20CSS%20%2F%20JS-111111?style=flat-square)
+![No Build](https://img.shields.io/badge/build-none-00A86B?style=flat-square)
+![Local First](https://img.shields.io/badge/data-local--first-347FD3?style=flat-square)
+![License](https://img.shields.io/badge/license-MIT-8C8C8E?style=flat-square)
 
 </div>
 
 ---
 
-> 你最该防的，不是踏空，而是：**高位焦虑追买，低位反而不敢买。**
+> **不预测明天，只校准今天的行动。**
 
-BTC DCA Dashboard 是一个面向长期比特币定投者的单页信息网站。它把价格结构、周期估值、链上数据、资金情绪、个人预算与买入纪律放进同一个移动端终端。
+BTC Intelligence 是为长期比特币定投者设计的移动端情报与执行终端。
 
-它不预测短线、不自动下单，也不鼓励杠杆；它做的事情只有一件：**把每天的市场噪声，压缩成可以长期重复执行的纪律。**
+它将价格结构、周期估值、链上指标、资金情绪、个人预算与买入记录汇聚在一个界面中，把市场噪声转化为可以长期重复的纪律。
 
-## ✦ V21.0.1 有什么
+不自动交易，不鼓励杠杆，不承诺预测未来。
 
-| 模块 | 能力 |
+## Overview
+
+| 模块 | 核心能力 |
 |:---|:---|
-| **今日情报** | 现价、24H 变化、30 日走势、估值评分、下行风险、数据置信度、市场阶段、最大驱动、资金状态与最新阈值事件 |
-| **21M 长期积累** | 把现货/冷钱包持仓换算为 sats 与 2100 万分之一占比，跟踪永久仓目标、21 格进度、里程碑与预计完成时间 |
-| **市场结构图谱** | BTC 价格、长期趋势和 2024 减半坐标同屏；支持日/周以及 90D、1Y、2Y、全部范围 |
-| **AHR999 周期估值** | 本地计算新版与经典 AHR999、幂律估值、200 日定投成本和三档关键价格 |
-| **周期雷达** | 展示市场阶段、持续天数、1/7/30 日变化、30 日迷你走势与 90 个真实数据日后的历史分位 |
-| **7 维综合估值** | 按数据质量校准后的 0–100 长期估值评分，并映射 0.1x–3.0x 定投倍数 |
-| **资金与情绪** | 恐惧贪婪、永续资金费率、Coinbase 溢价、USDT/USDC 最新日及 7 日流动性变化 |
-| **市场体温** | 关机价、均衡价、200 周均线、SOPR、减半进度、市场隐含概率与 LTH-NUPL 周期警戒 |
-| **个人定投与持仓** | 三池预算、五档回撤、持仓管理、个人成本曲线、买入记录、冷钱包确认与 JSON 备份 |
-| **数据健康度** | 每个数据源独立标记实时、备用、沿用、滞后或缺失；单一接口失败不会伪装成正常数据 |
+| **今日情报** | 价格、阶段、估值、主要驱动、资金环境与数据置信度 |
+| **市场图谱** | BTC 价格、长期趋势与减半坐标的多周期可视化 |
+| **AHR999** | 200 日定投成本、幂律估值、经典值与重拟合值 |
+| **21M 积累** | BTC、sats、永久仓目标与 2100 万分之一占比 |
+| **周期雷达** | 指标变化、阶段持续与关键阈值事件 |
+| **综合估值** | 七维质量加权评分与 `0.10x–3.00x` 定投倍数 |
+| **资金体温** | 情绪、资金费率、现货溢价、稳定币与链上状态 |
+| **执行系统** | 三池预算、五档回撤、持仓成本、买入记录与备份 |
 
-## ✦ 21M 长期积累
+## A Tribute to AHR999
 
-比特币的最终供应上限是 **21,000,000 BTC**。V21 不把它只当一句口号，而是把它变成长期积累坐标：
+AHR999 是这个项目的精神原点。
 
-- 只统计现货与冷钱包 BTC，不把 IBIT、杠杆或网格仓位算进永久仓
-- 同时显示 BTC、sats 和占 2100 万枚总量的比例
-- 可选择 `0.01 / 0.05 / 0.1 / 1 BTC` 永久仓目标
-- 用 21 格堆叠图展示目标完成度
-- 自动计算每个 BTC 里程碑还差多少
-- 按“当前价格 −50% / 当前价格 / 当前价格 +50%”三种固定情景测算完成时间
-- 月度测算金额独立存在，不会修改原有定投预算
+独立的 [`ahr999.html`](https://9992100.xyz/btc/ahr999.html) 展示完整公式、双锚点拆解、历史曲线、经典与重拟合模型，以及 `0.45 / 1 / 1.2 / 5` 四档关键价格。
 
-> 三种情景只是机械测算，不是价格预测，也未计入交易费用。
+它不是神谕，而是一把尺：在情绪最嘈杂的时候，把决定重新交还给时间、成本与规则。
 
-## ✦ 7 维估值引擎
+## Valuation Engine
 
-评分越高，代表长期估值越低、定投机会越强；它不是常见的“风险分越高越危险”。
+`AHR999` · `价格 / 200WMA` · `MVRV` · `恐惧贪婪` · `Puell Multiple` · `Reserve Risk` · `SOPR`
 
-| 维度 | 权重 | 作用 |
+评分越高，代表长期估值越低。
+
+系统按数据新鲜度与可靠性加权；实时、沿用、滞后和缺失均明确标注，不用过期数据制造确定性。
+
+## DCA Discipline
+
+| 资金池 | 默认额度 | 纪律 |
 |:---|---:|:---|
-| AHR999 新拟 | 20% | 衡量价格相对 200 日定投成本与长期幂律趋势的位置 |
-| 价格 / 200 周均线 | 15% | 衡量价格相对长期周期底座的偏离 |
-| MVRV | 15% | 衡量市场价值相对已实现价值的位置 |
-| 恐惧贪婪指数 | 15% | 衡量短中期市场情绪 |
-| Puell Multiple | 15% | 衡量矿工收入周期 |
-| Reserve Risk | 10% | 衡量长期持币信心与价格的关系 |
-| SOPR | 10% | 衡量链上筹码的盈利或亏损兑现状态 |
-
-定投倍数采用连续插值：
+| 基础定投 | ¥1,000 | 无条件执行 |
+| 回撤加仓 | ¥700 | 回撤 `10% / 20% / 30%` 分档执行 |
+| 极端预备金 | ¥300 | 回撤 `40% / 50%` 时使用 |
 
 ```text
-评分 0 → 0.10x
-评分 30 → 0.30x
-评分 50 → 0.80x
-评分 70 → 1.20x
-评分 85 → 1.95x
-评分 100 → 3.00x
+不追涨 · 不改买点 · 不停定投
+不加杠杆 · 不动备用金 · 买入后转冷钱包
 ```
 
-评分不是把缺失数据当作真实数据。系统会根据新鲜度给予不同可信权重，并把低质量输入向中性值校准；至少需要 **4/7 个可靠指标**且有效覆盖达到 **3.5/7**，才会正式输出估值结论。
+## Design Principles
 
-## ✦ 三池预算与五档回撤
+- **Local First** — 预算、持仓、历史与设置保存在当前浏览器
+- **Data Honesty** — 不伪造历史，不掩盖缺失，不把缓存冒充实时
+- **Graceful Degradation** — 多源接口自动降级，单点失败不阻断终端
+- **Zero Build** — 原生 HTML / CSS / JavaScript，无 npm、无构建步骤
+- **Privacy by Default** — 无账户、无自建后端、无分析埋点
+- **Mobile Native** — 深浅色、iPhone 安全区与主屏幕 Web App 适配
 
-默认每月预算为 ¥2,000：
+数据主要来自 Binance、OKX、Coinbase、Coin Metrics、Alternative.me、DefiLlama、mempool.space、BGeometrics 与 Polymarket。
 
-| 资金池 | 额度 | 用途 |
-|:---|---:|:---|
-| 基础定投 | ¥1,000 | 每月无条件执行，并按评分拆为 1 / 2 / 4 次 |
-| 回撤加仓 | ¥700 | 从阶段锚点回撤 10% / 20% / 30% 时分档执行 |
-| 极端预备金 | ¥300 | 从阶段锚点回撤 40% / 50% 时使用 |
-
-默认触发阶梯：
-
-| 相对锚点 | 金额 | 资金池 |
-|---:|---:|:---|
-| −10% | ¥200 | 回撤加仓 |
-| −20% | ¥200 | 回撤加仓 |
-| −30% | ¥300 | 回撤加仓 |
-| −40% | ¥150 | 极端预备金 |
-| −50% | ¥150 | 极端预备金 |
-
-系统会把“等待、已触发、已执行”分开显示。锚点默认由 `MA250` 与 `AHR999 = 1` 价格共同生成，也允许手动锚定现价。
-
-## ✦ 情报与历史
-
-V21 会在当前设备保存每日 UTC 快照，并逐步建立真正属于你的本地历史：
-
-- 自动识别深度投降、低估筑底、复苏、趋势扩张、高位分配与过热风险
-- 对比核心指标的 1 日、7 日和 30 日变化
-- 记录 AHR999、SOPR、LTH-NUPL 等关键阈值穿越
-- 识别稳定币单日异动与永续杠杆拥挤
-- 给出估值变化的主要驱动，而不是只展示一个孤立分数
-- 一键复制“BTC 今日情报”，便于保存或分享
-
-历史从当前设备开始积累；不会为了填满图表而伪造过去数据。
-
-## ✦ 数据源
-
-| 数据 | 主源与降级路径 |
-|:---|:---|
-| BTC 现价 / 24H | Binance → OKX → Coinbase |
-| 日线 / 周线 / 30D 走势 | Binance 多官方节点竞速 |
-| MA51 / 120 / 250 / 850 | Binance 日线，本地计算 |
-| 200 周均线 | Binance 周线，本地计算 |
-| AHR999 / 200 日定投成本 | Binance 日线 + 2026 重拟合幂律，本地计算 |
-| MVRV / 已实现价格 / 均衡价 | Coin Metrics Community；Bitcoin Data / BGeometrics 与本地缓存降级 |
-| 恐惧贪婪指数 | Alternative.me |
-| 永续资金费率 | OKX → Binance Futures |
-| Coinbase 溢价 | Coinbase Exchange + BTC 现货参考价 |
-| USDT / USDC 流动性 | DefiLlama Stablecoins → CoinGecko |
-| 减半进度 / 算力 / 关机价 | mempool.space + 本地模型 |
-| SOPR / Puell / Reserve Risk / LTH-NUPL | Bitcoin Data / BGeometrics，24 小时慢指标缓存 |
-| 年内价格隐含概率 | Polymarket 活跃市场 |
-
-所有接口均由浏览器直接请求。系统没有自建数据服务器，并会对超时、缓存、滞后和缺失状态明确标注。第三方接口的可用性仍可能受到地区网络、CORS 或调用额度影响。
-
-## ✦ 本地优先与隐私
-
-- 买入记录、预算、持仓、指标历史与设置保存在浏览器 `localStorage`
-- 不需要注册账户，没有自建后端，也没有分析埋点
-- 可选的 BGeometrics API Key 仅保存在当前设备，不写入 HTML，也不会进入 JSON 备份
-- 支持完整 JSON 导出与导入，换机或清理浏览器前建议主动备份
-- V21 会尝试申请浏览器持久存储，但这不能替代备份
-
-## ✦ 技术架构
-
-- 核心应用只有一个 `index.html`
-- 原生 HTML、CSS、JavaScript，无 npm、无编译、无部署流水线要求
-- TradingView Lightweight Charts v5.2.0 已内嵌，无需运行时 CDN
-- 响应式 Aurum UI，支持深色/浅色、iPhone 安全区、减少动态效果与高对比度偏好
-- 价格每 60 秒更新，全量数据每 30 分钟更新；页面隐藏时停止无意义轮询
-- Web App Manifest 运行时生成，可从 iPhone Safari 添加到主屏幕
-
-仓库最小结构：
+## Structure
 
 ```text
 btc-dca/
 ├── index.html
+├── ahr999.html
 ├── apple-touch-icon.png
 └── README.md
 ```
 
-## ✦ 使用与部署
+直接部署到 GitHub Pages、Nginx、VPS 或任意静态托管即可运行。
 
-### 在线使用
+## Access
 
-直接访问：[bwy999.github.io/btc-dca](https://bwy999.github.io/btc-dca/)
+- [正式站点](https://9992100.xyz/btc/)
+- [GitHub Pages](https://bwy999.github.io/btc-dca/)
+- iPhone：Safari → 分享 → 添加到主屏幕
 
-### iPhone 主屏幕
+> 数据保存在当前设备。清理浏览器或换机前，请先导出 JSON 备份。
 
-1. 使用 Safari 打开网站
-2. 点击“分享”
-3. 选择“添加到主屏幕”
-4. 确认后即可用独立窗口运行
+## Disclaimer
 
-`apple-touch-icon.png` 必须与 `index.html` 放在仓库根目录。iOS 会强缓存主屏幕图标；更换图标后，需要先删除旧快捷方式，再从 Safari 重新添加。
+本项目是个人信息整理与定投纪律工具，不构成投资建议、收益承诺或交易指令。
 
-### GitHub Pages
-
-1. 将 `index.html`、`apple-touch-icon.png` 和 `README.md` 放到仓库根目录
-2. 在仓库 `Settings → Pages` 中选择从主分支根目录发布
-3. 无需执行任何构建命令
-
-### 可选链上数据 Key
-
-在页面顶部展开“数据可用性”，可填写个人 BGeometrics API Key，以提高 SOPR、Puell、Reserve Risk 与 LTH-NUPL 的可用性。未配置时，系统仍会尝试公开兼容源和已有缓存，并如实显示数据状态。
-
-## ✦ 六条铁律
-
-```text
-1. 不因涨而动用回撤资金 —— 700 元只等跌才用
-2. 不修改已设定的买点 —— 触发就买，不临时再等
-3. 不暂停基础定投 —— 每月 1000 元，不管涨跌
-4. 不加杠杆 —— 现货与网格已有足够敞口
-5. 不动生活备用金 —— 25% 收入是上限，不临时挪借
-6. 买入后必须提至冷钱包 —— Not your keys, not your coins.
-```
-
-## ✦ 当前版本
-
-**V21.0.1 · Aurum 21M**
-
-- 全新 Aurum 移动端视觉系统
-- 新增 21M 长期积累与永久仓目标模块
-- 新增今日情报、市场结构图谱、周期雷达与本地阈值事件
-- 完善多源降级、数据新鲜度、质量校准与 JSON 备份
-- iPhone 主屏幕图标固定读取根目录 `apple-touch-icon.png`
-- 估值评分圆环改为 SVG 圆头描边，消除 iPhone Safari 锯齿
-
-## ✦ 免责声明
-
-本项目是个人信息整理与定投纪律工具，不构成投资建议、收益承诺或交易指令。比特币价格波动剧烈，请根据自己的财务状况独立判断，并始终保留生活备用金。
-
-## ✦ License
-
-MIT
+请根据自身财务状况独立判断，并始终保留生活备用金。
 
 ---
 
 <div align="center">
 
-*如果有一天你特难受，特绝望，特孤独。*<br>
-*你感觉全世界只有你还相信比特币，*<br>
-*你开始动摇了，你快要撑不住了。*<br>
+*如果有一天你特难受，特绝望，特孤独。*  
+*你感觉全世界只有你还相信比特币，*  
+*你开始动摇了，你快要撑不住了。*  
 *相信我，其实你并不孤独。*
 
 ### 我们都是中本聪！
