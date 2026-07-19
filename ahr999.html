@@ -7,10 +7,10 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="AHR999" />
-  <meta name="ahr999-build" content="21.7.0-20260719" />
+  <meta name="ahr999-build" content="21.8.0-20260719" />
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="manifest" id="pwaManifest" />
-  <title>AHR999 致敬专页 · BTC Aurum V21.7</title>
+  <title>AHR999 致敬专页 · BTC Aurum V21.8</title>
   <style>
     :root{
       color-scheme:dark;
@@ -117,15 +117,18 @@
     .range-btn{min-width:52px;height:36px;border:0;border-radius:9px;background:transparent;color:var(--dim);font-size:11px;font-weight:800}
     .range-btn.active{background:var(--text);color:var(--bg)}
     .chart-live{color:var(--dim);font-size:10px;text-align:right}
-    .chart-legend{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:9px 0;color:var(--muted);font-size:10px;font-weight:720}
+    .chart-legend{display:flex;column-gap:13px;row-gap:8px;align-items:center;flex-wrap:wrap;margin:9px 0 12px;color:var(--muted);font-size:10px;font-weight:720}
     .legend{display:inline-flex;align-items:center;gap:6px}.legend i{width:16px;height:2px;border-radius:2px;background:var(--btc)}
-    .legend.threshold i{background:var(--dim);border-top:1px dashed var(--dim);height:0}
+    .legend.zone i{width:7px;height:7px;border-radius:2px}.legend.low i{background:var(--green)}.legend.dca i{background:var(--yellow)}.legend.risk i{background:var(--red)}
     .chart-wrap{position:relative;width:100%;height:390px;overflow:hidden;border-radius:18px;background:
       linear-gradient(180deg,rgba(247,147,26,.025),transparent 45%),rgba(255,255,255,.018)}
     #ahrChart{display:block;width:100%;height:100%;touch-action:pan-y}
+    .chart-zone.low{fill:var(--green);opacity:.075}.chart-zone.dca{fill:var(--yellow);opacity:.07}.chart-zone.risk{fill:var(--red);opacity:.048}
     .chart-grid{stroke:rgba(255,255,255,.075);stroke-width:1;stroke-dasharray:4 6}
     .chart-threshold{stroke:rgba(255,255,255,.18);stroke-width:1;stroke-dasharray:5 7}
+    .chart-zone-boundary{fill:none;stroke-width:1.25;stroke-dasharray:6 5;vector-effect:non-scaling-stroke}.chart-zone-boundary.low{stroke:var(--green);opacity:.78}.chart-zone-boundary.dca{stroke:var(--yellow);opacity:.82}
     .chart-axis{fill:var(--dim);font-family:var(--font);font-size:11px}
+    .chart-axis.low{fill:var(--green);font-weight:760}.chart-axis.dca{fill:var(--yellow);font-weight:760}
     .chart-area{fill:url(#ahrArea)}.chart-line{fill:none;stroke:var(--btc);stroke-width:2.3;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
     .chart-last{fill:var(--btc);stroke:var(--surface);stroke-width:4;vector-effect:non-scaling-stroke}
     .chart-tip{position:absolute;z-index:4;display:none;pointer-events:none;min-width:136px;padding:10px 12px;border:1px solid var(--line);
@@ -207,7 +210,7 @@
 <main class="page">
   <nav class="topbar" aria-label="AHR999 专页导航">
     <a class="back" href="./index.html#ahr"><i>‹</i><span>返回 BTC 终端</span></a>
-    <div class="top-title"><b>AHR999 TRIBUTE</b><span>AURUM V21.7 · 独立专页</span></div>
+    <div class="top-title"><b>AHR999 TRIBUTE</b><span>AURUM V21.8 · 独立专页</span></div>
     <div class="top-actions"><button class="refresh-action" id="refreshBtn" type="button" onclick="loadData(true)" aria-label="强制刷新 AHR999 数据">↻</button><button class="top-action" id="copyBtn" type="button" onclick="copySnapshot()">复制快照</button></div>
   </nav>
 
@@ -294,7 +297,7 @@
         </div>
         <div class="chart-live" id="chartLive">等待至少 200 个日线样本</div>
       </div>
-      <div class="chart-legend"><span class="legend"><i></i>AHR999 重拟合值</span><span class="legend threshold"><i></i>0.45 / 1.2 / 5 历史阈值</span></div>
+      <div class="chart-legend"><span class="legend"><i></i>AHR999 重拟合值</span><span class="legend zone low"><i></i>抄底区 ≤ 0.45</span><span class="legend zone dca"><i></i>定投区 0.45–1.20</span><span class="legend zone risk"><i></i>风险区 ＞ 1.20</span></div>
       <div class="chart-wrap" id="chartWrap">
         <svg id="ahrChart" viewBox="0 0 1000 390" preserveAspectRatio="none" role="img" aria-label="AHR999 历史图表"></svg>
         <div class="chart-tip" id="chartTip"></div>
@@ -383,7 +386,7 @@
 
   <footer>
     数据来自公开市场接口并在浏览器本地计算 · 不构成投资建议或收益承诺<br />
-    AHR999 Tribute Page · Build 21.7.0-20260719
+    AHR999 Tribute Page · Build 21.8.0-20260719
   </footer>
 </main>
 
@@ -706,7 +709,10 @@ function renderChart(){
   chartSeries=days?fullSeries.filter(function(x){return x.t>=end-days*86400}):fullSeries.slice();
   if(chartSeries.length<2)return;
   const plot=downsample(chartSeries,760);
-  const W=1000,H=390,L=62,R=20,T=22,B=42,PW=W-L-R,PH=H-T-B;
+  const svg=$("ahrChart"),rect=svg.getBoundingClientRect();
+  const W=Math.max(280,Math.round(rect.width||1000)),H=Math.max(260,Math.round(rect.height||390));
+  const compact=W<520,L=compact?42:62,R=compact?8:20,T=compact?18:22,B=compact?40:42,PW=W-L-R,PH=H-T-B;
+  svg.setAttribute("viewBox","0 0 "+W+" "+H);
   const vals=chartSeries.map(function(x){return x.value});
   const actualMax=Math.max.apply(null,vals.concat([5]));
   const minY=Math.max(.04,Math.min(.1,Math.min.apply(null,vals)*.82));
@@ -717,23 +723,29 @@ function renderChart(){
   const path=plot.map(function(p,i){return(i?"L":"M")+x(p.t).toFixed(2)+","+y(p.value).toFixed(2)}).join(" ");
   const area=path+" L"+x(plot[plot.length-1].t).toFixed(2)+","+(T+PH)+" L"+x(plot[0].t).toFixed(2)+","+(T+PH)+" Z";
   const yTicks=[.1,.45,1.2,5,10,50].filter(function(v){return v>=minY&&v<=maxY});
-  const thresholdSet=new Set([.45,1.2,5]);
+  const y045=y(.45),y120=y(1.2),plotBottom=T+PH;
+  const zoneLayers='<rect class="chart-zone risk" x="'+L+'" y="'+T+'" width="'+PW+'" height="'+Math.max(0,y120-T).toFixed(2)+'"></rect>'+ 
+    '<rect class="chart-zone dca" x="'+L+'" y="'+y120.toFixed(2)+'" width="'+PW+'" height="'+Math.max(0,y045-y120).toFixed(2)+'"></rect>'+ 
+    '<rect class="chart-zone low" x="'+L+'" y="'+y045.toFixed(2)+'" width="'+PW+'" height="'+Math.max(0,plotBottom-y045).toFixed(2)+'"></rect>';
   let grid="";
   yTicks.forEach(function(v){
     const yy=y(v);
-    grid+='<line class="'+(thresholdSet.has(v)?"chart-threshold":"chart-grid")+'" x1="'+L+'" y1="'+yy.toFixed(2)+'" x2="'+(W-R)+'" y2="'+yy.toFixed(2)+'"></line>';
-    grid+='<text class="chart-axis" x="'+(L-10)+'" y="'+(yy+4).toFixed(2)+'" text-anchor="end">'+v+'</text>';
+    const lineClass=v===.45?"chart-zone-boundary low":v===1.2?"chart-zone-boundary dca":v===5?"chart-threshold":"chart-grid";
+    const axisClass=v===.45?"chart-axis low":v===1.2?"chart-axis dca":"chart-axis";
+    const label=v===.45?"0.45":v===1.2?"1.20":String(v);
+    grid+='<line class="'+lineClass+'" x1="'+L+'" y1="'+yy.toFixed(2)+'" x2="'+(W-R)+'" y2="'+yy.toFixed(2)+'"></line>';
+    grid+='<text class="'+axisClass+'" x="'+(L-(compact?7:10))+'" y="'+(yy+4).toFixed(2)+'" text-anchor="end">'+label+'</text>';
   });
-  const tickCount=chartSeries.length<500?4:5;
+  const tickCount=compact?4:(chartSeries.length<500?4:5);
   for(let i=0;i<tickCount;i++){
     const idx=Math.round(i*(chartSeries.length-1)/(tickCount-1)),p=chartSeries[idx],xx=x(p.t);
     grid+='<line class="chart-grid" x1="'+xx.toFixed(2)+'" y1="'+T+'" x2="'+xx.toFixed(2)+'" y2="'+(T+PH)+'"></line>';
     grid+='<text class="chart-axis" x="'+xx.toFixed(2)+'" y="'+(H-14)+'" text-anchor="'+(i===0?"start":i===tickCount-1?"end":"middle")+'">'+dayText(p.t).slice(0,7)+'</text>';
   }
   const last=chartSeries[chartSeries.length-1];
-  $("ahrChart").innerHTML='<defs><linearGradient id="ahrArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f7931a" stop-opacity=".28"></stop><stop offset="100%" stop-color="#f7931a" stop-opacity="0"></stop></linearGradient></defs>'+grid+
+  svg.innerHTML='<defs><linearGradient id="ahrArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f7931a" stop-opacity=".14"></stop><stop offset="100%" stop-color="#f7931a" stop-opacity="0"></stop></linearGradient></defs>'+zoneLayers+grid+
     '<path class="chart-area" d="'+area+'"></path><path class="chart-line" d="'+path+'"></path><circle class="chart-last" cx="'+x(last.t).toFixed(2)+'" cy="'+y(last.value).toFixed(2)+'" r="5"></circle>';
-  $("ahrChart").setAttribute("aria-label","AHR999 从 "+dayText(chartSeries[0].t)+" 到 "+dayText(last.t)+" 的历史曲线");
+  svg.setAttribute("aria-label","AHR999 从 "+dayText(chartSeries[0].t)+" 到 "+dayText(last.t)+" 的历史曲线，绿色为抄底区，黄色为定投区，红色为风险区");
   $("rangeLow").textContent=fmtIndex(Math.min.apply(null,vals));
   $("rangeMedian").textContent=fmtIndex(median(vals));
   const pct=Math.round(fullSeries.filter(function(p){return p.value<=current.ahr}).length/fullSeries.length*100);
@@ -741,18 +753,19 @@ function renderChart(){
   $("sampleCount").textContent=fullSeries.length.toLocaleString("en-US")+" 日";
   $("historyBadge").textContent=dayText(fullSeries[0].t)+" 起";
   $("chartLive").textContent=chartRange+" · 对数坐标 · 最新 "+fmtIndex(current.ahr);
-  bindChartTip(x,y);
+  bindChartTip(x,y,{W:W,H:H,L:L,PW:PW});
 }
-function bindChartTip(x,y){
+function bindChartTip(x,y,geom){
   const svg=$("ahrChart"),tip=$("chartTip"),wrap=$("chartWrap");
   svg.onpointermove=function(event){
     if(!chartSeries.length)return;
     const rect=svg.getBoundingClientRect();
-    const ratio=clamp((event.clientX-rect.left)/rect.width,0,1);
+    const viewX=(event.clientX-rect.left)/rect.width*geom.W;
+    const ratio=clamp((viewX-geom.L)/geom.PW,0,1);
     const idx=Math.round(ratio*(chartSeries.length-1));
     const p=chartSeries[idx];
-    const px=x(p.t)/1000*rect.width;
-    const py=y(p.value)/390*rect.height;
+    const px=x(p.t)/geom.W*rect.width;
+    const py=y(p.value)/geom.H*rect.height;
     tip.innerHTML=dayText(p.t)+'<b class="num">'+fmtIndex(p.value)+'</b><span class="num">BTC '+fmtUsd(p.c)+'</span>';
     tip.style.left=clamp(px,76,rect.width-76)+"px";
     tip.style.top=clamp(py,72,rect.height-12)+"px";
@@ -840,6 +853,11 @@ try{
   const saved=localStorage.getItem("ahr999_page_range");
   if(["1Y","2Y","4Y","ALL"].includes(saved))chartRange=saved;
 }catch(e){}
+let chartResizeTimer=0;
+window.addEventListener("resize",function(){
+  clearTimeout(chartResizeTimer);
+  chartResizeTimer=setTimeout(function(){if(fullSeries.length)renderChart()},120);
+},{passive:true});
 buildDial();
 setRange(chartRange);
 injectManifest();
