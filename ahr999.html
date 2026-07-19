@@ -7,10 +7,10 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="AHR999" />
-  <meta name="ahr999-build" content="21.3.1-20260719" />
+  <meta name="ahr999-build" content="21.6.0-20260719" />
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="manifest" id="pwaManifest" />
-  <title>AHR999 致敬专页 · BTC Aurum V21.3.1</title>
+  <title>AHR999 致敬专页 · BTC Aurum V21.6</title>
   <style>
     :root{
       color-scheme:dark;
@@ -50,37 +50,46 @@
       font-size:270px;font-weight:900;line-height:1;letter-spacing:-.11em}
     .hero::after{content:"";position:absolute;right:-120px;top:-160px;z-index:-2;width:520px;height:520px;border-radius:50%;
       background:radial-gradient(circle,rgba(247,147,26,.25),transparent 68%)}
-    .hero-grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;align-items:center;gap:48px}
+    .hero-grid{display:grid;grid-template-columns:minmax(0,1fr) 390px;align-items:center;gap:48px}
     .eyebrow{display:flex;align-items:center;gap:9px;color:var(--btc);font-size:11px;font-weight:850;letter-spacing:.17em}
     .eyebrow::before{content:"";width:24px;height:2px;border-radius:2px;background:var(--btc)}
-    h1{max-width:none;margin:17px 0 14px;font-size:clamp(36px,4vw,62px);font-weight:760;line-height:1.02;letter-spacing:-.04em;white-space:nowrap}
+    h1{max-width:none;margin:17px 0 14px;font-size:clamp(38px,4.8vw,64px);font-weight:760;line-height:1;letter-spacing:-.045em;white-space:nowrap}
     .lead{max-width:650px;margin:0;color:var(--muted);font-size:15px;line-height:1.75}
-    .hero-quote{max-width:620px;margin-top:25px;padding-left:15px;border-left:2px solid var(--btc);color:#d7d7dc;font-size:13px;line-height:1.7}
-    .score-orbit{position:relative;width:322px;max-width:100%;margin:0 auto;aspect-ratio:200/176}
-    .score-orbit::before{content:"";position:absolute;left:50%;top:50%;width:58%;height:58%;transform:translate(-50%,-58%);
-      border-radius:50%;background:radial-gradient(circle at 50% 42%,rgba(247,147,26,.10),transparent 68%);filter:blur(6px)}
-    .score-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
-    .gauge-band{fill:none;stroke-width:11;stroke-linecap:round;opacity:.24;transition:opacity .35s ease,stroke-width .35s ease}
-    .gauge-band.active{opacity:1;stroke-width:13}
-    .gauge-tick{stroke:var(--bg);stroke-width:3.4;stroke-linecap:round;opacity:.95}
-    .gauge-halo{opacity:0;filter:blur(3px);transition:opacity .35s ease}
-    .gauge-halo.on{opacity:.5}
-    .gauge-thumb{fill:var(--surface);stroke:var(--btc);stroke-width:4;opacity:0;
-      filter:drop-shadow(0 3px 9px rgba(0,0,0,.5));transition:opacity .35s ease}
-    .gauge-thumb.on{opacity:1}
-    .gauge-end{fill:var(--dim);font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:-.02em;text-anchor:middle}
-    .gauge-blabel{fill:var(--dim);font-family:var(--mono);font-size:8.5px;font-weight:700;text-anchor:middle;opacity:.8}
-    .score-center{position:absolute;left:0;right:0;top:50%;transform:translateY(-56%);text-align:center;pointer-events:none;z-index:1}
-    .score-label{display:block;color:var(--dim);font-size:10px;font-weight:800;letter-spacing:.16em}
-    .score-value{display:block;margin-top:5px;font-size:62px;font-weight:760;line-height:1;letter-spacing:-.045em}
-    .score-zone{display:inline-flex;margin-top:11px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;
-      background:rgba(255,255,255,.05);font-size:11px;font-weight:820}
+    .hero-quote{max-width:620px;margin-top:24px;padding-left:15px;border-left:1px solid rgba(247,147,26,.72);color:#d7d7dc;font-size:12px;line-height:1.72}
+    .precision-dial{position:relative;width:390px;max-width:100%;margin:0 auto;padding:0 9px 2px}
+    .dial-topline{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 5px 7px;color:var(--dim);font-size:8px;font-weight:820;letter-spacing:.14em}
+    .dial-topline span{display:inline-flex;align-items:center;gap:7px}.dial-topline i{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(49,215,131,.08)}
+    .dial-topline b{color:var(--dim);font-size:8px;font-weight:740;letter-spacing:.1em}
+    .dial-canvas{position:relative;width:100%;margin-top:3px;aspect-ratio:240/228}
+    .dial-canvas::before{content:"";position:absolute;left:50%;top:49%;width:51%;height:51%;border-radius:50%;transform:translate(-50%,-50%);
+      background:radial-gradient(circle,rgba(247,147,26,.055),transparent 68%);pointer-events:none}
+    .dial-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+    .dial-rail{fill:none;stroke:var(--line);stroke-width:1.2;stroke-linecap:butt}
+    .dial-minor{stroke:var(--dim);stroke-width:.75;opacity:.34}
+    .dial-minor.five{stroke-width:1.15;opacity:.58}
+    .dial-band{fill:none;stroke-width:4.5;stroke-linecap:butt;opacity:.17;transition:opacity .32s ease,stroke-width .32s ease}
+    .dial-band.active{opacity:.92;stroke-width:6.5}
+    .dial-threshold{stroke:var(--surface);stroke-width:1.6;stroke-linecap:butt}
+    .dial-threshold-label,.dial-end{fill:var(--dim);font-family:var(--mono);font-size:7.8px;font-weight:720;text-anchor:middle}
+    .dial-marker-line{stroke:var(--text);stroke-width:1.15;stroke-linecap:butt;opacity:0;transition:opacity .25s ease}
+    .dial-marker-dot{fill:var(--surface);stroke:var(--text);stroke-width:1.9;opacity:0;transition:opacity .25s ease}
+    .dial-marker-line.on,.dial-marker-dot.on{opacity:1}
+    .dial-center{position:absolute;left:0;right:0;top:49%;transform:translateY(-51%);text-align:center;pointer-events:none}
+    .score-label{display:block;color:var(--dim);font-size:9px;font-weight:820;letter-spacing:.18em}
+    .score-value{display:block;margin-top:8px;font-size:62px;font-weight:730;line-height:.9;letter-spacing:-.06em}
+    .score-zone{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;padding:0;border:0;background:none!important;font-size:10px;font-weight:820;white-space:nowrap;transition:color .3s ease}
+    .score-zone::before{content:"";width:13px;height:2px;flex:none;background:currentColor}
+    .dial-summary{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:-5px;padding-top:13px;border-top:1px solid var(--line)}
+    .dial-summary div{min-width:0;padding:0 5px}.dial-summary div:last-child{border-left:1px solid var(--line);text-align:right}
+    .dial-summary small{display:block;color:var(--dim);font-size:8px;font-weight:760;letter-spacing:.06em}
+    .dial-summary b{display:block;margin-top:5px;color:var(--muted);font-size:10px;font-weight:760;white-space:nowrap}
     .livebar{display:flex;align-items:center;gap:9px;margin-top:24px;color:var(--dim);font-size:11px}
     .live-dot{width:8px;height:8px;border-radius:50%;background:var(--dim);box-shadow:0 0 0 5px rgba(127,127,127,.08)}
     .live-dot.on{background:var(--green);box-shadow:0 0 0 5px rgba(49,215,131,.11),0 0 16px rgba(49,215,131,.28)}
     .livebar .source{margin-left:auto;text-align:right}
-    .metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:18px}
-    .metric{min-width:0;padding:17px 18px;border:1px solid var(--line);border-radius:19px;background:rgba(255,255,255,.035)}
+    .metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin-top:20px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .metric{min-width:0;padding:18px 20px;border:0;border-left:1px solid var(--line);border-radius:0;background:transparent}
+    .metric:first-child{border-left:0}
     .metric small{display:block;color:var(--dim);font-size:10px;font-weight:750}.metric b{display:block;margin-top:8px;font-size:23px;font-weight:740;white-space:nowrap}
     .metric span{display:block;margin-top:6px;color:var(--muted);font-size:10px;line-height:1.4}
     .section{margin-top:72px;scroll-margin-top:86px}
@@ -169,44 +178,40 @@
       body{background:radial-gradient(900px 520px at 88% -80px,rgba(247,147,26,.18),transparent 68%),var(--bg)}
       .topbar{background:rgba(255,255,255,.86)}
       .hero{background:linear-gradient(150deg,#fff 0,#fffaf3 58%,#f7f7f9 100%)}
-      .lead{color:#595961}.hero-quote{padding:13px 15px;border-radius:0 14px 14px 0;background:rgba(247,147,26,.055);color:#54545c}
-      .score-orbit::before{background:radial-gradient(circle at 50% 42%,rgba(247,147,26,.12),transparent 66%)}
-      .gauge-band{opacity:.34}.gauge-thumb{filter:drop-shadow(0 3px 8px rgba(85,67,42,.25))}
-      .score-zone{background:rgba(255,255,255,.86)}
-      .metric{background:rgba(255,255,255,.74)}
+      .lead{color:#595961}.hero-quote{color:#54545c}
       .chart-grid{stroke:rgba(15,15,18,.08)}.chart-threshold{stroke:rgba(15,15,18,.2)}.chart-tip{background:rgba(255,255,255,.94)}
     }
     @media(max-width:820px){
-      .hero{padding:30px}.hero-grid{grid-template-columns:1fr 268px;gap:24px}.score-orbit{width:268px}.score-value{font-size:52px}h1{font-size:clamp(28px,4.3vw,50px)}
-      .metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.formula-flow{grid-template-columns:1fr}.operator{height:24px}.equations{grid-template-columns:1fr}
+      .hero{padding:30px}.hero-grid{grid-template-columns:1fr;gap:26px}.precision-dial{width:360px}.score-value{font-size:60px}h1{font-size:clamp(40px,7vw,60px)}
+      .metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.metric:nth-child(odd){border-left:0}.metric:nth-child(n+3){border-top:1px solid var(--line)}.formula-flow{grid-template-columns:1fr}.operator{height:24px}.equations{grid-template-columns:1fr}
       .two-col{grid-template-columns:1fr}.zones{grid-template-columns:repeat(2,minmax(0,1fr))}
     }
     @media(max-width:620px){
       body{padding-left:12px;padding-right:12px}.topbar{margin-top:max(7px,env(safe-area-inset-top));}.top-title{display:none}.top-action{min-width:68px;padding-left:10px;padding-right:10px}
       .hero{padding:24px 18px;border-radius:28px}.hero::before{right:-15px;top:-22px;font-size:132px}.hero-grid{grid-template-columns:1fr;gap:0}.eyebrow{font-size:10px;letter-spacing:.13em}.lead{font-size:12.5px;line-height:1.65}
-      h1{margin-top:14px;margin-bottom:12px;font-size:clamp(30px,10.4vw,58px);line-height:1.05}.hero-quote{display:none}.score-orbit{width:250px;margin:16px auto 0}.score-value{font-size:46px}.score-zone{margin-top:8px;padding:6px 10px;font-size:10px;white-space:nowrap}
-      .livebar{flex-wrap:nowrap;margin-top:13px;font-size:10px}.livebar .source{width:auto;margin-left:auto;text-align:right;white-space:nowrap}.metric-grid{gap:8px;margin-top:14px}.metric{min-height:104px;padding:13px}.metric b{font-size:18px}.metric span{font-size:10px}.section{margin-top:52px}.section-head{display:block}.section-badge{display:inline-flex;margin-top:12px}
+      h1{margin-top:14px;margin-bottom:12px;font-size:clamp(30px,10.4vw,58px);line-height:1.05}.hero-quote{display:none}.precision-dial{width:100%;margin-top:22px;padding:0 4px 2px}.score-value{font-size:55px}.score-zone{font-size:9.5px}
+      .livebar{flex-wrap:nowrap;margin-top:13px;font-size:10px}.livebar .source{width:auto;margin-left:auto;text-align:right;white-space:nowrap}.metric-grid{gap:0;margin-top:16px}.metric{min-height:101px;padding:15px 13px}.metric b{font-size:18px}.metric span{font-size:10px}.section{margin-top:52px}.section-head{display:block}.section-badge{display:inline-flex;margin-top:12px}
       h2{font-size:26px}.formula-card,.chart-card,.panel{padding:15px;border-radius:22px}.formula-part{padding:17px}.formula-part b{font-size:24px}
       .chart-toolbar{align-items:stretch;flex-direction:column}.range-tabs{width:100%}.range-btn{flex:1;min-width:0}.chart-live{text-align:left}.chart-wrap{height:330px}
       .chart-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.ladder-row{grid-template-columns:66px minmax(0,1fr) auto;padding:12px 10px;gap:8px}
       .ladder-price b{font-size:14px}.zones{grid-template-columns:1fr}.zone{min-height:0}.tribute{padding:32px 22px;border-radius:28px}.tribute blockquote{font-size:23px}
       .origin-card{padding:19px}.origin-stat{padding:13px 12px}.origin-stat b{font-size:20px}.origin-story{padding:16px 17px}
     }
-    @media(max-width:380px){.metric-grid{grid-template-columns:1fr}.score-orbit{width:224px}.score-value{font-size:42px}}
-    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.gauge-band,.gauge-halo,.gauge-thumb,.toast{transition:none}}
+    @media(max-width:380px){.score-value{font-size:49px}.precision-dial{padding-left:0;padding-right:0}.dial-topline b{display:none}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.dial-band,.dial-marker-line,.dial-marker-dot,.score-zone,.toast{transition:none}}
   </style>
 </head>
 <body>
 <main class="page">
   <nav class="topbar" aria-label="AHR999 专页导航">
     <a class="back" href="./index.html#ahr"><i>‹</i><span>返回 BTC 终端</span></a>
-    <div class="top-title"><b>AHR999 TRIBUTE</b><span>AURUM V21.2 · 独立专页</span></div>
+    <div class="top-title"><b>AHR999 TRIBUTE</b><span>AURUM V21.6 · 独立专页</span></div>
     <div class="top-actions"><button class="refresh-action" id="refreshBtn" type="button" onclick="loadData(true)" aria-label="强制刷新 AHR999 数据">↻</button><button class="top-action" id="copyBtn" type="button" onclick="copySnapshot()">复制快照</button></div>
   </nav>
 
   <section class="hero" aria-labelledby="heroTitle">
     <div class="hero-grid">
-      <div>
+      <div class="hero-copy">
         <div class="eyebrow">A TRIBUTE TO AHR999</div>
         <h1 id="heroTitle">AHR999囤币指标</h1>
         <p class="lead">AHR999 不负责预测明天的涨跌。它把今天的价格重新放回两个长期坐标：过去 200 天的定投成本，以及比特币随年龄增长形成的趋势估值。</p>
@@ -217,20 +222,28 @@
           <span class="source" id="sourceText">等待行情</span>
         </div>
       </div>
-      <div class="score-orbit" aria-live="polite" id="scoreOrbit">
-        <svg class="score-svg" viewBox="0 0 200 176" aria-hidden="true">
-          <g id="gaugeBands"></g>
-          <g id="gaugeTicks"></g>
-          <g id="gaugeBLabels"></g>
-          <circle class="gauge-halo" id="gaugeHalo" r="13" cx="0" cy="0"></circle>
-          <circle class="gauge-thumb" id="gaugeThumb" r="8" cx="0" cy="0"></circle>
-          <text class="gauge-end" x="42" y="172">0.10</text>
-          <text class="gauge-end" x="158" y="172">10.0</text>
-        </svg>
-        <div class="score-center">
-          <span class="score-label">AHR999 · REFIT</span>
-          <b class="score-value num" id="ahrValue">--</b>
-          <span class="score-zone" id="ahrZone">等待数据</span>
+      <div class="precision-dial" aria-live="polite" id="scoreSpectrum">
+        <div class="dial-topline"><span><i></i>LIVE INDEX</span><b>LOG · 0.10—10.0</b></div>
+        <div class="dial-canvas">
+          <svg class="dial-svg" viewBox="0 0 240 228" aria-hidden="true">
+            <path class="dial-rail" id="dialRail"></path>
+            <g id="dialMinorTicks"></g>
+            <g id="dialBands"></g>
+            <g id="dialThresholds"></g>
+            <line class="dial-marker-line" id="dialMarkerLine" x1="0" y1="0" x2="0" y2="0"></line>
+            <circle class="dial-marker-dot" id="dialMarkerDot" r="4" cx="0" cy="0"></circle>
+            <text class="dial-end" x="52" y="213">0.10</text>
+            <text class="dial-end" x="188" y="213">10.0</text>
+          </svg>
+          <div class="dial-center">
+            <span class="score-label">AHR999 · REFIT</span>
+            <b class="score-value num" id="ahrValue">--</b>
+            <span class="score-zone" id="ahrZone">等待数据</span>
+          </div>
+        </div>
+        <div class="dial-summary">
+          <div><small>区间位置</small><b id="spectrumPosition">等待实时数据</b></div>
+          <div><small>下一阈值</small><b class="num" id="spectrumDistance">--</b></div>
         </div>
       </div>
     </div>
@@ -368,7 +381,7 @@
 
   <footer>
     数据来自公开市场接口并在浏览器本地计算 · 不构成投资建议或收益承诺<br />
-    AHR999 Tribute Page · Build 21.3.1-20260719
+    AHR999 Tribute Page · Build 21.6.0-20260719
   </footer>
 </main>
 
@@ -530,63 +543,83 @@ function calculateSeries(rows,model){
   });
   return out;
 }
-const G_CX=100,G_CY=100,G_R=80,G_A0=225,G_SWEEP=270;
-const G_LO=Math.log(.1),G_HI=Math.log(10),G_SPAN=G_HI-G_LO;
-const G_B1=0.3266,G_B2=0.5396,G_B3=0.8495;
-const G_BANDS=[[0,G_B1,"var(--green)"],[G_B1,G_B2,"var(--green2)"],[G_B2,G_B3,"var(--orange)"],[G_B3,1,"var(--red)"]];
-const G_TICKS=[G_B1,G_B2,G_B3];
-let gaugeReady=false;
-function gPol(r,a){const rad=(a-90)*Math.PI/180;return[G_CX+r*Math.cos(rad),G_CY+r*Math.sin(rad)];}
-function gArc(r,t0,t1){
-  const a0=G_A0+t0*G_SWEEP,a1=G_A0+t1*G_SWEEP,p0=gPol(r,a0),p1=gPol(r,a1),large=(a1-a0)>180?1:0;
+const D_CX=120,D_CY=112,D_R=88,D_A0=225,D_SWEEP=270;
+const D_LO=Math.log(.1),D_HI=Math.log(10),D_SPAN=D_HI-D_LO;
+const D_B1=.3266,D_B2=.5396,D_B3=.8495;
+const D_COLORS=["var(--green)","var(--green2)","var(--orange)","var(--red)"];
+const D_BANDS=[[0,D_B1,D_COLORS[0]],[D_B1,D_B2,D_COLORS[1]],[D_B2,D_B3,D_COLORS[2]],[D_B3,1,D_COLORS[3]]];
+const D_BOUNDS=[[.1,.45],[.45,1.2],[1.2,5],[5,10]];
+let dialReady=false,dialCurT=-1,dialRAF=0;
+const DIAL_REDUCED=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+function dialT(ahr){return clamp((Math.log(Math.max(.1,ahr))-D_LO)/D_SPAN,0,1);}
+function dialBand(ahr){return ahr<=.45?0:ahr<=1.2?1:ahr<5?2:3;}
+function dialPol(r,a){const rad=(a-90)*Math.PI/180;return[D_CX+r*Math.cos(rad),D_CY+r*Math.sin(rad)];}
+function dialArc(r,t0,t1){
+  const a0=D_A0+t0*D_SWEEP,a1=D_A0+t1*D_SWEEP,p0=dialPol(r,a0),p1=dialPol(r,a1),large=(a1-a0)>180?1:0;
   return"M"+p0[0].toFixed(2)+" "+p0[1].toFixed(2)+" A"+r+" "+r+" 0 "+large+" 1 "+p1[0].toFixed(2)+" "+p1[1].toFixed(2);
 }
-function buildGauge(){
-  const bands=$("gaugeBands");if(!bands)return;
-  bands.innerHTML=G_BANDS.map(function(z,i){return'<path class="gauge-band" data-i="'+i+'" d="'+gArc(G_R,z[0],z[1])+'" style="stroke:'+z[2]+'"/>';}).join("");
-  $("gaugeTicks").innerHTML=G_TICKS.map(function(t){
-    const a=G_A0+t*G_SWEEP,p1=gPol(G_R-8.5,a),p2=gPol(G_R+8.5,a);
-    return'<line class="gauge-tick" x1="'+p1[0].toFixed(1)+'" y1="'+p1[1].toFixed(1)+'" x2="'+p2[0].toFixed(1)+'" y2="'+p2[1].toFixed(1)+'"/>';
+function buildDial(){
+  if(dialReady||!$("dialBands"))return;
+  $("dialRail").setAttribute("d",dialArc(101,0,1));
+  $("dialBands").innerHTML=D_BANDS.map(function(b,i){
+    return'<path class="dial-band" data-zone="'+i+'" d="'+dialArc(D_R,b[0],b[1])+'" style="stroke:'+b[2]+'"></path>';
   }).join("");
-  const labs=[[G_B1,"0.45"],[G_B2,"1.20"],[G_B3,"5.00"]];
-  $("gaugeBLabels").innerHTML=labs.map(function(l){
-    const p=gPol(G_R+17,G_A0+l[0]*G_SWEEP);
-    return'<text class="gauge-blabel" x="'+p[0].toFixed(1)+'" y="'+(p[1]+3).toFixed(1)+'">'+l[1]+'</text>';
-  }).join("");
-  gaugeReady=true;
-}
-function gaugeT(ahr){return clamp((Math.log(Math.max(.05,ahr))-G_LO)/G_SPAN,0,1);}
-function bandIndex(t){for(let i=0;i<G_BANDS.length;i++){if(t<=G_BANDS[i][1]+1e-9)return i;}return G_BANDS.length-1;}
-let gaugeCurT=-1,gaugeRAF=0;
-const GAUGE_REDUCED=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-function setGaugeAt(t){
-  const bi=bandIndex(t),color=G_BANDS[bi][2];
-  $("gaugeBands").querySelectorAll(".gauge-band").forEach(function(p){p.classList.toggle("active",+p.dataset.i===bi)});
-  const tp=gPol(G_R,G_A0+t*G_SWEEP),cx=tp[0].toFixed(2),cy=tp[1].toFixed(2);
-  const thumb=$("gaugeThumb"),halo=$("gaugeHalo");
-  thumb.setAttribute("cx",cx);thumb.setAttribute("cy",cy);thumb.style.stroke=color;
-  if(halo){halo.setAttribute("cx",cx);halo.setAttribute("cy",cy);halo.style.fill=color;}
-  gaugeCurT=t;
-}
-function renderGauge(ahr){
-  if(!gaugeReady)buildGauge();
-  const thumb=$("gaugeThumb"),halo=$("gaugeHalo"),bands=$("gaugeBands");
-  if(!thumb||!bands)return;
-  cancelAnimationFrame(gaugeRAF);
-  if(!Number.isFinite(ahr)){
-    bands.querySelectorAll(".gauge-band").forEach(function(p){p.classList.remove("active")});
-    thumb.classList.remove("on");if(halo)halo.classList.remove("on");gaugeCurT=-1;return;
+  let ticks="";
+  for(let i=0;i<=40;i++){
+    const t=i/40,a=D_A0+t*D_SWEEP,major=i%5===0,p1=dialPol(major?95:97,a),p2=dialPol(101,a);
+    ticks+='<line class="dial-minor'+(major?' five':'')+'" x1="'+p1[0].toFixed(1)+'" y1="'+p1[1].toFixed(1)+'" x2="'+p2[0].toFixed(1)+'" y2="'+p2[1].toFixed(1)+'"></line>';
   }
-  const target=gaugeT(ahr);
-  thumb.classList.add("on");if(halo)halo.classList.add("on");
-  if(GAUGE_REDUCED||Math.abs(gaugeCurT-target)<1e-4){setGaugeAt(target);return;}
-  const from=gaugeCurT<0?0:gaugeCurT,dur=760,t0=(performance&&performance.now)?performance.now():Date.now();
+  $("dialMinorTicks").innerHTML=ticks;
+  const thresholds=[[D_B1,"0.45"],[D_B2,"1.20"],[D_B3,"5.00"]];
+  $("dialThresholds").innerHTML=thresholds.map(function(x){
+    const a=D_A0+x[0]*D_SWEEP,p1=dialPol(80,a),p2=dialPol(104,a),lab=dialPol(108,a);
+    return'<line class="dial-threshold" x1="'+p1[0].toFixed(1)+'" y1="'+p1[1].toFixed(1)+'" x2="'+p2[0].toFixed(1)+'" y2="'+p2[1].toFixed(1)+'"></line><text class="dial-threshold-label" x="'+lab[0].toFixed(1)+'" y="'+(lab[1]+2.8).toFixed(1)+'">'+x[1]+'</text>';
+  }).join("");
+  dialReady=true;
+}
+function updateDialSummary(ahr,bi){
+  if(bi===3){
+    $("spectrumPosition").textContent="历史高位 · 风险带";
+    $("spectrumDistance").textContent="5.00 · 已越过";
+    return;
+  }
+  const bounds=D_BOUNDS[bi],lo=bounds[0],hi=bounds[1];
+  const p=clamp((Math.log(Math.max(lo,ahr))-Math.log(lo))/(Math.log(hi)-Math.log(lo)),0,1);
+  const stage=p<.34?"前段":p<.67?"中段":"后段";
+  const names=["深度低估","长期定投","估值升温"];
+  $("spectrumPosition").textContent=names[bi]+" · "+stage+" "+Math.round(p*100)+"%";
+  $("spectrumDistance").textContent=hi.toFixed(2)+" · 还差 "+fmtIndex(Math.max(0,hi-ahr));
+}
+function setDialAt(t,color){
+  const a=D_A0+t*D_SWEEP,p1=dialPol(76,a),p2=dialPol(103,a),dot=dialPol(D_R,a);
+  const line=$("dialMarkerLine"),marker=$("dialMarkerDot");
+  line.setAttribute("x1",p1[0].toFixed(2));line.setAttribute("y1",p1[1].toFixed(2));line.setAttribute("x2",p2[0].toFixed(2));line.setAttribute("y2",p2[1].toFixed(2));line.style.stroke=color;
+  marker.setAttribute("cx",dot[0].toFixed(2));marker.setAttribute("cy",dot[1].toFixed(2));marker.style.stroke=color;
+  dialCurT=t;
+}
+function renderDial(ahr){
+  buildDial();
+  const line=$("dialMarkerLine"),marker=$("dialMarkerDot"),bands=$("dialBands");
+  if(!line||!marker||!bands)return;
+  cancelAnimationFrame(dialRAF);
+  if(!Number.isFinite(ahr)){
+    line.classList.remove("on");marker.classList.remove("on");
+    bands.querySelectorAll(".dial-band").forEach(function(el){el.classList.remove("active")});
+    dialCurT=-1;
+    return;
+  }
+  const target=dialT(ahr),bi=dialBand(ahr),color=D_COLORS[bi];
+  line.classList.add("on");marker.classList.add("on");
+  bands.querySelectorAll(".dial-band").forEach(function(el){el.classList.toggle("active",+el.dataset.zone===bi)});
+  updateDialSummary(ahr,bi);
+  if(DIAL_REDUCED||Math.abs(dialCurT-target)<1e-4){setDialAt(target,color);return;}
+  const from=dialCurT<0?0:dialCurT,dur=740,t0=window.performance&&performance.now?performance.now():Date.now();
   function frame(now){
     const k=clamp(((now||Date.now())-t0)/dur,0,1),e=1-Math.pow(1-k,3);
-    setGaugeAt(from+(target-from)*e);
-    if(k<1)gaugeRAF=requestAnimationFrame(frame);
+    setDialAt(from+(target-from)*e,color);
+    if(k<1)dialRAF=requestAnimationFrame(frame);
   }
-  gaugeRAF=requestAnimationFrame(frame);
+  dialRAF=requestAnimationFrame(frame);
 }
 function renderCurrent(rows,spot,source){
   if(rows.length<200)return;
@@ -615,8 +648,8 @@ function renderCurrent(rows,spot,source){
   $("formulaResult").textContent=fmtIndex(ahr);
   $("refitValue").textContent=fmtIndex(ahr);
   $("classicModelValue").textContent=fmtIndex(classic);
-  $("scoreOrbit").setAttribute("aria-label","AHR999 "+fmtIndex(ahr)+"，"+zone.label);
-  renderGauge(ahr);
+  $("scoreSpectrum").setAttribute("aria-label","AHR999 "+fmtIndex(ahr)+"，"+zone.label+"，精密对数估值仪表盘");
+  renderDial(ahr);
   renderLadder(current);
 
   fullSeries=calculateSeries(adjusted,REFIT);
@@ -801,7 +834,7 @@ try{
   const saved=localStorage.getItem("ahr999_page_range");
   if(["1Y","2Y","4Y","ALL"].includes(saved))chartRange=saved;
 }catch(e){}
-buildGauge();
+buildDial();
 setRange(chartRange);
 injectManifest();
 loadData(false);
