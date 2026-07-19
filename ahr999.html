@@ -7,16 +7,16 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="AHR999" />
-  <meta name="ahr999-build" content="21.6.0-20260719" />
+  <meta name="ahr999-build" content="21.7.0-20260719" />
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="manifest" id="pwaManifest" />
-  <title>AHR999 致敬专页 · BTC Aurum V21.6</title>
+  <title>AHR999 致敬专页 · BTC Aurum V21.7</title>
   <style>
     :root{
       color-scheme:dark;
       --bg:#09090b;--surface:#121216;--surface2:#19191e;--surface3:#222228;
       --text:#f5f5f7;--muted:#a0a0aa;--dim:#707079;--line:rgba(255,255,255,.09);
-      --btc:#f7931a;--gold:#ffc56b;--green:#31d783;--green2:#77e4ad;
+      --btc:#f7931a;--gold:#ffc56b;--green:#00c805;--green2:#c3f53c;
       --yellow:#f6c445;--orange:#ff9f2f;--red:#ff5b66;--blue:#5fa8ff;
       --shadow:0 28px 80px rgba(0,0,0,.38);--radius:28px;
       --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Helvetica Neue",Arial,sans-serif;
@@ -58,17 +58,17 @@
     .hero-quote{max-width:620px;margin-top:24px;padding-left:15px;border-left:1px solid rgba(247,147,26,.72);color:#d7d7dc;font-size:12px;line-height:1.72}
     .precision-dial{position:relative;width:390px;max-width:100%;margin:0 auto;padding:0 9px 2px}
     .dial-topline{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 5px 7px;color:var(--dim);font-size:8px;font-weight:820;letter-spacing:.14em}
-    .dial-topline span{display:inline-flex;align-items:center;gap:7px}.dial-topline i{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(49,215,131,.08)}
+    .dial-topline span{display:inline-flex;align-items:center;gap:7px}.dial-topline i{width:5px;height:5px;border-radius:50%;background:var(--green)}
     .dial-topline b{color:var(--dim);font-size:8px;font-weight:740;letter-spacing:.1em}
     .dial-canvas{position:relative;width:100%;margin-top:3px;aspect-ratio:240/228}
     .dial-canvas::before{content:"";position:absolute;left:50%;top:49%;width:51%;height:51%;border-radius:50%;transform:translate(-50%,-50%);
-      background:radial-gradient(circle,rgba(247,147,26,.055),transparent 68%);pointer-events:none}
+      border:1px solid color-mix(in srgb,var(--line) 42%,transparent);pointer-events:none;opacity:.45}
     .dial-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
     .dial-rail{fill:none;stroke:var(--line);stroke-width:1.2;stroke-linecap:butt}
-    .dial-minor{stroke:var(--dim);stroke-width:.75;opacity:.34}
-    .dial-minor.five{stroke-width:1.15;opacity:.58}
-    .dial-band{fill:none;stroke-width:4.5;stroke-linecap:butt;opacity:.17;transition:opacity .32s ease,stroke-width .32s ease}
-    .dial-band.active{opacity:.92;stroke-width:6.5}
+    .dial-minor{stroke:var(--dim);stroke-width:.7;opacity:.23}
+    .dial-minor.five{stroke-width:1.05;opacity:.46}
+    .dial-band{fill:none;stroke-width:4;stroke-linecap:butt;opacity:.14;transition:opacity .28s ease,stroke-width .28s ease}
+    .dial-band.active{opacity:.96;stroke-width:6}
     .dial-threshold{stroke:var(--surface);stroke-width:1.6;stroke-linecap:butt}
     .dial-threshold-label,.dial-end{fill:var(--dim);font-family:var(--mono);font-size:7.8px;font-weight:720;text-anchor:middle}
     .dial-marker-line{stroke:var(--text);stroke-width:1.15;stroke-linecap:butt;opacity:0;transition:opacity .25s ease}
@@ -76,7 +76,8 @@
     .dial-marker-line.on,.dial-marker-dot.on{opacity:1}
     .dial-center{position:absolute;left:0;right:0;top:49%;transform:translateY(-51%);text-align:center;pointer-events:none}
     .score-label{display:block;color:var(--dim);font-size:9px;font-weight:820;letter-spacing:.18em}
-    .score-value{display:block;margin-top:8px;font-size:62px;font-weight:730;line-height:.9;letter-spacing:-.06em}
+    .score-value{display:block;margin-top:8px;font-family:var(--font);font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1;font-size:64px;font-weight:680;line-height:.88;letter-spacing:-.07em}
+    .score-value.fresh{animation:scoreFresh .42s cubic-bezier(.22,.8,.3,1)}
     .score-zone{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;padding:0;border:0;background:none!important;font-size:10px;font-weight:820;white-space:nowrap;transition:color .3s ease}
     .score-zone::before{content:"";width:13px;height:2px;flex:none;background:currentColor}
     .dial-summary{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:-5px;padding-top:13px;border-top:1px solid var(--line)}
@@ -85,7 +86,7 @@
     .dial-summary b{display:block;margin-top:5px;color:var(--muted);font-size:10px;font-weight:760;white-space:nowrap}
     .livebar{display:flex;align-items:center;gap:9px;margin-top:24px;color:var(--dim);font-size:11px}
     .live-dot{width:8px;height:8px;border-radius:50%;background:var(--dim);box-shadow:0 0 0 5px rgba(127,127,127,.08)}
-    .live-dot.on{background:var(--green);box-shadow:0 0 0 5px rgba(49,215,131,.11),0 0 16px rgba(49,215,131,.28)}
+    .live-dot.on{background:var(--green);box-shadow:0 0 0 4px color-mix(in srgb,var(--green) 11%,transparent)}
     .livebar .source{margin-left:auto;text-align:right}
     .metric-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin-top:20px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
     .metric{min-width:0;padding:18px 20px;border:0;border-left:1px solid var(--line);border-radius:0;background:transparent}
@@ -174,7 +175,7 @@
       padding:11px 18px;border:1px solid var(--line);border-radius:999px;background:var(--surface3);box-shadow:0 16px 45px rgba(0,0,0,.34);
       font-size:11px;font-weight:760;transition:.25s}.toast.on{opacity:1;transform:translate(-50%,0)}
     @media(prefers-color-scheme:light){
-      :root{color-scheme:light;--bg:#f4f4f6;--surface:#fff;--surface2:#f5f5f7;--surface3:#e9e9ed;--text:#111114;--muted:#65656d;--dim:#8b8b94;--line:rgba(15,15,18,.09);--shadow:0 28px 80px rgba(40,35,28,.12);--green:#1faf6f;--green2:#26b87e;--orange:#f08a1f;--red:#f0454f}
+      :root{color-scheme:light;--bg:#f4f4f6;--surface:#fff;--surface2:#f5f5f7;--surface3:#e9e9ed;--text:#111114;--muted:#65656d;--dim:#8b8b94;--line:rgba(15,15,18,.09);--shadow:0 26px 72px rgba(40,35,28,.10);--green:#00a83e;--green2:#00c805;--orange:#f08a1f;--red:#f0454f}
       body{background:radial-gradient(900px 520px at 88% -80px,rgba(247,147,26,.18),transparent 68%),var(--bg)}
       .topbar{background:rgba(255,255,255,.86)}
       .hero{background:linear-gradient(150deg,#fff 0,#fffaf3 58%,#f7f7f9 100%)}
@@ -198,14 +199,15 @@
       .origin-card{padding:19px}.origin-stat{padding:13px 12px}.origin-stat b{font-size:20px}.origin-story{padding:16px 17px}
     }
     @media(max-width:380px){.score-value{font-size:49px}.precision-dial{padding-left:0;padding-right:0}.dial-topline b{display:none}}
-    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.dial-band,.dial-marker-line,.dial-marker-dot,.score-zone,.toast{transition:none}}
+    @keyframes scoreFresh{from{opacity:.45;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.dial-band,.dial-marker-line,.dial-marker-dot,.score-zone,.toast{transition:none}.score-value.fresh{animation:none}}
   </style>
 </head>
 <body>
 <main class="page">
   <nav class="topbar" aria-label="AHR999 专页导航">
     <a class="back" href="./index.html#ahr"><i>‹</i><span>返回 BTC 终端</span></a>
-    <div class="top-title"><b>AHR999 TRIBUTE</b><span>AURUM V21.6 · 独立专页</span></div>
+    <div class="top-title"><b>AHR999 TRIBUTE</b><span>AURUM V21.7 · 独立专页</span></div>
     <div class="top-actions"><button class="refresh-action" id="refreshBtn" type="button" onclick="loadData(true)" aria-label="强制刷新 AHR999 数据">↻</button><button class="top-action" id="copyBtn" type="button" onclick="copySnapshot()">复制快照</button></div>
   </nav>
 
@@ -381,7 +383,7 @@
 
   <footer>
     数据来自公开市场接口并在浏览器本地计算 · 不构成投资建议或收益承诺<br />
-    AHR999 Tribute Page · Build 21.6.0-20260719
+    AHR999 Tribute Page · Build 21.7.0-20260719
   </footer>
 </main>
 
@@ -565,8 +567,8 @@ function buildDial(){
     return'<path class="dial-band" data-zone="'+i+'" d="'+dialArc(D_R,b[0],b[1])+'" style="stroke:'+b[2]+'"></path>';
   }).join("");
   let ticks="";
-  for(let i=0;i<=40;i++){
-    const t=i/40,a=D_A0+t*D_SWEEP,major=i%5===0,p1=dialPol(major?95:97,a),p2=dialPol(101,a);
+  for(let i=0;i<=32;i++){
+    const t=i/32,a=D_A0+t*D_SWEEP,major=i%4===0,p1=dialPol(major?95:97,a),p2=dialPol(101,a);
     ticks+='<line class="dial-minor'+(major?' five':'')+'" x1="'+p1[0].toFixed(1)+'" y1="'+p1[1].toFixed(1)+'" x2="'+p2[0].toFixed(1)+'" y2="'+p2[1].toFixed(1)+'"></line>';
   }
   $("dialMinorTicks").innerHTML=ticks;
@@ -613,7 +615,7 @@ function renderDial(ahr){
   bands.querySelectorAll(".dial-band").forEach(function(el){el.classList.toggle("active",+el.dataset.zone===bi)});
   updateDialSummary(ahr,bi);
   if(DIAL_REDUCED||Math.abs(dialCurT-target)<1e-4){setDialAt(target,color);return;}
-  const from=dialCurT<0?0:dialCurT,dur=740,t0=window.performance&&performance.now?performance.now():Date.now();
+  const from=dialCurT<0?0:dialCurT,dur=620,t0=window.performance&&performance.now?performance.now():Date.now();
   function frame(now){
     const k=clamp(((now||Date.now())-t0)/dur,0,1),e=1-Math.pow(1-k,3);
     setDialAt(from+(target-from)*e,color);
@@ -634,7 +636,11 @@ function renderCurrent(rows,spot,source){
   const zone=zoneFor(ahr);
   current={price:price,change:spot?spot.change:null,cost:cost,growth:growth,classicGrowth:classicGrowth,ahr:ahr,classic:classic,zone:zone,source:source||"本机缓存"};
 
-  $("ahrValue").textContent=fmtIndex(ahr);
+  const scoreValue=$("ahrValue");
+  scoreValue.textContent=fmtIndex(ahr);
+  scoreValue.classList.remove("fresh");
+  void scoreValue.offsetWidth;
+  scoreValue.classList.add("fresh");
   $("ahrZone").textContent=zone.label+" · "+zone.desc;
   $("ahrZone").style.color=zone.color;
   $("priceValue").textContent=fmtUsd(price);
