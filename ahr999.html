@@ -7,10 +7,10 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="AHR999" />
-  <meta name="ahr999-build" content="21.8.0-20260719" />
+  <meta name="ahr999-build" content="21.8.3-20260719" />
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="manifest" id="pwaManifest" />
-  <title>AHR999 致敬专页 · BTC Aurum V21.8</title>
+  <title>AHR999 致敬专页 · BTC Aurum V21.8.3</title>
   <style>
     :root{
       color-scheme:dark;
@@ -117,9 +117,9 @@
     .range-btn{min-width:52px;height:36px;border:0;border-radius:9px;background:transparent;color:var(--dim);font-size:11px;font-weight:800}
     .range-btn.active{background:var(--text);color:var(--bg)}
     .chart-live{color:var(--dim);font-size:10px;text-align:right}
-    .chart-legend{display:flex;column-gap:13px;row-gap:8px;align-items:center;flex-wrap:wrap;margin:9px 0 12px;color:var(--muted);font-size:10px;font-weight:720}
-    .legend{display:inline-flex;align-items:center;gap:6px}.legend i{width:16px;height:2px;border-radius:2px;background:var(--btc)}
-    .legend.zone i{width:7px;height:7px;border-radius:2px}.legend.low i{background:var(--green)}.legend.dca i{background:var(--yellow)}.legend.risk i{background:var(--red)}
+    .chart-legend{display:flex;align-items:center;justify-content:space-between;gap:clamp(5px,1.8vw,12px);flex-wrap:nowrap;margin:9px 0 12px;color:var(--muted);font-size:clamp(8px,2.35vw,10px);font-weight:740;white-space:nowrap}
+    .legend{display:inline-flex;align-items:center;gap:4px;min-width:0;white-space:nowrap}.legend i{width:12px;height:2px;flex:none;border-radius:2px;background:var(--btc)}
+    .legend.zone-key i{width:6px;height:6px;border-radius:2px}.legend.low i{background:var(--green)}.legend.dca i{background:var(--yellow)}.legend.risk i{background:var(--red)}
     .chart-wrap{position:relative;width:100%;height:390px;overflow:hidden;border-radius:18px;background:
       linear-gradient(180deg,rgba(247,147,26,.025),transparent 45%),rgba(255,255,255,.018)}
     #ahrChart{display:block;width:100%;height:100%;touch-action:pan-y}
@@ -210,7 +210,7 @@
 <main class="page">
   <nav class="topbar" aria-label="AHR999 专页导航">
     <a class="back" href="./index.html#ahr"><i>‹</i><span>返回 BTC 终端</span></a>
-    <div class="top-title"><b>AHR999 TRIBUTE</b><span>AURUM V21.8 · 独立专页</span></div>
+    <div class="top-title"><b>AHR999 TRIBUTE</b><span>AURUM V21.8.3 · 独立专页</span></div>
     <div class="top-actions"><button class="refresh-action" id="refreshBtn" type="button" onclick="loadData(true)" aria-label="强制刷新 AHR999 数据">↻</button><button class="top-action" id="copyBtn" type="button" onclick="copySnapshot()">复制快照</button></div>
   </nav>
 
@@ -297,7 +297,7 @@
         </div>
         <div class="chart-live" id="chartLive">等待至少 200 个日线样本</div>
       </div>
-      <div class="chart-legend"><span class="legend"><i></i>AHR999 重拟合值</span><span class="legend zone low"><i></i>抄底区 ≤ 0.45</span><span class="legend zone dca"><i></i>定投区 0.45–1.20</span><span class="legend zone risk"><i></i>风险区 ＞ 1.20</span></div>
+      <div class="chart-legend"><span class="legend"><i></i>AHR999</span><span class="legend zone-key low"><i></i>抄底 ≤.45</span><span class="legend zone-key dca"><i></i>定投 .45–1.2</span><span class="legend zone-key risk"><i></i>风险 &gt;1.2</span></div>
       <div class="chart-wrap" id="chartWrap">
         <svg id="ahrChart" viewBox="0 0 1000 390" preserveAspectRatio="none" role="img" aria-label="AHR999 历史图表"></svg>
         <div class="chart-tip" id="chartTip"></div>
@@ -386,7 +386,7 @@
 
   <footer>
     数据来自公开市场接口并在浏览器本地计算 · 不构成投资建议或收益承诺<br />
-    AHR999 Tribute Page · Build 21.8.0-20260719
+    AHR999 Tribute Page · Build 21.8.3-20260719
   </footer>
 </main>
 
@@ -711,7 +711,7 @@ function renderChart(){
   const plot=downsample(chartSeries,760);
   const svg=$("ahrChart"),rect=svg.getBoundingClientRect();
   const W=Math.max(280,Math.round(rect.width||1000)),H=Math.max(260,Math.round(rect.height||390));
-  const compact=W<520,L=compact?42:62,R=compact?8:20,T=compact?18:22,B=compact?40:42,PW=W-L-R,PH=H-T-B;
+  const compact=W<520,L=compact?30:62,R=compact?8:20,T=compact?18:22,B=compact?40:42,PW=W-L-R,PH=H-T-B;
   svg.setAttribute("viewBox","0 0 "+W+" "+H);
   const vals=chartSeries.map(function(x){return x.value});
   const actualMax=Math.max.apply(null,vals.concat([5]));
@@ -734,7 +734,7 @@ function renderChart(){
     const axisClass=v===.45?"chart-axis low":v===1.2?"chart-axis dca":"chart-axis";
     const label=v===.45?"0.45":v===1.2?"1.20":String(v);
     grid+='<line class="'+lineClass+'" x1="'+L+'" y1="'+yy.toFixed(2)+'" x2="'+(W-R)+'" y2="'+yy.toFixed(2)+'"></line>';
-    grid+='<text class="'+axisClass+'" x="'+(L-(compact?7:10))+'" y="'+(yy+4).toFixed(2)+'" text-anchor="end">'+label+'</text>';
+    grid+='<text class="'+axisClass+'" x="'+(L-(compact?4:10))+'" y="'+(yy+4).toFixed(2)+'" text-anchor="end">'+label+'</text>';
   });
   const tickCount=compact?4:(chartSeries.length<500?4:5);
   for(let i=0;i<tickCount;i++){
