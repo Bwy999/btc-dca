@@ -7,10 +7,10 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="AHR999" />
-  <meta name="ahr999-build" content="21.8.3-20260719" />
+  <meta name="ahr999-build" content="21.9.0-20260719" />
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="manifest" id="pwaManifest" />
-  <title>AHR999 致敬专页 · BTC Aurum V21.8.3</title>
+  <title>AHR999 致敬专页 · BTC Aurum V21.9.0</title>
   <style>
     :root{
       color-scheme:dark;
@@ -61,19 +61,11 @@
     .dial-topline span{display:inline-flex;align-items:center;gap:7px}.dial-topline i{width:5px;height:5px;border-radius:50%;background:var(--green)}
     .dial-topline b{color:var(--dim);font-size:8px;font-weight:740;letter-spacing:.1em}
     .dial-canvas{position:relative;width:100%;margin-top:3px;aspect-ratio:240/228}
-    .dial-canvas::before{content:"";position:absolute;left:50%;top:49%;width:51%;height:51%;border-radius:50%;transform:translate(-50%,-50%);
-      border:1px solid color-mix(in srgb,var(--line) 42%,transparent);pointer-events:none;opacity:.45}
     .dial-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
-    .dial-rail{fill:none;stroke:var(--line);stroke-width:1.2;stroke-linecap:butt}
-    .dial-minor{stroke:var(--dim);stroke-width:.7;opacity:.23}
-    .dial-minor.five{stroke-width:1.05;opacity:.46}
-    .dial-band{fill:none;stroke-width:4;stroke-linecap:butt;opacity:.14;transition:opacity .28s ease,stroke-width .28s ease}
-    .dial-band.active{opacity:.96;stroke-width:6}
-    .dial-threshold{stroke:var(--surface);stroke-width:1.6;stroke-linecap:butt}
     .dial-threshold-label,.dial-end{fill:var(--dim);font-family:var(--mono);font-size:7.8px;font-weight:720;text-anchor:middle}
-    .dial-marker-line{stroke:var(--text);stroke-width:1.15;stroke-linecap:butt;opacity:0;transition:opacity .25s ease}
-    .dial-marker-dot{fill:var(--surface);stroke:var(--text);stroke-width:1.9;opacity:0;transition:opacity .25s ease}
-    .dial-marker-line.on,.dial-marker-dot.on{opacity:1}
+    .dial-knob{fill:#fff;stroke:rgba(0,0,0,.16);stroke-width:1;opacity:0;
+      filter:drop-shadow(0 1.5px 4px rgba(0,0,0,.45));transition:opacity .25s ease}
+    .dial-knob.on{opacity:1}
     .dial-center{position:absolute;left:0;right:0;top:49%;transform:translateY(-51%);text-align:center;pointer-events:none}
     .score-label{display:block;color:var(--dim);font-size:9px;font-weight:820;letter-spacing:.18em}
     .score-value{display:block;margin-top:8px;font-family:var(--font);font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1;font-size:64px;font-weight:680;line-height:.88;letter-spacing:-.07em}
@@ -203,14 +195,14 @@
     }
     @media(max-width:380px){.score-value{font-size:49px}.precision-dial{padding-left:0;padding-right:0}.dial-topline b{display:none}}
     @keyframes scoreFresh{from{opacity:.45;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.dial-band,.dial-marker-line,.dial-marker-dot,.score-zone,.toast{transition:none}.score-value.fresh{animation:none}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.dial-knob,.score-zone,.toast{transition:none}.score-value.fresh{animation:none}}
   </style>
 </head>
 <body>
 <main class="page">
   <nav class="topbar" aria-label="AHR999 专页导航">
     <a class="back" href="./index.html#ahr"><i>‹</i><span>返回 BTC 终端</span></a>
-    <div class="top-title"><b>AHR999 TRIBUTE</b><span>AURUM V21.8.3 · 独立专页</span></div>
+    <div class="top-title"><b>AHR999 TRIBUTE</b><span>AURUM V21.9.0 · 独立专页</span></div>
     <div class="top-actions"><button class="refresh-action" id="refreshBtn" type="button" onclick="loadData(true)" aria-label="强制刷新 AHR999 数据">↻</button><button class="top-action" id="copyBtn" type="button" onclick="copySnapshot()">复制快照</button></div>
   </nav>
 
@@ -231,12 +223,9 @@
         <div class="dial-topline"><span><i></i>LIVE INDEX</span><b>LOG · 0.10—10.0</b></div>
         <div class="dial-canvas">
           <svg class="dial-svg" viewBox="0 0 240 228" aria-hidden="true">
-            <path class="dial-rail" id="dialRail"></path>
-            <g id="dialMinorTicks"></g>
             <g id="dialBands"></g>
             <g id="dialThresholds"></g>
-            <line class="dial-marker-line" id="dialMarkerLine" x1="0" y1="0" x2="0" y2="0"></line>
-            <circle class="dial-marker-dot" id="dialMarkerDot" r="4" cx="0" cy="0"></circle>
+            <circle class="dial-knob" id="dialKnob" r="7" cx="0" cy="0"></circle>
             <text class="dial-end" x="52" y="213">0.10</text>
             <text class="dial-end" x="188" y="213">10.0</text>
           </svg>
@@ -386,7 +375,7 @@
 
   <footer>
     数据来自公开市场接口并在浏览器本地计算 · 不构成投资建议或收益承诺<br />
-    AHR999 Tribute Page · Build 21.8.3-20260719
+    AHR999 Tribute Page · Build 21.9.0-20260719
   </footer>
 </main>
 
@@ -551,8 +540,6 @@ function calculateSeries(rows,model){
 const D_CX=120,D_CY=112,D_R=88,D_A0=225,D_SWEEP=270;
 const D_LO=Math.log(.1),D_HI=Math.log(10),D_SPAN=D_HI-D_LO;
 const D_B1=.3266,D_B2=.5396,D_B3=.8495;
-const D_COLORS=["var(--green)","var(--green2)","var(--orange)","var(--red)"];
-const D_BANDS=[[0,D_B1,D_COLORS[0]],[D_B1,D_B2,D_COLORS[1]],[D_B2,D_B3,D_COLORS[2]],[D_B3,1,D_COLORS[3]]];
 const D_BOUNDS=[[.1,.45],[.45,1.2],[1.2,5],[5,10]];
 let dialReady=false,dialCurT=-1,dialRAF=0;
 const DIAL_REDUCED=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -563,22 +550,45 @@ function dialArc(r,t0,t1){
   const a0=D_A0+t0*D_SWEEP,a1=D_A0+t1*D_SWEEP,p0=dialPol(r,a0),p1=dialPol(r,a1),large=(a1-a0)>180?1:0;
   return"M"+p0[0].toFixed(2)+" "+p0[1].toFixed(2)+" A"+r+" "+r+" 0 "+large+" 1 "+p1[0].toFixed(2)+" "+p1[1].toFixed(2);
 }
-function buildDial(){
-  if(dialReady||!$("dialBands"))return;
-  $("dialRail").setAttribute("d",dialArc(101,0,1));
-  $("dialBands").innerHTML=D_BANDS.map(function(b,i){
-    return'<path class="dial-band" data-zone="'+i+'" d="'+dialArc(D_R,b[0],b[1])+'" style="stroke:'+b[2]+'"></path>';
-  }).join("");
-  let ticks="";
-  for(let i=0;i<=32;i++){
-    const t=i/32,a=D_A0+t*D_SWEEP,major=i%4===0,p1=dialPol(major?95:97,a),p2=dialPol(101,a);
-    ticks+='<line class="dial-minor'+(major?' five':'')+'" x1="'+p1[0].toFixed(1)+'" y1="'+p1[1].toFixed(1)+'" x2="'+p2[0].toFixed(1)+'" y2="'+p2[1].toFixed(1)+'"></line>';
+function cssRgb(name){
+  const v=getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const m=v.match(/^#([0-9a-f]{6})$/i);
+  if(!m)return[128,128,128];
+  const n=parseInt(m[1],16);
+  return[(n>>16)&255,(n>>8)&255,n&255];
+}
+function lerpStops(stops,t){
+  if(t<=stops[0][0])return stops[0][1];
+  for(let i=1;i<stops.length;i++){
+    if(t<=stops[i][0]){
+      const k=(t-stops[i-1][0])/(stops[i][0]-stops[i-1][0]),a=stops[i-1][1],b=stops[i][1];
+      return[Math.round(a[0]+(b[0]-a[0])*k),Math.round(a[1]+(b[1]-a[1])*k),Math.round(a[2]+(b[2]-a[2])*k)];
+    }
   }
-  $("dialMinorTicks").innerHTML=ticks;
+  return stops[stops.length-1][1];
+}
+function buildDial(){
+  if(!$("dialBands"))return;
+  const stops=[[.16,cssRgb("--green")],[.43,cssRgb("--green2")],[.69,cssRgb("--orange")],[.93,cssRgb("--red")]];
+  const W=10.5,HALF_GAP=.009;
+  const ranges=[[0,D_B1-HALF_GAP],[D_B1+HALF_GAP,D_B2-HALF_GAP],[D_B2+HALF_GAP,D_B3-HALF_GAP],[D_B3+HALF_GAP,1]];
+  let seg="";
+  ranges.forEach(function(range){
+    const span=range[1]-range[0],n=Math.max(4,Math.round(span*72));
+    for(let i=0;i<n;i++){
+      const t0=range[0]+span*i/n,t1=range[0]+span*(i+1)/n,tm=(t0+t1)/2;
+      const c=lerpStops(stops,tm);
+      seg+='<path d="'+dialArc(D_R,t0,Math.min(range[1],t1+.004))+'" fill="none" stroke="rgb('+c.join(",")+')" stroke-width="'+W+'" stroke-linecap="butt"></path>';
+    }
+  });
+  const p0=dialPol(D_R,D_A0),p1=dialPol(D_R,D_A0+D_SWEEP),c0=lerpStops(stops,0),c1=lerpStops(stops,1);
+  seg+='<circle cx="'+p0[0].toFixed(2)+'" cy="'+p0[1].toFixed(2)+'" r="'+(W/2)+'" fill="rgb('+c0.join(",")+')"></circle>';
+  seg+='<circle cx="'+p1[0].toFixed(2)+'" cy="'+p1[1].toFixed(2)+'" r="'+(W/2)+'" fill="rgb('+c1.join(",")+')"></circle>';
+  $("dialBands").innerHTML=seg;
   const thresholds=[[D_B1,"0.45"],[D_B2,"1.20"],[D_B3,"5.00"]];
   $("dialThresholds").innerHTML=thresholds.map(function(x){
-    const a=D_A0+x[0]*D_SWEEP,p1=dialPol(80,a),p2=dialPol(104,a),lab=dialPol(108,a);
-    return'<line class="dial-threshold" x1="'+p1[0].toFixed(1)+'" y1="'+p1[1].toFixed(1)+'" x2="'+p2[0].toFixed(1)+'" y2="'+p2[1].toFixed(1)+'"></line><text class="dial-threshold-label" x="'+lab[0].toFixed(1)+'" y="'+(lab[1]+2.8).toFixed(1)+'">'+x[1]+'</text>';
+    const lab=dialPol(108,D_A0+x[0]*D_SWEEP);
+    return'<text class="dial-threshold-label" x="'+lab[0].toFixed(1)+'" y="'+(lab[1]+2.8).toFixed(1)+'">'+x[1]+'</text>';
   }).join("");
   dialReady=true;
 }
@@ -595,33 +605,30 @@ function updateDialSummary(ahr,bi){
   $("spectrumPosition").textContent=names[bi]+" · "+stage+" "+Math.round(p*100)+"%";
   $("spectrumDistance").textContent=hi.toFixed(2)+" · 还差 "+fmtIndex(Math.max(0,hi-ahr));
 }
-function setDialAt(t,color){
-  const a=D_A0+t*D_SWEEP,p1=dialPol(76,a),p2=dialPol(103,a),dot=dialPol(D_R,a);
-  const line=$("dialMarkerLine"),marker=$("dialMarkerDot");
-  line.setAttribute("x1",p1[0].toFixed(2));line.setAttribute("y1",p1[1].toFixed(2));line.setAttribute("x2",p2[0].toFixed(2));line.setAttribute("y2",p2[1].toFixed(2));line.style.stroke=color;
-  marker.setAttribute("cx",dot[0].toFixed(2));marker.setAttribute("cy",dot[1].toFixed(2));marker.style.stroke=color;
+function setDialAt(t){
+  const dot=dialPol(D_R,D_A0+t*D_SWEEP),knob=$("dialKnob");
+  knob.setAttribute("cx",dot[0].toFixed(2));
+  knob.setAttribute("cy",dot[1].toFixed(2));
   dialCurT=t;
 }
 function renderDial(ahr){
-  buildDial();
-  const line=$("dialMarkerLine"),marker=$("dialMarkerDot"),bands=$("dialBands");
-  if(!line||!marker||!bands)return;
+  if(!dialReady)buildDial();
+  const knob=$("dialKnob");
+  if(!knob)return;
   cancelAnimationFrame(dialRAF);
   if(!Number.isFinite(ahr)){
-    line.classList.remove("on");marker.classList.remove("on");
-    bands.querySelectorAll(".dial-band").forEach(function(el){el.classList.remove("active")});
+    knob.classList.remove("on");
     dialCurT=-1;
     return;
   }
-  const target=dialT(ahr),bi=dialBand(ahr),color=D_COLORS[bi];
-  line.classList.add("on");marker.classList.add("on");
-  bands.querySelectorAll(".dial-band").forEach(function(el){el.classList.toggle("active",+el.dataset.zone===bi)});
+  const target=dialT(ahr),bi=dialBand(ahr);
+  knob.classList.add("on");
   updateDialSummary(ahr,bi);
-  if(DIAL_REDUCED||Math.abs(dialCurT-target)<1e-4){setDialAt(target,color);return;}
+  if(DIAL_REDUCED||Math.abs(dialCurT-target)<1e-4){setDialAt(target);return;}
   const from=dialCurT<0?0:dialCurT,dur=620,t0=window.performance&&performance.now?performance.now():Date.now();
   function frame(now){
     const k=clamp(((now||Date.now())-t0)/dur,0,1),e=1-Math.pow(1-k,3);
-    setDialAt(from+(target-from)*e,color);
+    setDialAt(from+(target-from)*e);
     if(k<1)dialRAF=requestAnimationFrame(frame);
   }
   dialRAF=requestAnimationFrame(frame);
@@ -858,6 +865,15 @@ window.addEventListener("resize",function(){
   clearTimeout(chartResizeTimer);
   chartResizeTimer=setTimeout(function(){if(fullSeries.length)renderChart()},120);
 },{passive:true});
+if(window.matchMedia){
+  const schemeQuery=window.matchMedia("(prefers-color-scheme: dark)");
+  const onScheme=function(){
+    buildDial();
+    if(dialCurT>=0)setDialAt(dialCurT);
+  };
+  if(schemeQuery.addEventListener)schemeQuery.addEventListener("change",onScheme);
+  else if(schemeQuery.addListener)schemeQuery.addListener(onScheme);
+}
 buildDial();
 setRange(chartRange);
 injectManifest();
