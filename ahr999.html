@@ -7,10 +7,10 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="AHR999" />
-  <meta name="ahr999-build" content="21.9.0-20260719" />
+  <meta name="ahr999-build" content="21.10.0-20260722" />
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="manifest" id="pwaManifest" />
-  <title>AHR999 致敬专页 · BTC Aurum V21.9.0</title>
+  <title>AHR999 致敬专页 · BTC Aurum V21.10.0</title>
   <style>
     :root{
       color-scheme:dark;
@@ -202,7 +202,7 @@
 <main class="page">
   <nav class="topbar" aria-label="AHR999 专页导航">
     <a class="back" href="./index.html#ahr"><i>‹</i><span>返回 BTC 终端</span></a>
-    <div class="top-title"><b>AHR999 TRIBUTE</b><span>AURUM V21.9.0 · 独立专页</span></div>
+    <div class="top-title"><b>AHR999 TRIBUTE</b><span>AURUM V21.10.0 · 独立专页</span></div>
     <div class="top-actions"><button class="refresh-action" id="refreshBtn" type="button" onclick="loadData(true)" aria-label="强制刷新 AHR999 数据">↻</button><button class="top-action" id="copyBtn" type="button" onclick="copySnapshot()">复制快照</button></div>
   </nav>
 
@@ -273,7 +273,7 @@
 
   <section class="section" id="history">
     <div class="section-head">
-      <div><div class="kicker">CYCLE MEMORY</div><h2>AHR999 历史轨迹</h2><p class="sub">使用 Binance BTCUSDT 日线在本地重算。纵轴采用对数尺度，避免高位尖峰压扁低估区细节。</p></div>
+      <div><div class="kicker">CYCLE MEMORY</div><h2>AHR999 历史轨迹</h2><p class="sub">2017-08 起为 Binance BTCUSDT 日线；更早（2010-07 起）拼接 CryptoCompare 聚合日线，覆盖比特币有连续报价以来的完整周期，全部在本地重算。纵轴采用对数尺度，避免高位尖峰压扁低估区细节。</p></div>
       <span class="section-badge" id="historyBadge">建立历史中</span>
     </div>
     <div class="chart-card">
@@ -375,7 +375,7 @@
 
   <footer>
     数据来自公开市场接口并在浏览器本地计算 · 不构成投资建议或收益承诺<br />
-    AHR999 Tribute Page · Build 21.9.0-20260719
+    AHR999 Tribute Page · Build 21.10.0-20260722
   </footer>
 </main>
 
@@ -390,6 +390,7 @@ const REFIT={a:5.5856,b:-16.1567,name:"2026 重拟合"};
 const CLASSIC={a:5.84,b:-17.01,name:"经典 2018"};
 const BINANCE_BASES=["https://data-api.binance.vision","https://api-gcp.binance.com","https://api.binance.com"];
 const HISTORY_KEY="ahr999_page_history_v1";
+const DEEP_KEY="ahr999_deep_history_v1";
 const MAIN_DAILY_KEY="btc_daily_v1";
 const MAIN_LIVE_KEY="btc_live_v9";
 const MAIN_STATE_KEY="btc_exec_v7";
@@ -515,6 +516,56 @@ async function fetchHistory(force){
   if(rows.length<200)throw new Error("日线样本不足");
   try{localStorage.setItem(HISTORY_KEY,JSON.stringify({ts:Date.now(),rows:rows}))}catch(e){}
   return rows;
+}
+function readCachedDeep(){
+  const cached=readJson(DEEP_KEY);
+  const rows=normalizeRows(cached&&cached.rows);
+  return(rows.length>=1500&&rows[0].t<1325376000)?rows:[];
+}
+function saveDeep(rows){
+  try{localStorage.setItem(DEEP_KEY,JSON.stringify({ts:Date.now(),rows:rows}))}catch(e){}
+}
+async function fetchDeepHistory(){
+  const cached=readCachedDeep();
+  if(cached.length)return cached;
+  try{
+    const j=await timedJson("https://min-api.cryptocompare.com/data/v2/histoday?fsym=BTC&tsym=USD&allData=true&tryConversion=false",20000);
+    const arr=j&&j.Data&&j.Data.Data;
+    const out=normalizeRows((arr||[]).map(function(x){return{t:x.time,c:x.close}}));
+    if(out.length>=2000&&out[0].t<1325376000){saveDeep(out);return out;}
+  }catch(e){}
+  try{
+    let toTs=Math.floor(Date.now()/1000),all=[];
+    for(let i=0;i<4;i++){
+      const j=await timedJson("https://min-api.cryptocompare.com/data/v2/histoday?fsym=BTC&tsym=USD&tryConversion=false&limit=2000&toTs="+toTs,15000);
+      const arr=j&&j.Data&&j.Data.Data;
+      if(!arr||!arr.length)break;
+      all=arr.concat(all);
+      toTs=arr[0].time-86400;
+      if(arr[0].time<1279324800)break;
+    }
+    const out=normalizeRows(all.map(function(x){return{t:x.time,c:x.close}}));
+    if(out.length>=2000&&out[0].t<1325376000){saveDeep(out);return out;}
+  }catch(e){}
+  let start=1313539200,all=[];
+  for(let i=0;i<8;i++){
+    const j=await timedJson("https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1000&start="+start,15000);
+    const arr=j&&j.data&&j.data.ohlc;
+    if(!arr||!arr.length)break;
+    all=all.concat(arr.map(function(x){return{t:+x.timestamp,c:+x.close}}));
+    const lastT=+arr[arr.length-1].timestamp;
+    if(arr.length<1000||lastT>=1502928000)break;
+    start=lastT+86400;
+  }
+  const out=normalizeRows(all);
+  if(out.length>=1500){saveDeep(out);return out;}
+  throw new Error("早期历史不可用");
+}
+function mergeRows(deep,recent){
+  if(!deep||!deep.length)return recent||[];
+  if(!recent||!recent.length)return deep;
+  const cut=recent[0].t;
+  return normalizeRows(deep.filter(function(r){return r.t<cut}).concat(recent));
 }
 function withCurrentPrice(rows,price){
   const a=rows.slice();
@@ -802,13 +853,16 @@ async function loadData(force){
   if(loading)return;
   setLoading(true,force?"正在强制刷新行情与历史…":"正在同步行情与历史…");
   const cachedRows=readCachedRows();
+  const cachedDeep=readCachedDeep();
   const cachedPrice=readCachedPrice()||(cachedRows.length?cachedRows[cachedRows.length-1].c:null);
-  if(cachedRows.length>=200&&cachedPrice>0)renderCurrent(cachedRows,{price:cachedPrice,change:null},"本机缓存");
-  const results=await Promise.allSettled([fetchHistory(!!force),fetchSpot()]);
-  const rows=results[0].status==="fulfilled"?results[0].value:cachedRows;
+  if(cachedRows.length>=200&&cachedPrice>0)renderCurrent(mergeRows(cachedDeep,cachedRows),{price:cachedPrice,change:null},cachedDeep.length?"本机缓存 +早期":"本机缓存");
+  const results=await Promise.allSettled([fetchHistory(!!force),fetchSpot(),fetchDeepHistory()]);
+  const binRows=results[0].status==="fulfilled"?results[0].value:cachedRows;
   const spot=results[1].status==="fulfilled"?results[1].value:{price:cachedPrice,change:null,source:"本机缓存"};
+  const deepRows=results[2].status==="fulfilled"?results[2].value:cachedDeep;
+  const rows=mergeRows(deepRows,binRows);
   if(rows.length>=200&&spot.price>0){
-    renderCurrent(rows,spot,spot.source);
+    renderCurrent(rows,spot,deepRows.length?spot.source+" +早期":spot.source);
     setLoading(false,"更新于 "+new Date().toLocaleTimeString("zh-CN",{hour:"2-digit",minute:"2-digit"}));
   }else{
     $("liveText").textContent="数据暂不可用，请稍后重试";
