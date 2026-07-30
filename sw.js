@@ -1,4 +1,4 @@
-const CACHE="btc-terminal-v21.7.2";
+const CACHE="btc-terminal-v22.0";
 const SHELL=["./","./index.html","./apple-touch-icon.png"];
 
 self.addEventListener("install",e=>{
