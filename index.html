@@ -591,6 +591,20 @@
       .loss-hero{grid-template-columns:1fr}.loss-primary,.loss-alert{min-height:0;padding:15px 13px}.loss-primary-line b{font-size:29px}.loss-alert>p{margin-top:10px}.loss-context{align-items:flex-start;flex-wrap:wrap}.loss-context span:last-child{width:100%;margin-left:0;padding-top:2px}
       .loss-ladder{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.loss-rung{padding:13px 10px 11px}.loss-rung>b{font-size:17px}.loss-foot{flex-direction:column;gap:4px}.loss-foot span:last-child{max-width:none;text-align:left}
     }
+
+    /* V22.1.3 · 今日情报卡片操作精简 */
+    .today-actions{display:flex;flex-direction:row;justify-content:flex-end;gap:0;margin-top:10px}
+    .today-actions .btn.today-status-btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:6px;
+      flex:0 0 auto;width:auto;min-height:31px;padding:7px 11px;
+      border:1px solid var(--div);border-radius:999px;background:rgba(127,127,127,.055);
+      color:var(--tx2);font-size:10.5px;font-weight:760;line-height:1;box-shadow:none
+    }
+    .today-status-btn::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--gn);box-shadow:0 0 0 3px var(--gn-dim);flex:none}
+    @media(max-width:640px){
+      .today-actions{flex-direction:row;justify-content:flex-end}
+      .today-actions .btn.ghost.today-status-btn{width:auto}
+    }
   </style>
 </head>
 <body class="booting">
@@ -656,8 +670,7 @@
     </div>
     <div class="reason-row" id="actionReasons"></div>
     <div class="today-actions">
-      <button class="btn" id="actionBtn" onclick="copyDailyBrief()">复制今日情报</button>
-      <button class="btn ghost" onclick="openHealthPanel()">数据状态</button>
+      <button class="btn ghost today-status-btn" onclick="openHealthPanel()" aria-label="查看数据状态">数据状态</button>
     </div>
   </section>
   </div>
@@ -2582,9 +2595,6 @@ function renderIntelligenceNow(){
   renderRadar();renderDrivers();renderTimeline()
 }
 function renderIntelligence(){if(intelligenceRaf)return;intelligenceRaf=requestAnimationFrame(()=>{intelligenceRaf=0;renderIntelligenceNow()})}
-async function copyDailyBrief(){
-  const ctx=phaseContext(),cur=currentStatusSnapshot(),model=evaluateRecord(cur),reliable=key=>recordQualityWeight(cur,key,cur[key])>=.5,drivers=scoreDrivers().slice(0,3),events=eventHistory(),st=reliable("stableD7")?combinedStableStats():null,conf=confidenceInfo(),line=(name,v)=>`${name}：${v}`,phaseText=ctx.phase.key==="unknown"?`${ctx.phase.name}${ctx.previous?`（最近完整阶段 ${ctx.previous.name}）`:""}`:`${ctx.phase.name}（持续 ${ctx.days} 天${ctx.previous?`，此前 ${ctx.previous.name}`:""}）`,text=[`BTC 今日情报（UTC 日）· ${statusDay()}`,line("现价",cur.price?`$${Math.round(cur.price).toLocaleString()} ${$("pc24").textContent||""}`:"--"),line("市场阶段",phaseText),line("估值评分",model.ready?`${model.score} · 数据置信度${conf.label}`:`数据不足（可靠 ${model.reliable}/7 · 有效 ${model.coverage.toFixed(1)}/7）`),line("AHR999",reliable("ahr")&&cur.ahr!=null?cur.ahr.toFixed(3):"--"),line("MVRV",reliable("mvrv")&&cur.mvrv!=null?cur.mvrv.toFixed(3):"--"),line("SOPR",reliable("sopr")&&cur.sopr!=null?cur.sopr.toFixed(3):"--"),line("LTH-NUPL",reliable("lth")&&cur.lth!=null?cur.lth.toFixed(4):"--"),line("稳定币7日",st?fmtUsdB(st.d7):"--"),line("资金费率",reliable("funding")&&cur.funding!=null?(cur.funding*100).toFixed(4)+"%":"--"),line("主要变化",drivers.length?drivers.map(d=>`${d.name}${signed(d.delta,1,"分")}`).join("、"):"暂无可靠连续对比"),line("最新事件",events[0]?`${events[0].day} ${events[0].text}`:"近30天无关键阈值切换")].join("\n");try{if(navigator.clipboard&&navigator.clipboard.writeText)await navigator.clipboard.writeText(text);else{const t=document.createElement("textarea");t.value=text;t.style.position="fixed";t.style.opacity="0";document.body.appendChild(t);t.select();document.execCommand("copy");t.remove()}ntf("今日情报已复制")}catch(e){ntf("复制失败，请长按手动选择")}
-}
 function previousDailyClose(){const done=completedDailyRows();if(done.length)return done.at(-1).close;const d=normalizedDaily();return d.length?d.at(-1).close:null}
 function previousAhrValue(){const rows=completedDailyRows(),closes=rows.slice(-200).map(r=>r.close).filter(v=>v>0);if(closes.length<200)return null;const last=rows.at(-1),hm=closes.length/closes.reduce((a,b)=>a+1/b,0),dg=Math.floor((last.time*1000-new Date("2009-01-03").getTime())/864e5),pl=Math.pow(10,AHR_A*Math.log10(dg)+AHR_B);return hm>0&&pl>0?last.close*last.close/(hm*pl):null}
 function previousStableDaily(){const one=ser=>Array.isArray(ser)&&ser.length>=3?ser.at(-2)-ser.at(-3):null,u=one(S.stbU),c=one(S.stbC);return u==null&&c==null?null:(u||0)+(c||0)}
@@ -3234,7 +3244,6 @@ function renderAction(){
   $("actionScore").textContent=ready?sc:"--";
   $("todayScoreArc").style.strokeDashoffset=String(100-ringScore);
   $("todayScoreRing").setAttribute("aria-label",ready?`估值评分 ${sc}`:"估值评分等待数据");
-  $("actionBtn").textContent="复制今日情报";
   $("oppKpi").textContent=ready?zone.t:"待确认";$("oppKpi").style.color=ready?zone.c:"var(--tx3)";
   $("riskKpi").textContent=risk;$("riskKpi").style.color=pb==null?"var(--tx3)":pb>=40?"var(--rd)":pb>=25?"var(--or)":pb>=10?"var(--yl)":"var(--gn)";
   $("confKpi").textContent=conf.label;$("confKpi").style.color=conf.color;
