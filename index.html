@@ -412,11 +412,12 @@
     .today-actions .btn{min-height:46px}.btn{min-height:42px;background:var(--btc);color:#17100a;font-weight:800}.btn.ghost{background:transparent;color:var(--tx);border-color:var(--div)}
     .chip.primary,.mini-toggle.on{background:var(--btc);border-color:var(--btc);color:#17100a}
     .section-nav{
-      grid-template-columns:repeat(14,minmax(58px,1fr));top:calc(env(safe-area-inset-top,0px) + 8px);
+      grid-template-columns:repeat(15,minmax(58px,1fr));top:calc(env(safe-area-inset-top,0px) + 8px);
       margin-top:18px;padding:6px;border-radius:18px;border:1px solid var(--edge);
       background:color-mix(in srgb,var(--card) 78%,transparent);box-shadow:0 16px 40px rgba(0,0,0,.18)
     }
     .section-nav a{height:42px;border-radius:12px;font-size:11px;letter-spacing:.02em}.section-nav a.active{color:#17100a;background:var(--btc);box-shadow:0 8px 20px rgba(247,147,26,.18)}
+    .section-nav a.dca-nav{color:var(--btc);box-shadow:inset 0 0 0 1px rgba(247,147,26,.22);background:var(--btc-dim)}
     .section-nav a.tribute-nav{color:var(--btc);box-shadow:inset 0 0 0 1px rgba(247,147,26,.22);background:var(--btc-dim)}
     .health{margin-top:12px;border-radius:18px}.health summary{min-height:44px;align-items:center}.api-settings input{min-height:42px;font-size:14px}
     .sec{margin-top:48px;scroll-margin-top:92px}.divider{margin-top:44px;background:var(--div)}
@@ -511,14 +512,14 @@
       .bitfloor-panel{background:radial-gradient(520px 260px at 100% 0,rgba(191,90,242,.08),transparent 68%),linear-gradient(180deg,#fff,#f8f8fb)}
     }
     @media(max-width:820px){
-      .w{max-width:720px}.section-nav{grid-template-columns:repeat(14,68px);overflow-x:auto;justify-content:start}.section-nav::-webkit-scrollbar{display:none}.radar-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.holds{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .w{max-width:720px}.section-nav{grid-template-columns:repeat(15,68px);overflow-x:auto;justify-content:start}.section-nav::-webkit-scrollbar{display:none}.radar-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.holds{grid-template-columns:repeat(2,minmax(0,1fr))}
     }
     @media(max-width:640px){
       body{padding-left:12px;padding-right:12px;background:radial-gradient(520px 300px at 50% -130px,rgba(247,147,26,.14),transparent 65%),var(--bg)}
       .aurum-hero{margin-top:max(8px,env(safe-area-inset-top,0px));border-radius:26px}.aurum-hero .hdr{padding:20px 17px 8px}.brand-row{margin-bottom:27px}.brand-mark{width:36px;height:36px;font-size:21px}.brand-copy small{display:block;font-size:9px}.hero-date small{display:none}
       .price-big,.price-big input{font-size:49px}.price-big input{width:calc(100vw - 176px);min-width:165px}.aurum-hero .price-spark-wrap{width:100%;height:42px;margin-top:5px}.aurum-hero .live-row{margin:0 17px;gap:7px}.aurum-hero .hbadge{padding-left:7px;padding-right:7px}.refresh{margin-left:auto}
       .aurum-hero .today-card{margin:7px;padding:19px 17px 18px;border-radius:21px}.today-title{font-size:27px}.today-sub{font-size:12px}.today-score{width:76px;height:76px;min-width:76px}.today-score b{font-size:25px}.today-score-core{inset:6px}.today-kpis{margin-top:18px}.today-kpi{padding:11px 8px}.today-kpi b{font-size:13px}.intel-strip{grid-template-columns:repeat(2,minmax(0,1fr))}.today-actions{flex-direction:column}.today-actions .btn.ghost{width:100%}
-      .section-nav{grid-template-columns:repeat(14,68px);overflow-x:auto;scroll-snap-type:x proximity;justify-content:start;padding:5px}.section-nav::-webkit-scrollbar{display:none}.section-nav a{scroll-snap-align:start;height:40px}
+      .section-nav{grid-template-columns:repeat(15,68px);overflow-x:auto;scroll-snap-type:x proximity;justify-content:start;padding:5px}.section-nav::-webkit-scrollbar{display:none}.section-nav a{scroll-snap-align:start;height:40px}
       .health-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.api-settings-row{grid-template-columns:1fr 1fr}.api-settings-row input{grid-column:1/-1;font-size:16px}
       .sec{margin-top:40px;scroll-margin-top:82px}.divider{margin-top:36px}.sec-title{font-size:22px}.sec-sub{font-size:12px}.decision-section{margin-top:42px}.decision-head{align-items:flex-start}.decision-status{display:none}.decision-card{margin-top:16px;padding:13px 10px 11px;border-radius:22px}.decision-toolbar{align-items:stretch;flex-direction:column;gap:8px}.segmented,.range-tabs{width:100%}.seg-btn,.range-btn{flex:1;min-width:0;height:36px}.decision-readout{grid-template-columns:repeat(3,minmax(0,1fr));padding:0 3px 12px;gap:5px}.decision-readout b{font-size:14px}.decision-readout .chart-live{grid-column:1/-1;text-align:left;font-size:10px}.decision-shell,.decision-chart{height:330px;min-height:330px}.decision-foot{padding-left:3px;padding-right:3px}
       .floor-head{align-items:flex-start}.floor-status{align-self:flex-start}.bitfloor-panel{margin-top:16px;padding:14px 11px 12px;border-radius:22px}.bitfloor-panel::after{top:-12px;font-size:90px}.bitfloor-top{align-items:stretch;flex-direction:column;gap:10px}.bitfloor-spot b{font-size:30px}.bitfloor-state{min-width:0;text-align:left}.bitfloor-levels{gap:6px;margin-top:10px}.bitfloor-level{padding:11px 9px;border-radius:14px}.bitfloor-level b{font-size:17px}.bitfloor-level-head small{font-size:8.5px}.bitfloor-callout{align-items:flex-start;flex-direction:column;gap:4px}.bitfloor-callout span{text-align:left}.bitfloor-foot{flex-direction:column;gap:3px}.bitfloor-foot span:last-child{text-align:left}.floor-subhead{align-items:flex-start;margin-top:30px}.floor-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.floor-panel{margin-top:16px;padding:13px 10px 11px;border-radius:22px}.floor-metric{padding:13px}.floor-metric b{font-size:19px}.floor-toolbar{align-items:stretch;flex-direction:column}.floor-toolbar .range-tabs{order:-1}.floor-chart-shell,.floor-chart{height:330px;min-height:330px}.floor-foot{flex-direction:column;gap:4px}.floor-foot span:last-child{text-align:left}
@@ -665,6 +666,7 @@
     <a href="#today" class="active" data-section="today" aria-current="page">今日</a>
     <a href="#ahr" data-section="ahr">周期</a>
     <a href="#twentyone" data-section="twentyone">21M</a>
+    <a class="dca-nav" href="./dca.html">定投</a>
     <a href="#decision" data-section="decision">图谱</a>
     <a href="#powerlaw" data-section="powerlaw">幂律</a>
     <a href="#floor" data-section="floor">底价</a>
@@ -761,7 +763,7 @@
     <div class="m21-scenarios" id="m21Scenarios"></div>
     <div class="m21-note">三种情景仅把 BTC 价格固定在当前价的 −50%、当前价与 +50% 后进行机械测算，不是价格预测；未计交易费用。</div>
 
-    <div class="m21-actions"><span>持仓来源与“个人定投与持仓”完全一致，不统计杠杆、IBIT 或网格仓位。</span><button class="btn ghost sm" type="button" onclick="oe()">编辑现货持仓</button></div>
+    <div class="m21-actions"><span>持仓来源与“个人定投”专页保持一致，不统计杠杆、IBIT 或网格仓位。</span><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn sm" href="./dca.html" style="display:inline-flex;align-items:center;justify-content:center">打开个人定投</a><button class="btn ghost sm" type="button" onclick="oe()">编辑现货持仓</button></div></div>
   </section>
 
   <div class="divider"></div>
