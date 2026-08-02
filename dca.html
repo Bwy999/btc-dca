@@ -1,17 +1,16 @@
 <!doctype html>
-<!-- BUILD: BTC-INTELLIGENCE-V22.1.3-PERSONAL-DCA-20260802 -->
-<html lang="zh-CN">
+<!-- BUILD: BTC-INTELLIGENCE-V22.1.3-PERSONAL-DCA-LIGHT-DEFAULT-20260802 -->
+<html lang="zh-CN" data-theme="light">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="format-detection" content="telephone=no" />
-  <meta name="theme-color" media="(prefers-color-scheme:dark)" content="#000000" />
-  <meta name="theme-color" media="(prefers-color-scheme:light)" content="#f6f3ed" />
+  <meta name="theme-color" content="#f6f3ed" />
   <title>个人定投 · BTC 情报终端 V22.1.3</title>
   <script>
-    (()=>{try{const t=localStorage.getItem("btc-intelligence-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(_){}})();
+    (()=>{let t="light";try{const saved=localStorage.getItem("btc-intelligence-dca-theme");if(saved==="light"||saved==="dark")t=saved}catch(_){}document.documentElement.dataset.theme=t;const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=t==="dark"?"#000000":"#f6f3ed"})();
   </script>
   <style>
     :root{
@@ -324,8 +323,8 @@
   function renderHostBanner(){const h=hostHolding(),empty=state.baseline.btc===0&&state.orders.length===0;$("hostBanner").classList.toggle("on",!!(h&&empty));if(h)$("hostText").innerHTML=`发现 V22.1.3 已有持仓：<b class="num">${fmtBtc(h.btc,8)} BTC</b> · 均价 ${fmtUsd(h.avg)}`}
   function render(){renderCharts();renderBalances();renderLedger();renderHostBanner()}
 
-  function toggleTheme(){const root=document.documentElement,cur=root.dataset.theme||((matchMedia("(prefers-color-scheme:light)").matches)?"light":"dark"),next=cur==="light"?"dark":"light";root.dataset.theme=next;try{localStorage.setItem("btc-intelligence-theme",next)}catch(_){}themeLabel();renderCharts()}
-  function themeLabel(){const t=document.documentElement.dataset.theme||((matchMedia("(prefers-color-scheme:light)").matches)?"light":"dark");$("themeText").textContent=t==="light"?"深色":"亮色"}
+  function toggleTheme(){const root=document.documentElement,cur=root.dataset.theme||"light",next=cur==="light"?"dark":"light";root.dataset.theme=next;const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=next==="dark"?"#000000":"#f6f3ed";try{localStorage.setItem("btc-intelligence-dca-theme",next)}catch(_){}themeLabel();renderCharts()}
+  function themeLabel(){const t=document.documentElement.dataset.theme||"light";$("themeText").textContent=t==="light"?"深色":"亮色"}
   function setFilter(f,btn){filter=f;document.querySelectorAll("[data-filter]").forEach(x=>x.classList.toggle("on",x===btn));renderLedger()}
   function openSheet(mode,id=""){
     editingId=id;$("modal").classList.add("on");document.body.style.overflow="hidden";switchMode(mode);if(!id){if(mode==="c2c")resetC2c();if(mode==="btc")resetBtc();if(mode==="baseline")fillBaseline()}setTimeout(()=>$(mode==="c2c"?"c2cCny":mode==="btc"?"btcPrice":"baseBtc").focus(),80)
