@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME="btc-intelligence-v22.3.2-20260808";
+const CACHE_NAME="btc-intelligence-v22.3.3-nav-refine-20260808";
 const CORE=["./","./index.html","./floor.json","./dca.html"];
 
 self.addEventListener("install",event=>{
