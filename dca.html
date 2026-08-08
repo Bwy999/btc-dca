@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BUILD: BTC-INTELLIGENCE-V22.1.3-PERSONAL-DCA-NAV-BUTTONS-20260802 -->
+<!-- BUILD: BTC-INTELLIGENCE-V22.3.2-PERSONAL-DCA-SYNC-20260808 -->
 <html lang="zh-CN" data-theme="light">
 <head>
   <meta charset="utf-8" />
@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="format-detection" content="telephone=no" />
   <meta name="theme-color" content="#f6f3ed" />
-  <title>个人定投 · BTC 情报终端 V22.1.3</title>
+  <title>个人定投 · BTC 情报终端 V22.3.2</title>
   <script>
     (()=>{let t="light";try{const saved=localStorage.getItem("btc-intelligence-dca-theme");if(saved==="light"||saved==="dark")t=saved}catch(_){}document.documentElement.dataset.theme=t;const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=t==="dark"?"#000000":"#f6f3ed"})();
   </script>
@@ -96,7 +96,7 @@
 <body>
   <header class="site-header">
     <div class="shell header-inner">
-      <a class="back" href="./index.html#personal" aria-label="返回 V22.1.3 主站">
+      <a class="back" href="./index.html#personal" aria-label="返回 V22.3.2 主站">
         <span class="back-mark">₿</span><span class="wordmark">BTC INTELLIGENCE · PERSONAL DCA</span>
       </a>
       <span class="save-state"><i></i><span id="saveText">已保存本机</span></span>
@@ -107,7 +107,7 @@
   <main>
     <section class="hero">
       <div class="shell">
-        <p class="eyebrow">V22.1.3 · PERSONAL DCA LEDGER</p>
+        <p class="eyebrow">V22.3.2 · PERSONAL DCA LEDGER</p>
         <div class="hero-row">
           <div><h1>个人定投</h1><p class="hero-sub">把真实路径完整记下来：人民币 C2C 换成 USDT / USDC，再在币安买入 BTC。历史持仓只需填写 BTC 数量与累计人民币投入。</p></div>
           <div class="price-box"><small>BTC / USDT</small><b id="heroPrice">--</b><em id="heroFx">USD/CNY --</em><button class="refresh-link" type="button" onclick="refreshMarket(true)"><span id="priceState">同步价格与汇率</span></button></div>
@@ -153,7 +153,7 @@
           <div class="inventory-item" id="usdcBox"><small>USDC 可用余额</small><b id="usdcBalance">0.00 USDC</b></div>
           <div class="inventory-item"><small>待转冷钱包</small><b id="coldPending">0 笔</b></div>
         </div>
-        <div class="host-banner" id="hostBanner"><span id="hostText">发现 V22.1.3 既有持仓</span><button class="btn secondary" type="button" onclick="importHostHolding()">作为起始持仓导入</button></div>
+        <div class="host-banner" id="hostBanner"><span id="hostText">发现主站既有持仓</span><button class="btn secondary" type="button" onclick="importHostHolding()">作为起始持仓导入</button></div>
       </div>
     </section>
 
@@ -171,7 +171,7 @@
           <div class="data-card"><b>完整 JSON 备份</b><p>包含历史持仓、C2C 流水、BTC 买入和页面设置，可在另一台设备恢复。</p><div class="action-row"><button class="btn secondary" type="button" onclick="exportJson()">导出</button><button class="btn ghost" type="button" onclick="document.getElementById('importFile').click()">导入</button></div></div>
           <div class="data-card"><b>表格 CSV</b><p>导出为通用流水表，可在 Excel、Numbers 或其他记账工具中查看。</p><div class="action-row"><button class="btn secondary" type="button" onclick="exportCsv()">导出 CSV</button><button class="btn danger" type="button" onclick="clearLedger()">清空</button></div></div>
         </div>
-        <p class="privacy" id="storageNote">页面会申请浏览器持久存储，并将汇总持仓同步给同域名下的 V22.1.3 主站；仍建议每次换机或清理浏览器前导出 JSON。</p>
+        <p class="privacy" id="storageNote">页面会申请浏览器持久存储，并将人民币总成本、持仓与流水同步给同域名下的 V22.3.2 主站；仍建议每次换机或清理浏览器前导出 JSON。</p>
       </div>
     </section>
   </main>
@@ -241,7 +241,7 @@
 
   <script>
   "use strict";
-  const BUILD="V22.1.3-PERSONAL-DCA-NAV-BUTTONS-1";
+  const BUILD="V22.3.2-PERSONAL-DCA-SYNC-1";
   const KEY="btc_dca_ledger_v1",HOST_KEY="btc_exec_v7",MARKET_KEY="btc_dca_market_v1";
   const BASES=["https://data-api.binance.vision","https://api-gcp.binance.com","https://api.binance.com"];
   const $=id=>document.getElementById(id),num=v=>Number.isFinite(+v)?+v:0,clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -297,11 +297,11 @@
   function syncHost(){
     try{
       const host=JSON.parse(localStorage.getItem(HOST_KEY)||"null")||{},d=derive(),generated=state.orders.filter(o=>o.type==="btc").map(o=>{const a=d.alloc.get(o.id)||{cny:o.spent*latestRate(o.at,o.coin)};const dt=new Date(o.at),mo=dt.getFullYear()+"年"+(dt.getMonth()+1)+"月";return{ts:o.at,dt:dt.toLocaleString("zh-CN",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}),t:o.strategy,a:Math.round(a.cny*100)/100,p:o.price,b:o.btc,mo,tp:null,cold:o.cold,source:"dca-ledger",dcaLedgerId:o.id}}),old=Array.isArray(host.log)?host.log.filter(x=>x&&x.source!=="dca-ledger"&&!x.dcaLedgerId):[];
-      host.hd={d:0,dc:0,l:0,lc:0,ibit:0,gridLo:0,gridHi:0,goal:300000,...(host.hd||{}),d:d.btc,dc:d.avgUsd};host.log=[...generated,...old].sort((a,b)=>(+b.ts||0)-(+a.ts||0)).slice(0,500);host.fx=d.currentRate||host.fx||7.1;host.dcaLedger=state;localStorage.setItem(HOST_KEY,JSON.stringify(host));
+      host.hd={d:0,dc:0,dcCny:0,l:0,lc:0,lcCny:0,costSchema:2,ibit:0,gridLo:0,gridHi:0,goal:300000,...(host.hd||{}),d:d.btc,dc:d.avgUsd,dcCny:d.btcCostCny,costSchema:2};host.log=[...generated,...old].sort((a,b)=>(+b.ts||0)-(+a.ts||0)).slice(0,500);host.fx=d.currentRate||host.fx||7.1;host.dcaLedger=state;localStorage.setItem(HOST_KEY,JSON.stringify(host));
     }catch(_){}
   }
   function hostHolding(){try{const h=JSON.parse(localStorage.getItem(HOST_KEY)||"null"),hd=h&&h.hd;if(hd&&num(hd.d)>0)return{btc:num(hd.d),avg:num(hd.dc),rate:num(h.fx)||7.1}}catch(_){}return null}
-  function importHostHolding(){const h=hostHolding();if(!h)return toast("未找到可导入的 V22.1.3 持仓");state.baseline={...state.baseline,at:todayLocal(),btc:h.btc,totalCny:h.btc*h.avg*h.rate,legacyRate:h.rate};save("已导入主站持仓");render();toast("已作为起始持仓导入")}
+  function importHostHolding(){const h=hostHolding();if(!h)return toast("未找到可导入的主站持仓");state.baseline={...state.baseline,at:todayLocal(),btc:h.btc,totalCny:h.btc*h.avg*h.rate,legacyRate:h.rate};save("已导入主站持仓");render();toast("已作为起始持仓导入")}
 
   function quantitySeries(){
     const b=state.baseline,start=new Date(b.at+"T12:00:00").getTime(),points=[];let held=b.btc;if(held>0)points.push({t:start,v:held,label:"历史持仓"});state.orders.filter(o=>o.type==="btc").sort((a,c)=>a.at-c.at).forEach(o=>{held+=o.btc;points.push({t:o.at,v:held,label:"买入 "+fmtBtc(o.btc)+" BTC",buy:true})});if(points.length)points.push({t:Date.now(),v:held,label:"当前持仓"});return dedupe(points)
@@ -334,7 +334,7 @@
     const fx=currentFx(),baseUsd=fx>0?base.totalCny/fx:0,baseAvg=base.btc>0?baseUsd/base.btc:0,baseRow=filter==="all"&&base.btc>0?`<div class="entry"><div class="entry-icon base">BASE</div><div class="entry-main"><div class="entry-title">历史持仓基线 <span class="tag">人民币总成本</span></div><div class="entry-meta">${esc(base.at)} · 累计投入 ${fmtCny(base.totalCny)} · 今日折算均价 ${fmtUsd(baseAvg)}/BTC</div></div><div class="entry-side"><b>${fmtBtc(base.btc,8)} BTC</b><span>${fmtUsd(baseUsd)} · 今日汇率</span><div class="entry-menu"><button onclick="openSheet('baseline')">编辑</button></div></div></div>`:"";
     $("ledger").innerHTML=html+baseRow||'<div class="empty"><b>还没有定投流水</b>先记录 C2C 换币，再记录 BTC 买入；已有持仓可直接设置为历史基线。</div>';
   }
-  function renderHostBanner(){const h=hostHolding(),empty=state.baseline.btc===0&&state.orders.length===0;$("hostBanner").classList.toggle("on",!!(h&&empty));if(h)$("hostText").innerHTML=`发现 V22.1.3 已有持仓：<b class="num">${fmtBtc(h.btc,8)} BTC</b> · 均价 ${fmtUsd(h.avg)}`}
+  function renderHostBanner(){const h=hostHolding(),empty=state.baseline.btc===0&&state.orders.length===0;$("hostBanner").classList.toggle("on",!!(h&&empty));if(h)$("hostText").innerHTML=`发现主站已有持仓：<b class="num">${fmtBtc(h.btc,8)} BTC</b> · 均价 ${fmtUsd(h.avg)}`}
   function render(){renderCharts();renderBalances();renderLedger();renderHostBanner()}
 
   function toggleTheme(){const root=document.documentElement,cur=root.dataset.theme||"light",next=cur==="light"?"dark":"light";root.dataset.theme=next;const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=next==="dark"?"#000000":"#f6f3ed";try{localStorage.setItem("btc-intelligence-dca-theme",next)}catch(_){}themeLabel();renderCharts()}
@@ -389,7 +389,7 @@
   }
   function loadMarket(){try{const x=JSON.parse(localStorage.getItem(MARKET_KEY)||"null");if(x)market={price:Math.max(0,num(x.price)),change:num(x.change),at:Math.max(0,num(x.at)),history:Array.isArray(x.history)?x.history:[],fx:Math.max(0,num(x.fx)),fxAt:Math.max(0,num(x.fxAt)),fxSource:String(x.fxSource||"")}}catch(_){}renderMarket()}
   function renderMarket(){$("heroPrice").textContent=market.price?fmtUsd(market.price):"--";$("heroFx").textContent="USD/CNY "+(market.fx?market.fx.toFixed(4):currentFx().toFixed(2)+(market.fx?"":" · 估算"));if(market.at&&Date.now()-market.at>60000&&$("priceState").textContent==="同步价格与汇率")$("priceState").textContent=Math.floor((Date.now()-market.at)/60000)+" 分钟前"}
-  async function persistent(){try{if(navigator.storage&&navigator.storage.persist){const ok=await navigator.storage.persist();$("storageNote").textContent=(ok?"已启用本机持久存储。":"浏览器未授予持久存储。")+"账本会同步汇总给同域名下的 V22.1.3 主站；仍建议换机或清理浏览器前导出 JSON。"}}catch(_){}}
+  async function persistent(){try{if(navigator.storage&&navigator.storage.persist){const ok=await navigator.storage.persist();$("storageNote").textContent=(ok?"已启用本机持久存储。":"浏览器未授予持久存储。")+"账本会同步人民币总成本、持仓与流水给同域名下的 V22.3.2 主站；仍建议换机或清理浏览器前导出 JSON。"}}catch(_){}}
   document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("modal").classList.contains("on"))closeSheet()});
   themeLabel();loadMarket();render();persistent();refreshMarket(false);
   if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol))setTimeout(()=>navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(()=>{}),2500);
