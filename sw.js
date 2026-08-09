@@ -1,7 +1,7 @@
 "use strict";
 
-const CACHE_NAME="btc-intelligence-v22.3.4-nav-cache-fix-20260808";
-const CORE=["./","./index.html","./floor.json","./dca.html"];
+const CACHE_NAME="btc-intelligence-v22.3.6-urpd-fine-20260808";
+const CORE=["./","./index.html","./floor.json","./dca.html","./ahr999.html"];
 
 self.addEventListener("install",event=>{
   event.waitUntil((async()=>{
@@ -37,7 +37,7 @@ self.addEventListener("fetch",event=>{
   if(url.origin!==self.location.origin)return;
 
   if(request.mode==="navigate"){
-    const fallback=url.pathname.endsWith("/dca.html")?"./dca.html":"./index.html";
+    const fallback=url.pathname.endsWith("/dca.html")?"./dca.html":url.pathname.endsWith("/ahr999.html")?"./ahr999.html":"./index.html";
     event.respondWith(networkFirst(request,fallback));
     return;
   }
