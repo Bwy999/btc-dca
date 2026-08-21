@@ -1,7 +1,14 @@
 "use strict";
 
-const CACHE_NAME="btc-intelligence-v22.3.6-urpd-fine-20260808";
-const CORE=["./","./index.html","./floor.json","./dca.html","./ahr999.html"];
+const CACHE_NAME="btc-intelligence-v22.3.12-p0-20260821";
+const CORE=[
+  "./",
+  "./index.html",
+  "./ahr999.html",
+  "./dca.html",
+  "./floor.json",
+  "./apple-touch-icon.png"
+];
 
 self.addEventListener("install",event=>{
   event.waitUntil((async()=>{
@@ -14,7 +21,7 @@ self.addEventListener("install",event=>{
 self.addEventListener("activate",event=>{
   event.waitUntil((async()=>{
     const keys=await caches.keys();
-    await Promise.all(keys.filter(key=>key!==CACHE_NAME&&key.startsWith("btc-intelligence-")).map(key=>caches.delete(key)));
+    await Promise.all(keys.filter(key=>key!==CACHE_NAME&&(key.startsWith("btc-intelligence-")||key.startsWith("btc-dca-ledger-"))).map(key=>caches.delete(key)));
     await self.clients.claim();
   })());
 });
