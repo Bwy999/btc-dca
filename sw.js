@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME="btc-intelligence-v22.3.12-p0-20260821";
+const CACHE_NAME="btc-intelligence-v23.0-source-convergence-20260822";
 const CORE=[
   "./",
   "./index.html",
