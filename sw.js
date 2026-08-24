@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME="btc-intelligence-v23.0-source-convergence-20260822";
+const CACHE_NAME="btc-intelligence-v24-5-claude-baseline-24-1-20260823";
 const CORE=[
   "./",
   "./index.html",
@@ -13,7 +13,9 @@ const CORE=[
 self.addEventListener("install",event=>{
   event.waitUntil((async()=>{
     const cache=await caches.open(CACHE_NAME);
-    await Promise.allSettled(CORE.map(url=>cache.add(new Request(url,{cache:"reload"}))));
+    await Promise.allSettled(
+      CORE.map(url=>cache.add(new Request(url,{cache:"reload"})))
+    );
     await self.skipWaiting();
   })());
 });
@@ -21,7 +23,14 @@ self.addEventListener("install",event=>{
 self.addEventListener("activate",event=>{
   event.waitUntil((async()=>{
     const keys=await caches.keys();
-    await Promise.all(keys.filter(key=>key!==CACHE_NAME&&(key.startsWith("btc-intelligence-")||key.startsWith("btc-dca-ledger-"))).map(key=>caches.delete(key)));
+    await Promise.all(
+      keys
+        .filter(key=>key!==CACHE_NAME && (
+          key.startsWith("btc-intelligence-") ||
+          key.startsWith("btc-dca-ledger-")
+        ))
+        .map(key=>caches.delete(key))
+    );
     await self.clients.claim();
   })());
 });
@@ -33,18 +42,24 @@ async function networkFirst(request,fallbackUrl){
     if(response&&response.ok)cache.put(request,response.clone());
     return response;
   }catch(error){
-    return(await cache.match(request))||(fallbackUrl&&await cache.match(fallbackUrl))||Response.error();
+    return (await cache.match(request)) ||
+           (fallbackUrl && await cache.match(fallbackUrl)) ||
+           Response.error();
   }
 }
 
 self.addEventListener("fetch",event=>{
   const request=event.request;
   if(request.method!=="GET")return;
+
   const url=new URL(request.url);
   if(url.origin!==self.location.origin)return;
 
   if(request.mode==="navigate"){
-    const fallback=url.pathname.endsWith("/dca.html")?"./dca.html":url.pathname.endsWith("/ahr999.html")?"./ahr999.html":"./index.html";
+    const fallback=
+      url.pathname.endsWith("/dca.html") ? "./dca.html" :
+      url.pathname.endsWith("/ahr999.html") ? "./ahr999.html" :
+      "./index.html";
     event.respondWith(networkFirst(request,fallback));
     return;
   }
@@ -55,8 +70,14 @@ self.addEventListener("fetch",event=>{
   }
 
   event.respondWith((async()=>{
-    const cache=await caches.open(CACHE_NAME),cached=await cache.match(request);
-    const update=fetch(request).then(response=>{if(response&&response.ok)cache.put(request,response.clone());return response}).catch(()=>null);
-    return cached||(await update)||Response.error();
+    const cache=await caches.open(CACHE_NAME);
+    const cached=await cache.match(request);
+    const update=fetch(request)
+      .then(response=>{
+        if(response&&response.ok)cache.put(request,response.clone());
+        return response;
+      })
+      .catch(()=>null);
+    return cached || (await update) || Response.error();
   })());
 });
