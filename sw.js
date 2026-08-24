@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME="btc-intelligence-v24-5-5-pwa-safe-top-20260824";
+const CACHE_NAME="btc-intelligence-v24-5-7-pwa-safe-top-hardened-20260824";
 const CORE=[
   "./",
   "./index.html",
