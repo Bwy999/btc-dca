@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME="btc-intelligence-v24-5-lock-20260824";
+const CACHE_NAME="btc-intelligence-v24-5-1-urpd-resilient-20260824";
 const CORE=[
   "./",
   "./index.html",
@@ -13,9 +13,7 @@ const CORE=[
 self.addEventListener("install",event=>{
   event.waitUntil((async()=>{
     const cache=await caches.open(CACHE_NAME);
-    await Promise.allSettled(
-      CORE.map(url=>cache.add(new Request(url,{cache:"reload"})))
-    );
+    await Promise.allSettled(CORE.map(url=>cache.add(new Request(url,{cache:"reload"}))));
     await self.skipWaiting();
   })());
 });
@@ -23,14 +21,9 @@ self.addEventListener("install",event=>{
 self.addEventListener("activate",event=>{
   event.waitUntil((async()=>{
     const keys=await caches.keys();
-    await Promise.all(
-      keys
-        .filter(key=>key!==CACHE_NAME && (
-          key.startsWith("btc-intelligence-") ||
-          key.startsWith("btc-dca-ledger-")
-        ))
-        .map(key=>caches.delete(key))
-    );
+    await Promise.all(keys.filter(key=>key!==CACHE_NAME && (
+      key.startsWith("btc-intelligence-") || key.startsWith("btc-dca-ledger-")
+    )).map(key=>caches.delete(key)));
     await self.clients.claim();
   })());
 });
@@ -71,12 +64,10 @@ self.addEventListener("fetch",event=>{
   event.respondWith((async()=>{
     const cache=await caches.open(CACHE_NAME);
     const cached=await cache.match(request);
-    const update=fetch(request)
-      .then(response=>{
-        if(response&&response.ok)cache.put(request,response.clone());
-        return response;
-      })
-      .catch(()=>null);
+    const update=fetch(request).then(response=>{
+      if(response&&response.ok)cache.put(request,response.clone());
+      return response;
+    }).catch(()=>null);
     return cached || (await update) || Response.error();
   })());
 });
