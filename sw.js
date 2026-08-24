@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME="btc-intelligence-v24-5-claude-baseline-24-1-20260823";
+const CACHE_NAME="btc-intelligence-v24-5-lock-20260824";
 const CORE=[
   "./",
   "./index.html",
@@ -51,7 +51,6 @@ async function networkFirst(request,fallbackUrl){
 self.addEventListener("fetch",event=>{
   const request=event.request;
   if(request.method!=="GET")return;
-
   const url=new URL(request.url);
   if(url.origin!==self.location.origin)return;
 
