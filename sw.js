@@ -1,5 +1,5 @@
 "use strict";
-const CACHE_NAME="btc-intelligence-v24-6-0-regime-engine-20260828";
+const CACHE_NAME="btc-intelligence-v24-8-0-dca-rolling-backtest-20260828";
 const CORE=["./","./index.html","./ahr999.html","./dca.html","./floor.json","./apple-touch-icon.png"];
 self.addEventListener("install",event=>{event.waitUntil((async()=>{const cache=await caches.open(CACHE_NAME);await Promise.allSettled(CORE.map(url=>cache.add(new Request(url,{cache:"reload"}))));await self.skipWaiting()})())});
 self.addEventListener("activate",event=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(key=>key!==CACHE_NAME&&(key.startsWith("btc-intelligence-")||key.startsWith("btc-dca-ledger-"))).map(key=>caches.delete(key)));await self.clients.claim()})())});
