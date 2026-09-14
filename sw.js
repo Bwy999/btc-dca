@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "btc-intelligence-v25-0-8-view-preferences-20260913";
+const CACHE_NAME = "btc-intelligence-v25-0-9-chart-recovery-20260914";
 const CORE = [
   "./",
   "./index.html",
