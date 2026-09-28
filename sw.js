@@ -1,7 +1,7 @@
 "use strict";
 
-const SW_BUILD = "25.1.5-20260927";
-const CACHE_NAME = "btc-intelligence-v25-1-5-cycle-drawdown-20260927";
+const SW_BUILD = "25.1.7-20260928";
+const CACHE_NAME = "btc-intelligence-v25-1-7-cycle-drawdown-20260928";
 const CACHE_PREFIX = "btc-site:" + self.registration.scope + ":";
 const SCOPED_CACHE = CACHE_PREFIX + CACHE_NAME;
 const CORE = [
@@ -9,7 +9,6 @@ const CORE = [
   "./index.html",
   "./ahr999.html",
   "./dca.html",
-  "./floor.json",
   "./apple-touch-icon.png",
 ];
 
@@ -91,11 +90,6 @@ self.addEventListener("fetch", (event) => {
         ? "./ahr999.html"
         : "./index.html";
     event.respondWith(networkFirst(request, fallback));
-    return;
-  }
-
-  if (url.pathname.endsWith("/floor.json")) {
-    event.respondWith(networkFirst(request, "./floor.json"));
     return;
   }
 
