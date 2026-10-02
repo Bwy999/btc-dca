@@ -1,7 +1,7 @@
 "use strict";
 
-const SW_BUILD = "25.1.18-20261002";
-const CACHE_NAME = "btc-intelligence-v25-1-18-analysis-20261002";
+const SW_BUILD = "25.1.22-20261002";
+const CACHE_NAME = "btc-intelligence-v25-1-22-chain-20261002";
 const CACHE_PREFIX = "btc-site:" + self.registration.scope + ":";
 const SCOPED_CACHE = CACHE_PREFIX + CACHE_NAME;
 const CORE = [
