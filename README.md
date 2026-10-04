@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./apple-touch-icon.png" width="92" height="92" alt="BTC Intelligence">
+<img src="./btc-logo.png" width="96" height="96" alt="BTC Intelligence">
 
 # ₿ BTC Intelligence
 
@@ -179,7 +179,8 @@ AHR999 是这个项目的精神原点。
 | `sw.js` | Service Worker：离线缓存、版本更新、资源清单 |
 | `ahr999.html` | AHR999 致敬与模型研究专页 |
 | `dca.html` | 独立定投页面 |
-| `apple-touch-icon.png` | 主屏幕图标 |
+| `apple-touch-icon.png` | 主屏幕图标（方形，iPhone 会自动裁成圆角） |
+| `btc-logo.png` | 圆角标志，用于 README |
 | `tools/build.py` | 构建工具：单文件与拆分文件互相转换（仅修改网站时使用） |
 | `tests/smoke_test.py` | 上线前自检（可选） |
 
