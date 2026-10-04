@@ -1,9 +1,23 @@
 "use strict";
 
-const SW_BUILD = "25.2.2-20261003";
-const CACHE_NAME = "btc-intelligence-v25-2-2-bitview-verified-20261002";
+const SW_BUILD = "26.0.1-20261004";
+const CACHE_NAME = "btc-intelligence-v26-0-1-20261004";
 const CACHE_PREFIX = "btc-site:" + self.registration.scope + ":";
 const SCOPED_CACHE = CACHE_PREFIX + CACHE_NAME;
+// 带内容哈希的静态资源。文件内容不变，文件名就不变，更新时无需重新下载。
+const ASSETS = /*ASSETS*/[
+  "./assets/app.6069caed29.css",
+  "./assets/lightweight-charts.682f74d8c4.js",
+  "./assets/seed-cycle.5a6f45f52a.js",
+  "./assets/app.d416d38758.js",
+  "./assets/ext-1.70c40104f9.js",
+  "./assets/ext-2.dee3a44e20.js",
+  "./assets/ext-3.ced2549cb2.js",
+  "./assets/ext-4.2fe3962a95.js",
+  "./assets/ext-5.65add82144.js",
+  "./assets/ext-6.768208e945.js",
+]/*END*/;
+const ASSET_CACHE = CACHE_PREFIX + "assets";
 const CORE = [
   "./",
   "./index.html",
@@ -22,6 +36,14 @@ self.addEventListener("install", (event) => {
     await cache.put("./index.html", page.clone());
     await cache.put("./", page);
     await Promise.allSettled(CORE.slice(2).map((url) => cache.add(new Request(url, { cache: "reload" }))));
+    // 新版本用到的资源必须全部就绪，否则保留旧版本，避免页面引用缺失文件。
+    const assetCache = await caches.open(ASSET_CACHE);
+    for (const url of ASSETS) {
+      if (await assetCache.match(url)) continue;
+      const res = await fetch(new Request(url, { cache: "reload" }));
+      if (!res.ok) throw new Error("Asset missing: " + url);
+      await assetCache.put(url, res);
+    }
     // An existing client keeps its worker until the user explicitly confirms.
   })());
 });
@@ -30,8 +52,14 @@ self.addEventListener("activate", (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
     // Only clean our own scope. Legacy/ledger/other-site caches are not ours to delete.
-    const obsolete = keys.filter((key) => key !== SCOPED_CACHE && key.startsWith(CACHE_PREFIX));
+    const obsolete = keys.filter((key) => key !== SCOPED_CACHE && key !== ASSET_CACHE && key.startsWith(CACHE_PREFIX));
     await Promise.allSettled(obsolete.map((key) => caches.delete(key)));
+    // 资源缓存只删除当前版本不再使用的文件
+    try {
+      const assetCache = await caches.open(ASSET_CACHE);
+      const keep = new Set(ASSETS.map((u) => new URL(u, self.registration.scope).href));
+      for (const req of await assetCache.keys()) if (!keep.has(req.url)) await assetCache.delete(req);
+    } catch (_) {}
     await self.clients.claim();
   })());
 });
@@ -80,6 +108,18 @@ self.addEventListener("fetch", (event) => {
 
   if (url.searchParams.has("_btc_update") || url.pathname.endsWith("/sw.js")) {
     event.respondWith(fetch(new Request(request, {cache:"no-store"})));
+    return;
+  }
+
+  if (url.pathname.includes("/assets/")) {
+    event.respondWith((async () => {
+      const assetCache = await caches.open(ASSET_CACHE).catch(() => null);
+      const hit = assetCache ? await assetCache.match(request).catch(() => null) : null;
+      if (hit) return hit;
+      const res = await fetch(request);
+      if (res.ok && assetCache) try { await assetCache.put(request, res.clone()); } catch (_) {}
+      return res;
+    })());
     return;
   }
 

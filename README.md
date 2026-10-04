@@ -170,15 +170,18 @@ AHR999 是这个项目的精神原点。
 
 ## 自行部署
 
-纯静态网站，无需服务器端程序、数据库或构建步骤。把以下文件放到任意静态托管（GitHub Pages、Cloudflare Pages、Nginx 等）即可：
+纯静态网站，无需服务器端程序或数据库。把以下文件放到任意静态托管（GitHub Pages、Cloudflare Pages、Nginx 等）即可：
 
 | 文件 | 用途 |
 |:---|:---|
-| `index.html` | 主页面，单文件包含全部界面与逻辑 |
-| `sw.js` | Service Worker，负责离线缓存与版本更新 |
+| `index.html` | 页面骨架与首屏版本号 |
+| `assets/` | 样式、图表库、历史种子数据与脚本。文件名带内容哈希，内容不变则文件名不变，浏览器不会重复下载 |
+| `sw.js` | Service Worker：离线缓存、版本更新、资源清单 |
 | `ahr999.html` | AHR999 致敬与模型研究专页 |
 | `dca.html` | 独立定投页面 |
 | `apple-touch-icon.png` | 主屏幕图标 |
+| `tools/build.py` | 构建工具：单文件与拆分文件互相转换（仅修改网站时使用） |
+| `tests/smoke_test.py` | 上线前自检（可选） |
 
 本地预览：
 
@@ -187,9 +190,7 @@ python3 -m http.server 8080
 # 浏览器打开 http://localhost:8080
 ```
 
-更新网站时，`index.html` 与 `sw.js` 需要一起替换，并建议最后上传 `sw.js`。更新后可在「分析 → 数据健康中心」核对版本。
-
----
+更新网站时，`index.html`、`sw.js` 和 `assets/` 需要一起上传，并最后上传 `sw.js`。旧的 `assets/` 文件可以保留，Service Worker 只使用当前版本列出的文件。更新后可在「分析 → 数据健康中心」核对版本。
 
 ## 技术
 
@@ -197,7 +198,7 @@ python3 -m http.server 8080
 |:---|:---|
 | **界面** | 原生 HTML / CSS / JavaScript，无框架依赖 |
 | **图表** | 手绘 SVG / Canvas 与 Lightweight Charts |
-| **离线** | Service Worker + 多级缓存降级 |
+| **离线** | Service Worker + 多级缓存降级；静态资源按内容哈希长期缓存 |
 | **存储** | localStorage，本地优先 |
 | **适配** | 移动端优先；电脑大屏自动切换为顶部导航与双栏布局；支持刘海屏安全区、减弱动态效果与键盘操作 |
 
