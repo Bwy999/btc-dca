@@ -238,6 +238,28 @@
     .tribute h2{color:var(--text);font-size:20px;font-weight:700}
     .tribute-sign{color:var(--accent)}
     @media(max-width:620px){.hero::before{right:-12px;top:-20px;font-size:130px}.tribute::after{font-size:160px;bottom:-40px}}
+    /* —— 数据网格统一：色盘摘要、四项指标、图表统计使用同一种 2 列网格 —— */
+    .dial-summary,.metric-grid,.chart-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin-top:0;padding:0;border-top:1px solid var(--line)}
+    .dial-summary div,.metric,.chart-stat{min-width:0;padding:14px 0 14px 16px;border-left:1px solid var(--line);border-top:0;text-align:left}
+    .dial-summary div:nth-child(odd),.metric:nth-child(odd),.chart-stat:nth-child(odd){padding-left:0;padding-right:16px;border-left:0}
+    .dial-summary div:last-child{text-align:left}
+    .metric:nth-child(n+3),.chart-stat:nth-child(n+3){border-top:1px solid var(--line)}
+    .dial-summary small,.metric small,.chart-stat small{display:block;color:var(--dim);font-size:12px}
+    .dial-summary b,.metric b,.chart-stat b{display:block;margin-top:6px;font-size:20px;font-weight:650;line-height:1.15;white-space:nowrap;font-variant-numeric:tabular-nums}
+    .dial-summary b{font-size:16px}
+    .metric span{display:block;margin-top:4px;color:var(--muted);font-size:12px;line-height:1.4}
+    .chart-stat b small,.metric b small{display:inline;margin-left:2px;color:var(--muted);font-size:13px;font-weight:600}
+    .precision-dial{display:flex;flex-direction:column}
+    .dial-canvas{margin-bottom:6px}
+    .metric-grid{margin-top:0}
+    .chart-stats{margin-top:14px}
+    @media(min-width:821px){
+      .metric-grid,.chart-stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+      .metric:nth-child(n),.chart-stat:nth-child(n){padding-left:16px;padding-right:0;border-left:1px solid var(--line);border-top:0}
+      .metric:first-child,.chart-stat:first-child{padding-left:0;border-left:0}
+      .metric-grid{margin-top:22px}
+    }
+    @media(min-resolution:2dppx){.dial-summary,.dial-summary div,.metric-grid,.metric,.chart-stats,.chart-stat{border-width:.5px}}
     @keyframes scoreFresh{from{opacity:.45;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.dial-knob,.score-zone,.toast,.hero::after{transition:none}.score-value.fresh{animation:none}}
   </style>
@@ -852,7 +874,7 @@ function renderChart(){
   $("rangeMedian").textContent=fmtIndex(median(vals));
   const pct=Math.round(fullSeries.filter(function(p){return p.value<=current.ahr}).length/fullSeries.length*100);
   $("historyPct").textContent=pct+"%";
-  $("sampleCount").textContent=fullSeries.length.toLocaleString("en-US")+" 日";
+  $("sampleCount").innerHTML=fullSeries.length.toLocaleString("en-US")+"<small>日</small>";
   $("historyBadge").textContent=dayText(fullSeries[0].t)+" 起";
   $("chartLive").textContent="对数坐标 · 最新 "+fmtIndex(current.ahr);
   bindChartTip(x,y,{W:W,H:H,L:L,PW:PW});
