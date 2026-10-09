@@ -1,18 +1,18 @@
 "use strict";
 
-const SW_BUILD = "26.1.7-20261009";
-const CACHE_NAME = "btc-intelligence-v26-1-7-20261009";
+const SW_BUILD = "26.1.9-20261009";
+const CACHE_NAME = "btc-intelligence-v26-1-9-20261009";
 const CACHE_PREFIX = "btc-site:" + self.registration.scope + ":";
 const SCOPED_CACHE = CACHE_PREFIX + CACHE_NAME;
 // 带内容哈希的静态资源。文件内容不变，文件名就不变，更新时无需重新下载。
 const ASSETS = /*ASSETS*/[
-  "./assets/app.91a13f8c48.css",
+  "./assets/app.c3bc0ed0cf.css",
   "./assets/lightweight-charts.682f74d8c4.js",
   "./assets/seed-cycle.5a6f45f52a.js",
-  "./assets/app.2961f149ea.js",
+  "./assets/app.e33d3ddda6.js",
   "./assets/ext-1.70c40104f9.js",
   "./assets/ext-2.b79b59fafd.js",
-  "./assets/ext-3.ced2549cb2.js",
+  "./assets/ext-3.2b40ad0eca.js",
   "./assets/ext-4.2fe3962a95.js",
   "./assets/ext-5.65add82144.js",
   "./assets/ext-6.768208e945.js",
@@ -20,12 +20,10 @@ const ASSETS = /*ASSETS*/[
   "./assets/ext-8.15eeb9601c.js",
   "./assets/ext-9.241310d1ee.js",
   "./assets/ext-10.4ba957689e.js",
-  "./assets/ext-11.5f4f11fe07.js",
-  "./assets/ext-12.4ba957689e.js",
-  "./assets/ext-13.97c9545369.js",
-  "./assets/ext-14.e1cde74716.js",
-  "./assets/ext-15.423a99f908.js",
-  "./assets/ext-16.0e3a4a939f.js",
+  "./assets/ext-11.6e66781c95.js",
+  "./assets/ext-12.e1cde74716.js",
+  "./assets/ext-13.9cf3242231.js",
+  "./assets/ext-14.0e3a4a939f.js",
 ]/*END*/;
 const ASSET_CACHE = CACHE_PREFIX + "assets";
 const CORE = [
