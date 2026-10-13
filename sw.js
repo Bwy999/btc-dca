@@ -1,19 +1,19 @@
 "use strict";
 
-const SW_BUILD = "26.3.0-20261010";
-const CACHE_NAME = "btc-intelligence-v26-3-0-20261010";
+const SW_BUILD = "26.3.4-20261012";
+const CACHE_NAME = "btc-intelligence-v26-3-4-20261012";
 const CACHE_PREFIX = "btc-site:" + self.registration.scope + ":";
 const SCOPED_CACHE = CACHE_PREFIX + CACHE_NAME;
 // 带内容哈希的静态资源。文件内容不变，文件名就不变，更新时无需重新下载。
 const ASSETS = /*ASSETS*/[
-  "./assets/app.beb73dd6e7.css",
+  "./assets/app.c35c08238b.css",
   "./assets/lightweight-charts.682f74d8c4.js",
   "./assets/seed-cycle.5a6f45f52a.js",
   "./assets/app.e33d3ddda6.js",
   "./assets/ext-1.70c40104f9.js",
   "./assets/ext-2.b79b59fafd.js",
   "./assets/ext-3.2b40ad0eca.js",
-  "./assets/ext-4.fff1702e6f.js",
+  "./assets/ext-4.45fd620ad4.js",
   "./assets/ext-5.65add82144.js",
   "./assets/ext-6.768208e945.js",
   "./assets/ext-7.8f5b902cbd.js",
@@ -25,11 +25,13 @@ const ASSETS = /*ASSETS*/[
   "./assets/ext-13.e50f1b7249.js",
   "./assets/ext-14.3f9ae16450.js",
   "./assets/ext-15.cef25ca042.js",
-  "./assets/ext-16.9129031bfd.js",
+  "./assets/ext-16.6351663ac3.js",
   "./assets/ext-17.39951112a8.js",
   "./assets/ext-18.cf0896aae3.js",
-  "./assets/ext-19.edf7d08a8c.js",
-  "./assets/ext-20.0e3a4a939f.js",
+  "./assets/ext-19.09517ee77d.js",
+  "./assets/ext-20.b7a8058485.js",
+  "./assets/ext-21.edf7d08a8c.js",
+  "./assets/ext-22.0e3a4a939f.js",
 ]/*END*/;
 const ASSET_CACHE = CACHE_PREFIX + "assets";
 const CORE = [
@@ -122,6 +124,22 @@ self.addEventListener("fetch", (event) => {
 
   if (url.searchParams.has("_btc_update") || url.pathname.endsWith("/sw.js")) {
     event.respondWith(fetch(new Request(request, {cache:"no-store"})));
+    return;
+  }
+
+  // 预先计算的数据（data/*.json）：优先取网络上的最新版本，断网时用缓存
+  if (url.pathname.includes("/data/")) {
+    event.respondWith((async () => {
+      try {
+        const res = await fetch(new Request(request, {cache:"no-store"}));
+        if (res.ok) { const c = await caches.open(SCOPED_CACHE).catch(() => null); if (c) try { await c.put(request, res.clone()); } catch (_) {} }
+        return res;
+      } catch (_) {
+        const c = await caches.open(SCOPED_CACHE).catch(() => null);
+        const hit = c ? await c.match(request, {ignoreSearch:true}).catch(() => null) : null;
+        return hit || Response.error();
+      }
+    })());
     return;
   }
 

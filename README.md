@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/%E7%89%88%E6%9C%AC-V26.3.0-f7931a?style=flat-square" alt="版本 V26.3.0">
+  <img src="https://img.shields.io/badge/%E7%89%88%E6%9C%AC-V26.3.2-f7931a?style=flat-square" alt="版本 V26.3.2">
   <img src="https://img.shields.io/badge/%E8%AF%AD%E8%A8%80-%E4%B8%AD%E6%96%87%20%7C%20English-3a7bd5?style=flat-square" alt="中文 | English">
   <img src="https://img.shields.io/badge/%E6%95%B0%E6%8D%AE-Bitview%20%2F%20BRK-6a5ae0?style=flat-square" alt="数据 Bitview / BRK">
   <img src="https://img.shields.io/badge/%E9%9A%90%E7%A7%81-%E6%97%A0%E8%B4%A6%E5%8F%B7%20%C2%B7%20%E6%97%A0%E5%B9%BF%E5%91%8A-2e9d6a?style=flat-square" alt="无账号 无广告">
@@ -102,10 +102,12 @@
 纯静态网站，上传到任意静态托管即可。
 
 ```
-index.html      页面
-sw.js           离线缓存与版本更新
-assets/         样式、脚本与内置历史数据
-ahr999.html     AHR999 致敬专页
+index.html                       页面
+sw.js                            离线缓存与版本更新
+assets/                          样式、脚本与内置历史数据
+ahr999.html                      AHR999 致敬专页
+data/lth-chips.json              每天预先算好的 LTH 筹码集中度（自动生成）
+.github/workflows/lth-chips.yml  生成上面这份数据的定时任务
 ```
 
 <details>
