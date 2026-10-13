@@ -1,0 +1,34 @@
+name: Precompute LTH chips
+
+on:
+  schedule:
+    - cron: "20 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lth-chips
+  cancel-in-progress: false
+
+jobs:
+  precompute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compute
+        run: python3 tools/precompute_lth_chips.py data/lth-chips.json
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
+          git add data/lth-chips.json
+          if git diff --cached --quiet; then echo "no change"; exit 0; fi
+          git commit -m "data: LTH chips $(date -u +%F)"
+          git pull --rebase --autostash
+          git push
