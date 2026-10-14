@@ -33,6 +33,9 @@ def main():
     html = open(path, encoding="utf-8").read()
     m = list(re.finditer(r"(<style[^>]*>)(.*?)(</style>)", html, re.S))[-1]
     nodes = C.parse(m.group(2))
+    if any(nd["t"] == "raw" and "================= 模块：" in nd["text"] for nd in nodes):
+        print("已按模块整理过，无需重复运行（新增样式请直接写到对应模块分组里）。")
+        return
     idx = next(i for i, nd in enumerate(nodes) if nd["t"] == "raw" and nd["text"].startswith(START))
     head, tail = nodes[:idx], nodes[idx:]
     groups = [[] for _ in MODULES]
