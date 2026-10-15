@@ -1,40 +1,43 @@
 "use strict";
 
-const SW_BUILD = "26.4.1-20261014";
-const CACHE_NAME = "btc-intelligence-v26-4-1-20261014";
+const SW_BUILD = "26.4.5-20261015";
+const CACHE_NAME = "btc-intelligence-v26-4-5-20261015";
 const CACHE_PREFIX = "btc-site:" + self.registration.scope + ":";
 const SCOPED_CACHE = CACHE_PREFIX + CACHE_NAME;
 // 带内容哈希的静态资源。文件内容不变，文件名就不变，更新时无需重新下载。
 const ASSETS = /*ASSETS*/[
-  "./assets/app.e155d346e7.css",
+  "./assets/app.bf39b866c0.css",
   "./assets/lightweight-charts.682f74d8c4.js",
   "./assets/seed-cycle.5a6f45f52a.js",
-  "./assets/app.081e5b0032.js",
-  "./assets/ext-1.bed6b0f62f.js",
-  "./assets/ext-2.70c40104f9.js",
-  "./assets/ext-3.b79b59fafd.js",
-  "./assets/ext-4.2b40ad0eca.js",
-  "./assets/ext-5.45fd620ad4.js",
-  "./assets/ext-6.0233cf2386.js",
-  "./assets/ext-7.768208e945.js",
-  "./assets/ext-8.8f5b902cbd.js",
-  "./assets/ext-9.15eeb9601c.js",
-  "./assets/ext-10.2d6ec46993.js",
-  "./assets/ext-11.4ba957689e.js",
-  "./assets/ext-12.4080454237.js",
-  "./assets/ext-13.de1fcc1f56.js",
-  "./assets/ext-14.e50f1b7249.js",
-  "./assets/ext-15.c76830efec.js",
-  "./assets/ext-16.cef25ca042.js",
-  "./assets/ext-17.dd53954a7b.js",
-  "./assets/ext-18.39951112a8.js",
-  "./assets/ext-19.cf0896aae3.js",
-  "./assets/ext-20.09517ee77d.js",
-  "./assets/ext-21.d175e3a2b3.js",
-  "./assets/ext-22.c55b68216b.js",
-  "./assets/ext-23.ac33ad748c.js",
-  "./assets/ext-24.0e3a4a939f.js",
+  "./assets/app.d334be4a4d.js",
+  "./assets/ext-1.79fa106bab.js",
+  "./assets/ext-2.bed6b0f62f.js",
+  "./assets/ext-3.7181491f4f.js",
+  "./assets/ext-4.748ac21983.js",
+  "./assets/ext-5.2b40ad0eca.js",
+  "./assets/ext-6.f514a0dbcd.js",
+  "./assets/ext-7.0233cf2386.js",
+  "./assets/ext-8.768208e945.js",
+  "./assets/ext-9.8f5b902cbd.js",
+  "./assets/ext-10.15eeb9601c.js",
+  "./assets/ext-11.2d6ec46993.js",
+  "./assets/ext-12.4ba957689e.js",
+  "./assets/ext-13.4080454237.js",
+  "./assets/ext-14.de1fcc1f56.js",
+  "./assets/ext-15.e50f1b7249.js",
+  "./assets/ext-16.5da6c75614.js",
+  "./assets/ext-17.cef25ca042.js",
+  "./assets/ext-18.dd53954a7b.js",
+  "./assets/ext-19.85709972a1.js",
+  "./assets/ext-20.cf0896aae3.js",
+  "./assets/ext-21.09517ee77d.js",
+  "./assets/ext-22.d175e3a2b3.js",
+  "./assets/ext-23.2df849f7d1.js",
+  "./assets/ext-24.ec18d2a0e7.js",
+  "./assets/ext-26.b798596959.js",
 ]/*END*/;
+// 按需下载的资源（英文对照表）：不预缓存，但版本切换时不删除
+const OPTIONAL_ASSETS = /*OPTIONAL*/["./assets/i18n-en.f84c8429ff.js"]/*OEND*/;
 const ASSET_CACHE = CACHE_PREFIX + "assets";
 const CORE = [
   "./",
@@ -75,7 +78,7 @@ self.addEventListener("activate", (event) => {
     // 资源缓存只删除当前版本不再使用的文件
     try {
       const assetCache = await caches.open(ASSET_CACHE);
-      const keep = new Set(ASSETS.map((u) => new URL(u, self.registration.scope).href));
+      const keep = new Set(ASSETS.concat(OPTIONAL_ASSETS).map((u) => new URL(u, self.registration.scope).href));
       for (const req of await assetCache.keys()) if (!keep.has(req.url)) await assetCache.delete(req);
     } catch (_) {}
     await self.clients.claim();
