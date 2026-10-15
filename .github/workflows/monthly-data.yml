@@ -1,0 +1,35 @@
+# 每天预先下载「顶底区间」与分析页使用的 Bitview 月度序列，结果写入 data/monthly.json。
+name: Precompute monthly data
+
+on:
+  schedule:
+    - cron: "30 1 * * *"   # 每天 UTC 01:30（北京时间 09:30）
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: monthly-data
+  cancel-in-progress: false
+
+jobs:
+  monthly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Download
+        run: python3 tools/precompute_monthly.py data/monthly.json
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
+          git add data/monthly.json
+          if git diff --cached --quiet; then echo "no change"; exit 0; fi
+          git commit -m "data: monthly series $(date -u +%F)"
+          git pull --rebase --autostash
+          git push
