@@ -223,6 +223,8 @@ def dead_selectors(nodes, source):
 def main():
     path = sys.argv[1]; write = "--write" in sys.argv
     html = open(path, encoding="utf-8").read()
+    if "<style" not in html:
+        raise SystemExit("这个文件里没有内联样式。请对源文件 index.html 运行本工具（构建后的 assets/*.css 由 tools/build.py 生成，不要直接修改）。")
     blocks = list(re.finditer(r"(<style[^>]*>)(.*?)(</style>)", html, re.S))
     source = re.sub(r"<style[^>]*>.*?</style>", "", html, flags=re.S)
     stats = []

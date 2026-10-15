@@ -31,6 +31,8 @@ def module_of(comment):
 def main():
     path = sys.argv[1]
     html = open(path, encoding="utf-8").read()
+    if "<style" not in html:
+        raise SystemExit("这个文件里没有内联样式。请对源文件 index.html 运行本工具（构建后的 assets/*.css 由 tools/build.py 生成，不要直接修改）。")
     m = list(re.finditer(r"(<style[^>]*>)(.*?)(</style>)", html, re.S))[-1]
     nodes = C.parse(m.group(2))
     if any(nd["t"] == "raw" and "================= 模块：" in nd["text"] for nd in nodes):
