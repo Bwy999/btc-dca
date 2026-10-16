@@ -61,6 +61,8 @@ def split(src, out):
     with open(os.path.join(out, 'index.html'), 'w', encoding='utf-8') as f: f.write(s)
     # 4. Service Worker：写入资源清单
     sw_src = os.path.join(os.path.dirname(src), 'sw.js')
+    if not os.path.exists(sw_src):  # 合并源码放在 source/ 时，使用仓库根目录的 sw.js
+        sw_src = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(src))), 'sw.js')
     sw = open(sw_src, encoding='utf-8').read()
     lst = '[\n' + ''.join(f'  "./{a}",\n' for a in assets) + ']'
     sw = re.sub(r'/\*ASSETS\*/.*?/\*END\*/', '/*ASSETS*/' + lst + '/*END*/', sw, flags=re.S)
