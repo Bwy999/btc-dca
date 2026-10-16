@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/%E7%89%88%E6%9C%AC-V26.4.2-f7931a?style=flat-square" alt="版本 V26.4.2">
+  <img src="https://img.shields.io/badge/%E7%89%88%E6%9C%AC-V26.4.6-f7931a?style=flat-square" alt="版本 V26.4.6">
   <img src="https://img.shields.io/badge/%E8%AF%AD%E8%A8%80-%E4%B8%AD%E6%96%87%20%7C%20English-3a7bd5?style=flat-square" alt="中文 | English">
   <img src="https://img.shields.io/badge/%E6%95%B0%E6%8D%AE-Bitview%20%2F%20BRK-6a5ae0?style=flat-square" alt="数据 Bitview / BRK">
   <img src="https://img.shields.io/badge/%E9%9A%90%E7%A7%81-%E6%97%A0%E8%B4%A6%E5%8F%B7%20%C2%B7%20%E6%97%A0%E5%B9%BF%E5%91%8A-2e9d6a?style=flat-square" alt="无账号 无广告">
@@ -47,7 +47,7 @@
 顶底区间（周期结论：底部 / 顶部仪表盘、信号明细与牛市风控）· 指标明细（按 5 类列出历史分位）· 周期位置与五轮回撤对比 · 200 周均线与幂律走廊 · Bedrock 十模型共识底价 · 恐惧贪婪、资金费率、稳定币与预测市场
 
 ### ⛓️ 链上
-按三组查看链上证据，每组一句数据结论：
+按三组查看链上证据，每组一张卡片：顶部 3 个关键数字，下方是可展开的模块：
 - **成本**：成本线 · 筹码分布
 - **持有者**：长期持有者（LTH_PSIL · LTH NUPL · 老币重新流通 · LTH 筹码集中度）· 持币群体
 - **矿工**：矿工收入 · 算力与难度
@@ -74,7 +74,7 @@
 - **底部区**：综合分 ≤ 25。
 - **顶部区**：Reserve Risk ≥ 75% 分位；Pi Cycle 或老币放量也 ≥ 75 时为「强」。
 
-2012 年以来：底部区命中 4 次底部（含 2020 年 3 月），81% 的亮灯月份在真实底部前后 6 个月内；顶部区命中 5 个顶部（含 2021 年 11 月），95% 在真实顶部前后 6 个月内，但可能提前数月出现。样本只有 4 轮周期，仅供参考。
+网站的「历史回测」表逐月列出每次亮灯之后的价格。这些是**样本内的历史观察**：规则是在看过历史之后设定的，样本只有约 4 轮周期，不代表未来的准确率。
 
 </details>
 
@@ -125,10 +125,23 @@ python3 -m http.server 8080
 
 版本规则：
 
-- **正式版**（如 V26.4.2）：上传 GitHub，VPS 每 5 分钟自动同步。
+- **正式版**（如 V26.4.6）：上传 GitHub，VPS 每 5 分钟自动同步。
 - **测试版**（如 V26 Beta 24）：只在本地验证，不上传。
 
-上传顺序：先上传 `assets/`，再一次性上传 `index.html`、`ahr999.html`、`sw.js`。
+上传顺序：先上传 `assets/`，再上传页面（`index.html`、`ahr999.html`），最后上传 `sw.js`；保留服务器上已有的 `dca.html` 与 `data/`。
+
+上传前检查（只读，不修改文件）：
+
+```bash
+python3 tools/build.py split source/index.html dist   # 从合并源码生成部署目录
+python3 tools/check_deploy.py dist                    # 构建号、资源、哈希、重复 id
+node tests/reliability_test.mjs dist                  # 历史信号：不用未来数据、按日期取收益
+python3 tests/deploy_test.py source/index.html        # 部署检查本身能发现问题
+```
+
+`source/index.html` 是方便编辑的合并源码（样式、脚本、对照表都在一个文件里），网站运行不需要它，上传与否均可。也可以用 `python3 tools/build.py join . source.html` 从部署目录还原。
+
+
 
 </details>
 
