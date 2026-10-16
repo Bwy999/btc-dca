@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/%E7%89%88%E6%9C%AC-V26.4.6-f7931a?style=flat-square" alt="版本 V26.4.6">
+  <img src="https://img.shields.io/badge/%E7%89%88%E6%9C%AC-V26.4.12-f7931a?style=flat-square" alt="版本 V26.4.12">
   <img src="https://img.shields.io/badge/%E8%AF%AD%E8%A8%80-%E4%B8%AD%E6%96%87%20%7C%20English-3a7bd5?style=flat-square" alt="中文 | English">
   <img src="https://img.shields.io/badge/%E6%95%B0%E6%8D%AE-Bitview%20%2F%20BRK-6a5ae0?style=flat-square" alt="数据 Bitview / BRK">
   <img src="https://img.shields.io/badge/%E9%9A%90%E7%A7%81-%E6%97%A0%E8%B4%A6%E5%8F%B7%20%C2%B7%20%E6%97%A0%E5%B9%BF%E5%91%8A-2e9d6a?style=flat-square" alt="无账号 无广告">
@@ -125,7 +125,7 @@ python3 -m http.server 8080
 
 版本规则：
 
-- **正式版**（如 V26.4.6）：上传 GitHub，VPS 每 5 分钟自动同步。
+- **正式版**（如 V26.4.12）：版本号与构建号相同（V26.4.12 ↔ 26.4.12-日期），上传 GitHub，VPS 每 5 分钟自动同步。
 - **测试版**（如 V26 Beta 24）：只在本地验证，不上传。
 
 上传顺序：先上传 `assets/`，再上传页面（`index.html`、`ahr999.html`），最后上传 `sw.js`；保留服务器上已有的 `dca.html` 与 `data/`。
@@ -137,6 +137,7 @@ python3 tools/build.py split source/index.html dist   # 从合并源码生成部
 python3 tools/check_deploy.py dist                    # 构建号、资源、哈希、重复 id
 node tests/reliability_test.mjs dist                  # 历史信号：不用未来数据、按日期取收益
 python3 tests/deploy_test.py source/index.html        # 部署检查本身能发现问题
+python3 tests/static_test.py dist                     # 被 try{} 包住调用的函数都有定义
 ```
 
 `source/index.html` 是方便编辑的合并源码（样式、脚本、对照表都在一个文件里），网站运行不需要它，上传与否均可。也可以用 `python3 tools/build.py join . source.html` 从部署目录还原。
