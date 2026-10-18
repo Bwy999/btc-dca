@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="./btc-logo.png" width="96" height="96" alt="BTC Intelligence">
+  <img src="./btc-logo.png" width="96" height="96" alt="Sats Garden">
 </p>
 
-<h1 align="center">BTC Intelligence</h1>
+<h1 align="center">Sats Garden</h1>
 
 <p align="center">
   <b>比特币价格 · AHR999 估值 · 链上结构 · 定投纪律</b><br>
@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/%E7%89%88%E6%9C%AC-V26.4.12-f7931a?style=flat-square" alt="版本 V26.4.12">
+  <img src="https://img.shields.io/badge/%E7%89%88%E6%9C%AC-V26.5-f7931a?style=flat-square" alt="版本 V26.5">
   <img src="https://img.shields.io/badge/%E8%AF%AD%E8%A8%80-%E4%B8%AD%E6%96%87%20%7C%20English-3a7bd5?style=flat-square" alt="中文 | English">
   <img src="https://img.shields.io/badge/%E6%95%B0%E6%8D%AE-Bitview%20%2F%20BRK-6a5ae0?style=flat-square" alt="数据 Bitview / BRK">
   <img src="https://img.shields.io/badge/%E9%9A%90%E7%A7%81-%E6%97%A0%E8%B4%A6%E5%8F%B7%20%C2%B7%20%E6%97%A0%E5%B9%BF%E5%91%8A-2e9d6a?style=flat-square" alt="无账号 无广告">
@@ -23,7 +23,7 @@
 </p>
 
 <p align="center">
-  <img src="./docs/cover.jpg" width="720" alt="BTC Intelligence V26">
+  <img src="./docs/cover.jpg" width="720" alt="Sats Garden">
 </p>
 
 ---
@@ -51,6 +51,7 @@
 - **成本**：成本线 · 筹码分布
 - **持有者**：长期持有者（LTH_PSIL · LTH NUPL · 老币重新流通 · LTH 筹码集中度）· 持币群体
 - **矿工**：矿工收入 · 算力与难度
+- **量子准备度**：BIP-360 / BIP-361 / 后量子签名的进度，以及按地址类型统计的公钥暴露（P2PK、P2TR）
 
 ### 👤 我的
 本月定投与定投执行（额外加仓与今日结论同一条件）· 买入记录 · 持仓与 21M 积累进度 · 定投策略回测（含信号联动定投）与真实复盘
@@ -125,7 +126,7 @@ python3 -m http.server 8080
 
 版本规则：
 
-- **正式版**（如 V26.4.12）：版本号与构建号相同（V26.4.12 ↔ 26.4.12-日期），上传 GitHub，VPS 每 5 分钟自动同步。
+- **正式版**（如 V26.5）：版本号与构建号相同（V26.4.16 ↔ 26.4.16-日期；末尾 .0 可省略，V26.5 ↔ 26.5.0-日期），上传 GitHub，VPS 每 5 分钟自动同步。
 - **测试版**（如 V26 Beta 24）：只在本地验证，不上传。
 
 上传顺序：先上传 `assets/`，再上传页面（`index.html`、`ahr999.html`），最后上传 `sw.js`；保留服务器上已有的 `dca.html` 与 `data/`。
