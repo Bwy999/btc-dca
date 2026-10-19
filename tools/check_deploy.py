@@ -58,6 +58,13 @@ def main():
     if len({v for v in vals.values() if v}) > 1:
         fails.append("构建号不一致：" + "，".join(f"{k}={v}" for k, v in vals.items()))
 
+    # 1b. 正式版的版本号必须等于构建号（V26.4.12 ↔ 26.4.12-日期；末尾 .0 可省略：V26.5 ↔ 26.5.0-日期）；测试版（含 Beta）不检查
+    lab = re.search(r'const BUILD_LABEL="([^"]+)"', html)
+    if lab and "Beta" not in lab.group(1) and vals.get("BUILD_ID"):
+        num = vals["BUILD_ID"].split("-")[0]
+        if lab.group(1) not in ("V" + num, "V" + re.sub(r"\.0$", "", num)):
+            fails.append(f"版本号 {lab.group(1)} 与构建号 {vals['BUILD_ID']} 不一致")
+
     # 2. 页面引用的本地资源
     refs = set(re.findall(r'(?:src|href)="(?:\./)?((?:assets/)[^"?#]+)"', html))
     refs |= set(re.findall(r'I18N_SRC="(?:\./)?(assets/[^"]+)"', html))
@@ -100,7 +107,7 @@ def main():
 
     # 6. 预计算数据
     now = datetime.now(timezone.utc)
-    for p, need in (("data/monthly.json", "groups"), ("data/lth-chips.json", "daily"), ("data/daily-state.json", "today")):
+    for p, need in (("data/monthly.json", "groups"), ("data/lth-chips.json", "daily"), ("data/daily-state.json", "today"), ("data/quantum.json", "bips")):
         if not exists(p):
             (fails if require_data else notes).append(f"{p} 不存在" + ("" if require_data else "（由 GitHub 定时任务生成，部署包不含属正常）"))
             continue
