@@ -1,15 +1,15 @@
 "use strict";
 
-const SW_BUILD = "26.5.4-20261018";
-const CACHE_NAME = "btc-intelligence-v26-5-4-20261018";
+const SW_BUILD = "26.5.6-20261019";
+const CACHE_NAME = "btc-intelligence-v26-5-6-20261019";
 const CACHE_PREFIX = "btc-site:" + self.registration.scope + ":";
 const SCOPED_CACHE = CACHE_PREFIX + CACHE_NAME;
 // 带内容哈希的静态资源。文件内容不变，文件名就不变，更新时无需重新下载。
 const ASSETS = /*ASSETS*/[
-  "./assets/app.39813c087f.css",
+  "./assets/app.c22a03008a.css",
   "./assets/lightweight-charts.682f74d8c4.js",
   "./assets/seed-cycle.5a6f45f52a.js",
-  "./assets/app.04ae11c4c2.js",
+  "./assets/app.0eacbde54a.js",
   "./assets/ext-1.79fa106bab.js",
   "./assets/ext-2.bed6b0f62f.js",
   "./assets/ext-3.7181491f4f.js",
@@ -41,7 +41,7 @@ const ASSETS = /*ASSETS*/[
   "./assets/ext-30.b798596959.js",
 ]/*END*/;
 // 按需下载的资源（英文对照表）：不预缓存，但版本切换时不删除
-const OPTIONAL_ASSETS = /*OPTIONAL*/["./assets/i18n-en.fe251acd72.js"]/*OEND*/;
+const OPTIONAL_ASSETS = /*OPTIONAL*/["./assets/i18n-en.446a99be75.js"]/*OEND*/;
 const ASSET_CACHE = CACHE_PREFIX + "assets";
 const CORE = [
   "./",
