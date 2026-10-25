@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """V26.6 样式表整理：删除匹配不到任何元素的选择器、被后面同一规则完全覆盖的重复规则、空规则。
 
-用法：python3 tools/css_prune.py source/index.html [--write]
+用法：python3 tools/css_prune.py source/index.html [--hidden] [--write]
+--hidden：再删除只作用于「永远隐藏的元素」的样式（这些元素本身的隐藏规则保留）。
 不加 --write 只打印统计。保守原则：
 - 选择器里只要有一个类名或 id 在 HTML / 脚本里完全找不到（也找不到用字符串拼接生成的前缀），这个选择器才算无效；
 - 含 :is() :where() :not() :has() 的选择器一律保留；
@@ -67,9 +68,11 @@ def split_selectors(prelude):
     return parts
 
 class Pruner:
-    def __init__(self, text):
+    def __init__(self, text, hidden=None):
         self.text = text
+        self.hidden = hidden or set()   # 永远隐藏的单个类名 / id（如 .price-unit、#ctDetail）
         self.cache = {}
+        self.is_hide_rule = False
         self.removed_sel = 0; self.removed_rules = 0; self.removed_dupes = 0; self.removed_props = 0
     def alive(self, tok):
         if tok in self.cache: return self.cache[tok]
@@ -85,6 +88,9 @@ class Pruner:
         return ok
     def selector_dead(self, sel):
         if re.search(r':(is|where|not|has)\(', sel): return False
+        if self.hidden and not self.is_hide_rule:
+            toks = set(re.findall(r'([.#]-?[A-Za-z_][\w-]*)', re.sub(r'\[[^\]]*\]', '', sel)))
+            if toks & self.hidden: return True
         sel2 = re.sub(r'\[[^\]]*\]', '', sel)                 # 属性选择器里的值不算类名
         sel2 = re.sub(r'::?[\w-]+(\([^)]*\))?', '', sel2)       # 伪类、伪元素
         toks = re.findall(r'[.#](-?[A-Za-z_][\w-]*)', sel2)
@@ -105,6 +111,7 @@ class Pruner:
             if p.startswith("@"):
                 res.append(it); continue
             sels = split_selectors(pre)
+            self.is_hide_rule = bool(re.search(r'display\s*:\s*none\s*!important', body)) and not ctx
             keep = [s for s in sels if not self.selector_dead(s)]
             self.removed_sel += len(sels) - len(keep)
             if not keep or not body.strip():
@@ -180,12 +187,38 @@ def _drop_overridden(self, res):
 
 Pruner.drop_overridden = _drop_overridden
 
+def find_hidden(css):
+    """顶层、无条件的 display:none!important 规则里，只由一个类名或 id 组成的选择器 = 永远隐藏的元素。"""
+    hidden = set()
+    for it in split_blocks(css):
+        if it[0] != "RULE" or it[1].strip().startswith("@"): continue
+        if not re.search(r'display\s*:\s*none\s*!important', it[2]): continue
+        for sel in split_selectors(it[1]):
+            sel = sel.strip()
+            if re.fullmatch(r'[.#]-?[A-Za-z_][\w-]*', sel): hidden.add(sel)
+    # 有任何规则用 !important 把它重新显示出来（display 不是 none），就不算永远隐藏
+    def walk(c):
+        for it in split_blocks(c):
+            if it[0] != "RULE": continue
+            if it[1].strip().startswith("@"):
+                yield from walk(it[2]); continue
+            yield it
+    for it in walk(css):
+        m = re.search(r'display\s*:\s*([a-z-]+)\s*!important', it[2])
+        if m and m.group(1) != "none":
+            for tok in list(hidden):
+                if re.search(re.escape(tok) + r'(?![\w-])', it[1]): hidden.discard(tok)
+    return hidden
+
 def main():
     path = sys.argv[1]; write = "--write" in sys.argv
     src = open(path, encoding="utf-8").read()
     blocks = list(re.finditer(r'(<style[^>]*>)(.*?)(</style>)', src, re.S))
     text = re.sub(r'<style[^>]*>.*?</style>', ' ', src, flags=re.S)
-    pr = Pruner(text)
+    allcss = "\n".join(m.group(2) for m in blocks)
+    hidden = find_hidden(allcss) if "--hidden" in sys.argv else set()
+    if hidden: print("永远隐藏的元素：", " ".join(sorted(hidden)))
+    pr = Pruner(text, hidden)
     out, last, before, after = [], 0, 0, 0
     for m in blocks:
         css = m.group(2); before += len(css.encode())
