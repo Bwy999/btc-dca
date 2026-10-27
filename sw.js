@@ -1,7 +1,7 @@
 "use strict";
 
-const SW_BUILD = "27.0.2-20261027";
-const CACHE_NAME = "btc-intelligence-v27-0-2-20261027";
+const SW_BUILD = "27.0.3-20261027";
+const CACHE_NAME = "btc-intelligence-v27-0-3-20261027";
 const CACHE_PREFIX = "btc-site:" + self.registration.scope + ":";
 const SCOPED_CACHE = CACHE_PREFIX + CACHE_NAME;
 // 带内容哈希的静态资源。文件内容不变，文件名就不变，更新时无需重新下载。
