@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BUILD: 27.0.3-20261027 · SATS-GARDEN-V27.0.3 -->
+<!-- BUILD: 27.1.0-20261027 · SATS-GARDEN-V27.1 -->
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -9,7 +9,7 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Sats Garden" />
-  <meta name="btc-dca-build" content="27.0.3-20261027" />
+  <meta name="btc-dca-build" content="27.1.0-20261027" />
   <script>
 (function(){
   "use strict";
@@ -23,15 +23,17 @@
   function line(k,v){return "<div><b>"+k+"</b> "+String(v).replace(/</g,"&lt;")+"</div>"}
   function run(){
     var box=document.getElementById("sgDiag");if(!box){box=document.createElement("div");box.id="sgDiag";box.style.cssText="position:fixed;left:8px;right:8px;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:99999;max-height:60vh;overflow:auto;padding:10px 12px;border-radius:12px;background:rgba(0,0,0,.88);color:#fff;font:11px/1.45 ui-monospace,Menlo,monospace;white-space:normal";document.body.appendChild(box)}
-    var f=document.querySelector('details[data-module="addrdist"]'),sec=document.getElementById("addrDist"),panel=sec&&sec.querySelector(".ad-panel"),rows=document.getElementById("adRows"),hold=document.querySelector('details[data-module="holders"]');
+    var f=document.querySelector('details[data-module="walletdist"]'),sec=document.getElementById("walletDist"),panel=sec&&sec.querySelector(".hd-panel"),rows=document.getElementById("hdRows"),hold=document.querySelector('details[data-module="holders"]');
     var probe="无";if(f){var fb=f.getBoundingClientRect();var x=fb.left+fb.width/2,y=fb.bottom-8;if(y>0&&y<innerHeight){var el=document.elementFromPoint(x,y);probe=el?chain(el):"无"}else probe="不在屏幕内"}
     box.innerHTML=line("版本",typeof BUILD_ID!=="undefined"?BUILD_ID:"?")+line("浏览器",navigator.userAgent.replace(/.*(iPhone OS [\d_]+|Mac OS X [\d_]+|Android [\d.]+).*?(Version\/[\d.]+)?.*/,"$1 $2"))+
       line("折叠项",f?(f.open?"已展开":"未展开")+" · "+r(f):"找不到")+
-      line("位置",sec?chain(sec):"找不到 #addrDist")+
-      line("表格区 section",r(sec))+line("ad-panel",r(panel))+
+      line("位置",sec?chain(sec):"找不到 #walletDist")+
+      line("表格区 section",r(sec))+line("hd-panel",r(panel))+
       line("行数",rows?rows.children.length+" · "+(rows.textContent||"").slice(0,30):"找不到")+
       line("持币群体折叠",hold?(hold.open?"已展开":"未展开"):"找不到")+
       line("折叠项底部是谁",probe)+
+      line("数据源失败",(function(){var f=window.__sgNet&&window.__sgNet.stat.fail||{},k=Object.keys(f);return k.length?k.map(function(h){return h+"×"+f[h]}).join("  "):"无"})())+
+      line("用了旧副本",(function(){var n=window.__sgNet&&window.__sgNet.stat;return n?n.stale+" 项":"未启用"})())+
       line("脚本错误",errs.length?errs.join(" | "):"无");
   }
   function start(){run();setInterval(run,1000)}
@@ -50,7 +52,9 @@
   "use strict";
   if(!window.fetch||!window.indexedDB||window.__sgNet)return;
   var native=window.fetch.bind(window),DB="sg-net",ST="resp",FRESH=6*36e5,LIVE_MAX=3*864e5,MAX_BYTES=8e6,CAP=120e6;
-  var stat={fresh:0,stale:0,live:0,miss:0,urls:{}};
+  var stat={fresh:0,stale:0,live:0,miss:0,urls:{},fail:{}};
+  function failed(u){try{var h=new URL(u,location.href).hostname;if(h&&h!==location.hostname)stat.fail[h]=(stat.fail[h]||0)+1}catch(e){}}
+  function watch(p,u){return p.then(function(r){if(r&&!r.ok&&r.status!==304)failed(u);return r},function(e){failed(u);throw e})}
   window.__sgNet={stat:stat,version:1};
   function cls(u){
     var h=u.hostname,p=u.pathname,q=u.search;
@@ -86,7 +90,7 @@
       var req=typeof input==="string"?null:input,url=req?req.url:String(input),method=((init&&init.method)||(req&&req.method)||"GET").toUpperCase();
       if(method!=="GET")return native(input,init);
       var u=new URL(url,location.href),c=cls(u);
-      if(!c)return native(input,init);
+      if(!c)return u.origin===location.origin?native(input,init):watch(native(input,init),url);
       var key=u.href;
     }catch(e){return native(input,init)}
     return get(key).then(function(rec){
@@ -98,8 +102,8 @@
           note(key,"live");return r;
         }
         if(rec&&(c==="daily"||age<LIVE_MAX)){note(key,"stale");return resp(rec,"stale")}
-        note(key,"miss");return r;
-      },function(err){
+        note(key,"miss");failed(key);return r;
+      },function(err){failed(key);
         if(rec&&(c==="daily"||age<LIVE_MAX)){note(key,"stale");return resp(rec,"stale")}
         note(key,"miss");throw err;
       });
@@ -108,7 +112,7 @@
 })();
 </script>
 <script>(function(){var l=null;try{l=localStorage.getItem("btc_lang_v1")}catch(e){}if(l!=="zh"&&l!=="en"){var n=(navigator.languages&&navigator.languages[0])||navigator.language||"";l=/^zh/i.test(n)?"zh":"en"}window.BTC_LANG=l;var d=document.documentElement;d.lang=l==="en"?"en":"zh-CN";if(l==="en"){d.classList.add("i18n-pending");setTimeout(function(){d.classList.remove("i18n-pending")},2500)}})();</script>
-<script>const BUILD_ID="27.0.3-20261027";const BUILD_LABEL="V27.0.3";(function(){var T="btc_theme_v1",t=null;try{t=localStorage.getItem(T)}catch(e){}if(t!=="light"&&t!=="dark"){t=null}window.__themePinned=!!t;if(!t)t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.dataset.theme=t;})();</script>
+<script>const BUILD_ID="27.1.0-20261027";const BUILD_LABEL="V27.1";(function(){var T="btc_theme_v1",t=null;try{t=localStorage.getItem(T)}catch(e){}if(t!=="light"&&t!=="dark"){t=null}window.__themePinned=!!t;if(!t)t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.dataset.theme=t;})();</script>
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="data:image/png;base64,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" />
   <link rel="manifest" id="pwaManifest" />
@@ -344,9 +348,9 @@ button,input,select{font:inherit}
 .dot.spin{background:var(--market-caution);animation:blink 1s infinite}
 @keyframes blink{50%{opacity:.4}}
 .refresh{margin-left:auto;background:transparent;border:0;font-weight:700;cursor:pointer}
-.update-banner{display:none;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;padding:10px 12px;border-radius:var(--r-md);background:rgba(255,159,10,.12);color:var(--market-caution);font-size:13px;font-weight:700}
-.update-banner.on{display:flex}
-.update-banner button{border:0;background:var(--market-caution);color:var(--on-bright-signal);border-radius:var(--r-full);padding:5px 10px;font-size:13px;font-weight:700;white-space:nowrap}
+.update-notice{display:none;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;padding:10px 12px;border-radius:var(--r-md);background:rgba(255,159,10,.12);color:var(--market-caution);font-size:13px;font-weight:700}
+.update-notice.on{display:flex}
+.update-notice button{border:0;background:var(--market-caution);color:var(--on-bright-signal);border-radius:var(--r-full);padding:5px 10px;font-size:13px;font-weight:700;white-space:nowrap}
 .hbadge,.pill{font-size:13px;font-weight:700;padding:4px 9px;border-radius:var(--r-full);white-space:nowrap}
 .hbadge.good{background:var(--market-positive-tint);color:var(--market-positive)}
 .hbadge.warn{background:rgba(255,159,10,.12);color:var(--market-caution)}
@@ -1567,7 +1571,7 @@ body{background:var(--page-bg)}
 
 .aurum-hero .today-card .today-top{padding-top:0}
 /* 横幅出现时不破坏白纸的连续性 */
-.update-banner{margin-left:0;margin-right:0}
+.update-notice{margin-left:0;margin-right:0}
 /* ═══ V23.1d 收尾 ═══ */
 /* ② 情报标签：去掉填充色块，改发丝线轮廓 + 等宽字 */
 .aurum-hero .today-card .reason{background:transparent;border:1px solid var(--rule);color:var(--ink-body);font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.01em;font-variant-numeric:var(--num-feat);padding:6px 11px;border-radius:var(--r-full)}
@@ -2684,9 +2688,9 @@ html[data-tab="value"] body.focus-layout #todayCard :is(.today-kpi,.intel-item) 
 /* 主要按钮：橙色只表达现价，主操作改为深色实心按钮 */
 html[data-tab="value"] body.focus-layout #todayCard #actionBtn{background:var(--text-primary)!important;color:var(--surface-0)!important;border:0!important;box-shadow:none!important;font-weight:600}
 /* —— V25.2.3 更新提示：中性卡片 + 深色按钮（橙色只表达现价） —— */
-.focus-layout .aurum-hero .update-banner{gap:12px;margin:4px 20px 20px!important;padding:10px 10px 10px 14px;border-radius:16px;font-size:13px}
-.focus-layout .aurum-hero .update-banner span{min-width:0}
-.focus-layout .aurum-hero .update-banner button{padding:0 16px;border-radius:10px;font-size:13px}
+.focus-layout .aurum-hero .update-notice{gap:12px;margin:4px 20px 20px!important;padding:10px 10px 10px 14px;border-radius:16px;font-size:13px}
+.focus-layout .aurum-hero .update-notice span{min-width:0}
+.focus-layout .aurum-hero .update-notice button{padding:0 16px;border-radius:10px;font-size:13px}
 /* —— V25.2.3 首屏精修 —— */
 /* 1. 加载进度条与分割线合并为一条细线，去掉首屏底部的空白 */
 .focus-layout .aurum-hero .hero-ahr{margin-bottom:0}
@@ -2702,8 +2706,8 @@ html[data-tab="value"] body.focus-layout #todayCard #actionBtn{background:var(--
 :root[data-theme="dark"] .focus-layout .hero-spec-cur{background:#f5f5f7;box-shadow:0 0 0 .5px rgba(255,255,255,.2),0 2px 8px rgba(0,0,0,.6)}
 .focus-layout .hero-spec-tick{top:17px;font-size:11px;font-variant-numeric:tabular-nums}
 /* 3. 更新提示：中性底色 + 深色按钮，橙色只用于现价 */
-.focus-layout .aurum-hero .update-banner,.focus-layout .aurum-hero .update-banner.on{background:var(--surface-tint)!important;border:1px solid var(--border-subtle)!important;color:var(--text-secondary)!important;font-weight:400!important;letter-spacing:normal!important}
-.focus-layout .aurum-hero .update-banner button{background:var(--text-primary)!important;color:var(--surface-0)!important;border:0!important;font-weight:600!important;flex:none;min-height:36px}
+.focus-layout .aurum-hero .update-notice,.focus-layout .aurum-hero .update-notice.on{background:var(--surface-tint)!important;border:1px solid var(--border-subtle)!important;color:var(--text-secondary)!important;font-weight:400!important;letter-spacing:normal!important}
+.focus-layout .aurum-hero .update-notice button{background:var(--text-primary)!important;color:var(--surface-0)!important;border:0!important;font-weight:600!important;flex:none;min-height:36px}
 /* —— V25.2.4 首页精修 —— */
 /* 1. 主题切换：只保留图标，圆形按钮 */
 /* 2. AHR 走势：时间范围占满整行，4 段等宽，与上方标题行对齐 */
@@ -3407,39 +3411,39 @@ details[data-module="coststate"][open]>summary small.live{display:none!important
 /* 持币群体：「相对变化 · 存量占比」两段各占一行，不在词中间断开 */
 .holder-summary-card>span[id$="Sub"]{word-break:keep-all;overflow-wrap:normal}
 /* —— V26.7：持币地址分布 —— 三列：余额档位 · 地址数 · 持币量（BTC / USD 切换）；数值叠在比例条上 */
-.ad-panel{margin-top:4px}
-.ad-head,.ad-row{display:grid;grid-template-columns:minmax(92px,1.05fr) 1fr 1fr;gap:6px;align-items:center}
-.ad-head{padding:0 2px 8px;color:var(--text-tertiary);font-weight:600}
-.ad-head>span:nth-child(2){padding-left:8px}
-.ad-unit{display:inline-flex;justify-self:start;padding:2px;border-radius:999px;background:color-mix(in srgb,var(--text-tertiary) 14%,transparent)}
-.ad-unit button{min-width:40px;min-height:26px;padding:0 9px;border:0;border-radius:999px;background:transparent;color:var(--text-tertiary);font:inherit;font-size:11px;font-weight:700;cursor:pointer}
-.ad-unit button[aria-pressed="true"]{background:var(--surface-0);color:var(--text-primary);box-shadow:0 1px 3px rgba(0,0,0,.10),0 0 0 .5px rgba(0,0,0,.05)}
-.ad-rows{display:flex;flex-direction:column;gap:4px}
-.ad-row{position:relative;min-height:34px;padding:0 2px;border-radius:9px}
-.ad-band{color:var(--text-secondary);font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:-.01em}
-.ad-cell{position:relative;display:flex;align-items:center;height:28px;padding:0 8px;border-radius:7px;overflow:hidden;background:color-mix(in srgb,var(--text-tertiary) 7%,transparent)}
-.ad-cell>i{position:absolute;inset:0 auto 0 0;border-radius:7px;min-width:2px}
+.hd-panel{margin-top:4px}
+.hd-head,.hd-row{display:grid;grid-template-columns:minmax(92px,1.05fr) 1fr 1fr;gap:6px;align-items:center}
+.hd-head{padding:0 2px 8px;color:var(--text-tertiary);font-weight:600}
+.hd-head>span:nth-child(2){padding-left:8px}
+.hd-unit{display:inline-flex;justify-self:start;padding:2px;border-radius:999px;background:color-mix(in srgb,var(--text-tertiary) 14%,transparent)}
+.hd-unit button{min-width:40px;min-height:26px;padding:0 9px;border:0;border-radius:999px;background:transparent;color:var(--text-tertiary);font:inherit;font-size:11px;font-weight:700;cursor:pointer}
+.hd-unit button[aria-pressed="true"]{background:var(--surface-0);color:var(--text-primary);box-shadow:0 1px 3px rgba(0,0,0,.10),0 0 0 .5px rgba(0,0,0,.05)}
+.hd-rows{display:flex;flex-direction:column;gap:4px}
+.hd-row{position:relative;min-height:34px;padding:0 2px;border-radius:9px}
+.hd-band{color:var(--text-secondary);font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:-.01em}
+.hd-cell{position:relative;display:flex;align-items:center;height:28px;padding:0 8px;border-radius:7px;overflow:hidden;background:color-mix(in srgb,var(--text-tertiary) 7%,transparent)}
+.hd-cell>i{position:absolute;inset:0 auto 0 0;border-radius:7px;min-width:2px}
 
-.ad-s>i{background:color-mix(in srgb,var(--brand,#f7931a) 32%,transparent)}
-.ad-cell>b{position:relative;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--text-primary);white-space:nowrap}
-.ad-row.is-you{background:color-mix(in srgb,var(--brand,#f7931a) 10%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--brand,#f7931a) 40%,transparent)}
-.ad-row.is-you .ad-band{color:var(--text-primary)}
-.ad-you{display:inline-block;margin-left:5px;padding:1px 6px;border-radius:999px;background:var(--brand,#f7931a);color:#fff;font-size:10px;font-weight:700;vertical-align:1px}
-.ad-total{margin-top:6px;padding-top:8px;border-top:1px solid var(--border-subtle);border-radius:0}
-.ad-total .ad-cell{background:transparent}
-.ad-total .ad-band{color:var(--text-primary)}
-.ad-empty{padding:28px 0;color:var(--text-tertiary);font-size:13px;text-align:center}
+.hd-s>i{background:color-mix(in srgb,var(--brand,#f7931a) 32%,transparent)}
+.hd-cell>b{position:relative;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--text-primary);white-space:nowrap}
+.hd-row.is-you{background:color-mix(in srgb,var(--brand,#f7931a) 10%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--brand,#f7931a) 40%,transparent)}
+.hd-row.is-you .hd-band{color:var(--text-primary)}
+.hd-you{display:inline-block;margin-left:5px;padding:1px 6px;border-radius:999px;background:var(--brand,#f7931a);color:#fff;font-size:10px;font-weight:700;vertical-align:1px}
+.hd-total{margin-top:6px;padding-top:8px;border-top:1px solid var(--border-subtle);border-radius:0}
+.hd-total .hd-cell{background:transparent}
+.hd-total .hd-band{color:var(--text-primary)}
+.hd-empty{padding:28px 0;color:var(--text-tertiary);font-size:13px;text-align:center}
 /* V26.7.4：列名带颜色标记，与下方条的颜色一一对应（蓝 = 地址数量，橙 = 持币量）；单位切换移到标题行 */
-.ad-head{font-size:12px}
-.ad-key{display:inline-flex;align-items:center;gap:6px;font-weight:700}
-.ad-key::before{content:"";flex:none;width:10px;height:10px;border-radius:3px}
-.ad-key.a{color:color-mix(in srgb,var(--accent,#0a84ff) 85%,var(--text-primary))}
-.ad-key.a::before{background:color-mix(in srgb,var(--accent,#0a84ff) 55%,transparent)}
-.ad-key.s{color:color-mix(in srgb,var(--brand,#f7931a) 85%,var(--text-primary));padding-left:8px}
-.ad-key.s::before{background:color-mix(in srgb,var(--brand,#f7931a) 60%,transparent)}
-#addrDist .module-title-row>.ad-unit{flex:none;margin-left:auto;justify-self:end}
-#addrDist .module-title-row>.ad-unit+.head-status{margin-left:8px!important}
-.ad-a>i{background:color-mix(in srgb,var(--accent,#0a84ff) 32%,transparent)}
+.hd-head{font-size:12px}
+.hd-key{display:inline-flex;align-items:center;gap:6px;font-weight:700}
+.hd-key::before{content:"";flex:none;width:10px;height:10px;border-radius:3px}
+.hd-key.a{color:color-mix(in srgb,var(--accent,#0a84ff) 85%,var(--text-primary))}
+.hd-key.a::before{background:color-mix(in srgb,var(--accent,#0a84ff) 55%,transparent)}
+.hd-key.s{color:color-mix(in srgb,var(--brand,#f7931a) 85%,var(--text-primary));padding-left:8px}
+.hd-key.s::before{background:color-mix(in srgb,var(--brand,#f7931a) 60%,transparent)}
+#walletDist .module-title-row>.hd-unit{flex:none;margin-left:auto;justify-self:end}
+#walletDist .module-title-row>.hd-unit+.head-status{margin-left:8px!important}
+.hd-a>i{background:color-mix(in srgb,var(--accent,#0a84ff) 32%,transparent)}
 
 
 /* —— V26.8：长期持有者币龄销毁 —— 橙线 = 每日 LTH 币龄销毁，灰线 = BTC 价格（右轴，对数），红色虚线 = 异动线（近 1 年 95% 分位），红圈 = 超过异动线的日子 */
@@ -3458,8 +3462,8 @@ details[data-module="coststate"][open]>summary small.live{display:none!important
 .cdd-legend .k-hit i{width:10px!important;height:10px!important;border-radius:50%;border:2px solid var(--market-negative)!important;box-sizing:border-box}
 .cdd-chart{position:relative;height:230px;margin-top:4px}
 .cdd-chart canvas{display:block;width:100%;height:100%;touch-action:pan-y}
-.cdd-chart .ad-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
-.cdd-chart .ad-empty[hidden]{display:none}
+.cdd-chart .hd-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.cdd-chart .hd-empty[hidden]{display:none}
 #cddLive{display:block;min-height:18px;font-size:12px}
 @media (min-width:1024px){.cdd-chart{height:280px}}
 /* V26.9.3：预测市场两张卡片——标题单独一行、状态在下一行，标题不再被挤成两行，两张卡片数字对齐 */
@@ -3479,8 +3483,8 @@ details[data-module="coststate"][open]>summary small.live{display:none!important
 #sigDca .sd-verdict{line-height:1.6}
 /* V27.0.1：持币地址分布单独成为「持有者」卡片里的一项；标题由折叠栏显示，BTC / USD 切换放在表格上方右侧 */
 /* V27.0.2：结构简化——折叠栏直接放数据日；表格区不再借用模块标题行（避免 iPhone Safari 上整块不显示） */
-.ad-toolbar{display:flex;justify-content:flex-end;margin:0 0 8px}
-details[data-module="addrdist"][open]>#addrDist,details[data-module="addrdist"][open]>#addrDist .ad-panel{display:block!important;visibility:visible!important;opacity:1!important;height:auto!important;max-height:none!important;overflow:visible!important;content-visibility:visible!important}
+.hd-toolbar{display:flex;justify-content:flex-end;margin:0 0 8px}
+details[data-module="walletdist"][open]>#walletDist,details[data-module="walletdist"][open]>#walletDist .hd-panel{display:block!important;visibility:visible!important;opacity:1!important;height:auto!important;max-height:none!important;overflow:visible!important;content-visibility:visible!important}
 /* 链上分组卡：折叠箭头相对折叠栏定位（原来相对整张卡，展开后箭头跑到卡片中间） */
 .focus-layout .chain-card>.module-fold>summary{position:relative}
 /* —— V26.5 Beta 3：「我的」总览卡 —— */
@@ -3548,8 +3552,8 @@ details[data-module="addrdist"][open]>#addrDist,details[data-module="addrdist"][
     
     <button class="btn-refresh" id="refreshBtn" type="button" aria-label="更新数据" onclick="fetchLive(true)"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg></button>
   </div>
-  <div class="update-banner" id="updateBanner"><span id="updateText">有新版本。</span><button onclick="reloadLatest()">更新</button></div>
-  <div class="update-banner" id="backupBanner"><span id="backupText">建议导出备份。</span><button onclick="exportBackup()">导出</button></div>
+  <div class="update-notice" id="updateBanner"><span id="updateText">有新版本。</span><button onclick="reloadLatest()">更新</button></div>
+  <div class="update-notice" id="backupBanner"><span id="backupText">建议导出备份。</span><button onclick="exportBackup()">导出</button></div>
 
   
   </div>
@@ -4090,7 +4094,7 @@ details[data-module="addrdist"][open]>#addrDist,details[data-module="addrdist"][
 
 <details class="health health-center" id="healthPanel">
     <summary><span>数据健康中心</span><span id="healthSummary">等待检查</span></summary>
-    <div class="health-center-body"><div class="focus-runtime"><span>版本 <b class="num" id="buildBadge">V27.0.3</b></span><span>UTC 日期 <b class="num" id="heroDate">--</b></span><span class="hbadge" id="healthBadge">--</span></div>
+    <div class="health-center-body"><div class="focus-runtime"><span>版本 <b class="num" id="buildBadge">V27.1</b></span><span>UTC 日期 <b class="num" id="heroDate">--</b></span><span class="hbadge" id="healthBadge">--</span></div>
       <div class="health-hero">
         <div class="health-score-ring" id="healthScoreRing" role="img" aria-label="数据健康度等待检查"><b class="num" id="healthScore">--</b><small>HEALTH</small></div>
         <div class="health-hero-copy">
@@ -4466,7 +4470,7 @@ details[data-module="addrdist"][open]>#addrDist,details[data-module="addrdist"][
       </div>
     </div>
     <span class="chart-live" id="cddLive"></span>
-    <div class="cdd-chart"><canvas id="cddCanvas" aria-label="长期持有者每日币龄销毁与 BTC 价格"></canvas><div class="ad-empty" id="cddEmpty">等待数据</div></div>
+    <div class="cdd-chart"><canvas id="cddCanvas" aria-label="长期持有者每日币龄销毁与 BTC 价格"></canvas><div class="hd-empty" id="cddEmpty">等待数据</div></div>
   </section><section class="sec" id="lthNupl" aria-label="长期持有者 NUPL"><div class="tiles lth-nupl-tiles"><div class="tile lth-nupl">
         <div class="tile-name"><span class="tile-live"></span>长期持有者 NUPL<span class="fresh-badge" id="freshLth">--</span></div>
         <div class="lth-head">
@@ -4577,11 +4581,11 @@ details[data-module="addrdist"][open]>#addrDist,details[data-module="addrdist"][
     </div>
   </section>
 </details>
-<details class="module-fold" data-module="addrdist"><summary><span><b>持币地址分布</b><span class="fresh-badge fold-date" id="freshAddrDist">等待数据</span></span></summary><section class="sec addr-dist-section" id="addrDist" aria-label="比特币持币地址分布">
-  <div class="ad-panel">
-    <div class="ad-toolbar"><span class="ad-unit" role="group" aria-label="持币量单位"><button type="button" data-ad-unit="btc" aria-pressed="true">BTC</button><button type="button" data-ad-unit="usd" aria-pressed="false">USD</button></span></div>
-    <div class="ad-head"><span id="adHeadBand">余额 · BTC</span><span class="ad-key a" id="adHeadAddr">地址数量</span><span class="ad-key s" id="adHeadHold">持币量</span></div>
-    <div class="ad-rows" id="adRows"><div class="ad-empty">等待数据</div></div>
+<details class="module-fold" data-module="walletdist"><summary><span><b>持币地址分布</b><span class="fresh-badge fold-date" id="freshWalletDist">等待数据</span></span></summary><section class="sec addr-dist-section" id="walletDist" aria-label="比特币持币地址分布">
+  <div class="hd-panel">
+    <div class="hd-toolbar"><span class="hd-unit" role="group" aria-label="持币量单位"><button type="button" data-hd-unit="btc" aria-pressed="true">BTC</button><button type="button" data-hd-unit="usd" aria-pressed="false">USD</button></span></div>
+    <div class="hd-head"><span id="hdHeadBand">余额 · BTC</span><span class="hd-key a" id="hdHeadAddr">地址数量</span><span class="hd-key s" id="hdHeadHold">持币量</span></div>
+    <div class="hd-rows" id="hdRows"><div class="hd-empty">等待数据</div></div>
   </div>
 </section></details>
 </div>
@@ -14369,7 +14373,11 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
     var ch=raw("lthChipsNow");tile("cg_holders","chips",ch);
   }
   // 分组结论需要成本与深度亏损数据：打开链上页时就开始读取（不必等展开模块）
-  var orig=window.setTab;if(typeof orig==="function")window.setTab=function(t){var r=orig.apply(this,arguments);if(t==="chain"){try{initCostBasisPrice()}catch(e){}try{initDeepLoss()}catch(e){}setTimeout(paint,800)}return r};
+  // V27.1：筹码集中度也在打开链上页时就开始计算（原来要点开「长期持有者」才算，摘要一直是灰色占位条）；
+  // 直接打开在链上页（上次停留在链上）时同样预热。
+  function warm(){try{initCostBasisPrice()}catch(e){}try{initDeepLoss()}catch(e){}try{if(typeof window.initLthChips==="function")window.initLthChips()}catch(e){}setTimeout(paint,800)}
+  var orig=window.setTab;if(typeof orig==="function")window.setTab=function(t){var r=orig.apply(this,arguments);if(t==="chain")warm();return r};
+  if(document.documentElement.dataset.tab==="chain")setTimeout(warm,300);
   document.addEventListener("tb:update",paint);setInterval(paint,10000);setTimeout(paint,1500);
   // V26.6.2：分组摘要的数据来源一变就立即刷新（原来最多要等 10 秒，筹码集中度等会先显示骨架条）
   (function(){var q=0,ids=["costBasisSth", "costBasisSthGap", "lossHeroValue", "lthChipsNow"];function kick(){if(!q)q=setTimeout(function(){q=0;paint()},120)}var mo=new MutationObserver(kick);ids.forEach(function(id){var e=document.getElementById(id);if(e)mo.observe(e,{childList:true,characterData:true,subtree:true})})})();
@@ -14526,7 +14534,7 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
   function price(){var x=st(),p=x&&+x.price;return p>0?p:0}
   function held(){var x=st(),h=x&&x.hd;return h?Math.max(0,(+h.d||0)+(+h.l||0)):0}
   function badge(){
-    var b=$("freshAddrDist");if(!b)return;
+    var b=$("freshWalletDist");if(!b)return;
     var t,c;
     if(data){var ms=Date.parse(data.day+"T00:00:00Z"),age=(Date.now()-ms)/864e5,md=data.day.slice(5);
       if(age>3){t=(en()?"Stale · ":"滞后 · ")+md;c="warn"}else{t=(en()?"Data date · ":"数据日 · ")+md;c="good"}}
@@ -14547,22 +14555,22 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
   function pct(v){return v<=0?"0%":v<0.01?"<0.01%":v<1?v.toFixed(2)+"%":v<10?v.toFixed(1)+"%":v.toFixed(1)+"%"}
   function render(){
     badge();
-    var box=$("adRows");if(!box)return;
+    var box=$("hdRows");if(!box)return;
     var E2=en();
-    var hb=$("adHeadBand"),ha=$("adHeadAddr"),hh=$("adHeadHold");if(hb)hb.textContent=E2?"Balance · BTC":"余额 · BTC";if(ha)ha.textContent=E2?"Addresses":"地址数量";if(hh)hh.textContent=E2?"Holdings":"持币量";
-    document.querySelectorAll("[data-ad-unit]").forEach(function(x){x.setAttribute("aria-pressed",x.dataset.adUnit===unit?"true":"false")});
-    if(!data){box.innerHTML='<div class="ad-empty">'+(loading?(E2?"Syncing…":"同步中…"):failed?(E2?"Unavailable":"暂不可用"):(E2?"Waiting for data":"等待数据"))+'</div>';return}
+    var hb=$("hdHeadBand"),ha=$("hdHeadAddr"),hh=$("hdHeadHold");if(hb)hb.textContent=E2?"Balance · BTC":"余额 · BTC";if(ha)ha.textContent=E2?"Addresses":"地址数量";if(hh)hh.textContent=E2?"Holdings":"持币量";
+    document.querySelectorAll("[data-hd-unit]").forEach(function(x){x.setAttribute("aria-pressed",x.dataset.hdUnit===unit?"true":"false")});
+    if(!data){box.innerHTML='<div class="hd-empty">'+(loading?(E2?"Syncing…":"同步中…"):failed?(E2?"Unavailable":"暂不可用"):(E2?"Waiting for data":"等待数据"))+'</div>';return}
     var p=price(),usd=unit==="usd"&&p>0,rows=data.rows;
     var maxA=0,maxS=0,totA=0,totS=0;rows.forEach(function(r){maxA=Math.max(maxA,r.count);maxS=Math.max(maxS,r.supply);totA+=r.count;totS+=r.supply});
     var h=held(),you=-1;if(h>0){for(var i=BANDS.length-1;i>=0;i--){if(h>=BANDS[i].lo){you=i;break}}}
     var sv=function(v){return usd?"$"+compact(v*p):num(v)};
     var html=rows.map(function(r,i){
       var wa=maxA>0?Math.max(r.count>0?1:0,r.count/maxA*100):0,ws=maxS>0?Math.max(r.supply>0?1:0,r.supply/maxS*100):0;
-      return '<div class="ad-row'+(i===you?' is-you':'')+'"><span class="ad-band">'+BANDS[i].label+(i===you?'<em class="ad-you">'+(E2?"You":"你")+'</em>':'')+'</span>'+
-        '<span class="ad-cell ad-a" title="'+(r.count/totA*100).toFixed(2)+'%"><i style="width:'+wa.toFixed(2)+'%"></i><b>'+num(r.count)+'</b></span>'+
-        '<span class="ad-cell ad-s" title="'+(r.supply/totS*100).toFixed(2)+'%"><i style="width:'+ws.toFixed(2)+'%"></i><b>'+sv(r.supply)+'</b></span></div>';
+      return '<div class="hd-row'+(i===you?' is-you':'')+'"><span class="hd-band">'+BANDS[i].label+(i===you?'<em class="hd-you">'+(E2?"You":"你")+'</em>':'')+'</span>'+
+        '<span class="hd-cell hd-a" title="'+(r.count/totA*100).toFixed(2)+'%"><i style="width:'+wa.toFixed(2)+'%"></i><b>'+num(r.count)+'</b></span>'+
+        '<span class="hd-cell hd-s" title="'+(r.supply/totS*100).toFixed(2)+'%"><i style="width:'+ws.toFixed(2)+'%"></i><b>'+sv(r.supply)+'</b></span></div>';
     }).join("");
-    html+='<div class="ad-row ad-total"><span class="ad-band">'+(E2?"Total":"合计")+'</span><span class="ad-cell ad-a"><b>'+num(totA)+'</b></span><span class="ad-cell ad-s"><b>'+sv(totS)+'</b></span></div>';
+    html+='<div class="hd-row hd-total"><span class="hd-band">'+(E2?"Total":"合计")+'</span><span class="hd-cell hd-a"><b>'+num(totA)+'</b></span><span class="hd-cell hd-s"><b>'+sv(totS)+'</b></span></div>';
     box.innerHTML=html;
   }
   async function load(force){
@@ -14582,8 +14590,8 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
     finally{loading=false;render()}
   }
   function init(){
-    var sec=$("addrDist");if(!sec)return;
-    sec.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-ad-unit]");if(!b)return;unit=b.dataset.adUnit;render()});
+    var sec=$("walletDist");if(!sec)return;
+    sec.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-hd-unit]");if(!b)return;unit=b.dataset.hdUnit;render()});
     var started=false,go=function(){if(started)return;started=true;load(false)};
     if("IntersectionObserver" in window){var io=new IntersectionObserver(function(es){if(es.some(function(x){return x.isIntersecting})){io.disconnect();go()}},{rootMargin:"600px 0px"});io.observe(sec.closest("details")||sec)}else go();
     // 跟随持币群体的「更新」按钮一起刷新
