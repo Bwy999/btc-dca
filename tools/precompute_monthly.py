@@ -23,6 +23,8 @@ GROUPS = [
     # 顶底区间（与网页 SER_A / SER_B 完全一致）
     ["date", "lth_nupl", "lth_supply_in_loss_share", "utxos_over_1y_old_transfer_volume_sum_1m", "price", "nupl", "sth_nupl", "supply_in_profit_share", "reserve_risk"],
     ["date", "mvrv", "puell_multiple", "price_sma_111d", "price_sma_350d_x2"],
+    # V27.5：顶部证据「长期持有者连续减持」（与网页 SER_C 一致）
+    ["date", "lth_supply_delta_1m"],
     # 分析页数据化解读
     ["date", "price", "mvrv", "sth_nupl", "price_sma_200w_ratio"],
 ]

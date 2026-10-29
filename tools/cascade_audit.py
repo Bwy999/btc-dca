@@ -8,7 +8,7 @@
 """
 import asyncio, json, os, sys, glob
 
-TABS = ["now", "value", "chain", "mine"]
+TABS = ["now", "value", "chain", "dca", "mine"]
 
 async def run(src, out, fixture, only):
     from playwright.async_api import async_playwright
