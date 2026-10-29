@@ -1,0 +1,162 @@
+
+(function(){
+  "use strict";
+  // V26.3：顶底区间。门槛 = 过去 48 个月的分位（至少 24 个有效月），每月只用当时已知数据。
+  //  5 类指标先在类内平均，再合成综合分（0–100）：
+  //   估值利润：MVRV、NUPL、LTH NUPL、Reserve Risk、获利筹码占比、PSIL（取反）
+  //   短期情绪：STH NUPL；矿工：Puell；老币行为：1 年以上老币月度重新流通；趋势：Pi Cycle（111 日均线 ÷ 350 日均线×2）
+  //  底部区：综合分 ≤ 25。顶部区：Reserve Risk 分位 ≥ 75；若 Pi Cycle 或老币放量也 ≥ 75，记为「强」。
+  var KEY="btc_bitview_topbottom_v2",TTL=12*3600*1000,W=48,MIN=24,inited=false,M=null;
+  // V26.4：GitHub 每天预先下载的月度序列（data/monthly.json）；缺失、超过 48 小时或缺组时回到直接请求 Bitview
+  if(!window.monthlyRaw){var _mp=null;window.monthlyRaw=function(ser){
+    if(!_mp)_mp=fetch("data/monthly.json?d="+new Date().toISOString().slice(0,10),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).catch(function(){return null});
+    return _mp.then(function(j){if(!j||j.v!==1||!j.groups)return null;var age=Date.now()-Date.parse(j.generated);if(!(age<48*3600*1000))return null;return j.groups[ser.join(",")]||null})}}
+  var SER_A=["date","lth_nupl","lth_supply_in_loss_share","utxos_over_1y_old_transfer_volume_sum_1m","price","nupl","sth_nupl","supply_in_profit_share","reserve_risk"];
+  var SER_B=["date","mvrv","puell_multiple","price_sma_111d","price_sma_350d_x2"];
+  // V27.5：顶部证据之一「长期持有者连续减持」需要的月度序列
+  var SER_C=["date","lth_supply_delta_1m"];
+  var FAMS=[["value",["mvrv","mnupl","nupl","rrl","sip","psilInv"],"估值利润","Valuation"],["sth",["snupl"],"短期情绪","Short-term"],["miner",["puell"],"矿工","Miners"],["old",["rev"],"老币行为","Old coins"],["trend",["pi"],"趋势","Trend"]];
+  function $(id){return document.getElementById(id)}
+  function E(){return window.BTC_LANG==="en"}
+  function num(v){if(v==null||v==="")return null;v=+v;return Number.isFinite(v)?v:null}
+  function pt(v){return v==null?"--":(v>=0?"+":"")+(v*100).toFixed(0)+"%"}
+  var P=null;
+  function rp(a,i){if(i+1<MIN)return null;var lo=Math.max(0,i-W+1),n=0,c=0;for(var j=lo;j<=i;j++){c++;if(a[j]<=a[i])n++}return n/c*100}
+  function rpCol(a){var out=[];for(var i=0;i<a.length;i++){if(a[i]==null){out.push(null);continue}var n=0,c=0;for(var j=Math.max(0,i-W+1);j<=i;j++){if(a[j]==null)continue;c++;if(a[j]<=a[i])n++}out.push(c>=MIN?n/c*100:null)}return out}
+  function prep(){
+    var col=function(k){return M.map(function(r){return r[k]})};
+    P={};["mvrv","mnupl","nupl","rrl","sip","psil","snupl","puell","rev","pi"].forEach(function(k){P[k]=rpCol(col(k))});
+    P.psilInv=P.psil.map(function(v){return v==null?null:100-v});
+  }
+  function lthDist(i){var x=M[i]&&M[i].lth;if(x==null||!(x<0))return false;var s3=0;for(var j=Math.max(0,i-2);j<=i;j++)s3+=(M[j].lth||0);return s3<0}
+  function mvrvDiv(i){var mv=M[i]&&M[i].mvrv;if(mv==null||!(mv>1.5))return false;var hp=0,hm=0;
+    for(var j=Math.max(0,i-24);j<=i;j++){if(M[j].price>hp)hp=M[j].price;if(j<i&&M[j].mvrv>hm)hm=M[j].mvrv}
+    return hm>0&&M[i].price>=.85*hp&&mv<=.85*hm}
+  function evalAt(i){
+    var fam={},vals=[];
+    FAMS.forEach(function(f){var xs=f[1].map(function(k){return P[k][i]}).filter(function(v){return v!=null});fam[f[0]]=xs.length?xs.reduce(function(a,b){return a+b},0)/xs.length:null;if(fam[f[0]]!=null)vals.push(fam[f[0]])});
+    var score=vals.length>=3?vals.reduce(function(a,b){return a+b},0)/vals.length:null;
+    if(score==null)return null;
+    var rr=P.rrl[i],pi=P.pi[i],rev=P.rev[i];
+    // V27.5：顶部区 = 三项证据满足两项
+    //   ① Reserve Risk 4 年分位 ≥ 75
+    //   ② 长期持有者连续减持：当月净减持，且近 3 个月合计也是净减持
+    //   ③ MVRV 背离：价格在近 2 年最高价的 85% 以内，MVRV 却比此前 2 年最高 MVRV 低 15% 以上（且 MVRV > 1.5，处在牛市阶段）
+    var eRR=rr!=null&&rr>=75,eLTH=lthDist(i),eDIV=mvrvDiv(i),cnt=(eRR?1:0)+(eLTH?1:0)+(eDIV?1:0);
+    var top=cnt>=2,strong=top&&((pi||0)>=75||(rev||0)>=75);
+    return{score:score,fam:fam,rr:rr,pi:pi,rev:rev,eRR:eRR,eLTH:eLTH,eDIV:eDIV,cnt:cnt,bottom:score<=25.0001,top:top,strong:strong,r:M[i]};
+  }
+  async function fetchCols(ser,start){
+    var url=bitviewBulkUrl(ser,start).replace("index=day1","index=month1"),raw=(start==="2012-01-01"&&window.monthlyRaw?await window.monthlyRaw(ser):null)||await tryFetch(url,15000),out={};
+    var cols=ser.map(function(n,i){return pickSeries(raw,n,i)});if(!cols.every(Array.isArray))throw new Error("bad");
+    for(var i=0;i<cols[0].length;i++){var m=String(cols[0][i]).slice(0,7);if(!/^\d{4}-\d{2}$/.test(m))continue;var o={};ser.forEach(function(n,k){if(k)o[n]=num(cols[k][i])});out[m]=o}
+    return out;
+  }
+  async function load(){
+    var c=null;try{c=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}
+    if(c&&c.rows&&c.rows.length){M=c.rows;prep();render()}
+    if(c&&Date.now()-c.ts<TTL)return;
+    try{
+      var A=await fetchCols(SER_A,"2012-01-01"),B=await fetchCols(SER_B,"2012-01-01").catch(function(){return {}}),C=await fetchCols(SER_C,"2012-01-01").catch(function(){return {}});
+      var rows=Object.keys(A).sort().map(function(m){var a=A[m],b=B[m]||{};
+        return{m:m,nupl:a.lth_nupl,psil:a.lth_supply_in_loss_share,rev:a.utxos_over_1y_old_transfer_volume_sum_1m,price:a.price,mnupl:a.nupl,snupl:a.sth_nupl,sip:a.supply_in_profit_share,
+          rrl:a.reserve_risk>0?Math.log10(a.reserve_risk):null,mvrv:b.mvrv,lth:(C[m]||{}).lth_supply_delta_1m,puell:b.puell_multiple,pi:b.price_sma_111d>0&&b.price_sma_350d_x2>0?b.price_sma_111d/b.price_sma_350d_x2:null}}).filter(function(r){return r.price>0&&r.nupl!=null});
+      if(rows.length<36)throw new Error("short");
+      M=rows;prep();try{localStorage.setItem(KEY,JSON.stringify({ts:Date.now(),rows:rows}))}catch(e){}
+      render();
+    }catch(e){if(!M){$("ctHeadline").textContent=E()?"Unavailable":"暂不可用";$("ctDetail").textContent=E()?"Bitview monthly history could not be loaded; it will retry.":"Bitview 月度历史暂时无法读取，稍后自动重试。";var f=$("ctFresh");f.textContent=E()?"Unavailable":"暂不可用";f.className="fresh-badge warn"}}
+  }
+  // V26.4：底部仪表 = 100 − 综合分（≥ 75 即综合分 ≤ 25，进入底部区）；顶部仪表 = Reserve Risk 4 年分位（≥ 75 进入顶部区）
+  function gauge(el,val,on,note,pill,sig){
+    if(!el)return;var L=216.77,v=Math.max(0,Math.min(100,val==null?0:val));
+    var at=function(p){var a=(135+2.7*p)*Math.PI/180;return [60+46*Math.cos(a),60+46*Math.sin(a)]};
+    var arc=el.querySelector(".tbg2-arc"),zone=el.querySelector(".tbg2-zone"),notch=el.querySelector(".tbg2-notch"),knob=el.querySelector(".tbg2-knob");
+    arc.style.strokeDasharray=(L*v/100).toFixed(1)+" "+L.toFixed(1);
+    zone.style.strokeDasharray="0 "+(L*.75).toFixed(1)+" "+(L*.25).toFixed(1)+" "+L.toFixed(1);
+    var n=at(75),k=at(v);notch.setAttribute("cx",n[0].toFixed(1));notch.setAttribute("cy",n[1].toFixed(1));knob.setAttribute("cx",k[0].toFixed(1));knob.setAttribute("cy",k[1].toFixed(1));
+    knob.style.opacity=val==null?0:1;
+    el.classList.toggle("on",!!on);el.querySelector(".tbg2-center b").textContent=val==null?"--":Math.round(v);
+    el.querySelector(".tbg2-center small").textContent=note;el.querySelector(".tbg2-pill").textContent=pill;
+    var ft=el.querySelector(".tbg2-foot");if(ft){var en=window.BTC_LANG==="en";ft.textContent=(sig?(en?"Signals ":"信号 ")+sig+" · ":"")+(en?ft.dataset.baseEn:ft.dataset.base)}
+  }
+  function gauges(v,en){
+    var b=100-v.score,cnt=function(id){var e=$(id);var t=e?String(e.textContent||"").trim():"";return /\d/.test(t)?t.replace(/\s+/g,""):""};
+    var bc=cnt("csBottomCount"),tc=cnt("csTopCount");
+    gauge($("tbgBottom"),b,v.bottom,v.bottom?(en?"in zone":"已进入"):(en?Math.ceil(75-b)+" pts to go":"还差 "+Math.ceil(75-b)+" 分"),v.bottom?(en?"Bottom zone":"底部区"):(en?"Not in zone":"未进入"),bc);
+    var tv=[8,45,80,100][v.cnt]||0,tg=$("tbgTop");
+    gauge(tg,tv,v.top,v.top?(en?"in zone":"已进入"):(en?(2-v.cnt)+" more to go":"还差 "+(2-v.cnt)+" 项"),v.top?(v.strong?(en?"Top · strong":"顶部区 · 强"):(en?"Top zone":"顶部区")):(en?"Not in zone":"未进入"),tc);
+    if(tg){var cb=tg.querySelector(".tbg2-center b");if(cb)cb.textContent=v.cnt+"/3"}
+  }
+  function famColor(v){return v==null?"var(--text-tertiary)":v<=25?"var(--market-positive)":v>=75?"var(--market-negative)":v>=60?"var(--market-caution)":"var(--text-secondary)"}
+  function render(){
+    if(!M||!P)return;var en=E(),i=M.length-1,v=evalAt(i);if(!v)return;
+    var st=$("ctStatus");st.className="ct-status"+(v.bottom?" bottom":v.top?" top":"");
+    $("ctHeadline").textContent=v.bottom?(en?"Bottom zone":"底部区"):v.top?(v.strong?(en?"Top zone · strong":"顶部区 · 强"):(en?"Top zone":"顶部区")):(en?"Neutral":"中性区间");
+    $("ctDetail").textContent=v.bottom?(en?"Composite ≤ 25. Past bottoms all landed in this zone.":"综合分 ≤ 25。历史底部都出现在这一区间。"):v.top?(en?v.cnt+" of 3 top signals present. Pair with risk control below.":"顶部证据满足 "+v.cnt+" / 3。配合下方风控使用。"):(en?"Neither zone is active this month.":"本月不在底部区，也不在顶部区。");
+    $("ctNeedle").style.left=Math.max(2,Math.min(98,v.score)).toFixed(1)+"%";
+    $("ctNow").textContent=(en?"Composite ":"综合分 ")+Math.round(v.score);
+    $("tbFams").innerHTML=FAMS.map(function(f){var x=v.fam[f[0]];return '<div class="tb-fam"><span>'+(en?f[3]:f[2])+'</span><i><b style="width:'+(x==null?0:x.toFixed(0))+'%;background:'+famColor(x)+'"></b></i><em style="color:'+famColor(x)+'">'+(x==null?"--":Math.round(x))+'</em></div>'}).join("");
+    var ok=function(b){return b?'<b class="tb-ok">✓</b>':'<b class="tb-no">—</b>'};
+    $("tbTop").innerHTML='<div class="tb-top-title">'+(en?"Top zone · 2 of 3":"顶部区 · 三项满足两项")+'<small>'+(en?"Strong if Pi Cycle or old coins moving also ≥ 75":"Pi Cycle 或老币放量也 ≥ 75 时为「强」")+'</small></div>'
+      +'<div class="tb-top-row">'+ok(v.eRR)+'<span>'+(en?"Reserve Risk ≥ 75th pct":"Reserve Risk ≥ 75% 分位")+'</span><em>'+(v.rr==null?"--":Math.round(v.rr)+"%")+'</em></div>'
+      +'<div class="tb-top-row">'+ok(v.eLTH)+'<span>'+(en?"Long-term holders keep selling":"长期持有者连续减持")+'</span><em>'+(v.r.lth==null?"--":(v.r.lth>=0?"+":"−")+(en?(Math.abs(v.r.lth)/1e3).toFixed(0)+"K":(Math.abs(v.r.lth)/1e4).toFixed(1)+"万"))+'</em></div>'
+      +'<div class="tb-top-row">'+ok(v.eDIV)+'<span>'+(en?"MVRV lags new highs":"MVRV 背离")+'</span><em>'+(v.r.mvrv==null?"--":v.r.mvrv.toFixed(2))+'</em></div>';
+    // 历史：连续同类月份合并为一段
+    var eps=[],cur=null;
+    for(var k=0;k<M.length;k++){var e=evalAt(k);var t=e?(e.bottom?"b":e.top?(e.strong?"T":"t"):null):null;
+      if(t&&cur&&(cur.t===t||(cur.t!=="b"&&t!=="b"))&&cur.end===k-1){cur.end=k;if(t==="T")cur.t="T"}else if(t){cur={t:t,start:k,end:k};eps.push(cur)}else cur=null}
+    var fw=function(k,n){return k+n<M.length?M[k+n].price/M[k].price-1:null};
+    var html='<div class="ct-row h"><span>'+(en?"Months":"月份")+'</span><span>'+(en?"Zone":"区间")+'</span><span>'+(en?"+3M":"3 个月后")+'</span><span>'+(en?"+6M":"6 个月后")+'</span></div>';
+    eps.slice().reverse().forEach(function(p){var a=M[p.start].m,b=M[p.end].m;
+      html+='<div class="ct-row"><span>'+a+(b!==a?" – "+b:"")+'</span><span class="'+(p.t==="b"?"t-b":"t-t")+'">'+(p.t==="b"?(en?"Bottom":"底部区"):p.t==="T"?(en?"Top · strong":"顶部区 · 强"):(en?"Top":"顶部区"))+'</span><span>'+pt(fw(p.start,3))+'</span><span>'+pt(fw(p.start,6))+'</span></div>'});
+    $("ctHistory").innerHTML=html;
+    var f=$("ctFresh");if(f){f.textContent=(en?"Data date · ":"数据日 · ")+v.r.m;f.className="fresh-badge good"}
+    try{gauges(v,en)}catch(e){}
+    window.__TB={zone:v.bottom?"bottom":v.top?(v.strong?"topStrong":"top"):"neutral",score:v.score,month:v.r.m,risk:"off"};
+    var IND={};["mvrv","mnupl","nupl","rrl","sip","psil","snupl","puell","rev","pi"].forEach(function(k){IND[k]={v:M[i][k],p:P[k][i],prev:i>0?M[i-1][k]:null}});window.__TBD={fam:v.fam,ind:IND,month:v.r.m};
+    try{risk()}catch(e){}
+    try{document.dispatchEvent(new CustomEvent("tb:update"))}catch(e){}
+  }
+  // V26 Beta 22：牛市后期风控——NUPL 确认进入牛市后期后，月线收盘较本轮最高回撤 20% 时提示一次。
+  function risk(){
+    var en=E(),nu=M.map(function(r){return r.nupl}),n=M.length,nrs=[];for(var i=0;i<n;i++)nrs.push(rp(nu,i));
+    var hi=null,hiI=null,armed=false,evs=[],state=[];
+    for(var k=0;k<n;k++){var late=false;for(var j=Math.max(0,k-12);j<=k;j++)if((nrs[j]||0)>=85)late=true;
+      if(late){if(hi==null||M[k].price>hi){hi=M[k].price;hiI=k;armed=true}var dd=M[k].price/hi-1;
+        if(armed&&dd<=-0.2){var mn=Infinity;for(var q=k;q<Math.min(n,k+19);q++)mn=Math.min(mn,M[q].price);evs.push({k:k,hiI:hiI,ratio:M[k].price/hi,after:k+1<n?mn/M[k].price-1:null});armed=false}
+        state[k]={late:true,hi:hi,hiI:hiI,dd:dd,armed:armed}}
+      else{hi=null;armed=false;state[k]={late:false}}}
+    var cur=state[n-1],box=$("ctRisk"),maxNr=0;for(var t=Math.max(0,n-13);t<n;t++)maxNr=Math.max(maxNr,nrs[t]||0);
+    var money=function(v){return "$"+Math.round(v).toLocaleString("en-US")};
+    box.className="psil-hist ct-risk"+(cur.late?(cur.armed?" watch":" fire"):"");
+    if(window.__TB)window.__TB.risk=!cur.late?"off":cur.armed?"watch":"fired";if(window.__TB&&cur.late&&cur.armed)window.__TB.dd=cur.dd;
+    if(!cur.late){
+      $("crState").textContent=en?"Not active":"未启动";
+      $("crSub").textContent=en?"Starts at NUPL 85th pct (12-month high "+Math.round(maxNr)+"%)":"NUPL 达 85% 分位后启动（近 12 月最高 "+Math.round(maxNr)+"%）";
+      $("crFill").style.width="0%";$("crKnob").style.left="0%";$("crNow").textContent=en?"Inactive":"未启动";
+      $("crNote").textContent=en?"Inactive outside a late bull market.":"仅在牛市后期启动。";
+    }else{
+      var dd=cur.dd,p=Math.max(0,Math.min(100,-dd/0.2*100));
+      $("crFill").style.width=p+"%";$("crKnob").style.left=p+"%";
+      $("crNow").textContent=(en?"Now ":"当前 ")+(dd*100).toFixed(1)+"%";
+      $("crSub").textContent=(en?"Cycle high monthly close ":"本轮最高月线收盘 ")+money(cur.hi)+" · "+M[cur.hiI].m;
+      if(cur.armed){$("crState").textContent=(dd*100).toFixed(1)+"%";
+        $("crNote").textContent=en?"Prompt below "+money(cur.hi*0.8)+" (−20%). Fires after the top by design.":"月线收盘低于 "+money(cur.hi*0.8)+"（−20%）时提示。规则必然在顶部之后触发。"}
+      else{$("crState").textContent=en?"Triggered":"已提示";
+        $("crNote").textContent=en?"20%+ below the cycle high: the point your plan named. Resets on a new high.":"已较本轮高点回撤 20% 以上：按你预设的计划执行。创新高后重置。"}
+    }
+    var html='<div class="ct-row r4 h"><span>'+(en?"Prompt":"提示月份")+'</span><span>'+(en?"Cycle high":"本轮高点")+'</span><span>'+(en?"Price vs high":"占高点")+'</span><span>'+(en?"Lower within 18M":"之后最低")+'</span></div>';
+    evs.slice().reverse().forEach(function(e){html+='<div class="ct-row r4"><span>'+M[e.k].m+'</span><span>'+M[e.hiI].m+'</span><span>'+Math.round(e.ratio*100)+'%</span><span style="color:var(--market-negative)">'+(e.after==null?"--":pt(e.after))+'</span></div>'});
+    $("crHistory").innerHTML=html;
+    try{var zs=[],gb=[],gt=[];for(var q=0;q<n;q++){var ev=evalAt(q);zs.push(ev?(ev.bottom?"b":ev.top?(ev.strong?"T":"t"):"n"):"n");gb.push(ev&&ev.score!=null?100-ev.score:null);gt.push(ev?ev.cnt:null)}
+      window.__TBM={rows:M.map(function(r){return{m:r.m,price:r.price}}),zone:zs,risk:evs.map(function(e){return e.k}),gBottom:gb,gTop:gt};
+      document.dispatchEvent(new CustomEvent("tbm:update"))}catch(e){}
+    try{var H=[];for(var q=0;q<n;q++){var ev2=evalAt(q);H.push({m:M[q].m,price:M[q].price,zone:ev2?(ev2.bottom?"b":ev2.top?"t":"n"):null,prompt:false})}
+      evs.forEach(function(e){if(H[e.k])H[e.k].prompt=true});window.__TBHist=H;document.dispatchEvent(new CustomEvent("tb:hist"))}catch(e){}
+  }
+  function init(){if(inited)return;inited=true;load()}
+  window.__tbmInit=init;
+  if(typeof lazySection==="function")lazySection("cycleThermo",init);else init();
+  setTimeout(init,2500);  // 首页「今日结论」需要这份结果
+  document.addEventListener("toggle",function(e){if(e.target&&e.target.open&&e.target.querySelector&&e.target.querySelector("#cycleThermo"))init()},true);
+})();
