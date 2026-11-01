@@ -24,7 +24,7 @@ async def main(site):
         await pg.route("**/*", lambda r: r.continue_() if r.request.url.startswith("file:") else r.abort())
         await pg.goto(url); await pg.wait_for_timeout(2500)
         hits = {}
-        for t in ["now", "value", "chain", "mine"]:
+        for t in ["now", "value", "chain", "dca", "mine"]:
             await pg.evaluate("(t)=>{setTab(t);document.querySelectorAll('details').forEach(x=>x.open=true)}", t)
             await pg.wait_for_timeout(1500)
             r = await pg.evaluate("""(sels)=>{const out={};for(const s of sels){let n;try{n=[...document.querySelectorAll(s)]}catch(e){continue}

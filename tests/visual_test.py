@@ -14,7 +14,7 @@
 """
 import asyncio, json, os, sys, glob, time
 
-TABS = ["now", "value", "chain", "mine"]
+TABS = ["now", "value", "chain", "dca", "mine"]
 DEFAULT = [(393, "light", "zh-CN"), (393, "dark", "zh-CN"), (375, "light", "en-US"), (430, "light", "zh-CN"), (1440, "light", "zh-CN"), (1024, "dark", "en-US")]
 FULL = [(w, c, l) for w in (375, 393, 430, 1024, 1440) for c in ("light", "dark") for l in ("zh-CN", "en-US")]
 # 关闭动画与闪烁，保证同一份输入得到同一张图
