@@ -38,9 +38,19 @@ def get_json(url, tries=3):
     raise last
 
 
+def rows(j):
+    """V27.7.1：兼容 Bitview URPD 新旧两种格式，统一成 [{price_floor, supply}]。
+    新格式：buckets = {"price": [...], "supply": [...], ...}（按列）；旧格式：buckets = [{"price_floor":..,"supply":..}, ...]。"""
+    b = (j or {}).get("buckets")
+    if isinstance(b, dict) and isinstance(b.get("price"), list):
+        pr, sp = b.get("price") or [], b.get("supply") or []
+        return [{"price_floor": pr[i], "supply": sp[i] if i < len(sp) else 0} for i in range(len(pr))]
+    return b if isinstance(b, list) else []
+
+
 def compact(j):
     b = []
-    for x in (j or {}).get("buckets") or []:
+    for x in rows(j):
         try:
             pf, s = float(x["price_floor"]), float(x["supply"])
         except Exception:
@@ -73,7 +83,7 @@ def measure_log(j, price):
     k = 10 ** (1 / 50)
     lo, hi = price * (1 - BAND), price * (1 + BAND)
     tot = inb = 0.0
-    for x in (j or {}).get("buckets") or []:
+    for x in rows(j):
         try:
             a, s = float(x["price_floor"]), float(x["supply"])
         except Exception:
@@ -116,15 +126,24 @@ def main():
         except Exception:
             pass
 
-    dates = sorted(d for d in get_json(f"{API}/dates?weight=raw") if isinstance(d, str) and len(d) == 10)
+    # V27.7.1：新接口不再接受 weight=raw，日期列表接口也可能已取消；最新一天从「最新分布」接口取
+    latest_j = get_json(f"{API}?agg=lin1000")
+    latest_day = str(latest_j.get("date") or "")[:10]
+    if len(latest_day) != 10:
+        raise SystemExit("no URPD latest date")
+    try:
+        dates = sorted(d for d in get_json(f"{API}/dates") if isinstance(d, str) and len(d) == 10 and d <= latest_day)
+    except Exception:
+        dates = []
     if not dates:
-        raise SystemExit("no URPD dates")
-    latest_day = dates[-1]
+        from datetime import date, timedelta
+        d0, d1 = date(2013, 1, 1), date.fromisoformat(latest_day)
+        dates = [(d0 + timedelta(days=k)).isoformat() for k in range((d1 - d0).days + 1)]
     pm = prices()
 
     # 1) 最新分布（网页上的 ±10% 价格区间与区间内 BTC 用它计算）
     if not data["latest"] or data["latest"].get("day") != latest_day:
-        cb = compact(get_json(f"{API}/{latest_day}?agg=lin1000&weight=raw"))
+        cb = compact(latest_j)
         if cb:
             data["latest"] = {"day": latest_day, "b": cb["b"], "w": cb["w"]}
             if latest_day in pm:
@@ -138,7 +157,7 @@ def main():
         if d in data["daily"] or d not in pm:
             continue
         try:
-            c = measure(compact(get_json(f"{API}/{d}?agg=lin1000&weight=raw")), pm[d])
+            c = measure(compact(get_json(f"{API}/{d}?agg=lin1000")), pm[d])
             if c is not None:
                 data["daily"][d] = {"c": round(c, 4), "p": pm[d]}
             fails = 0
@@ -164,7 +183,7 @@ def main():
         if have and (m != cur_m or have.get("day") == d):
             continue
         try:
-            j = get_json(f"{API}/{d}?agg=log50&weight=raw")
+            j = get_json(f"{API}/{d}?agg=log50")
             p = float(j.get("close") or 0)
             c = measure_log(j, p) if p > 0 else None
             if c is not None:
