@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BUILD: 27.7.1-20261101 · SATS-GARDEN-V27.7.1 -->
+<!-- BUILD: 27.9.0-20261102 · SATS-GARDEN-V27.9 -->
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -9,7 +9,7 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Sats Garden" />
-  <meta name="btc-dca-build" content="27.7.1-20261101" />
+  <meta name="btc-dca-build" content="27.9.0-20261102" />
   <script>
 (function(){
   "use strict";
@@ -103,7 +103,7 @@
       var agg=new URL(u).searchParams.get("agg")||"",lin=/^lin(\d+)$/.exec(agg),lg=/^log(\d+)$/.exec(agg),n=b.price.length,out=[];
       for(var i=0;i<n;i++){var pf=+b.price[i],nx=i+1<n?+b.price[i+1]:NaN,pc=lin?pf+(+lin[1]):lg?(pf>0?pf*Math.pow(10,1/(+lg[1])):(isFinite(nx)?nx:0)):(isFinite(nx)?nx:pf);
         out.push({price_floor:pf,price_ceil:pc,supply:b.supply?+b.supply[i]:0,realized_cap:b.realized_cap?+b.realized_cap[i]:null,unrealized_pnl:b.unrealized_pnl?+b.unrealized_pnl[i]:null})}
-      j.buckets=out;return JSON.stringify(j)}catch(e){return body}
+      j.buckets=out;if(j.total_supply==null&&j.supply!=null)j.total_supply=j.supply;return JSON.stringify(j)}catch(e){return body}
   }
   function synthDates(u){
     // 日期列表接口没了：按日历生成 2013-01-01 到昨天（UTC），各模块会按需逐日请求
@@ -112,9 +112,135 @@
     while(d.getTime()<=end){out.push(d.toISOString().slice(0,10));d.setUTCDate(d.getUTCDate()+1)}
     return JSON.stringify(out);
   }
+  // ===== V27.8：Bitview 新旧接口兼容层 =====
+  // Bitview 正在切换到新版本（next.bitview.space）：大量序列改名、合并或下线，单次请求最多 32 个序列。
+  // 先按原名请求；服务器回答「找不到」或拒绝时，自动换成新名字，或用新数据计算出旧序列，再按原来的格式交给各模块。
+  // 判断出已是新版本后记住 3 天，期间直接用新名字。以后 Bitview 再改名，只需更新这里的对照。
+  var BV_FLAG="sg-bv-next";
+  function bvNext(){try{return Date.now()-(+localStorage.getItem(BV_FLAG)||0)<3*864e5}catch(e){return false}}
+  function setBvNext(){try{localStorage.setItem(BV_FLAG,String(Date.now()))}catch(e){}}
+  var AGE1Y=["1y_to_18m","18m_to_2y","2y_to_3y","3y_to_4y","4y_to_5y","5y_to_6y","6y_to_7y","7y_to_8y","8y_to_10y","10y_to_12y","12y_to_15y","over_15y"];
+  var BAL={under_1m_sats:["1_to_10_sats","10_to_100_sats","100_to_1k_sats","1k_to_10k_sats","10k_to_100k_sats","100k_to_1m_sats"],under_1k_sats:["1_to_10_sats","10_to_100_sats","100_to_1k_sats"],
+    "1k_sats_to_10k_sats":["1k_to_10k_sats"],"10k_sats_to_100k_sats":["10k_to_100k_sats"],"100k_sats_to_1m_sats":["100k_to_1m_sats"],"1m_sats_to_10m_sats":["1m_to_10m_sats"],"10m_sats_to_1btc":["10m_to_100m_sats"],
+    "1btc_to_10btc":["1_to_10_btc"],"10btc_to_100btc":["10_to_100_btc"],"100btc_to_1k_btc":["100_to_1k_btc"],"1k_btc_to_10k_btc":["1k_to_10k_btc"],"10k_btc_to_100k_btc":["10k_to_100k_btc"],over_100k_btc:["over_100k_btc"],over_10k_btc:["10k_to_100k_btc","over_100k_btc"]};
+  var BV_ALIAS={supply:"circulating_supply",utxos_in_loss_supply:"supply_in_loss",p2pk65_supply:"p2pk_supply",p2pk65_supply_dominance:"p2pk_supply_share",p2tr_supply_dominance:"p2tr_supply_share",cost_basis_per_coin_pct50:"cost_basis_by_coin_median"};
+  function bvSpec(n){var m;
+    if(n==="date")return {k:"date",parts:[]};
+    if(BV_ALIAS[n])return {k:"alias",parts:[BV_ALIAS[n]]};
+    if(n==="p2pk33_supply"||n==="p2pk33_supply_dominance")return {k:"zero",parts:[]};          // 已与 p2pk65 合并为 p2pk
+    if(n==="puell_multiple")return {k:"puell",parts:["subsidy_sum_24h_usd","subsidy_sum_1y_usd"]};
+    if(n==="lth_realized_profit_to_loss_ratio_1w")return {k:"ratio",parts:["lth_realized_profit_sum_1w","lth_realized_loss_sum_1w"]};
+    if(n==="price_sma_111d")return {k:"sma",n:111,x:1,parts:[]};
+    if(n==="price_sma_350d_x2")return {k:"sma",n:350,x:2,parts:[]};
+    if((m=/^utxos_over_6m_old_(transfer_volume_sum_\w+)$/.exec(n)))return {k:"alias",parts:["age_over_6m_"+m[1]]};
+    if((m=/^utxos_over_1y_old_(transfer_volume_sum_\w+)$/.exec(n))){var sfx=m[1];return {k:"sum",parts:AGE1Y.map(function(b){return "age_"+b+"_"+sfx})}}
+    if((m=/^utxos_over_(\d+)pct_in_loss_supply$/.exec(n)))return {k:"loss",pct:+m[1],parts:[]};
+    if((m=/^addrs_(.+?)_(addr_count|supply(?:_delta_\w+)?)$/.exec(n))&&BAL[m[1]]){var suf=m[2]==="addr_count"?"address_count":m[2];return {k:"sum",parts:BAL[m[1]].map(function(b){return "balance_"+b+"_"+suf})}}
+    if((m=/^bedrock_(raw|cointime|coinflow)_floor_pct(\w+)$/.exec(n)))return {k:"alias",parts:["bedrock_"+{raw:"unweighted",cointime:"awake",coinflow:"mobile"}[m[1]]+"_floor_p"+m[2]]};
+    if(/^bedrock_coinflow_\w+_floor_/.test(n)||/^capital_sentiment_/.test(n)||/^rarity_meter_\w+_rank$/.test(n))return {k:"none",parts:[]};   // 新版没有对应数据
+    return {k:"alias",parts:[n]};
+  }
+  function bvGet(u){return native(u,{mode:"cors",cache:"no-store"}).then(function(r){return r.text().then(function(t){var j=null;try{j=JSON.parse(t)}catch(e){}return {ok:r.ok,status:r.status,j:j,t:t}})})}
+  function notFoundName(x){var msg=x&&x.j&&x.j.error&&x.j.error.message||x&&x.t||"";var m=/'([a-z0-9_]+)' not found/.exec(msg);return m?m[1]:null}
+  async function bvChunk(base,names){
+    // 取一组序列；某个名字不存在就去掉重试（最多 6 次），缺的按空值处理
+    var list=names.slice(),miss={};
+    for(var tries=0;tries<7;tries++){
+      var u=new URL(base.toString());u.searchParams.set("series",list.join(","));
+      var x=await bvGet(u.toString());
+      if(x.ok&&Array.isArray(x.j)){var out={};list.forEach(function(n,i){out[n]=x.j[i]});return {cols:out,miss:miss}}
+      var nf=notFoundName(x);if(!nf||list.indexOf(nf)<0)throw new Error("bitview "+x.status);
+      miss[nf]=1;list=list.filter(function(n){return n!==nf});if(!list.length)return {cols:{},miss:miss}
+    }
+    throw new Error("bitview retries");
+  }
+  var dailyPrice=null;
+  async function bvDailyPrice(){
+    if(dailyPrice)return dailyPrice;
+    var u=new URL("https://bitview.space/api/series/bulk");u.searchParams.set("index","day1");u.searchParams.set("series","date,price");u.searchParams.set("start","2010-07-01");
+    var x=await bvGet(u.toString());if(!x.ok||!Array.isArray(x.j))throw new Error("price");
+    var d=x.j[0].data,v=x.j[1].data;dailyPrice={d:d,v:v.map(Number)};return dailyPrice;
+  }
+  function smaAt(dp,n){var out={},sum=0,q=[];for(var i=0;i<dp.d.length;i++){var v=dp.v[i];if(!(v>0)){out[dp.d[i]]=null;continue}q.push(v);sum+=v;if(q.length>n)sum-=q.shift();out[dp.d[i]]=q.length>=n?sum/n:null}return out}
+  function monthEndValue(map,day){var y=+day.slice(0,4),mo=+day.slice(5,7),d=new Date(Date.UTC(y,mo,0));for(var k=0;k<31;k++){var key=d.toISOString().slice(0,10);if(map[key]!=null)return map[key];d.setUTCDate(d.getUTCDate()-1);if(d.getUTCMonth()!==mo-1)break}return null}
+  async function lossAt(day,pcts){
+    // 深度亏损：成本分布里成本 ≥ 价格 ÷ (1 − 亏损比例) 的币量。
+    // 过去日子的成本分布不会再变，存进本机副本（IndexedDB）后，以后只需下载最新一天。
+    var url="https://bitview.space/api/urpd/all/"+day+"?agg=log50",j=null,rec=await get(url).catch(function(){return null});
+    if(rec&&rec.body){try{j=JSON.parse(rec.body)}catch(e){}}
+    if(!j){var x=await bvGet(url);if(!x.ok||!x.j||!x.j.buckets)return null;j=x.j;
+      var today=new Date().toISOString().slice(0,10);if(day<today){put(url,{t:Date.now(),body:x.t,ct:"application/json"})}}
+    var b=j.buckets,close=+j.close,out={};if(!(close>0))return null;
+    var pr=Array.isArray(b)?b.map(function(r){return +r.price_floor}):b.price.map(Number),sp=Array.isArray(b)?b.map(function(r){return +r.supply}):b.supply.map(Number),step=Math.pow(10,1/50);
+    pcts.forEach(function(p){var th=close/(1-p/100),s=0;
+      for(var i=0;i<pr.length;i++){var lo=pr[i],hi=lo>0?lo*step:(pr[i+1]||0);if(!(sp[i]>0))continue;
+        if(lo>=th)s+=sp[i];else if(hi>th&&lo>0)s+=sp[i]*(Math.log(hi/th)/Math.log(hi/lo))}   // 跨过门槛的那一格按对数比例分配
+      out[p]=s});
+    return out;
+  }
+  async function bvTranslate(key){
+    var u=new URL(key),single=null,m=/^\/api\/series\/([a-z0-9_]+)\/([a-z0-9]+)\/?$/.exec(u.pathname);
+    if(m&&m[1]!=="bulk"){single=m[1];var b=new URL("https://bitview.space/api/series/bulk");b.searchParams.set("index",m[2]);b.searchParams.set("series",single);["start","end","limit"].forEach(function(k){if(u.searchParams.get(k)!=null)b.searchParams.set(k,u.searchParams.get(k))});u=b}
+    var index=u.searchParams.get("index")||"day1",names=(u.searchParams.get("series")||"").split(",").filter(Boolean),specs=names.map(bvSpec),need=[];
+    specs.forEach(function(sp){sp.parts.forEach(function(p){if(need.indexOf(p)<0)need.push(p)})});
+    var cols={},miss={},base=new URL(u.toString());
+    for(var i=0;i<Math.max(1,need.length);i+=30){var r=await bvChunk(base,["date"].concat(need.slice(i,i+30)));Object.assign(cols,r.cols);Object.assign(miss,r.miss)}
+    var ref=cols.date;if(!ref||!Array.isArray(ref.data))throw new Error("no date");
+    var n=ref.data.length,pos0=+ref.start||0,val=function(name,i){var c=cols[name];if(!c||!Array.isArray(c.data))return null;var k=pos0+i-(+c.start||0);var v=k>=0&&k<c.data.length?c.data[k]:null;return v==null?null:+v};
+    var out=[],dp=null,lossCache=null;
+    for(var q=0;q<specs.length;q++){
+      var sp=specs[q],arr=new Array(n);
+      if(sp.k==="date")arr=ref.data.slice();
+      else if(sp.k==="alias"){for(var i2=0;i2<n;i2++)arr[i2]=val(sp.parts[0],i2)}
+      else if(sp.k==="sum"){for(i2=0;i2<n;i2++){var t=0,any=false;sp.parts.forEach(function(p){var v=val(p,i2);if(v!=null&&isFinite(v)){t+=v;any=true}});arr[i2]=any?t:null}}
+      else if(sp.k==="zero"){arr.fill(0)}
+      else if(sp.k==="none"){arr.fill(null)}
+      else if(sp.k==="puell"){for(i2=0;i2<n;i2++){var a=val(sp.parts[0],i2),c=val(sp.parts[1],i2);arr[i2]=a!=null&&c>0?a/(c/365):null}}
+      else if(sp.k==="ratio"){for(i2=0;i2<n;i2++){var a2=val(sp.parts[0],i2),c2=val(sp.parts[1],i2);arr[i2]=a2!=null&&c2>0?a2/c2:null}}
+      else if(sp.k==="sma"){if(!dp)dp=await bvDailyPrice().catch(function(){return null});
+        if(!dp)arr.fill(null);else{var mp=smaAt(dp,sp.n);for(i2=0;i2<n;i2++){var day=ref.data[i2],v2=index==="month1"?monthEndValue(mp,day):mp[day];arr[i2]=v2==null?null:v2*sp.x}}}
+      else if(sp.k==="loss"){
+        if(!lossCache){lossCache={};var pcts=specs.filter(function(z){return z.k==="loss"}).map(function(z){return z.pct}),all=ref.data.slice(-120),days=[];
+          // 最近 7 天逐日算；更早的每 3 天算一次，中间按前后两次线性补齐（图表看趋势足够，最新数值是精确的）
+          all.forEach(function(d,k){if(k>=all.length-7||(all.length-1-k)%3===0)days.push(d)});
+          var idx=0,worker=async function(){while(idx<days.length){var d=days[idx++];try{lossCache[d]=await lossAt(d,pcts)}catch(e){lossCache[d]=null}}};
+          await Promise.all([worker(),worker(),worker(),worker()]);
+          all.forEach(function(d,k){if(lossCache[d])return;var a=k-1,c=k+1;while(a>=0&&!lossCache[all[a]])a--;while(c<all.length&&!lossCache[all[c]])c++;
+            if(a<0||c>=all.length)return;var A=lossCache[all[a]],C=lossCache[all[c]],w=(k-a)/(c-a),o={};pcts.forEach(function(p){o[p]=A[p]+(C[p]-A[p])*w});lossCache[d]=o})}
+        for(i2=0;i2<n;i2++){var lc=lossCache[ref.data[i2]];arr[i2]=lc?lc[sp.pct]:null}}
+      out.push({version:0,index:index,type:"Derived",start:pos0,end:pos0+n,stamp:ref.stamp||new Date().toISOString(),data:arr,translated:names[q]});
+    }
+    return JSON.stringify(single?out[0]:out);
+  }
+  function lenSame(rec){
+    return native(rec.lenUrl,{mode:"cors",cache:"no-store"}).then(function(r){return r.ok?r.text():null}).then(function(t){var n=+t;return n>0&&n===rec.len}).catch(function(){return false});
+  }
+  function bvLenInfo(key,body){
+    // 请求里取一个代表序列（第一个不是 date 的）和它的总长度 end；只用于「全量历史」类请求
+    try{var u=new URL(key),j=JSON.parse(body),arr=Array.isArray(j)?j:[j],idx=u.searchParams.get("index")||"day1",names=(u.searchParams.get("series")||"").split(",");
+      var m=/^\/api\/series\/([a-z0-9_]+)\/([a-z0-9]+)\/?$/.exec(u.pathname);if(m&&m[1]!=="bulk"){names=[m[1]];idx=m[2]}
+      for(var i=0;i<arr.length;i++){var n=names[i];if(!n||n==="date"||!arr[i]||!(+arr[i].end>0))continue;var real=n;if(arr[i].translated){var sp=bvSpec(n);real=sp.k==="alias"?sp.parts[0]:null}
+        if(!real)continue;return {lenUrl:"https://bitview.space/api/series/"+real+"/"+idx+"/len",len:+arr[i].end}}
+    }catch(e){}return null;
+  }
+  function isBvSeries(u){try{var x=new URL(u);return x.hostname==="bitview.space"&&x.pathname.indexOf("/api/series/")===0&&!/\/(search|count|indexes)$/.test(x.pathname)}catch(e){return false}}
+  async function bvFetch(key){
+    if(!bvNext()){
+      var r=await native(key,{mode:"cors",cache:"no-store"});
+      if(r.ok)return {ok:true,status:r.status,body:await r.text(),ct:r.headers.get("content-type")||"application/json"};
+      if(r.status!==404&&r.status!==400)return {ok:false,status:r.status};
+      var t=await r.text().catch(function(){return ""});if(/not found/i.test(t))setBvNext();
+    }
+    try{return {ok:true,status:200,body:await bvTranslate(key),ct:"application/json"}}catch(e){return {ok:false,status:502}}
+  }
   function shared(key){
     if(inflight[key])return inflight[key];
     var ctl=new AbortController(),tm=setTimeout(function(){ctl.abort()},60000);
+    if(isBvSeries(key)){
+      inflight[key]=bvFetch(key).then(function(x){clearTimeout(tm);delete inflight[key];
+        if(x.ok&&x.body&&x.body.length<MAX_BYTES){var li=bvLenInfo(key,x.body),rec={t:Date.now(),body:x.body,ct:x.ct};if(li){rec.lenUrl=li.lenUrl;rec.len=li.len}put(key,rec);prune()}return x},function(e){clearTimeout(tm);delete inflight[key];throw e});
+      return inflight[key];
+    }
     inflight[key]=native(fixUrl(key),{mode:"cors",cache:"no-store",signal:ctl.signal}).then(function(r){
       if(!r.ok){var sd=synthDates(key);if(sd)return {ok:true,status:200,body:sd,ct:"application/json"};return {ok:false,status:r.status}}
       return r.text().then(function(body){return {ok:true,status:r.status,body:adaptUrpd(key,body),ct:r.headers.get("content-type")||"application/json"}});
@@ -137,6 +263,12 @@
     return get(key).then(function(rec){
       var age=rec?Date.now()-rec.t:Infinity,stale=function(){return rec&&(c==="daily"||age<LIVE_MAX)};
       if(rec&&c==="daily"&&age<FRESH){note(key,"fresh");return resp(rec,"fresh")}
+      if(rec&&c==="daily"&&rec.lenUrl&&rec.len>0&&age<36*3600*1000)return lenSame(rec).then(function(same){
+        if(same){rec.t=Date.now();put(key,rec);note(key,"fresh");return resp(rec,"fresh")}
+        return go();
+      });
+      return go();
+      function go(){
       return waitFor(shared(key),sig).then(function(x){
         if(x.ok){note(key,"live");return new Response(x.body,{status:200,headers:{"content-type":x.ct,"x-sg-cache":"live"}})}
         failed(key);failedWhy(key,reason(null,x.status));
@@ -150,12 +282,13 @@
         if(stale()){note(key,"stale");return resp(rec,"stale")}
         note(key,"miss");throw err;
       });
+      }
     });
   };
 })();
 </script>
 <script>(function(){var l=null;try{l=localStorage.getItem("btc_lang_v1")}catch(e){}if(l!=="zh"&&l!=="en"){var n=(navigator.languages&&navigator.languages[0])||navigator.language||"";l=/^zh/i.test(n)?"zh":"en"}window.BTC_LANG=l;var d=document.documentElement;d.lang=l==="en"?"en":"zh-CN";if(l==="en"){d.classList.add("i18n-pending");setTimeout(function(){d.classList.remove("i18n-pending")},2500)}})();</script>
-<script>const BUILD_ID="27.7.1-20261101";const BUILD_LABEL="V27.7.1";(function(){var T="btc_theme_v1",t=null;try{t=localStorage.getItem(T)}catch(e){}if(t!=="light"&&t!=="dark"){t=null}window.__themePinned=!!t;if(!t)t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.dataset.theme=t;})();</script>
+<script>const BUILD_ID="27.9.0-20261102";const BUILD_LABEL="V27.9";(function(){var T="btc_theme_v1",t=null;try{t=localStorage.getItem(T)}catch(e){}if(t!=="light"&&t!=="dark"){t=null}window.__themePinned=!!t;if(!t)t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.dataset.theme=t;})();</script>
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="data:image/png;base64,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" />
   <link rel="manifest" id="pwaManifest" />
@@ -177,7 +310,7 @@
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="BTC · 价格与 AHR999" />
   <meta name="twitter:description" content="比特币价格、AHR999 周期估值与本月定投进度。" />
-  <link rel="stylesheet" href="assets/app.7869415e89.css" data-inline="css" />
+  <link rel="stylesheet" href="assets/app.85ae703698.css" data-inline="css" />
 <noscript><div style="max-width:700px;margin:0 auto;padding:40px 20px;font-family:system-ui;color:#333"><h1>Sats Garden</h1><p>本页面需要启用 JavaScript 才能加载实时行情与链上指标。请在浏览器设置中开启 JavaScript 后重新访问。</p></div></noscript>
   </head>
 <body class="booting terminal-ui focus-layout">
@@ -771,7 +904,7 @@
 
 <details class="health health-center" id="healthPanel">
     <summary><span>数据健康中心</span><span id="healthSummary">等待检查</span></summary>
-    <div class="health-center-body"><div class="focus-runtime"><span>版本 <b class="num" id="buildBadge">V27.7.1</b></span><span>UTC 日期 <b class="num" id="heroDate">--</b></span><span class="hbadge" id="healthBadge">--</span></div>
+    <div class="health-center-body"><div class="focus-runtime"><span>版本 <b class="num" id="buildBadge">V27.9</b></span><span>UTC 日期 <b class="num" id="heroDate">--</b></span><span class="hbadge" id="healthBadge">--</span></div>
       <div class="health-hero">
         <div class="health-score-ring" id="healthScoreRing" role="img" aria-label="数据健康度等待检查"><b class="num" id="healthScore">--</b><small>HEALTH</small></div>
         <div class="health-hero-copy">
@@ -879,6 +1012,30 @@
         <span id="costBasisSource">数据源 · Bitview / Bitcoin Research Kit · 免费 API</span>
         <span>STH Realized Price 观察短期筹码成本；True Market Mean 更偏向活跃投资者的市场成本中枢。两条成本线用于结构判断，不等同于绝对支撑或买卖信号。</span>
       </div>
+    </div>
+  </section><section class="sec cband-section" id="costBands" aria-label="持币成本分位带">
+    <div class="module-head"><div class="module-title-row"><h2 class="sec-title">持币成本分位带</h2><div class="module-status head-status"><span class="fresh-badge" id="freshCostBands">等待数据</span></div></div></div>
+    <div class="cdd-kpis mchg-kpis">
+      <article class="cdd-kpi"><small id="cbPosL">现价高于</small><b class="num" id="cbPos">--</b></article>
+      <article class="cdd-kpi"><small id="cbMedL">中位成本</small><b class="num" id="cbMed">--</b></article>
+      <article class="cdd-kpi"><small id="cbMidL">中间 50% 成本</small><b class="num" id="cbMid">--</b></article>
+    </div>
+    <div class="capitalized-toolbar cdd-toolbar">
+      <div class="capitalized-legend cdd-legend cb-legend">
+        <span class="k-b80"><i></i><em id="cbL80">中间 80% 的币</em></span><span class="k-b50"><i></i><em id="cbL50">中间 50% 的币</em></span>
+        <span class="k-med"><i></i><em id="cbLmed">中位成本</em></span><span class="k-px"><i></i><em id="cbLpx">价格</em></span>
+      </div>
+      <div class="range-tabs" role="group" aria-label="时间范围"><button class="range-btn" type="button" data-cb-range="365" aria-pressed="true">1年</button><button class="range-btn" type="button" data-cb-range="1095" aria-pressed="false">3年</button></div>
+    </div>
+    <span class="chart-live" id="cbLive"></span>
+    <div class="cdd-chart"><canvas id="cbCanvas" aria-label="持币成本分位带与价格"></canvas><div class="hd-empty" id="cbEmpty">等待数据</div></div>
+  </section><section class="sec agecost-section" id="ageCost" aria-label="各币龄的持币成本">
+    <div class="module-head"><div class="module-title-row"><h2 class="sec-title">各币龄的持币成本</h2><div class="module-status head-status"><span class="fresh-badge" id="freshAgeCost">等待数据</span></div></div></div>
+    <div class="ac-table" id="acTable"><div class="hd-empty">等待数据</div></div>
+    <div class="ac-detail" id="acDetail" hidden>
+      <div class="ac-detail-h"><b id="acDetName">--</b><span id="acDetSub">--</span></div>
+      <span class="chart-live" id="acLive"></span>
+      <div class="ac-chart"><canvas id="acCanvas" aria-label="该币龄群体的成本分布"></canvas><div class="hd-empty" id="acEmpty" hidden>同步中</div></div>
     </div>
   </section><section class="sec capitalized-section" id="capitalized" aria-label="Bitview STH 与 LTH 资本化价格历史图表">
     <div class="capitalized-head">
@@ -1851,7 +2008,7 @@
 
 <script src="assets/lightweight-charts.682f74d8c4.js" data-inline="vendor"></script>
 <script src="assets/seed-cycle.5a6f45f52a.js" data-inline="seed"></script>
-<script src="assets/app.c9e087cd83.js" data-inline="app"></script>
+<script src="assets/app.7d0604245c.js" data-inline="app"></script>
 <script src="assets/ext-1.79fa106bab.js" data-inline="ext"></script>
 <script src="assets/ext-2.bed6b0f62f.js" data-inline="ext"></script>
 <script src="assets/ext-3.9cfc90c757.js" data-inline="ext"></script>
@@ -1881,7 +2038,8 @@
 <script src="assets/ext-24.a5c5eea1e7.js" data-inline="ext"></script>
 <script src="assets/ext-25.2cec8137f0.js" data-inline="ext"></script>
 <script src="assets/ext-26.2070e37369.js" data-inline="ext"></script>
-<script src="assets/ext-27.443515614b.js" data-inline="ext"></script><script src="assets/ext-28.a59f1da5a1.js" data-inline="ext"></script><script src="assets/ext-29.0d7bb05011.js" data-inline="ext"></script><script src="assets/ext-30.339bef2bd3.js" data-inline="ext"></script><script src="assets/ext-31.a562b23f43.js" data-inline="ext"></script><script src="assets/ext-32.5e652536a8.js" data-inline="ext"></script><script src="assets/ext-33.2cda2e2558.js" data-inline="ext"></script><script src="assets/ext-34.f021f5ed65.js" data-inline="ext"></script><script src="assets/ext-35.4ea67c308e.js" data-inline="ext"></script><script>window.I18N_SRC="assets/i18n-en.d80c4f0602.js"</script>
-<script src="assets/ext-37.b798596959.js" data-inline="ext"></script>
+<script src="assets/ext-27.443515614b.js" data-inline="ext"></script><script src="assets/ext-28.a59f1da5a1.js" data-inline="ext"></script><script src="assets/ext-29.0d7bb05011.js" data-inline="ext"></script><script src="assets/ext-30.339bef2bd3.js" data-inline="ext"></script><script src="assets/ext-31.a562b23f43.js" data-inline="ext"></script><script src="assets/ext-32.5e652536a8.js" data-inline="ext"></script><script src="assets/ext-33.eb3ac7100b.js" data-inline="ext"></script><script src="assets/ext-34.f021f5ed65.js" data-inline="ext"></script><script src="assets/ext-35.4ea67c308e.js" data-inline="ext"></script><script src="assets/ext-36.0225113ba0.js" data-inline="ext"></script><script src="assets/ext-37.90e952ea6a.js" data-inline="ext"></script>
+<script src="assets/ext-38.4461332d8a.js" data-inline="ext"></script><script>window.I18N_SRC="assets/i18n-en.699f450351.js"</script>
+<script src="assets/ext-40.b798596959.js" data-inline="ext"></script>
 </body>
 </html>
