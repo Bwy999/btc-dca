@@ -1,0 +1,39 @@
+# 每 6 小时预先下载稳定币历史（data/stablecoins.json）与算力难度历史（data/mining.json）。
+# 网页先读这两个文件，读不到或过期才直接去 DefiLlama / mempool.space 取。
+# 同时检查稳定币 12 小时异动，达到市值 0.3% 时通过 Bark 推送（需要仓库 Secrets 里的 BARK_KEY）。
+name: Precompute market data
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: market-data
+  cancel-in-progress: false
+
+jobs:
+  market:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Download
+        env:
+          BARK_KEY: ${{ secrets.BARK_KEY }}
+        run: python3 tools/precompute_market.py data
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
+          git add data/stablecoins.json data/mining.json data/alert-state.json 2>/dev/null || true
+          if git diff --cached --quiet; then echo "no change"; exit 0; fi
+          git commit -m "data: market $(date -u +%F-%H)"
+          git pull --rebase --autostash
+          git push

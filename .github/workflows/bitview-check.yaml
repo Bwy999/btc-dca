@@ -1,0 +1,26 @@
+# 每天检查网页用到的 Bitview 序列是否都还在（名单：tools/bitview_series.json）。
+# 有失效时：在仓库开 Issue 列出名单，本任务显示失败（GitHub 会发邮件提醒）。
+name: Bitview API check
+
+on:
+  schedule:
+    - cron: "50 2 * * *"   # 每天 UTC 02:50（北京时间 10:50）
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Check Bitview series
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 tools/check_bitview.py

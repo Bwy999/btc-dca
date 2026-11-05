@@ -1,0 +1,49 @@
+# 一键上线：把 SatsGarden_*.zip 上传到仓库（任意位置）即可。
+# 自动解压 → 跑检查 → 放到对应位置 → 删除压缩包 → 提交。检查不通过时网站保持原样。
+name: Deploy from zip
+
+on:
+  push:
+    paths:
+      - "**.zip"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: deploy-zip
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 20
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+      - name: Check and place files
+        run: python3 tools/deploy_zip.py
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git reset -q -- data .github 2>/dev/null || true
+          if git diff --cached --quiet; then echo "no change"; exit 0; fi
+          git commit -m "deploy: $(cat .deploy-build 2>/dev/null || echo zip)"
+          git pull --rebase --autostash
+          git push
+      - name: Rebuild GitHub Pages
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds" || true
