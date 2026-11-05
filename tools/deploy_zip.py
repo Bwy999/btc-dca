@@ -82,7 +82,14 @@ def main():
     log(f"## 一键上线：`{z}`")
     tmp = tempfile.mkdtemp()
     with zipfile.ZipFile(z) as f:
-        f.extractall(tmp)
+        for info in f.infolist():
+            # 有的压缩工具不标注「文件名是 UTF-8」，Python 会按旧编码解成乱码（如「升级说明.txt」变成「σìçτ║ºΦ»┤µÿÄ.txt」）——还原成正确的中文名
+            if not info.flag_bits & 0x800:
+                try:
+                    info.filename = info.filename.encode("cp437").decode("utf-8")
+                except Exception:
+                    pass
+            f.extract(info, tmp)
     root = find_root(tmp)
     if not root:
         log("❌ 压缩包里没有找到 index.html + sw.js + assets/，没有上线。")
@@ -115,6 +122,15 @@ def main():
             shutil.copy2(src, dst)
     for p in zips:
         os.remove(p)
+    # 清理以前上线时留下的乱码文件名（它们能还原成正确中文名、且正确名的文件已经存在）
+    for name in os.listdir(REPO):
+        try:
+            fixed = name.encode("cp437").decode("utf-8")
+        except Exception:
+            continue
+        if fixed != name and os.path.exists(os.path.join(REPO, fixed)) and os.path.isfile(os.path.join(REPO, name)):
+            os.remove(os.path.join(REPO, name))
+            log(f"🧹 删除乱码文件名：`{name}`（正确的是 `{fixed}`）")
     with open(os.path.join(REPO, ".deploy-build"), "w") as f:
         f.write(bid)
     log(f"✅ 已放到仓库对应位置，等待提交。")
