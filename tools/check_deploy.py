@@ -62,7 +62,8 @@ def main():
     lab = re.search(r'const BUILD_LABEL="([^"]+)"', html)
     if lab and "Beta" not in lab.group(1) and vals.get("BUILD_ID"):
         num = vals["BUILD_ID"].split("-")[0]
-        if lab.group(1) not in ("V" + num, "V" + re.sub(r"\.0$", "", num)):
+        label = re.sub(r"\s*正式版$", "", lab.group(1))   # V27.2 起允许写「V27.2 正式版」
+        if label not in ("V" + num, "V" + re.sub(r"\.0$", "", num)):
             fails.append(f"版本号 {lab.group(1)} 与构建号 {vals['BUILD_ID']} 不一致")
 
     # 2. 页面引用的本地资源

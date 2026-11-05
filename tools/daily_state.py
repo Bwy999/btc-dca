@@ -57,7 +57,14 @@ def num(v):
 
 
 def bulk(series, index, start):
-    raw = get_json(f"{BULK}?index={index}&series={','.join(series)}&start={start}")
+    # V27.11：新版 Bitview 改了部分序列名——月度请求交给 precompute_monthly 的对照表换算（先按原名，找不到再换算）
+    if index == "month1" and start == "2012-01-01":
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("pm", os.path.join(os.path.dirname(os.path.abspath(__file__)), "precompute_monthly.py"))
+        pm = importlib.util.module_from_spec(spec); spec.loader.exec_module(pm)
+        raw = pm.fetch_group(list(series))
+    else:
+        raw = get_json(f"{BULK}?index={index}&series={','.join(series)}&start={start}")
     cols = [pick(raw, n, i) or [] for i, n in enumerate(series)]
     out = {}
     for i, d in enumerate(cols[0]):
@@ -105,6 +112,10 @@ def zones():
         B = bulk(["date", "mvrv", "puell_multiple", "price_sma_111d", "price_sma_350d_x2"], "month1", "2012-01-01")
     except Exception as e:
         print("辅助序列暂不可用：", e); B = {}
+    try:  # V27.11：顶部证据②需要的长期持有者 30 天变化
+        C = bulk(["date", "lth_supply_delta_1m"], "month1", "2012-01-01")
+    except Exception as e:
+        print("长期持有者变化暂不可用：", e); C = {}
     rows = []
     for d in sorted(A):
         a, b = A[d], B.get(d, {})
@@ -115,7 +126,8 @@ def zones():
         rows.append({"m": d[:7], "price": a["price"], "nupl": a["lth_nupl"], "mnupl": a.get("nupl"), "snupl": a.get("sth_nupl"),
                      "sip": a.get("supply_in_profit_share"), "psil": a.get("lth_supply_in_loss_share"), "rev": a.get("utxos_over_1y_old_transfer_volume_sum_1m"),
                      "rrl": math.log10(rr) if rr and rr > 0 else None, "mvrv": b.get("mvrv"), "puell": b.get("puell_multiple"),
-                     "pi": s111 / s350 if s111 and s350 and s111 > 0 and s350 > 0 else None})
+                     "pi": s111 / s350 if s111 and s350 and s111 > 0 and s350 > 0 else None,
+                     "lth": (C.get(d) or {}).get("lth_supply_delta_1m")})
     P = {k: rp_col([r[k] for r in rows]) for k in ["mvrv", "mnupl", "nupl", "rrl", "sip", "psil", "snupl", "puell", "rev", "pi"]}
     P["psilInv"] = [None if v is None else 100 - v for v in P["psil"]]
     fams = [("value", ["mvrv", "mnupl", "nupl", "rrl", "sip", "psilInv"]), ("sth", ["snupl"]), ("miner", ["puell"]), ("old", ["rev"]), ("trend", ["pi"])]
@@ -127,7 +139,17 @@ def zones():
     vals = [v for v in fam.values() if v is not None]
     score = sum(vals) / len(vals) if len(vals) >= 3 else None
     rr, pi, rev = P["rrl"][i], P["pi"][i], P["rev"][i]
-    top = rr is not None and rr >= 75
+    # V27.5 起的顶部规则（与网站一致）：三项证据满足两项
+    #   ① Reserve Risk 4 年分位 ≥ 75 ② 长期持有者当月净减持且近 3 个月合计净减持 ③ MVRV 背离（价格在近 2 年高点 85% 以内、MVRV 比此前高点低 15% 以上、MVRV > 1.5）
+    e_rr = rr is not None and rr >= 75
+    lv = rows[i].get("lth")
+    e_lth = lv is not None and lv < 0 and sum((rows[k].get("lth") or 0) for k in range(max(0, i - 2), i + 1)) < 0
+    mv = rows[i].get("mvrv")
+    hp = max(r["price"] for r in rows[max(0, i - 24):i + 1])
+    hm = max([r["mvrv"] for r in rows[max(0, i - 24):i] if r.get("mvrv")] or [0])
+    e_div = bool(mv and mv > 1.5 and hm > 0 and rows[i]["price"] >= 0.85 * hp and mv <= 0.85 * hm)
+    cnt = int(e_rr) + int(e_lth) + int(e_div)
+    top = cnt >= 2
     strong = top and ((pi or 0) >= 75 or (rev or 0) >= 75)
     zone = "neutral" if score is None else "bottom" if score <= 25.0001 else ("topStrong" if strong else "top") if top else "neutral"
 
@@ -148,7 +170,7 @@ def zones():
             hi = None; armed = False; state = {"late": False}
     risk = "off" if not state["late"] else "watch" if state["armed"] else "fired"
     return {"month": rows[i]["m"], "zone": zone, "score": None if score is None else round(score, 1), "fam": fam,
-            "rr": None if rr is None else round(rr), "risk": risk,
+            "rr": None if rr is None else round(rr), "risk": risk, "topEvidence": cnt,
             "dd": round(state.get("dd", 0), 4) if state["late"] else None}
 
 
