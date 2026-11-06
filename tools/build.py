@@ -10,9 +10,35 @@
 
 只使用 Python 标准库。
 """
+import re
 import hashlib, os, re, sys, shutil
 
 def h(data): return hashlib.sha256(data.encode('utf-8')).hexdigest()[:10]
+
+def minify_css(css):
+    """V27.4：保守压缩样式——去注释；空白合并成一个空格；去掉 { } ; , 两侧的空白和 } 前多余的分号。
+    不碰冒号两侧（「a :hover」与「a:hover」含义不同）、不碰 calc() 里的 + -。引号里的内容原样保留。"""
+    out, i, n = [], 0, len(css)
+    buf = []
+    def flush():
+        t = "".join(buf); buf.clear()
+        t = re.sub(r"\s+", " ", t)
+        t = re.sub(r"\s*([{};,])\s*", r"\1", t)
+        t = t.replace(";}", "}")
+        out.append(t)
+    while i < n:
+        c = css[i]
+        if css.startswith("/*", i):
+            j = css.find("*/", i + 2); i = n if j < 0 else j + 2; continue
+        if c in "\"'":
+            flush(); j = i + 1
+            while j < n and css[j] != c:
+                j += 2 if css[j] == "\\" else 1
+            out.append(css[i:j + 1]); i = j + 1; continue
+        buf.append(c); i += 1
+    flush()
+    return "".join(out).strip() + "\n"
+
 
 def split(src, out):
     s = open(src, encoding='utf-8').read()
@@ -29,6 +55,7 @@ def split(src, out):
     head_end = s.index('</head>')
     styles = list(re.finditer(r'<style[^>]*>(.*?)</style>\s*', s[:head_end], re.S))
     css = '\n'.join(m.group(1).strip('\n') for m in styles) + '\n'
+    css = minify_css(css)
     css_fn = emit('app', 'css', css)
     for i, m in enumerate(reversed(styles)):
         tag = f'<link rel="stylesheet" href="{css_fn}" data-inline="css" />\n' if i == len(styles) - 1 else ''
