@@ -1,9 +1,11 @@
+# 每天预先计算 LTH 筹码集中度 ±10%，结果写入 data/lth-chips.json。
+# 网页打开时先读这份文件，只补算缺少的最新一两天。
 name: Precompute LTH chips
 
 on:
   schedule:
-    - cron: "20 1 * * *"
-  workflow_dispatch:
+    - cron: "20 1 * * *"   # 每天 UTC 01:20（北京时间 09:20）
+  workflow_dispatch:        # 也可以在 Actions 页面手动运行
 
 permissions:
   contents: write
@@ -17,8 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: Compute

@@ -1,0 +1,37 @@
+name: Daily state and push
+
+on:
+  schedule:
+    - cron: "40 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-state
+  cancel-in-progress: false
+
+jobs:
+  daily:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Compute and push
+        env:
+          BARK_KEY: ${{ secrets.BARK_KEY }}
+          PUSH_DAILY: ${{ vars.PUSH_DAILY }}
+        run: python3 tools/daily_state.py data/daily-state.json
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
+          git add data/daily-state.json
+          if git diff --cached --quiet; then echo "no change"; exit 0; fi
+          git commit -m "data: daily state $(date -u +%F)"
+          git pull --rebase --autostash
+          git push

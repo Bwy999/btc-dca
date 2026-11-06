@@ -1,4 +1,5 @@
-# 每天预先下载「顶底区间」与分析页使用的 Bitview 月度序列，结果写入 data/monthly.json。
+# 每天预先下载「顶底区间」与分析页使用的 Bitview 月度序列（data/monthly.json），
+# 并读取 BIP 仓库中量子相关提案的状态（data/quantum.json）。
 name: Precompute monthly data
 
 on:
@@ -18,17 +19,21 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: Download
         run: python3 tools/precompute_monthly.py data/monthly.json
+      - name: Quantum proposals
+        continue-on-error: true
+        run: python3 tools/quantum_status.py data/quantum.json
       - name: Commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
           git add data/monthly.json
+          if [ -f data/quantum.json ]; then git add data/quantum.json; fi
           if git diff --cached --quiet; then echo "no change"; exit 0; fi
           git commit -m "data: monthly series $(date -u +%F)"
           git pull --rebase --autostash
