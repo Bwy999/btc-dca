@@ -1,0 +1,45 @@
+# 线上自动巡检：每天早上，以及每次「一键上线」完成后，用真实浏览器把正式网站五个分区走一遍。
+# 发现空白、脚本错误、乱码、多个模块暂不可用时：仓库开 Issue，本任务显示失败（GitHub 会发邮件）。
+name: Site patrol
+
+on:
+  schedule:
+    - cron: "40 23 * * *"   # 每天 UTC 23:40（北京时间 07:40）
+  workflow_run:
+    workflows: ["Deploy from zip"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  patrol:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install browser
+        run: |
+          pip install playwright==1.48.0
+          python -m playwright install --with-deps chromium
+      - name: Wait for GitHub Pages after a deploy
+        if: ${{ github.event_name == 'workflow_run' }}
+        run: sleep 150
+      - name: Patrol
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SITE_URL: https://bwy999.github.io/btc-dca/
+        run: python3 tools/patrol.py "$SITE_URL" patrol-shots
+      - name: Save screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: patrol-shots
+          path: patrol-shots
+          retention-days: 7
