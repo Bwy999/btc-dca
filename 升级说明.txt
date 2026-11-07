@@ -1,3 +1,18 @@
+Sats Garden V27.6
+构建：27.6.0-20261108
+
+量子准备度：
+1. 卡片默认只显示三个占比（P2PK、P2TR、合计）和一行「升级进度 · 主网未激活任何量子升级 ›」；
+   提案进度条、主网状态、个人安全建议收进折叠，点开再看。
+2. 提案状态改为每周一自动读取 BIP 仓库（新任务 .github/workflows/quantum-weekly.yml，北京时间周一 09:10）；
+   原来挂在每日月度数据任务里，那个任务出错时会连带跳过，所以一直停在 10-17。现在两者分开。
+3. 「状态核对」日期移到折叠里（「最近核对 11-06」）；超过 14 天没核对时，才在卡片标题旁显示橙色「状态核对 · x 天前」。
+上传：
+  · 压缩包整个上传到仓库首页；
+  · 手动上传 .github/workflows/quantum-weekly.yml（新）和 .github/workflows/monthly-data.yml（改）；
+  · 到 Actions → Quantum status weekly → Run workflow 跑一次。
+确认：页脚显示 V27.6。
+
 Sats Garden V27.5
 构建：27.5.0-20261108
 
