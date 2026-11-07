@@ -1,0 +1,31 @@
+# 每周读取 BIP 仓库里量子相关提案（BIP-360、BIP-361）的状态，写入 data/quantum.json，网页「量子准备度」据此更新。
+name: Quantum status weekly
+
+on:
+  schedule:
+    - cron: "10 1 * * 1"   # 每周一 UTC 01:10（北京时间 09:10）
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  quantum:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Read BIP repository
+        run: python3 tools/quantum_status.py data/quantum.json
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
+          git add data/quantum.json
+          if git diff --cached --quiet; then echo "no change"; exit 0; fi
+          git commit -m "data: quantum status $(date -u +%F)"
+          git pull --rebase --autostash
+          git push
