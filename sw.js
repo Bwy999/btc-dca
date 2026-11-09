@@ -1,12 +1,12 @@
 "use strict";
 
-const SW_BUILD = "27.8.0-20261109";
-const CACHE_NAME = "btc-intelligence-v27-8-0-20261109";
+const SW_BUILD = "27.9.0-20261109";
+const CACHE_NAME = "btc-intelligence-v27-9-0-20261109";
 const CACHE_PREFIX = "btc-site:" + self.registration.scope + ":";
 const SCOPED_CACHE = CACHE_PREFIX + CACHE_NAME;
 // 带内容哈希的静态资源。文件内容不变，文件名就不变，更新时无需重新下载。
 const ASSETS = /*ASSETS*/[
-  "./assets/app.151ee2ed72.css",
+  "./assets/app.4427bd68ab.css",
   "./assets/lightweight-charts.682f74d8c4.js",
   "./assets/seed-cycle.5a6f45f52a.js",
   "./assets/app.53b537d76c.js",
@@ -25,7 +25,7 @@ const ASSETS = /*ASSETS*/[
   "./assets/ext-13.83af97c815.js",
   "./assets/ext-14.de1fcc1f56.js",
   "./assets/ext-15.67c8b7276d.js",
-  "./assets/ext-16.72cc3b589a.js",
+  "./assets/ext-16.5d01d0fe5c.js",
   "./assets/ext-17.cef25ca042.js",
   "./assets/ext-18.f55d1c0955.js",
   "./assets/ext-19.34254b63b9.js",
@@ -49,7 +49,7 @@ const ASSETS = /*ASSETS*/[
   "./assets/ext-37.98c8f6f88c.js",
   "./assets/ext-38.804f0621b9.js",
   "./assets/ext-39.92f442436e.js",
-  "./assets/ext-40.04d21698da.js",
+  "./assets/ext-40.e1d083a887.js",
   "./assets/ext-41.f615a7540b.js",
   "./assets/ext-42.a5ef522f00.js",
   "./assets/ext-44.b798596959.js",
