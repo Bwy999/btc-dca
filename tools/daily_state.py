@@ -131,6 +131,26 @@ def zones():
     P = {k: rp_col([r[k] for r in rows]) for k in ["mvrv", "mnupl", "nupl", "rrl", "sip", "psil", "snupl", "puell", "rev", "pi"]}
     P["psilInv"] = [None if v is None else 100 - v for v in P["psil"]]
     fams = [("value", ["mvrv", "mnupl", "nupl", "rrl", "sip", "psilInv"]), ("sth", ["snupl"]), ("miner", ["puell"]), ("old", ["rev"]), ("trend", ["pi"])]
+    def month_zone(i):
+        """V28：任意一个月的分区（b 底部 / t 顶部 / n 中性）和是否深度底部——定投页算储备金要用过去每个月的分区。"""
+        fm = {}
+        for f, ks in fams:
+            xs = [P[k][i] for k in ks if P[k][i] is not None]
+            fm[f] = sum(xs) / len(xs) if xs else None
+        vs = [v for v in fm.values() if v is not None]
+        sc = sum(vs) / len(vs) if len(vs) >= 3 else None
+        e1 = P["rrl"][i] is not None and P["rrl"][i] >= 75
+        lv = rows[i].get("lth")
+        e2 = lv is not None and lv < 0 and sum((rows[k].get("lth") or 0) for k in range(max(0, i - 2), i + 1)) < 0
+        mv = rows[i].get("mvrv")
+        hp = max(r["price"] for r in rows[max(0, i - 24):i + 1])
+        hm = max([r["mvrv"] for r in rows[max(0, i - 24):i] if r.get("mvrv")] or [0])
+        e3 = bool(mv and mv > 1.5 and hm > 0 and rows[i]["price"] >= 0.85 * hp and mv <= 0.85 * hm)
+        ps = rows[i].get("psil")
+        deep = ps is not None and ps >= 42          # V27.8：深度底部
+        z = "n" if sc is None and not deep else "b" if (deep or sc <= 25.0001) else "t" if (int(e1) + int(e2) + int(e3)) >= 2 else "n"
+        return {"m": rows[i]["m"], "z": z, "deep": bool(deep), "price": round(rows[i]["price"], 2)}
+
     i = len(rows) - 1
     fam = {}
     for f, ks in fams:
@@ -151,12 +171,14 @@ def zones():
     cnt = int(e_rr) + int(e_lth) + int(e_div)
     top = cnt >= 2
     strong = top and ((pi or 0) >= 75 or (rev or 0) >= 75)
-    zone = "neutral" if score is None else "bottom" if score <= 25.0001 else ("topStrong" if strong else "top") if top else "neutral"
+    psil_now = rows[i].get("psil")
+    deep_now = psil_now is not None and psil_now >= 42
+    zone = "bottom" if deep_now else "neutral" if score is None else "bottom" if score <= 25.0001 else ("topStrong" if strong else "top") if top else "neutral"
 
     # 牛市后期风控：近 12 个月 LTH NUPL 曾 ≥ 4 年 85% 分位；之后月线收盘较本轮最高回撤 20% 提示一次
     nu = [r["nupl"] for r in rows]
     nrs = [rp_plain(nu, k) for k in range(len(rows))]
-    hi = hi_i = None; armed = False; state = None
+    hi = hi_i = None; armed = False; state = None; fired_months = []
     for k in range(len(rows)):
         late = any((nrs[j] or 0) >= 85 for j in range(max(0, k - 12), k + 1))
         if late:
@@ -164,13 +186,25 @@ def zones():
                 hi, hi_i, armed = rows[k]["price"], k, True
             dd = rows[k]["price"] / hi - 1
             if armed and dd <= -0.2:
-                armed = False
+                armed = False; fired_months.append(rows[k]["m"])
             state = {"late": True, "armed": armed, "dd": dd, "hi": hi, "hiMonth": rows[hi_i]["m"]}
         else:
             hi = None; armed = False; state = {"late": False}
     risk = "off" if not state["late"] else "watch" if state["armed"] else "fired"
-    return {"month": rows[i]["m"], "zone": zone, "score": None if score is None else round(score, 1), "fam": fam,
+    # V28：底部确认——近 24 个月里 LTH_PSIL 冲上 42% 以上，之后回落 8 个百分点以上；记下确认的月份（与网页「顶底区间」同一规则）
+    confirm = None
+    lo = max(0, i - 24)
+    hits = [k for k in range(lo, i + 1) if rows[k].get("psil") is not None and rows[k]["psil"] >= 42]
+    if hits:
+        pk = max(hits, key=lambda k: rows[k]["psil"])
+        for k in range(pk + 1, i + 1):
+            if rows[k].get("psil") is not None and rows[k]["psil"] <= rows[pk]["psil"] - 8:
+                confirm = rows[k]["m"]
+                break
+    return {"month": rows[i]["m"], "zone": zone, "confirm": confirm, "score": None if score is None else round(score, 1), "fam": fam,
             "rr": None if rr is None else round(rr), "risk": risk, "topEvidence": cnt,
+            "deep": bool(deep_now), "psil": None if psil_now is None else round(psil_now, 2),
+            "months": [month_zone(k) for k in range(max(0, len(rows) - 60), len(rows))], "riskMonths": fired_months[-6:],
             "dd": round(state.get("dd", 0), 4) if state["late"] else None}
 
 
@@ -220,7 +254,8 @@ def main():
             old = {}
     a, t = ahr999(), zones()
     headline, action = verdict(a, t)
-    now = {"day": a["day"], "price": a["price"], "ahr": a["ahr"], "ahrZone": a["zone"], "tb": t["zone"], "score": t["score"], "risk": t["risk"], "headline": headline, "action": action}
+    now = {"day": a["day"], "price": a["price"], "ahr": a["ahr"], "ahrZone": a["zone"], "tb": t["zone"], "score": t["score"], "risk": t["risk"], "headline": headline, "action": action,
+           "topEvidence": t.get("topEvidence"), "deep": t.get("deep"), "psil": t.get("psil"), "confirm": t.get("confirm")}
     hist = [h for h in (old.get("history") or []) if h.get("day") != now["day"]] + [now]
     hist = hist[-120:]
     prev = old.get("today") or {}
@@ -242,8 +277,22 @@ def main():
     elif os.environ.get("PUSH_DAILY") == "1":
         pushed = bark("BTC 今日结论", headline + " · " + action + "。" + body_tail)
 
+    # V28：每月定投日（默认 15 日，北京时间）推送「本月应投」。预算默认 ¥2,000，可在仓库 Variables 里设 DCA_BUDGET / DCA_DAY
+    from datetime import timedelta
+    bj = datetime.now(timezone.utc) + timedelta(hours=8)
+    ym, dca_pushed = bj.strftime("%Y-%m"), old.get("dcaPushed")
+    try:
+        dca_day, budget = int(os.environ.get("DCA_DAY") or 15), float(os.environ.get("DCA_BUDGET") or 2000)
+    except ValueError:
+        dca_day, budget = 15, 2000.0
+    if bj.day == dca_day and dca_pushed != ym:
+        mult = 2 if t["zone"] == "bottom" else 0.5 if t["zone"] in ("top", "topStrong") else 1
+        extra = "，储备金全部投入" if t.get("deep") else ""
+        if bark("今天是定投日", f"{TBN[t['zone']]}：应投 ¥{budget * mult:,.0f}（预算 ×{mult:g}）{extra}。{body_tail}"):
+            dca_pushed = ym
+
     data = {"v": 1, "generated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "today": now,
-            "zones": t, "changes": changes, "pushed": pushed, "history": hist}
+            "zones": t, "changes": changes, "pushed": pushed, "history": hist, "dcaPushed": dca_pushed}
     os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, separators=(",", ":"))

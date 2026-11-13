@@ -147,8 +147,35 @@ def g_sync():
     return {"height": j.get("computed_height") or j.get("indexed_height"), "behind": j.get("blocks_behind"), "ts": j.get("last_indexed_at_unix")}
 
 
+def g_signal():
+    """定投信号：AHR999（新拟合）、顶底区间、牛市后期风控——直接用 tools/daily_state.py 的算法（与 V27 网页、每日推送一致），
+    再加上 V27.8 的深度底部（LTH_PSIL ≥ 42%）和 V27.9 的底部确认（冲上 42% 后回落 8 个百分点）。"""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("ds", os.path.join(os.path.dirname(os.path.abspath(__file__)), "daily_state.py"))
+    ds = importlib.util.module_from_spec(spec); spec.loader.exec_module(ds)
+    a, t = ds.ahr999(), ds.zones()
+    r = bulk("month1", ["price", "lth_supply_in_loss_share"], "2013-01-01")
+    ms, ps, px = [d[:7] for d in r["date"]], [x if x is None else float(x) for x in r["lth_supply_in_loss_share"]], [float(x or 0) for x in r["price"]]
+    i = len(ms) - 1
+    deep = ps[i] is not None and ps[i] >= 42
+    confirm = None
+    hit = next((q for q in range(i, max(-1, i - 25), -1) if ps[q] is not None and ps[q] >= 42), -1)
+    if hit >= 0:
+        st = hit
+        while st > 0 and ps[st - 1] is not None and ps[st - 1] >= 42:
+            st -= 1
+        pk = max(range(st, hit + 1), key=lambda q: ps[q])
+        cm = next((q for q in range(pk + 1, i + 1) if ps[q] is not None and ps[q] <= ps[pk] - 8), -1)
+        end = i if cm < 0 else cm
+        lo = min(range(st, end + 1), key=lambda q: px[q])
+        confirm = {"state": "confirmed" if cm >= 0 else "inProgress", "month": ms[cm] if cm >= 0 else None, "lowMonth": ms[lo], "peak": round(ps[pk], 1), "peakMonth": ms[pk]}
+    zone = "bottom" if (t["zone"] == "bottom" or deep) else t["zone"]
+    return {"day": a["day"], "ahr": a["ahr"], "ahrZone": a["zone"], "month": t["month"], "zone": zone, "bottomGauge": None if t["score"] is None else round(100 - t["score"]),
+            "topEvidence": t.get("topEvidence"), "risk": t["risk"], "psil": None if ps[i] is None else round(ps[i], 1), "deep": deep, "confirm": confirm}
+
+
 GROUPS_CHARTS = {"daily": g_daily, "priceAll": g_price_all, "cohortWeekly": g_cohort_weekly, "age": g_age}
-GROUPS_CORE = {"percentiles": g_percentiles, "sync": g_sync}
+GROUPS_CORE = {"percentiles": g_percentiles, "sync": g_sync, "signal": g_signal}
 
 
 def latest(daily, cohort, age, pct):
@@ -160,6 +187,7 @@ def latest(daily, cohort, age, pct):
             i -= 1
         ratio = [l / s if l and s else None for l, s in zip(daily["lth"], daily["sth"])]
         peak = max((x for x in ratio[-500:] if x), default=None)
+        out["price30d"] = daily["price"][i - 30] if i >= 30 else None
         out.update({"day": daily["d"][i], "price": daily["price"][i], "psil": daily["psil"][i], "lthDelta30": daily["lthDelta30"][i],
                     "lthSthRatio": rnd(ratio[i], 3), "lthSthFromPeak": rnd(ratio[i] / peak - 1, 4) if peak and ratio[i] else None,
                     "costMedian": daily["p50"][i], "costP25": daily["p25"][i], "costP75": daily["p75"][i]})
@@ -210,6 +238,11 @@ def main():
         raise SystemExit("日度数据读取失败且没有上一次的文件，不写入")
     now = int(time.time() * 1000)
     charts.update({"v": 1, "ts": now, "stale": s1})
+    hist = dict(oldk.get("zoneHistory") or {})
+    sg = core.get("signal")
+    if sg and sg.get("month"):
+        hist[sg["month"]] = {"zone": sg["zone"], "deep": bool(sg.get("deep"))}
+    core["zoneHistory"] = {k: hist[k] for k in sorted(hist)[-60:]}
     core.update({"v": 1, "ts": now, "stale": s1 + s2,
                  "latest": latest(charts.get("daily"), charts.get("cohortWeekly"), charts.get("age"), core.get("percentiles"))})
     for path, data in ((pc, charts), (pk, core)):
