@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#1f4a40">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="sats-garden-v28" content="28.0.0-preview2">
+<meta name="sats-garden-v28" content="28.0.0-preview3">
 <title>Sats Garden</title>
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <style>
@@ -90,6 +90,42 @@ body{min-height:100vh;min-height:100dvh;background:var(--moss);color:var(--ink);
 .hint{font-size:12px;color:var(--ink3);margin:-4px 0 14px}
 .btns{display:grid;grid-template-columns:1fr 2fr;gap:10px}.btns .ghost{background:var(--hair);color:var(--ink)}
 .soon{margin-top:14px;padding:14px 16px;border-radius:16px;background:var(--hair);font-size:13px;color:var(--ink2);line-height:1.55}
+/* 指标页 / 我的 */
+:root{--c1:#1f7a5c;--c2:#c77a12;--c3:#4f77b3;--c4:#9163ad}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--c1:#4fc79a;--c2:#e8a548;--c3:#7ea6e0;--c4:#b993d6}}
+:root[data-theme="dark"]{--c1:#4fc79a;--c2:#e8a548;--c3:#7ea6e0;--c4:#b993d6}
+.hero .big{font-family:var(--serif);font-size:34px;line-height:1.2;font-weight:600;margin:22px 0 8px}
+.hero .big sup{font-size:.4em;font-weight:400;opacity:.7;margin-left:6px;vertical-align:baseline}
+.hero .sub{font-size:13px;color:var(--on2);min-height:18px}
+.ind{border-bottom:1px solid var(--hair)}
+.ind>button{display:grid;grid-template-columns:1fr auto 12px;gap:10px;align-items:center;width:100%;min-height:62px;padding:11px 0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.ind .n{font-size:15px;font-weight:600}
+.ind .x{text-align:right}.ind .x b{display:block;font-size:17px;font-weight:600}.ind .x small{display:block;font-size:11.5px;color:var(--ink3);margin-top:2px}
+.ind .x small.g{color:var(--pos)}.ind .x small.w{color:var(--cau)}.ind .x small.b{color:var(--neg)}
+.ind .ar{color:var(--ink3);font-size:17px;transition:transform .2s}.ind.open .ar{transform:rotate(90deg)}
+.ind .body{padding:2px 0 18px}.ind .body[hidden]{display:none}
+.rg{display:inline-flex;gap:2px;padding:3px;border-radius:11px;background:var(--hair);margin-bottom:8px}
+.rg button{border:0;background:none;font:inherit;font-size:12px;color:var(--ink2);padding:6px 13px;border-radius:8px;cursor:pointer}
+.rg button.on{background:var(--paper);color:var(--ink);font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.14)}
+.tip{min-height:18px;font-size:12px;color:var(--ink2);margin-bottom:4px;font-variant-numeric:tabular-nums;line-height:1.5}
+.cv{position:relative;height:200px;touch-action:pan-y}.cv canvas{position:absolute;left:0;top:0;width:100%;height:100%}
+.lg{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:11.5px;color:var(--ink2)}.lg i{display:inline-block;width:10px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}
+.tb{width:100%;border-collapse:collapse;font-size:13px}.tb th{font-weight:400;font-size:11.5px;color:var(--ink3);text-align:right;padding:4px 0 8px}
+.tb td{padding:10px 0;border-top:1px solid var(--hair);text-align:right;font-variant-numeric:tabular-nums}.tb th:first-child,.tb td:first-child{text-align:left}
+.tb .up{color:var(--pos)}.tb .dn{color:var(--neg)}
+.clock{position:relative;height:10px;border-radius:5px;background:var(--hair);margin:26px 0 8px}
+.clock i{position:absolute;top:0;height:100%;border-radius:5px}.clock .t{background:var(--neg);opacity:.55}.clock .bt{background:var(--pos);opacity:.6}
+.clock u{position:absolute;top:-6px;width:2px;height:22px;margin-left:-1px;background:var(--orange);border-radius:1px}
+.clock u::after{content:"";position:absolute;left:-4px;top:-9px;width:10px;height:10px;border-radius:50%;background:var(--orange)}
+.clab{display:flex;justify-content:space-between;font-size:11px;color:var(--ink3);margin-bottom:6px}
+.prog{height:6px;border-radius:3px;background:var(--hair);margin:12px 0 8px;overflow:hidden}.prog i{display:block;height:100%;border-radius:3px;background:var(--moss2)}
+.set{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--hair);font-size:15px}
+.set input{width:120px;height:40px;border-radius:12px;border:1px solid var(--hair);background:transparent;color:var(--ink);font:inherit;font-size:16px;text-align:right;padding:0 12px;font-variant-numeric:tabular-nums}
+.set input:focus{outline:2px solid var(--orange);outline-offset:1px}
+.hl{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--hair);font-size:14px}
+.hl span:last-child{font-size:12.5px;color:var(--ink2);display:flex;align-items:center;gap:7px}.hl span:last-child::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--pos)}
+.hl.warn span:last-child::before{background:var(--cau)}.hl.bad span:last-child::before{background:var(--neg)}
+.lib{display:flex;justify-content:space-between;align-items:center;min-height:62px;color:inherit;text-decoration:none;font-size:15px;font-weight:600}.lib small{font-size:12px;font-weight:400;color:var(--ink3)}
 /* 底部导航 */
 .tabs{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + var(--safe-b));height:58px;padding:0 8px;border-radius:29px;background:#161a18;display:flex;align-items:center;gap:2px;z-index:10;box-shadow:0 10px 30px rgba(0,0,0,.28)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tabs{background:#1c2622}}
@@ -149,12 +185,42 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--orange);outline-off
     </div>
     <div class="h" id="recH" hidden>买入记录</div>
     <div id="recList"></div>
-    <div class="links"><button type="button" id="recExport">导出备份</button><button type="button" id="recImportBtn">导入备份</button><input type="file" id="recImport" accept=".json,application/json" hidden></div>
+    <div class="links"><button type="button" data-act="export">导出备份</button><button type="button" data-act="import">导入备份</button><input type="file" id="recImport" accept=".json,application/json" hidden></div>
   </div>
 </section>
 
-<section class="view" id="vInd" hidden><div class="hero"><div class="top"><b>指标</b><span></span></div></div><div class="sheet"><div class="verdict">指标页还在做。</div><p class="meta">会放 14 个核心指标和「资料库」入口。现在可以先回 <a href="../index.html">原来的网站</a> 查看。</p></div></section>
-<section class="view" id="vMe" hidden><div class="hero"><div class="top"><b>我的</b><span></span></div></div><div class="sheet"><div class="verdict">「我的」还在做。</div><p class="meta">持仓、买入记录、备份、数据健康中心会搬到这里。个人记录和原来的网站共用，不需要重新录入。<br><br>预览版 28.0.0-preview2 · <a href="../index.html">回到 V27</a></p></div></section>
+<section class="view" id="vInd" hidden>
+  <div class="hero"><div class="top"><b>指标</b><span id="iDay"></span></div>
+    <div class="big" id="iBig">—</div><div class="sub" id="iSub"></div></div>
+  <div class="sheet"><div id="indList"></div>
+    <a class="lib" href="../index.html"><span>资料库<br><small>其余 21 个指标，在原来的网站里</small></span><span class="go" style="color:var(--ink3)">›</span></a>
+  </div>
+</section>
+
+<section class="view" id="vMe" hidden>
+  <div class="hero"><div class="top"><b>我的持仓</b><span id="mCount"></span></div>
+    <div class="big num"><span id="mBtc">—</span><sup>BTC</sup></div><div class="sub" id="mSub"></div></div>
+  <div class="sheet">
+    <div id="mEmpty" hidden><div class="verdict">还没有买入记录。</div><button class="cta" type="button" data-go="dca" style="margin-top:18px">去记第一笔</button></div>
+    <div id="mHold" hidden>
+      <div class="kv"><span>总投入</span><b class="num" id="mCost">—</b></div>
+      <div class="kv"><span>平均成本</span><b class="num" id="mAvg">—</b></div>
+      <div class="kv"><span>现值</span><b class="num" id="mVal">—</b></div>
+      <div class="kv"><span>浮动盈亏</span><b class="num" id="mPnl">—</b></div>
+      <div id="mCurveBox" hidden><div class="h">我的成本与价格</div><div id="mCurve"></div></div>
+      <div class="h">21M 长期积累</div>
+      <div class="kv"><span>占 2,100 万枚的<small id="mNext"></small></span><b class="num" id="mShare">—</b></div>
+      <div class="prog"><i id="mProg" style="width:0"></i></div>
+    </div>
+    <div class="h">设置</div>
+    <label class="set"><span>每月预算（元）</span><input id="sBudget" type="number" inputmode="decimal" min="0" step="100"></label>
+    <label class="set"><span>美元汇率</span><input id="sFx" type="number" inputmode="decimal" min="1" step="0.01"></label>
+    <div class="h">数据</div>
+    <div id="mHealth"></div>
+    <div class="links"><button type="button" data-act="export">导出备份</button><button type="button" data-act="import">导入备份</button><a href="../index.html" style="color:var(--ink3);padding:10px 0">回到 V27</a></div>
+    <p class="meta">Sats Garden 28.0.0-preview3 · 买入记录只保存在这台手机上，换手机前请先导出备份。</p>
+  </div>
+</section>
 
 <div class="modal" id="recModal" hidden><div class="panel" role="dialog" aria-label="记录本月投入">
   <h3>记录一笔买入</h3>
@@ -187,7 +253,7 @@ function pct(v,d){return (v<0?"−":"+")+Math.abs(v).toFixed(d==null?1:d)+"%"}
 var WEEK=["周日","周一","周二","周三","周四","周五","周六"];
 
 /* ============ 数据：全部来自网站自己的文件 + 一个实时价格 ============ */
-var D={state:null,core:null,stable:null,price:null,chg24:null,priceSrc:""};
+var D={state:null,core:null,stable:null,charts:null,chips:null,price:null,chg24:null,priceSrc:""};
 function loadFiles(){
   return Promise.all([
     getJSON("../data/daily-state.json").then(function(j){D.state=j},function(){}),
@@ -216,7 +282,9 @@ function ahrPos(a){   // 标尺位置：0.2 / 0.45 / 1.2 / 5 / 20 对应 0 / 22 
   var x=[.2,.45,1.2,5,20],y=[0,22,46,72,100];if(!(a>0))return 0;if(a<=x[0])return 0;if(a>=x[4])return 100;
   for(var i=0;i<4;i++)if(a<x[i+1])return y[i]+(y[i+1]-y[i])*Math.log(a/x[i])/Math.log(x[i+1]/x[i]);return 100}
 function zone(){var t=today();if(!t)return "n";return t.tb==="bottom"||t.deep?"b":(t.tb==="top"||t.tb==="topStrong")?"t":"n"}
-function budget(){try{var s=JSON.parse(localStorage.getItem("btc_cost_structure_state_v1"));var b=s&&s.sigPlan&&+s.sigPlan.budget;if(b>0)return b}catch(e){}return 2000}
+var SET_KEY="sg28_settings_v1";
+function settings(){try{return JSON.parse(localStorage.getItem(SET_KEY))||{}}catch(e){return {}}}
+function budget(){var b0=+settings().budget;if(b0>0)return b0;try{var s=JSON.parse(localStorage.getItem("btc_cost_structure_state_v1"));var b=s&&s.sigPlan&&+s.sigPlan.budget;if(b>0)return b}catch(e){}return 2000}
 function dcaWhen(){var n=new Date(),d=n.getDate();if(d===DCA_DAY)return{text:"今天定投",left:0};
   if(d<DCA_DAY)return{text:DCA_DAY+" 日 · 还有 "+(DCA_DAY-d)+" 天",left:DCA_DAY-d};
   var next=new Date(n.getFullYear(),n.getMonth()+1,DCA_DAY),left=Math.round((next-new Date(n.getFullYear(),n.getMonth(),d))/864e5);return{text:"下月 "+DCA_DAY+" 日 · 还有 "+left+" 天",left:left}}
@@ -225,7 +293,7 @@ function chg30(){var s=D.stable,p=livePrice();if(!s||!s.p||s.p.length<32||!p)ret
 
 /* ============ 买入记录（V28 自己的一份，只存在本机；会把 V27 账本里的买入只读地并进来） ============ */
 var REC_KEY="sg28_records_v1";
-function fx(){try{var l=JSON.parse(localStorage.getItem("btc_dca_ledger_v1"));var f=l&&l.settings&&+l.settings.fallbackFx;if(f>1)return f}catch(e){}return 7.1}
+function fx(){var f0=+settings().fx;if(f0>1)return f0;try{var l=JSON.parse(localStorage.getItem("btc_dca_ledger_v1"));var f=l&&l.settings&&+l.settings.fallbackFx;if(f>1)return f}catch(e){}return 7.1}
 function loadRecs(){var a=[];try{a=JSON.parse(localStorage.getItem(REC_KEY))||[]}catch(e){}
   // V27 账本里的 BTC 买入（type=btc：花了多少稳定币、成交价、买到多少）——只读，按 id 去重
   try{var l=JSON.parse(localStorage.getItem("btc_dca_ledger_v1")),have={};a.forEach(function(r){have[r.id]=1});
@@ -317,24 +385,209 @@ function renderDca(){
 var VIEWS={home:"vHome",dca:"vDca",ind:"vInd",me:"vMe"};
 function show(tab){if(!VIEWS[tab])tab="home";Object.keys(VIEWS).forEach(function(k){$(VIEWS[k]).hidden=k!==tab});
   document.querySelectorAll(".tabs button").forEach(function(b){var on=b.dataset.tab===tab;b.classList.toggle("on",on);b.setAttribute("aria-current",on?"page":"false")});
-  window.scrollTo(0,0);try{history.replaceState(null,"","#"+tab)}catch(e){}}
+  if(tab==="ind"||tab==="me")loadCharts();if(window.__sgReady)renderAll();window.scrollTo(0,0);try{history.replaceState(null,"","#"+tab)}catch(e){}}
 document.addEventListener("click",function(e){var b=e.target.closest("[data-tab]");if(b)return show(b.dataset.tab);var g=e.target.closest("[data-go]");if(g)show(g.dataset.go)});
 $("dRecord").addEventListener("click",openRec);$("rCancel").addEventListener("click",function(){$("recModal").hidden=true});$("rSave").addEventListener("click",saveRec);
 $("recModal").addEventListener("click",function(e){if(e.target===this)this.hidden=true});
 document.addEventListener("click",function(e){var d=e.target.closest("[data-del]");if(d){if(confirm("删除这笔记录？")){saveRecs(loadRecs().filter(function(r){return r.id!==d.dataset.del}));renderAll()}return}
   if(e.target.id==="recMore"){window.__recAll=true;renderRecs()}});
-$("recExport").addEventListener("click",function(){var data={app:"Sats Garden",kind:"v28-records",at:new Date().toISOString(),records:loadRecs()},blob=new Blob([JSON.stringify(data,null,1)],{type:"application/json"}),name="SatsGarden-买入记录-"+new Date().toISOString().slice(0,10)+".json",f;
+function doExport(){var data={app:"Sats Garden",kind:"v28-records",at:new Date().toISOString(),records:loadRecs()},blob=new Blob([JSON.stringify(data,null,1)],{type:"application/json"}),name="SatsGarden-买入记录-"+new Date().toISOString().slice(0,10)+".json",f;
   try{f=new File([blob],name,{type:"application/json"})}catch(e){}
   if(f&&navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:name}).catch(function(){});return}
-  var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){a.remove()},1500)});
-$("recImportBtn").addEventListener("click",function(){$("recImport").click()});
+  var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){a.remove()},1500)}
+document.addEventListener("click",function(e){var a=e.target.closest("[data-act]");if(!a)return;if(a.dataset.act==="export")doExport();else $("recImport").click()});
 $("recImport").addEventListener("change",function(e){var f=e.target.files&&e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{var d=JSON.parse(r.result);if(d.kind!=="v28-records"||!Array.isArray(d.records))throw 0;
     var cur=loadRecs(),have={};cur.forEach(function(x){have[x.id]=1});var add=d.records.filter(function(x){return x&&x.btc>0&&!have[x.id]&&x.src!=="v27"});
     if(!confirm("导入 "+add.length+" 笔新记录？（已有的不会重复）"))return;saveRecs(cur.concat(add));renderAll()}catch(err){alert("不是 Sats Garden 的买入记录备份")}};r.readAsText(f);e.target.value=""});
 
-function renderAll(){renderHome();renderDca()}
+/* ============ 图表（全站只有这一个） ============ */
+function cssv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}
+function fmtN(v){if(v==null||!isFinite(v))return "—";var a=Math.abs(v),sg=v<0?"−":"";return sg+(a>=1e9?(a/1e9).toFixed(1)+"B":a>=1e6?(a/1e6).toFixed(a>=1e7?1:2)+"M":a>=1e4?Math.round(a/1e3)+"K":a>=100?Math.round(a).toLocaleString("en-US"):a>=10?a.toFixed(1):a.toFixed(2))}
+function usd(v){return v==null||!isFinite(v)?"—":"$"+fmtN(v)}
+function pc(v){return v==null||!isFinite(v)?"—":v.toFixed(1)+"%"}
+// o：{x:[日期], s:[{v:[数值], c:颜色变量, n:名字, f:格式, own:单独刻度的淡线}], log, hl:[{y,t}], bands:[[i0,i1]], marks:[i], bars}
+function mountChart(host,o){
+  if(!host._cv){host.innerHTML='<div class="tip"></div><div class="cv"><canvas></canvas></div>';host._cv=host.querySelector("canvas");host._tip=host.querySelector(".tip");
+    var box=host.querySelector(".cv"),pick=function(e){var o2=host._o;if(!o2)return;var r=box.getBoundingClientRect(),n=o2.x.length,i=Math.round((e.clientX-r.left)/(r.width-46)*(n-1));host._hi=Math.max(0,Math.min(n-1,i));paint(host)};
+    box.addEventListener("pointerdown",pick);box.addEventListener("pointermove",function(e){if(e.pointerType==="mouse"||e.buttons||e.pressure>0)pick(e)});
+    var off=function(){host._hi=null;paint(host)};box.addEventListener("pointerleave",off);box.addEventListener("pointercancel",off);
+    if("ResizeObserver" in window)new ResizeObserver(function(){paint(host)}).observe(box)}
+  host._o=o;host._hi=null;paint(host)}
+function paint(host){
+  var o=host._o,cv=host._cv;if(!o||!cv)return;var W=cv.parentNode.clientWidth,H=cv.parentNode.clientHeight;if(!W||!H)return;
+  var dpr=Math.min(3,window.devicePixelRatio||1);cv.width=W*dpr;cv.height=H*dpr;var g=cv.getContext("2d");g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,W,H);
+  var n=o.x.length;if(n<2){host._tip.textContent="数据还没到";return}
+  var L=0,R=W-46,T=8,B=H-20,ink=cssv("--ink"),ink3=cssv("--ink3"),hair=cssv("--hair");
+  var X=function(i){return L+(R-L)*i/(n-1)},tf=function(v){return o.log?Math.log(v):v},ok=function(v){return v!=null&&isFinite(v)&&(!o.log||v>0)};
+  function range(list){var lo=Infinity,hi=-Infinity;list.forEach(function(s){for(var i=0;i<n;i++){var v=s.v[i];if(ok(v)){var t=tf(v);if(t<lo)lo=t;if(t>hi)hi=t}}});return [lo,hi]}
+  var main=o.s.filter(function(s){return !s.own}),mm=range(main);if(o.bars){mm[0]=Math.min(mm[0],0);mm[1]=Math.max(mm[1],0)}
+  if(!isFinite(mm[0])){host._tip.textContent="数据还没到";return}
+  (o.hl||[]).forEach(function(h){if(ok(h.y)&&h.fit){var t=tf(h.y);if(t<mm[0])mm[0]=t;if(t>mm[1])mm[1]=t}});
+  var pad=(mm[1]-mm[0])*.07||1;mm=[mm[0]-pad,mm[1]+pad];
+  var Y=function(v){return B-(B-T)*(tf(v)-mm[0])/(mm[1]-mm[0])};
+  g.font="10.5px -apple-system,system-ui,sans-serif";g.textBaseline="middle";
+  // 区间底色与标记
+  (o.bands||[]).forEach(function(b){g.fillStyle="rgba(31,157,107,.16)";g.fillRect(X(b[0]),T,Math.max(3,X(b[1])-X(b[0])),B-T)});
+  (o.marks||[]).forEach(function(i){g.strokeStyle=cssv("--pos");g.lineWidth=1;g.setLineDash([3,3]);g.beginPath();g.moveTo(X(i),T);g.lineTo(X(i),B);g.stroke();g.setLineDash([])});
+  // 刻度
+  var fy=o.fy||(main[0]&&main[0].f)||fmtN;
+  for(var k=0;k<4;k++){var t=mm[0]+(mm[1]-mm[0])*(.08+.28*k),y=B-(B-T)*(t-mm[0])/(mm[1]-mm[0]);g.strokeStyle=hair;g.lineWidth=1;g.beginPath();g.moveTo(L,y);g.lineTo(R,y);g.stroke();
+    g.fillStyle=ink3;g.textAlign="left";g.fillText(fy(o.log?Math.exp(t):t),R+6,y)}
+  (o.hl||[]).forEach(function(h){if(!ok(h.y))return;var y=Y(h.y);if(y<T||y>B)return;g.strokeStyle=ink3;g.setLineDash([4,4]);g.beginPath();g.moveTo(L,y);g.lineTo(R,y);g.stroke();g.setLineDash([]);
+    if(h.t){g.fillStyle=ink3;g.textAlign="left";g.fillText(h.t,L+2,y-8)}});
+  // 线
+  o.s.slice().reverse().forEach(function(s,si){
+    var yf=Y;if(s.own){var r=(function(){var lo=Infinity,hi=-Infinity;for(var i=0;i<n;i++){var v=s.v[i];if(v>0){var t=Math.log(v);if(t<lo)lo=t;if(t>hi)hi=t}}return [lo,hi]})();if(!isFinite(r[0]))return;var sp=(r[1]-r[0])||1;yf=function(v){return B-(B-T)*(.06+.88*(Math.log(v)-r[0])/sp)}}
+    g.strokeStyle=s.own?ink3:(s.c?cssv(s.c):ink);g.globalAlpha=s.own?.45:1;g.lineWidth=s.own?1:(s.w||1.6);g.lineJoin="round";g.beginPath();var pen=false;
+    for(var i=0;i<n;i++){var v=s.v[i];if(s.own?!(v>0):!ok(v)){pen=false;continue}var x=X(i),y=yf(v);if(pen)g.lineTo(x,y);else{g.moveTo(x,y);pen=true}}
+    if(!(o.bars&&!s.own))g.stroke();g.globalAlpha=1});
+  if(o.bars){var s0=main[0],y0=Y(0),bw=Math.max(1,(R-L)/n-.5);for(var i=0;i<n;i++){var v=s0.v[i];if(!ok(v))continue;g.fillStyle=cssv(v>=0?"--pos":"--neg");var y=Y(v);g.fillRect(X(i)-bw/2,Math.min(y,y0),bw,Math.max(1,Math.abs(y-y0)))}
+    g.strokeStyle=ink3;g.beginPath();g.moveTo(L,y0);g.lineTo(R,y0);g.stroke()}
+  // 横轴
+  var lab=function(d){d=String(d);return d.length>=10?(n>200?d.slice(0,7):d.slice(5)):d};g.fillStyle=ink3;g.textBaseline="alphabetic";
+  g.textAlign="left";g.fillText(lab(o.x[0]),L,H-4);g.textAlign="center";g.fillText(lab(o.x[n>>1]),(L+R)/2,H-4);g.textAlign="right";g.fillText(lab(o.x[n-1]),R,H-4);
+  // 十字线与读数
+  var hi=host._hi,ix=hi==null?n-1:hi;
+  if(hi!=null){g.strokeStyle=ink3;g.lineWidth=1;g.beginPath();g.moveTo(X(hi),T);g.lineTo(X(hi),B);g.stroke();
+    main.forEach(function(s){var v=s.v[hi];if(!ok(v))return;g.fillStyle=s.c?cssv(s.c):ink;g.beginPath();g.arc(X(hi),Y(v),3.5,0,7);g.fill()})}
+  host._tip.textContent=o.x[ix]+"　"+o.s.map(function(s){var v=s.v[ix];return (s.n?s.n+" ":"")+(v==null?"—":(s.f||fmtN)(v))}).join("　");
+}
+
+/* ============ 指标页：数据在打开「指标 / 我的」时才读 ============ */
+var chartsAsked=false;
+function loadCharts(){if(chartsAsked)return;chartsAsked=true;
+  var a=getJSON("../data/v28/charts.json",20000).then(function(j){D.charts=j},function(){}),b=getJSON("../data/lth-chips.json",20000).then(function(j){D.chips=j},function(){});
+  a.then(renderAll);b.then(renderAll);Promise.all([a,b]).then(function(){if(!D.charts)chartsAsked=false})}
+function iso(t){return new Date(t).toISOString().slice(0,10)}
+var dateCache={};function dates(start,n){var k=start+"|"+n;if(dateCache[k])return dateCache[k];var t=Date.parse(start+"T00:00:00Z"),a=new Array(n);for(var i=0;i<n;i++)a[i]=iso(t+i*864e5);return dateCache[k]=a}
+function cut(o,n){if(!n||o.x.length<=n)return o;var k=o.x.length-n;o.x=o.x.slice(k);o.s.forEach(function(s){s.v=s.v.slice(k)});return o}
+function LT(){return D.core&&D.core.latest||{}}
+function daily(){return D.charts&&D.charts.daily}
+var HALVING=Date.UTC(2024,3,20),NEXT_HALVING=Date.UTC(2028,3,17),TOPW=[526,548],BOTW=[777,924];
+function cycleDay(){return Math.floor((Date.now()-HALVING)/864e5)}
+function md(t){var d=new Date(t);return d.getUTCFullYear()+"-"+("0"+(d.getUTCMonth()+1)).slice(-2)+"-"+("0"+d.getUTCDate()).slice(-2)}
+function deepRuns(){var m=D.charts&&D.charts.monthly;if(!m)return {bands:[],marks:[]};var bands=[],marks=[],i=0,n=m.m.length;
+  while(i<n){if(m.psil[i]>=42){var st=i,pk=i;while(i<n&&m.psil[i]>=42){if(m.psil[i]>m.psil[pk])pk=i;i++}bands.push([st,i-1]);for(var q=pk+1;q<n&&q<pk+25;q++)if(m.psil[q]!=null&&m.psil[q]<=m.psil[pk]-8){marks.push(q);break}}else i++}
+  return {bands:bands,marks:marks}}
+var RY=[["1 年",365],["3 年",1095]],RYA=[["1 年",365],["3 年",1095],["全部",0]];
+var IND=[
+ {id:"ahr",n:"AHR999",ranges:RYA,r:1,
+  val:function(){var a=ahrNow();return a==null?null:{v:a.toFixed(2),s:ahrZone(a),tone:a<1.2?"g":a<5?"":"b"}},
+  data:function(n){var c=D.charts;if(!c||!c.ahrAll)return null;var a=c.ahrAll,pa=c.priceAll,off=pa?pa.v.length-a.v.length:0;
+    return cut({x:dates(a.start,a.v.length),s:[{v:pa?pa.v.slice(off):[],own:true,n:"价格",f:usd},{v:a.v,c:"--c1",n:"AHR999",f:function(v){return v.toFixed(2)}}],log:true,hl:[{y:.45,t:"0.45"},{y:1.2,t:"1.2"},{y:5,t:"5"}]},n)}},
+ {id:"tb",n:"顶底区间",
+  val:function(){var t=today();if(!t)return null;var z=zone();return {v:t.deep?"深度底部":z==="b"?"底部区":z==="t"?"顶部区":"中性区间",s:t.topEvidence!=null?"顶部证据 "+t.topEvidence+" / 3":"",tone:z==="b"?"g":z==="t"?"b":""}},
+  data:function(){var m=D.charts&&D.charts.monthly;if(!m)return null;var r=deepRuns();return {x:m.m,s:[{v:m.price,n:"价格",f:usd}],log:true,bands:r.bands,marks:r.marks}},
+  legend:'<span><i style="background:var(--pos);opacity:.4;height:9px"></i>深度底部</span><span><i style="background:var(--pos)"></i>底部确认</span>'},
+ {id:"clock",n:"周期时钟",
+  val:function(){var d=cycleDay(),s=d<TOPW[0]?"距顶部窗口 "+(TOPW[0]-d)+" 天":d<=TOPW[1]?"顶部窗口内":d<BOTW[0]?"距底部窗口 "+(BOTW[0]-d)+" 天":d<=BOTW[1]?"底部窗口内":"底部窗口已过";
+    return {v:"第 "+d+" 天",s:s,tone:d>=BOTW[0]&&d<=BOTW[1]?"g":d>=TOPW[0]&&d<=TOPW[1]?"b":""}},
+  html:function(){var Lc=Math.round((NEXT_HALVING-HALVING)/864e5),d=Math.min(Lc,cycleDay()),p=function(x){return (x/Lc*100).toFixed(2)+"%"},w=function(a){return ((a[1]-a[0])/Lc*100).toFixed(2)+"%"},D1=function(x){return md(HALVING+x*864e5)},D2=function(x){return md(NEXT_HALVING+x*864e5).slice(0,7)};
+    return '<div class="clock"><i class="t" style="left:'+p(TOPW[0])+';width:'+w(TOPW)+'"></i><i class="bt" style="left:'+p(BOTW[0])+';width:'+w(BOTW)+'"></i><u style="left:'+p(d)+'"></u></div>'
+     +'<div class="clab"><span>减半 2024-04</span><span>下次减半 约 2028-04</span></div>'
+     +'<div class="kv"><span>顶部窗口</span><b class="num" style="font-size:14px">'+D1(TOPW[0])+" 至 "+D1(TOPW[1]).slice(5)+'</b></div>'
+     +'<div class="kv"><span>底部窗口</span><b class="num" style="font-size:14px">'+D1(BOTW[0])+" 至 "+D1(BOTW[1]).slice(5)+'</b></div>'
+     +'<div class="kv"><span>下一个顶部窗口</span><b class="num" style="font-size:14px">约 '+D2(TOPW[0])+" 至 "+D2(TOPW[1])+'</b></div>'}},
+ {id:"stable",n:"稳定币流动性",ranges:[["3 月",90],["1 年",365],["全部",0]],r:1,
+  val:function(){var s=D.stable;if(!s||!s.u||!s.u.length)return null;var k=s.u.length-1,d=stable30();return {v:"$"+((s.u[k]+s.c[k])/1e9).toFixed(0)+"B",s:d==null?"":"30 天 "+usdB(d),tone:d>0?"g":d<0?"b":""}},
+  data:function(n){var s=D.stable;if(!s||!s.u)return null;return cut({x:s.days,s:[{v:s.p,own:true,n:"BTC",f:usd},{v:s.u.map(function(u,i){return u+s.c[i]}),c:"--c1",n:"USDT + USDC",f:usd}]},n)}},
+ {id:"bands",n:"持币成本分位带",ranges:RY,r:1,
+  val:function(){var l=LT();return l.pricePercentile==null?null:{v:l.pricePercentile+"%",s:"的持币成本低于现价"}},
+  data:function(n){var d=daily();if(!d)return null;return cut({x:d.d,s:[{v:d.price,n:"价格",f:usd,w:1.9},{v:d.p75,c:"--c4",w:1.2,n:"75%",f:usd},{v:d.p50,c:"--c2",n:"中位",f:usd},{v:d.p25,c:"--c3",w:1.2,n:"25%",f:usd}],log:true},n)},
+  legend:'<span><i style="background:var(--ink)"></i>价格</span><span><i style="background:var(--c4)"></i>75%</span><span><i style="background:var(--c2)"></i>中位成本</span><span><i style="background:var(--c3)"></i>25%</span>'},
+ {id:"age",n:"各币龄的持币成本",
+  val:function(){var b=LT().newBuyers;return b&&b.avg?{v:"$"+b.avg.toLocaleString("en-US"),s:"近 1 个月买入者成本"}:null},
+  html:function(){var a=D.charts&&D.charts.age;if(!a)return null;var N={m1:"1 个月内",m6:"1–6 个月",y1:"6–12 个月",y2:"1–2 年",y5:"2–5 年",old:"5 年以上"};
+    return '<table class="tb"><tr><th>币龄</th><th>持币量</th><th>平均成本</th><th>盈利占比</th></tr>'+a.rows.map(function(r){return "<tr><td>"+(N[r.k]||r.k)+"</td><td>"+(r.supply/1e4).toFixed(0)+" 万</td><td>"+(r.avg?"$"+r.avg.toLocaleString("en-US"):"—")+"</td><td>"+(r.profit==null?"—":Math.round(r.profit*100)+"%")+"</td></tr>"}).join("")+"</table>"}},
+ {id:"psil",n:"长期持有者浮亏",ranges:RYA,r:1,
+  val:function(){var t=today(),v=LT().psil!=null?LT().psil:t&&t.psil;return v==null?null:{v:Math.round(v)+"%",s:v>=42?"深度底部":"过 42% 为深度底部",tone:v>=42?"g":""}},
+  data:function(n){var o;if(!n){var m=D.charts&&D.charts.monthly;if(!m)return null;o={x:m.m,s:[{v:m.price,own:true,n:"价格",f:usd},{v:m.psil,c:"--c1",n:"浮亏占比",f:pc}]}}
+    else{var d=daily();if(!d)return null;o=cut({x:d.d,s:[{v:d.price,own:true,n:"价格",f:usd},{v:d.psil,c:"--c1",n:"浮亏占比",f:pc}]},n)}o.hl=[{y:42,t:"42%",fit:true}];return o}},
+ {id:"chips",n:"LTH 筹码集中度",ranges:[["1 年",365],["全部",0]],r:0,
+  val:function(){var c=D.chips;if(!c||!c.daily)return null;var k=Object.keys(c.daily).sort().pop();return k?{v:c.daily[k].c.toFixed(1)+"%",s:"成本在现价 ±10% 内"}:null},
+  data:function(n){var c=D.chips;if(!c)return null;var src=n?c.daily:c.monthly,ks=Object.keys(src||{}).sort();if(ks.length<2)return null;
+    return {x:ks,s:[{v:ks.map(function(k){return src[k].p}),own:true,n:"价格",f:usd},{v:ks.map(function(k){return src[k].c}),c:"--c1",n:"集中度",f:pc}]}}},
+ {id:"delta",n:"长期持有者持仓变化",ranges:RY,r:0,
+  val:function(){var v=LT().lthDelta30;return v==null?null:{v:(v<0?"−":"+")+(Math.abs(v)/1e4).toFixed(1)+" 万",s:v>=0?"近 30 天在增持":"近 30 天在派发",tone:v>=0?"g":"b"}},
+  data:function(n){var d=daily();if(!d)return null;return cut({x:d.d,s:[{v:d.lthDelta30,n:"30 天变化",f:function(v){return (v<0?"−":"+")+(Math.abs(v)/1e4).toFixed(1)+" 万 BTC"}},{v:d.price,own:true,n:"价格",f:usd}],bars:true,fy:function(v){return (v/1e4).toFixed(0)+" 万"}},n)}},
+ {id:"ratio",n:"长 / 短期持仓比率",ranges:RY,r:1,
+  val:function(){var l=LT();return l.lthSthRatio==null?null:{v:l.lthSthRatio.toFixed(2),s:l.lthSthFromPeak==null?"":l.lthSthFromPeak>-.0005?"处于近期高点":"距高点 "+pct(l.lthSthFromPeak*100)}},
+  data:function(n){var d=daily();if(!d)return null;return cut({x:d.d,s:[{v:d.price,own:true,n:"价格",f:usd},{v:d.lth.map(function(l,i){return l&&d.sth[i]?l/d.sth[i]:null}),c:"--c1",n:"比率",f:function(v){return v.toFixed(2)}}]},n)}},
+ {id:"cohort",n:"长期持有者分组成本",ranges:[["3 年",156],["全部",0]],r:1,
+  val:function(){var c=LT().cohort;return c&&c.a5?{v:"$"+c.a5.toLocaleString("en-US"),s:"持有 6 个月–5 年"}:null},
+  data:function(n){var w=D.charts&&D.charts.cohortWeekly;if(!w)return null;return cut({x:w.d,s:[{v:w.price,n:"价格",f:usd,w:1.9},{v:w.a5,c:"--c1",n:"6月–5年",f:usd},{v:w.a7,c:"--c3",w:1.2,n:"6月–7年",f:usd},{v:w.a10,c:"--c4",w:1.2,n:"6月–10年",f:usd},{v:w.l10,c:"--c2",w:1.2,n:"≤10年",f:usd}],log:true},n)},
+  legend:'<span><i style="background:var(--ink)"></i>价格</span><span><i style="background:var(--c1)"></i>6 月–5 年</span><span><i style="background:var(--c3)"></i>6 月–7 年</span><span><i style="background:var(--c4)"></i>6 月–10 年</span><span><i style="background:var(--c2)"></i>10 年以内</span>'},
+ {id:"addr",n:"持币地址分布",
+  val:function(){var a=D.charts&&D.charts.addr;if(!a)return null;var w=a.rows.slice(4).reduce(function(s,r){return s+r.d30},0);return {v:(w<0?"−":"+")+(Math.abs(w)/1e4).toFixed(1)+" 万",s:"≥100 BTC 地址 30 天",tone:w>=0?"g":"b"}},
+  html:function(){var a=D.charts&&D.charts.addr;if(!a)return null;
+    return '<table class="tb"><tr><th>余额（BTC）</th><th>地址数</th><th>持币量</th><th>30 天</th></tr>'+a.rows.map(function(r){return "<tr><td>"+r.k+"</td><td>"+(r.addrs<1e4?Math.round(r.addrs).toLocaleString("en-US"):fmtN(r.addrs))+"</td><td>"+(r.supply/1e4).toFixed(0)+" 万</td><td class=\""+(r.d30<0?"dn":"up")+"\">"+(r.d30<0?"−":"+")+fmtN(Math.abs(r.d30))+"</td></tr>"}).join("")+"</table>"}}
+];
+var indBuilt=false;
+function buildInd(){indBuilt=true;
+  $("indList").innerHTML=IND.map(function(it){return '<div class="ind" id="ind-'+it.id+'"><button type="button" data-ind="'+it.id+'" aria-expanded="false"><span class="n">'+it.n+'</span><span class="x"><b class="num">—</b><small></small></span><span class="ar">›</span></button><div class="body" hidden>'
+    +(it.ranges?'<div class="rg">'+it.ranges.map(function(r,i){return '<button type="button" data-rg="'+it.id+":"+i+'">'+r[0]+'</button>'}).join("")+'</div>':"")+'<div class="ch"></div>'+(it.legend?'<div class="lg">'+it.legend+'</div>':"")+'</div></div>'}).join("")}
+function drawInd(it){var el=$("ind-"+it.id),ch=el.querySelector(".ch");
+  el.querySelectorAll(".rg button").forEach(function(b,i){b.classList.toggle("on",i===it.r)});
+  if(it.html){var h=it.html();ch.innerHTML=h||'<p class="meta">数据还没到。</p>';return}
+  var o=it.data(it.ranges?it.ranges[it.r][1]:0);if(!o){if(!ch._cv)ch.innerHTML='<p class="meta">'+(chartsAsked&&!D.charts?"正在读取…":"数据还没到。")+'</p>';return}
+  if(!ch._cv)ch.innerHTML="";mountChart(ch,o)}
+function renderInd(){
+  if(!indBuilt)buildInd();
+  var t=today(),z=zone(),n=new Date();$("iDay").textContent=t&&t.day?"数据日 "+t.day.slice(5):"";
+  $("iBig").textContent=!t?"—":t.deep?"深度底部":z==="b"?"底部区":z==="t"?"顶部区":"中性区间";
+  var ps=LT().psil!=null?LT().psil:t&&t.psil;
+  $("iSub").textContent=t?["底部信号 "+(t.score==null?"—":Math.round(100-t.score)),"顶部证据 "+(t.topEvidence==null?"—":t.topEvidence)+" / 3",ps!=null?"长期持有者浮亏 "+Math.round(ps)+"%":""].filter(Boolean).join(" · "):"";
+  IND.forEach(function(it){var el=$("ind-"+it.id),v=null;try{v=it.val()}catch(e){}
+    el.querySelector(".x b").textContent=v?v.v:"—";var sm=el.querySelector(".x small");sm.textContent=v&&v.s||"";sm.className=v&&v.tone||"";
+    if(el.classList.contains("open")&&$("vInd").hidden===false)drawInd(it)})}
+document.addEventListener("click",function(e){
+  var b=e.target.closest("[data-ind]");if(b){var it=IND.filter(function(x){return x.id===b.dataset.ind})[0],el=$("ind-"+it.id),open=!el.classList.contains("open");
+    el.classList.toggle("open",open);el.querySelector(".body").hidden=!open;b.setAttribute("aria-expanded",open);if(open)drawInd(it);return}
+  var r=e.target.closest("[data-rg]");if(r){var p=r.dataset.rg.split(":"),it2=IND.filter(function(x){return x.id===p[0]})[0];it2.r=+p[1];drawInd(it2)}});
+
+/* ============ 我的 ============ */
+var MILE=[.01,.05,.1,.21,.5,1,2.1,5,10,21];
+function ago(ts){if(!ts)return "";var h=(Date.now()-ts)/36e5;return h<1?"刚刚":h<36?Math.round(h)+" 小时前":Math.round(h/24)+" 天前"}
+function renderMe(){
+  var recs=loadRecs(),btc=recs.reduce(function(a,r){return a+r.btc},0),cny=recs.reduce(function(a,r){return a+r.cny},0),p=livePrice(),f=fx();
+  $("mCount").textContent=recs.length?recs.length+" 笔买入":"";$("mEmpty").hidden=recs.length>0;$("mHold").hidden=!recs.length;
+  $("mBtc").textContent=recs.length?btc.toFixed(btc>=1?4:5):"0";
+  if(recs.length){var val=p?btc*p*f:null,pnl=val==null?null:val-cny;
+    $("mSub").textContent=val==null?"":"现值 "+money(val)+" · "+(pnl>=0?"盈利 ":"亏损 ")+Math.abs(pnl/cny*100).toFixed(1)+"%";
+    $("mCost").textContent=money(cny);$("mAvg").textContent="$"+Math.round(cny/f/btc).toLocaleString("en-US");$("mVal").textContent=val==null?"—":money(val);
+    var pe=$("mPnl");pe.textContent=pnl==null?"—":(pnl>=0?"+":"−")+money(Math.abs(pnl));pe.style.color=pnl==null?"":pnl>=0?"var(--pos)":"var(--neg)";
+    // 21M
+    $("mShare").textContent="1 / "+Math.round(21e6/btc).toLocaleString("en-US");
+    var nx=MILE.filter(function(m){return m>btc})[0],pv=MILE.filter(function(m){return m<=btc}).pop()||0;
+    if(nx){$("mProg").style.width=Math.max(2,(btc-pv)/(nx-pv)*100).toFixed(1)+"%";var six=Date.now()-183*864e5,rate=recs.filter(function(r){return r.at>=six}).reduce(function(a,r){return a+r.btc},0)/6;
+      $("mNext").textContent="下一站 "+nx+" BTC，还差 "+(nx-btc).toFixed(4)+(rate>0?"，按近半年节奏约 "+Math.max(1,Math.ceil((nx-btc)/rate))+" 个月":"")}
+    else{$("mProg").style.width="100%";$("mNext").textContent=""}
+    // 成本曲线
+    var pa=D.charts&&D.charts.priceAll,box=$("mCurveBox");
+    if(pa&&recs.length>=2&&$("vMe").hidden===false){var xs=dates(pa.start,pa.v.length),asc=recs.slice().reverse(),i0=Math.max(0,xs.indexOf(iso(asc[0].at)));
+      if(xs.length-i0>=3){var cost=[],k=0,sc=0,sb=0;for(var i=i0;i<xs.length;i++){while(k<asc.length&&iso(asc[k].at)<=xs[i]){sc+=asc[k].cny;sb+=asc[k].btc;k++}cost.push(sb>0?sc/f/sb:null)}
+        box.hidden=false;mountChart($("mCurve"),{x:xs.slice(i0),s:[{v:pa.v.slice(i0),n:"价格",f:usd,w:1.9},{v:cost,c:"--c2",n:"我的成本",f:usd}],log:true})}else box.hidden=true}
+    else if(!pa||recs.length<2)box.hidden=true}
+  else $("mSub").textContent="";
+  // 设置
+  var sb2=$("sBudget"),sf=$("sFx");if(document.activeElement!==sb2)sb2.value=budget();if(document.activeElement!==sf)sf.value=f;
+  // 数据
+  var t=today(),c=D.core,s=D.stable,rows=[];
+  var dAge=t&&t.day?(Date.now()-Date.parse(t.day+"T00:00:00Z"))/864e5:null;
+  rows.push(["每日信号",t?"数据日 "+t.day:"读不到",!t?"bad":dAge>3?"warn":""]);
+  rows.push(["链上数据",c?(c.stale&&c.stale.length?"部分沿用上一次":ago(c.ts)):"读不到",!c?"bad":(c.stale&&c.stale.length)||Date.now()-c.ts>26*36e5?"warn":""]);
+  rows.push(["稳定币",s?ago(s.ts):"读不到",!s?"bad":Date.now()-s.ts>26*36e5?"warn":""]);
+  rows.push(["实时价格",D.priceSrc||"用日线收盘价",D.priceSrc?"":"warn"]);
+  if(c&&c.sync&&c.sync.behind!=null)rows.push(["Bitview 同步",c.sync.behind>6?"落后 "+c.sync.behind+" 个区块":"已同步",c.sync.behind>6?"warn":""]);
+  $("mHealth").innerHTML=rows.map(function(r){return '<div class="hl '+r[2]+'"><span>'+r[0]+'</span><span>'+r[1]+'</span></div>'}).join("");
+}
+function saveSet(){var o=settings(),b=+$("sBudget").value,f=+$("sFx").value;if(b>0)o.budget=b;else delete o.budget;if(f>1)o.fx=f;else delete o.fx;try{localStorage.setItem(SET_KEY,JSON.stringify(o))}catch(e){}renderAll()}
+$("sBudget").addEventListener("change",saveSet);$("sFx").addEventListener("change",saveSet);
+
+function renderAll(){renderHome();renderDca();renderInd();renderMe()}
 show((location.hash||"").slice(1)||"home");
-renderAll();
+window.__sgReady=true;renderAll();
+window.addEventListener("hashchange",function(){var h=(location.hash||"").slice(1);if(VIEWS[h]&&$(VIEWS[h]).hidden)show(h)});
 loadFiles().then(renderAll);
 loadPrice().then(renderAll);
 setInterval(function(){if(document.visibilityState==="visible")loadPrice().then(renderAll)},60000);

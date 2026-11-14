@@ -2,7 +2,7 @@
 """V28 数据层：GitHub 每 6 小时把网页要用的 Bitview 数据算好，写成 data/v28/ 下的两个文件，手机只读文件、不再直接连 Bitview。
 
   data/v28/core.json    首页和定投页要用的「最新值」（很小，几 KB）
-  data/v28/charts.json  指标页图表要用的历史序列（约 200 KB）
+  data/v28/charts.json  指标页图表要用的历史序列（约 300 KB）
 
 网页（V28）不再认识 Bitview 的序列名——以后 Bitview 再改名，只改这个脚本。
 任何一组读取失败：沿用上一次文件里的那一组（标 stale），不让整个文件作废。
@@ -142,6 +142,52 @@ def g_age():
     return {"day": day, "rows": rows, "dist": dist}
 
 
+def g_monthly():
+    """2013 年起按月：价格与 LTH_PSIL（顶底区间图上标出历次深度底部和底部确认）。"""
+    r = bulk("month1", ["price", "lth_supply_in_loss_share"], "2013-01-01")
+    return {"m": [d[:7] for d in r["date"]], "price": [rnd(x, 0) for x in r["price"]], "psil": [rnd(x, 1) for x in r["lth_supply_in_loss_share"]]}
+
+
+ADDR_GROUPS = [("<0.1", ["1_to_10_sats", "10_to_100_sats", "100_to_1k_sats", "1k_to_10k_sats", "10k_to_100k_sats", "100k_to_1m_sats", "1m_to_10m_sats"]),
+               ("0.1–1", ["10m_to_100m_sats"]), ("1–10", ["1_to_10_btc"]), ("10–100", ["10_to_100_btc"]),
+               ("100–1K", ["100_to_1k_btc"]), ("1K–10K", ["1k_to_10k_btc"]), ("≥10K", ["10k_to_100k_btc", "over_100k_btc"])]
+
+
+def g_addr():
+    """持币地址分布：按余额分 7 组，每组的地址数、持币量、近 30 天持币量变化。"""
+    bands = [b for _, bs in ADDR_GROUPS for b in bs]
+    names = [f"balance_{b}_{suf}" for suf in ("address_count", "supply", "supply_delta_1m") for b in bands]
+    r = bulk("day1", names, -1)
+    last = lambda n: float(r[n][-1] or 0)
+    rows = [{"k": k, "addrs": round(sum(last(f"balance_{b}_address_count") for b in bs)),
+             "supply": round(sum(last(f"balance_{b}_supply") for b in bs)),
+             "d30": round(sum(last(f"balance_{b}_supply_delta_1m") for b in bs))} for k, bs in ADDR_GROUPS]
+    tot = sum(x["supply"] for x in rows)
+    if not 15e6 < tot < 22e6:
+        raise ValueError(f"addr supply total {tot}")
+    return {"day": r["date"][-1], "rows": rows}
+
+
+def ahr_all(pa):
+    """AHR999 全部历史（与 tools/daily_state.py 同一算法：近 200 日定投成本 + 新拟合），由 priceAll 直接算出。"""
+    import math
+    from datetime import date, timedelta
+    A, B = 5.5856, -16.1567
+    d0 = date.fromisoformat(pa["start"])
+    base = (d0 - date(2009, 1, 3)).days
+    v, win, inv, out = pa["v"], [], 0.0, []
+    for i, p in enumerate(v):
+        if p and p > 0:
+            win.append(p); inv += 1 / p
+            if len(win) > 200:
+                inv -= 1 / win.pop(0)
+        if not (p and p > 0) or len(win) < 200:
+            out.append(None); continue
+        out.append(round(p * p / ((200 / inv) * 10 ** (A * math.log10(base + i) + B)), 3))
+    k = next((i for i, x in enumerate(out) if x is not None), len(out))
+    return {"start": (d0 + timedelta(days=k)).isoformat(), "v": out[k:]}
+
+
 def g_sync():
     j = get(f"{BASE}/api/server/sync")
     return {"height": j.get("computed_height") or j.get("indexed_height"), "behind": j.get("blocks_behind"), "ts": j.get("last_indexed_at_unix")}
@@ -174,7 +220,7 @@ def g_signal():
             "topEvidence": t.get("topEvidence"), "risk": t["risk"], "psil": None if ps[i] is None else round(ps[i], 1), "deep": deep, "confirm": confirm}
 
 
-GROUPS_CHARTS = {"daily": g_daily, "priceAll": g_price_all, "cohortWeekly": g_cohort_weekly, "age": g_age}
+GROUPS_CHARTS = {"daily": g_daily, "priceAll": g_price_all, "cohortWeekly": g_cohort_weekly, "age": g_age, "monthly": g_monthly, "addr": g_addr}
 GROUPS_CORE = {"percentiles": g_percentiles, "sync": g_sync, "signal": g_signal}
 
 
@@ -237,6 +283,13 @@ def main():
     if not charts.get("daily"):
         raise SystemExit("日度数据读取失败且没有上一次的文件，不写入")
     now = int(time.time() * 1000)
+    if charts.get("priceAll"):
+        try:
+            charts["ahrAll"] = ahr_all(charts["priceAll"])
+        except Exception as e:
+            print("✗ ahrAll ：", e)
+            if oldc.get("ahrAll"):
+                charts["ahrAll"] = oldc["ahrAll"]
     charts.update({"v": 1, "ts": now, "stale": s1})
     hist = dict(oldk.get("zoneHistory") or {})
     sg = core.get("signal")
