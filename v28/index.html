@@ -3,34 +3,36 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#1f4a40">
+<meta name="theme-color" content="#f3f3f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e0f10" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="sats-garden-v28" content="28.0.0-preview3">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="sats-garden-v28" content="28.0.0-preview5">
 <title>Sats Garden</title>
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <style>
-/* Sats Garden V28 —— 设计规范（全站只用这一套）
-   颜色：墨绿 moss（顶部背景）· 纸 paper（内容区）· 墨 ink（文字三级）· 橙 orange（只用于「现在的位置」和当前导航）
-   字体：数字与结论用衬线（iPhone 自带 New York / 宋体），其余用系统黑体
-   形状：内容区是一张从下方浮上来的纸，上边圆角 32px；行与行之间用细线，不用卡片 */
+/* Sats Garden V28 —— 设计规范（外观沿用 V27：浅灰底、白色圆角卡片、黑体粗数字）
+   颜色：bg 页面底 · paper 卡片 · ink 文字三级 · 绿 / 橙 / 红只表示便宜 / 注意 / 贵
+   形状：每个分区一张或两张白卡片，圆角 28px；卡片里行与行之间用细线 */
 :root{
-  --moss:#16362f;--moss2:#1f4a40;--paper:#f4f5f2;--ink:#161a18;--ink2:#5b625e;--ink3:#8d948f;--hair:rgba(22,26,24,.10);
-  --orange:#f7931a;--pos:#1f9d6b;--neg:#d6453d;--cau:#c77a12;--on:#f3f6f3;--on2:rgba(243,246,243,.68);--on3:rgba(243,246,243,.5);
-  --serif:ui-serif,"New York","Songti SC","Noto Serif CJK SC",Georgia,serif;
+  --bg:#f3f3f5;--paper:#fff;--fill:#f1f1f4;--ink:#101113;--ink2:#55585e;--ink3:#8e9096;--hair:rgba(16,17,19,.09);
+  --orange:#f7931a;--pos:#3d9a5f;--neg:#c8452f;--cau:#c47a1c;--on:var(--ink);--on2:var(--ink2);--on3:var(--ink3);--moss:var(--paper);--moss2:var(--paper);
+  --serif:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Noto Sans CJK SC","Helvetica Neue",system-ui,sans-serif;
   --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Sans CJK SC","Helvetica Neue",system-ui,sans-serif;
   --safe-t:env(safe-area-inset-top,0px);--safe-b:env(safe-area-inset-bottom,0px);
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#121916;--ink:#eef2ef;--ink2:#a4ada8;--ink3:#737b76;--hair:rgba(255,255,255,.10);--moss:#12302a;--moss2:#1a4239;--pos:#3fc48f;--neg:#ff7a70}}
-:root[data-theme="dark"]{--paper:#121916;--ink:#eef2ef;--ink2:#a4ada8;--ink3:#737b76;--hair:rgba(255,255,255,.10);--moss:#12302a;--moss2:#1a4239;--pos:#3fc48f;--neg:#ff7a70}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e0f10;--paper:#1a1b1d;--fill:#242528;--ink:#f2f2f3;--ink2:#a9abb0;--ink3:#74767c;--hair:rgba(255,255,255,.10);--pos:#56bd7c;--neg:#f0705c;--cau:#e0a04a}}
+:root[data-theme="dark"]{--bg:#0e0f10;--paper:#1a1b1d;--fill:#242528;--ink:#f2f2f3;--ink2:#a9abb0;--ink3:#74767c;--hair:rgba(255,255,255,.10);--pos:#56bd7c;--neg:#f0705c;--cau:#e0a04a}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{background:var(--moss)}
-body{min-height:100vh;min-height:100dvh;background:var(--moss);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
-.app{max-width:480px;margin:0 auto;min-height:100dvh;position:relative;background:var(--moss)}
+body{min-height:100vh;min-height:100dvh;background:var(--paper);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
+.app{max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;position:relative;background:var(--paper);display:flex;flex-direction:column}
+.view{flex:1;display:flex;flex-direction:column}.view>.sheet{flex:1}
+[hidden]{display:none!important}
 .num{font-family:var(--serif);font-variant-numeric:tabular-nums lining-nums;font-feature-settings:"tnum","lnum"}
 .view[hidden]{display:none}
 /* 顶部 */
-.hero{background:linear-gradient(168deg,var(--moss2),var(--moss) 62%);color:var(--on);padding:calc(var(--safe-t) + 22px) 24px 58px}
+.hero{background:linear-gradient(180deg,var(--moss) 0,var(--moss2) 78%);color:var(--on);padding:calc(var(--safe-t) + 22px) 24px 58px}
 .hero .top{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--on2)}
 .hero .top b{color:var(--on);font-weight:600;letter-spacing:.02em}
 .price{font-size:clamp(46px,15vw,60px);line-height:1;font-weight:600;letter-spacing:-.02em;margin:26px 0 8px}
@@ -136,6 +138,45 @@ body{min-height:100vh;min-height:100dvh;background:var(--moss);color:var(--ink);
 .skel{display:inline-block;min-width:3em;border-radius:6px;background:currentColor;opacity:.12;color:inherit}
 @media (prefers-reduced-motion:reduce){.ruler .mk{transition:none}}
 button:focus-visible,a:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+/* ===== V27 式外观 ===== */
+html{background:var(--bg)}body,.app{background:var(--bg)}
+.app{padding:calc(var(--safe-t) + 10px) 14px calc(118px + var(--safe-b));display:block}
+.view{display:block}.num{font-weight:750;letter-spacing:-.01em}
+.hero,.sheet{background:var(--paper);border:1px solid var(--hair);border-radius:28px;box-shadow:0 1px 2px rgba(0,0,0,.03),0 8px 24px rgba(0,0,0,.04);margin:0}
+.hero{padding:22px 22px 24px;background:linear-gradient(150deg,var(--paper) 55%,color-mix(in srgb,var(--pos) 9%,var(--paper)))}
+.hero.dca{padding-bottom:24px}
+.sheet{margin-top:14px;padding:22px 22px 10px;min-height:0}.sheet::before{display:none}
+.hero .top{font-size:13.5px}.hero .top b{font-size:17px;font-weight:700}
+.price{font-size:clamp(50px,16vw,64px);font-weight:800;letter-spacing:-.035em;margin:20px 0 10px}
+.price sup{opacity:.45;font-weight:500}
+.chg{font-size:14.5px}.chg b{font-weight:700}.chg .dn{color:var(--neg)}.chg .up{color:var(--pos)}
+.ruler{margin-top:20px;padding-top:20px;border-top:1px solid var(--hair)}
+.ruler .now{align-items:center;gap:10px;margin-bottom:20px}
+.ruler .now em{margin:0;font-size:14px;color:var(--ink2)}.ruler .now b{font-size:34px;font-weight:800;letter-spacing:-.02em}
+.ruler .now span{margin-left:auto;padding:6px 13px;border-radius:999px;font-size:13.5px;font-weight:700;background:color-mix(in srgb,currentColor 13%,transparent)}
+.ruler .bar{height:7px;border-radius:4px;background:linear-gradient(90deg,#3d9a5f 0 21.6%,transparent 21.6% 22.4%,#6dbb85 22.4% 45.6%,transparent 45.6% 46.4%,#cc8433 46.4% 71.6%,transparent 71.6% 72.4%,#c8523c 72.4% 100%)}
+.ruler .mk{top:-9px;width:24px;height:24px;margin-left:-12px;border-radius:50%;background:#fff;box-shadow:0 1px 5px rgba(0,0,0,.28),0 0 0 .5px rgba(0,0,0,.08)}.ruler .mk::after{display:none}
+.ruler .lab{margin-top:14px;font-size:12px}
+.verdict{font-size:26px;font-weight:800;line-height:1.3;letter-spacing:-.01em}
+.note{display:inline-flex;padding:7px 13px;border-radius:999px;background:color-mix(in srgb,currentColor 12%,transparent);font-size:13.5px}
+.rows{margin-top:16px}.r{padding:16px 0}.r:last-child{border-bottom:0}.r .v b{font-weight:700}.r .v b .amt{font-weight:800}
+.meta{margin:10px 0 14px}
+.ring svg circle:first-child{stroke:var(--hair)}.ring b{font-weight:800}
+.seg{background:var(--fill);color:var(--ink2);font-size:12.5px;padding:4px}.seg .on{background:var(--paper);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.cmp .mine .barv{background:var(--ink)}.prog i{background:var(--pos)}
+.kv:last-of-type{border-bottom:0}
+.hero .big{font-size:30px;font-weight:800;letter-spacing:-.02em;margin:16px 0 6px}
+.ind:last-of-type{border-bottom:0}.ind .n{font-size:16px;font-weight:700}.ind .x b{font-weight:750}
+.lg{margin:2px 0 12px;font-size:12.5px}.lg i{width:14px}
+.rg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;padding:4px;border-radius:15px;background:var(--fill);border:1px solid var(--hair);margin-bottom:10px}
+.rg button{height:38px;font-size:14px;border-radius:11px;padding:0}.rg button.on{box-shadow:0 1px 4px rgba(0,0,0,.14)}
+.cv{height:220px}
+.lib{border-top:1px solid var(--hair)}
+.links{margin-top:2px}
+.tabs{left:14px;right:14px;transform:none;max-width:452px;margin:0 auto;height:70px;padding:6px;border-radius:35px;background:var(--paper);border:1px solid var(--hair);box-shadow:0 10px 30px rgba(0,0,0,.12);gap:0}
+.tabs button{flex:1;width:auto;height:58px;border-radius:29px;color:var(--ink3);font-size:11.5px}
+.tabs button.on{color:var(--ink);background:var(--paper);box-shadow:0 2px 10px rgba(0,0,0,.13)}.tabs button.on svg{stroke:var(--ink)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tabs{background:var(--paper)}:root:not([data-theme="light"]) .tabs button.on{background:var(--fill)}}
 </style>
 </head>
 <body>
@@ -147,7 +188,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--orange);outline-off
     <div class="price num"><sup>$</sup><span id="hPrice"><i class="skel">&nbsp;</i></span></div>
     <div class="chg" id="hChg"></div>
     <div class="ruler">
-      <div class="now"><b class="num" id="hAhr">—</b><span id="hAhrZone"></span><em>AHR999</em></div>
+      <div class="now"><em>AHR999</em><b class="num" id="hAhr">—</b><span id="hAhrZone"></span></div>
       <div class="bar"><div class="mk" id="hMark"></div></div>
       <div class="lab"><span>深度低估</span><span>低估</span><span>合理</span><span>昂贵</span></div>
     </div>
@@ -218,7 +259,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--orange);outline-off
     <div class="h">数据</div>
     <div id="mHealth"></div>
     <div class="links"><button type="button" data-act="export">导出备份</button><button type="button" data-act="import">导入备份</button><a href="../index.html" style="color:var(--ink3);padding:10px 0">回到 V27</a></div>
-    <p class="meta">Sats Garden 28.0.0-preview3 · 买入记录只保存在这台手机上，换手机前请先导出备份。</p>
+    <p class="meta">Sats Garden 28.0.0-preview5 · 买入记录只保存在这台手机上，换手机前请先导出备份。</p>
   </div>
 </section>
 
@@ -246,7 +287,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--orange);outline-off
 var $=function(id){return document.getElementById(id)};
 var DCA_DAY=15;                                   // 每月定投日
 function getJSON(url,ms){return new Promise(function(res,rej){var ctl=("AbortController" in window)?new AbortController():null,t=setTimeout(function(){if(ctl)ctl.abort();rej(new Error("timeout"))},ms||8000);
-  fetch(url,{cache:"no-cache",signal:ctl?ctl.signal:undefined}).then(function(r){if(!r.ok)throw new Error(r.status);return r.json()}).then(function(j){clearTimeout(t);res(j)},function(e){clearTimeout(t);rej(e)})})}
+  fetch(url,{cache:"no-cache",signal:ctl?ctl.signal:undefined}).then(function(r){if(!r.ok)throw new Error(r.status);return r.text()}).then(function(x){return JSON.parse(x.replace(/\b(NaN|-?Infinity)\b/g,"null"))}).then(function(j){clearTimeout(t);res(j)},function(e){clearTimeout(t);rej(e)})})}
 function money(v){return "¥"+Math.round(v).toLocaleString("en-US")}
 function usdB(v){var a=Math.abs(v);return (v<0?"−":"+")+"$"+(a>=1e9?(a/1e9).toFixed(1)+"B":Math.round(a/1e6)+"M")}
 function pct(v,d){return (v<0?"−":"+")+Math.abs(v).toFixed(d==null?1:d)+"%"}
@@ -273,7 +314,13 @@ function loadPrice(){
 }
 
 /* ============ 计算（规则与 V27 相同） ============ */
-function today(){return D.state&&D.state.today||null}
+// 信号来源：每日信号文件 → 没有就用链上数据文件里的同一份信号 → 再没有就只用价格现算 AHR999（照常定投）
+function ahrLocal(){var s=D.stable;if(!s||!s.p||s.p.length<200)return null;var a=s.p.slice(-200),inv=0;for(var i=0;i<200;i++){if(!(a[i]>0))return null;inv+=1/a[i]}
+  var day=s.days[s.days.length-1],dg=Math.round((Date.parse(day+"T00:00:00Z")-Date.UTC(2009,0,3))/864e5),p=a[199];return {day:day,price:p,ahr:p*p/((200/inv)*Math.pow(10,5.5856*Math.log(dg)/Math.LN10-16.1567))}}
+function today(){var t=D.state&&D.state.today;if(t&&t.ahr>0)return t;
+  var g=D.core&&D.core.signal,l=D.core&&D.core.latest;
+  if(g&&g.ahr>0)return {day:g.day,price:l&&l.day===g.day&&l.price||null,ahr:g.ahr,tb:g.zone,score:g.bottomGauge==null?null:100-g.bottomGauge,risk:g.risk,topEvidence:g.topEvidence,deep:g.deep,psil:g.psil,confirm:g.confirm&&g.confirm.month,src:"core"};
+  var a=ahrLocal();return a?{day:a.day,price:a.price,ahr:a.ahr,tb:"neutral",score:null,risk:"off",topEvidence:null,deep:false,psil:l?l.psil:null,noSignal:true}:null}
 function livePrice(){var t=today();return D.price||(D.core&&D.core.latest&&D.core.latest.price)||(t&&t.price)||null}
 // AHR999 与价格的平方成正比：用日线算好的值按实时价格换算
 function ahrNow(){var t=today(),p=livePrice();if(!t||!(t.ahr>0)||!(t.price>0)||!p)return t?t.ahr:null;return t.ahr*Math.pow(p/t.price,2)}
@@ -339,14 +386,15 @@ function renderHome(){
   if(c24!=null)parts.push('24 小时 <b class="'+(c24<0?"dn":"up")+'">'+pct(c24)+'</b>');
   if(c30!=null)parts.push('30 日 <b class="'+(c30<0?"dn":"up")+'">'+pct(c30)+'</b>');
   $("hChg").innerHTML=parts.join("　　");
-  var a=ahrNow();$("hAhr").textContent=a==null?"—":a.toFixed(2);$("hAhrZone").textContent=ahrZone(a);$("hMark").style.left=ahrPos(a)+"%";
+  var a=ahrNow();$("hAhr").textContent=a==null?"—":a.toFixed(2);$("hAhrZone").textContent=ahrZone(a);$("hAhrZone").hidden=a==null;var ac=a==null?"":a<1.2?"var(--pos)":a<5?"var(--cau)":"var(--neg)";$("hAhr").style.color=ac;$("hAhrZone").style.color=ac;$("hMark").style.left=ahrPos(a)+"%";
   var t=today(),z=zone(),risk=t&&t.risk&&t.risk!=="off",B=budget(),w=dcaWhen(),mult=z==="b"?2:z==="t"?.5:1;
   if(!t){$("hVerdict").textContent=p?"价格已更新，信号数据暂时读不到。":"数据暂时读不到。";return}
   // 一句结论
-  $("hVerdict").innerHTML=risk?"风控已提示，<br>按计划减仓。":z==="b"?(t.deep?"深度底部，<br>预算加全部储备金。":"底部区，<br>加倍定投。"):z==="t"?"顶部区，<br>减半定投。":"中性区间，<br>照常定投。";
+  $("hVerdict").innerHTML=risk?"风控已提示，<br>按计划减仓。":z==="b"?(t.deep?"深度底部，<br>预算加全部储备金。":"底部区，<br>加倍定投。"):z==="t"?"顶部区，<br>减半定投。":t.noSignal?"照常定投。":"中性区间，<br>照常定投。";
   // 底部确认 / 深度底部
   var note=$("hNote"),ps=D.core&&D.core.latest&&D.core.latest.psil,psNow=ps!=null?ps:t.psil;
   note.hidden=true;note.className="note";
+  if(t.noSignal){note.hidden=false;note.className="note warn";note.textContent="顶底信号暂时读不到，先按预算照常投"}else
   if(t.deep){note.hidden=false;note.textContent="长期持有者浮亏 "+Math.round(psNow)+"%，历史上只出现在大底"}
   else if(t.confirm){note.hidden=false;note.textContent="底部已在 "+(+String(t.confirm).slice(5,7))+" 月确认"}
   // 贵不贵
@@ -359,9 +407,9 @@ function renderHome(){
   $("q2s").textContent=z==="b"?(t.deep?"预算 ×2，储备金全部投入":"预算 ×2，多出的一份从储备金拿"):z==="t"?"预算 ×0.5，另一半存进储备金":"";
   // 要留意
   var st=stable30(),te=t.topEvidence;
-  $("q3").textContent=risk?"牛市后期风控已提示":z==="t"?"已进入顶部区":"暂无风险信号";
+  $("q3").textContent=risk?"牛市后期风控已提示":z==="t"?"已进入顶部区":t.noSignal?"信号暂缺":"暂无风险信号";
   $("q3s").textContent=[te!=null?"顶部证据 "+te+" / 3":"",st!=null?"稳定币 30 天 "+usdB(st):""].filter(Boolean).join("，");
-  $("hMeta").textContent="信号数据日 "+(t.day||"—")+(D.priceSrc?" · 价格 "+D.priceSrc:" · 价格为日线收盘")+"。按本站规则汇总，不构成投资建议。";
+  $("hMeta").textContent=(t.noSignal?"价格数据日 ":"信号数据日 ")+(t.day||"—")+(D.priceSrc?" · 价格 "+D.priceSrc:" · 价格为日线收盘")+"。按本站规则汇总，不构成投资建议。";
 }
 
 /* ============ 定投页 ============ */
@@ -438,7 +486,7 @@ function paint(host){
   // 线
   o.s.slice().reverse().forEach(function(s,si){
     var yf=Y;if(s.own){var r=(function(){var lo=Infinity,hi=-Infinity;for(var i=0;i<n;i++){var v=s.v[i];if(v>0){var t=Math.log(v);if(t<lo)lo=t;if(t>hi)hi=t}}return [lo,hi]})();if(!isFinite(r[0]))return;var sp=(r[1]-r[0])||1;yf=function(v){return B-(B-T)*(.06+.88*(Math.log(v)-r[0])/sp)}}
-    g.strokeStyle=s.own?ink3:(s.c?cssv(s.c):ink);g.globalAlpha=s.own?.45:1;g.lineWidth=s.own?1:(s.w||1.6);g.lineJoin="round";g.beginPath();var pen=false;
+    g.strokeStyle=s.own?ink3:(s.c?cssv(s.c):ink);g.globalAlpha=s.own?.45:1;g.lineWidth=s.own?1.2:(s.w||2);g.lineJoin="round";g.beginPath();var pen=false;
     for(var i=0;i<n;i++){var v=s.v[i];if(s.own?!(v>0):!ok(v)){pen=false;continue}var x=X(i),y=yf(v);if(pen)g.lineTo(x,y);else{g.moveTo(x,y);pen=true}}
     if(!(o.bars&&!s.own))g.stroke();g.globalAlpha=1});
   if(o.bars){var s0=main[0],y0=Y(0),bw=Math.max(1,(R-L)/n-.5);for(var i=0;i<n;i++){var v=s0.v[i];if(!ok(v))continue;g.fillStyle=cssv(v>=0?"--pos":"--neg");var y=Y(v);g.fillRect(X(i)-bw/2,Math.min(y,y0),bw,Math.max(1,Math.abs(y-y0)))}
@@ -493,7 +541,7 @@ var IND=[
   data:function(n){var s=D.stable;if(!s||!s.u)return null;return cut({x:s.days,s:[{v:s.p,own:true,n:"BTC",f:usd},{v:s.u.map(function(u,i){return u+s.c[i]}),c:"--c1",n:"USDT + USDC",f:usd}]},n)}},
  {id:"bands",n:"持币成本分位带",ranges:RY,r:1,
   val:function(){var l=LT();return l.pricePercentile==null?null:{v:l.pricePercentile+"%",s:"的持币成本低于现价"}},
-  data:function(n){var d=daily();if(!d)return null;return cut({x:d.d,s:[{v:d.price,n:"价格",f:usd,w:1.9},{v:d.p75,c:"--c4",w:1.2,n:"75%",f:usd},{v:d.p50,c:"--c2",n:"中位",f:usd},{v:d.p25,c:"--c3",w:1.2,n:"25%",f:usd}],log:true},n)},
+  data:function(n){var d=daily();if(!d)return null;return cut({x:d.d,s:[{v:d.price,n:"价格",f:usd,w:2.4},{v:d.p75,c:"--c4",w:1.7,n:"75%",f:usd},{v:d.p50,c:"--c2",n:"中位",f:usd},{v:d.p25,c:"--c3",w:1.7,n:"25%",f:usd}],log:true},n)},
   legend:'<span><i style="background:var(--ink)"></i>价格</span><span><i style="background:var(--c4)"></i>75%</span><span><i style="background:var(--c2)"></i>中位成本</span><span><i style="background:var(--c3)"></i>25%</span>'},
  {id:"age",n:"各币龄的持币成本",
   val:function(){var b=LT().newBuyers;return b&&b.avg?{v:"$"+b.avg.toLocaleString("en-US"),s:"近 1 个月买入者成本"}:null},
@@ -515,7 +563,7 @@ var IND=[
   data:function(n){var d=daily();if(!d)return null;return cut({x:d.d,s:[{v:d.price,own:true,n:"价格",f:usd},{v:d.lth.map(function(l,i){return l&&d.sth[i]?l/d.sth[i]:null}),c:"--c1",n:"比率",f:function(v){return v.toFixed(2)}}]},n)}},
  {id:"cohort",n:"长期持有者分组成本",ranges:[["3 年",156],["全部",0]],r:1,
   val:function(){var c=LT().cohort;return c&&c.a5?{v:"$"+c.a5.toLocaleString("en-US"),s:"持有 6 个月–5 年"}:null},
-  data:function(n){var w=D.charts&&D.charts.cohortWeekly;if(!w)return null;return cut({x:w.d,s:[{v:w.price,n:"价格",f:usd,w:1.9},{v:w.a5,c:"--c1",n:"6月–5年",f:usd},{v:w.a7,c:"--c3",w:1.2,n:"6月–7年",f:usd},{v:w.a10,c:"--c4",w:1.2,n:"6月–10年",f:usd},{v:w.l10,c:"--c2",w:1.2,n:"≤10年",f:usd}],log:true},n)},
+  data:function(n){var w=D.charts&&D.charts.cohortWeekly;if(!w)return null;return cut({x:w.d,s:[{v:w.price,n:"价格",f:usd,w:2.4},{v:w.a5,c:"--c1",n:"6月–5年",f:usd},{v:w.a7,c:"--c3",w:1.7,n:"6月–7年",f:usd},{v:w.a10,c:"--c4",w:1.7,n:"6月–10年",f:usd},{v:w.l10,c:"--c2",w:1.7,n:"≤10年",f:usd}],log:true},n)},
   legend:'<span><i style="background:var(--ink)"></i>价格</span><span><i style="background:var(--c1)"></i>6 月–5 年</span><span><i style="background:var(--c3)"></i>6 月–7 年</span><span><i style="background:var(--c4)"></i>6 月–10 年</span><span><i style="background:var(--c2)"></i>10 年以内</span>'},
  {id:"addr",n:"持币地址分布",
   val:function(){var a=D.charts&&D.charts.addr;if(!a)return null;var w=a.rows.slice(4).reduce(function(s,r){return s+r.d30},0);return {v:(w<0?"−":"+")+(Math.abs(w)/1e4).toFixed(1)+" 万",s:"≥100 BTC 地址 30 天",tone:w>=0?"g":"b"}},
@@ -525,7 +573,7 @@ var IND=[
 var indBuilt=false;
 function buildInd(){indBuilt=true;
   $("indList").innerHTML=IND.map(function(it){return '<div class="ind" id="ind-'+it.id+'"><button type="button" data-ind="'+it.id+'" aria-expanded="false"><span class="n">'+it.n+'</span><span class="x"><b class="num">—</b><small></small></span><span class="ar">›</span></button><div class="body" hidden>'
-    +(it.ranges?'<div class="rg">'+it.ranges.map(function(r,i){return '<button type="button" data-rg="'+it.id+":"+i+'">'+r[0]+'</button>'}).join("")+'</div>':"")+'<div class="ch"></div>'+(it.legend?'<div class="lg">'+it.legend+'</div>':"")+'</div></div>'}).join("")}
+    +(it.legend?'<div class="lg">'+it.legend+'</div>':"")+(it.ranges?'<div class="rg">'+it.ranges.map(function(r,i){return '<button type="button" data-rg="'+it.id+":"+i+'">'+r[0]+'</button>'}).join("")+'</div>':"")+'<div class="ch"></div>'+'</div></div>'}).join("")}
 function drawInd(it){var el=$("ind-"+it.id),ch=el.querySelector(".ch");
   el.querySelectorAll(".rg button").forEach(function(b,i){b.classList.toggle("on",i===it.r)});
   if(it.html){var h=it.html();ch.innerHTML=h||'<p class="meta">数据还没到。</p>';return}
@@ -534,7 +582,7 @@ function drawInd(it){var el=$("ind-"+it.id),ch=el.querySelector(".ch");
 function renderInd(){
   if(!indBuilt)buildInd();
   var t=today(),z=zone(),n=new Date();$("iDay").textContent=t&&t.day?"数据日 "+t.day.slice(5):"";
-  $("iBig").textContent=!t?"—":t.deep?"深度底部":z==="b"?"底部区":z==="t"?"顶部区":"中性区间";
+  $("iBig").textContent=!t?"—":t.noSignal?"信号暂缺":t.deep?"深度底部":z==="b"?"底部区":z==="t"?"顶部区":"中性区间";
   var ps=LT().psil!=null?LT().psil:t&&t.psil;
   $("iSub").textContent=t?["底部信号 "+(t.score==null?"—":Math.round(100-t.score)),"顶部证据 "+(t.topEvidence==null?"—":t.topEvidence)+" / 3",ps!=null?"长期持有者浮亏 "+Math.round(ps)+"%":""].filter(Boolean).join(" · "):"";
   IND.forEach(function(it){var el=$("ind-"+it.id),v=null;try{v=it.val()}catch(e){}
@@ -566,7 +614,7 @@ function renderMe(){
     var pa=D.charts&&D.charts.priceAll,box=$("mCurveBox");
     if(pa&&recs.length>=2&&$("vMe").hidden===false){var xs=dates(pa.start,pa.v.length),asc=recs.slice().reverse(),i0=Math.max(0,xs.indexOf(iso(asc[0].at)));
       if(xs.length-i0>=3){var cost=[],k=0,sc=0,sb=0;for(var i=i0;i<xs.length;i++){while(k<asc.length&&iso(asc[k].at)<=xs[i]){sc+=asc[k].cny;sb+=asc[k].btc;k++}cost.push(sb>0?sc/f/sb:null)}
-        box.hidden=false;mountChart($("mCurve"),{x:xs.slice(i0),s:[{v:pa.v.slice(i0),n:"价格",f:usd,w:1.9},{v:cost,c:"--c2",n:"我的成本",f:usd}],log:true})}else box.hidden=true}
+        box.hidden=false;mountChart($("mCurve"),{x:xs.slice(i0),s:[{v:pa.v.slice(i0),n:"价格",f:usd,w:2.4},{v:cost,c:"--c2",n:"我的成本",f:usd}],log:true})}else box.hidden=true}
     else if(!pa||recs.length<2)box.hidden=true}
   else $("mSub").textContent="";
   // 设置
@@ -574,7 +622,7 @@ function renderMe(){
   // 数据
   var t=today(),c=D.core,s=D.stable,rows=[];
   var dAge=t&&t.day?(Date.now()-Date.parse(t.day+"T00:00:00Z"))/864e5:null;
-  rows.push(["每日信号",t?"数据日 "+t.day:"读不到",!t?"bad":dAge>3?"warn":""]);
+  var st=D.state&&D.state.today;rows.push(["每日信号",st?"数据日 "+st.day:"读不到",!st?"bad":dAge>3?"warn":""]);
   rows.push(["链上数据",c?(c.stale&&c.stale.length?"部分沿用上一次":ago(c.ts)):"读不到",!c?"bad":(c.stale&&c.stale.length)||Date.now()-c.ts>26*36e5?"warn":""]);
   rows.push(["稳定币",s?ago(s.ts):"读不到",!s?"bad":Date.now()-s.ts>26*36e5?"warn":""]);
   rows.push(["实时价格",D.priceSrc||"用日线收盘价",D.priceSrc?"":"warn"]);
