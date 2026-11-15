@@ -78,6 +78,16 @@ def g_daily():
             **{f"p{p}": [rnd(x, 0) for x in r[pname(p)]] for p in (25, 40, 50, 60, 75)}}
 
 
+def g_weekly():
+    """2012 年起周度：和 daily 同样的列（成本分位只留 25 / 50 / 75），给图表的「5 年 / 全部」用。"""
+    names = ["price", "lth_supply_in_loss_share", "lth_supply", "sth_supply", "lth_supply_delta_1m"] + [pname(p) for p in (25, 50, 75)]
+    r = bulk("week1", names, "2012-01-01")
+    return {"d": r["date"], "price": [rnd(x) for x in r["price"]], "psil": [rnd(x) for x in r["lth_supply_in_loss_share"]],
+            "lth": [rnd(x, 0) for x in r["lth_supply"]], "sth": [rnd(x, 0) for x in r["sth_supply"]],
+            "lthDelta30": [rnd(x, 0) for x in r["lth_supply_delta_1m"]],
+            **{f"p{p}": [rnd(x, 0) for x in r[pname(p)]] for p in (25, 50, 75)}}
+
+
 def g_price_all():
     """全部历史日收盘（AHR999 的 200 日成本和拟合要用）。"""
     r = bulk("day1", ["price"], "2010-07-17")
@@ -220,7 +230,7 @@ def g_signal():
             "topEvidence": t.get("topEvidence"), "risk": t["risk"], "psil": None if ps[i] is None else round(ps[i], 1), "deep": deep, "confirm": confirm}
 
 
-GROUPS_CHARTS = {"daily": g_daily, "priceAll": g_price_all, "cohortWeekly": g_cohort_weekly, "age": g_age, "monthly": g_monthly, "addr": g_addr}
+GROUPS_CHARTS = {"daily": g_daily, "priceAll": g_price_all, "cohortWeekly": g_cohort_weekly, "age": g_age, "monthly": g_monthly, "addr": g_addr, "weekly": g_weekly}
 GROUPS_CORE = {"percentiles": g_percentiles, "sync": g_sync, "signal": g_signal}
 
 
