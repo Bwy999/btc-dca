@@ -1,62 +1,20 @@
 "use strict";
 
-const SW_BUILD = "27.12.1-20261115";
-const CACHE_NAME = "btc-intelligence-v27-11-0-20261111";
+const SW_BUILD = "27.12.3-20261118";
+const CACHE_NAME = "btc-intelligence-v" + SW_BUILD.replace(/\./g, "-");
 const CACHE_PREFIX = "btc-site:" + self.registration.scope + ":";
 const SCOPED_CACHE = CACHE_PREFIX + CACHE_NAME;
 // 带内容哈希的静态资源。文件内容不变，文件名就不变，更新时无需重新下载。
 const ASSETS = /*ASSETS*/[
-  "./assets/app.912c96a0c8.css",
+  "./assets/app.02bac4c6b8.css",
   "./assets/lightweight-charts.682f74d8c4.js",
   "./assets/seed-cycle.5a6f45f52a.js",
-  "./assets/app.ba68d4c5b0.js",
-  "./assets/ext-1.79fa106bab.js",
-  "./assets/ext-2.bed6b0f62f.js",
-  "./assets/ext-3.9cfc90c757.js",
-  "./assets/ext-4.a358591738.js",
-  "./assets/ext-5.56f364adda.js",
-  "./assets/ext-6.23765939a3.js",
-  "./assets/ext-7.7ebb239314.js",
-  "./assets/ext-8.768208e945.js",
-  "./assets/ext-9.67c7439527.js",
-  "./assets/ext-10.33aae955f9.js",
-  "./assets/ext-11.2d6ec46993.js",
-  "./assets/ext-12.4ba957689e.js",
-  "./assets/ext-13.83af97c815.js",
-  "./assets/ext-14.de1fcc1f56.js",
-  "./assets/ext-15.67c8b7276d.js",
-  "./assets/ext-16.5d01d0fe5c.js",
-  "./assets/ext-17.cef25ca042.js",
-  "./assets/ext-18.d36ffba92b.js",
-  "./assets/ext-19.34254b63b9.js",
-  "./assets/ext-20.6c74d1ce35.js",
-  "./assets/ext-21.09517ee77d.js",
-  "./assets/ext-22.d175e3a2b3.js",
-  "./assets/ext-23.c825b12ce4.js",
-  "./assets/ext-24.a5c5eea1e7.js",
-  "./assets/ext-25.0d82773e60.js",
-  "./assets/ext-26.2070e37369.js",
-  "./assets/ext-27.443515614b.js",
-  "./assets/ext-28.a59f1da5a1.js",
-  "./assets/ext-29.0d7bb05011.js",
-  "./assets/ext-30.339bef2bd3.js",
-  "./assets/ext-31.a562b23f43.js",
-  "./assets/ext-32.1d27b010bb.js",
-  "./assets/ext-33.dd7c51d971.js",
-  "./assets/ext-34.6d5e4c6f47.js",
-  "./assets/ext-35.5589edd028.js",
-  "./assets/ext-36.4c7695b8de.js",
-  "./assets/ext-37.0225113ba0.js",
-  "./assets/ext-38.0e21303473.js",
-  "./assets/ext-39.5b96c54c77.js",
-  "./assets/ext-40.92f442436e.js",
-  "./assets/ext-41.e1d083a887.js",
-  "./assets/ext-42.f615a7540b.js",
-  "./assets/ext-43.a5ef522f00.js",
-  "./assets/ext-45.b798596959.js",
+  "./assets/app.6cac8d035c.js",
+  "./assets/insight.67c8b7276d.js",
+  "./assets/ext-bundle.00e49109d1.js",
 ]/*END*/;
 // 按需下载的资源（英文对照表）：不预缓存，但版本切换时不删除
-const OPTIONAL_ASSETS = /*OPTIONAL*/["./assets/i18n-en.9a2f89c605.js"]/*OEND*/;
+const OPTIONAL_ASSETS = /*OPTIONAL*/["./assets/i18n-en.3d4cc58f98.js"]/*OEND*/;
 const ASSET_CACHE = CACHE_PREFIX + "assets";
 const CORE = [
   "./",
@@ -64,6 +22,7 @@ const CORE = [
   "./ahr999.html",
   "./dca.html",
   "./apple-touch-icon.png",
+  "./manifest.webmanifest",
 ];
 
 self.addEventListener("install", (event) => {
@@ -78,12 +37,21 @@ self.addEventListener("install", (event) => {
     await Promise.allSettled(CORE.slice(2).map((url) => cache.add(new Request(url, { cache: "reload" }))));
     // 新版本用到的资源必须全部就绪，否则保留旧版本，避免页面引用缺失文件。
     const assetCache = await caches.open(ASSET_CACHE);
+    const missing = [];
     for (const url of ASSETS) {
-      if (await assetCache.match(url)) continue;
-      const res = await fetch(new Request(url, { cache: "reload" }));
-      if (!res.ok) throw new Error("Asset missing: " + url);
-      await assetCache.put(url, res);
+      if (!(await assetCache.match(url))) missing.push(url);
     }
+    // 并发池预缓存（每次最多 6 个），兼顾弱网速度与完整性
+    let idx = 0;
+    const workers = Array.from({ length: Math.min(6, missing.length) }, async () => {
+      while (idx < missing.length) {
+        const url = missing[idx++];
+        const res = await fetch(new Request(url, { cache: "reload" }));
+        if (!res.ok) throw new Error("Asset missing: " + url);
+        await assetCache.put(url, res);
+      }
+    });
+    await Promise.all(workers);
     // An existing client keeps its worker until the user explicitly confirms.
   })());
 });
@@ -188,6 +156,10 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (request.mode === "navigate") {
+    if (url.pathname.includes("/v28/")) {
+      event.respondWith(networkFirst(request, null));
+      return;
+    }
     const fallback = url.pathname.endsWith("/dca.html")
       ? "./dca.html"
       : url.pathname.endsWith("/ahr999.html")

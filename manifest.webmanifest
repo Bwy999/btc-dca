@@ -1,0 +1,24 @@
+{
+  "name": "Sats Garden",
+  "short_name": "Sats Garden",
+  "description": "比特币价格、AHR999 周期估值、链上结构与定投纪律终端",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#090c11",
+  "theme_color": "#090c11",
+  "icons": [
+    {
+      "src": "./apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./btc-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
