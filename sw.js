@@ -1,6 +1,6 @@
 "use strict";
 
-const SW_BUILD = "27.12.3-20261118";
+const SW_BUILD = "27.12.6-20261121";
 const CACHE_NAME = "btc-intelligence-v" + SW_BUILD.replace(/\./g, "-");
 const CACHE_PREFIX = "btc-site:" + self.registration.scope + ":";
 const SCOPED_CACHE = CACHE_PREFIX + CACHE_NAME;
@@ -11,7 +11,7 @@ const ASSETS = /*ASSETS*/[
   "./assets/seed-cycle.5a6f45f52a.js",
   "./assets/app.6cac8d035c.js",
   "./assets/insight.67c8b7276d.js",
-  "./assets/ext-bundle.00e49109d1.js",
+  "./assets/ext-bundle.d2a07f0c70.js",
 ]/*END*/;
 // 按需下载的资源（英文对照表）：不预缓存，但版本切换时不删除
 const OPTIONAL_ASSETS = /*OPTIONAL*/["./assets/i18n-en.3d4cc58f98.js"]/*OEND*/;
@@ -20,6 +20,7 @@ const CORE = [
   "./",
   "./index.html",
   "./ahr999.html",
+  "./old-coins.html",
   "./dca.html",
   "./apple-touch-icon.png",
   "./manifest.webmanifest",
@@ -85,6 +86,7 @@ async function networkFirst(request, fallbackUrl) {
   const cache = await caches.open(SCOPED_CACHE).catch(() => null);
   try {
     const response = await fetch(request);
+    if (response?.type === "opaqueredirect") return response;
     if (!response?.ok) throw new Error(`HTTP ${response?.status || 0}`);
     if(cache)try { await cache.put(request, response.clone()); } catch (_) {}
     return response;
@@ -113,6 +115,8 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+  // 放行 /v28 与 /v28/*（含不带末尾斜杠时的 301 跳转），不交由 V27 首页兜底
+  if (/\/v28(\/|$)/.test(url.pathname)) return;
 
   if (url.searchParams.has("_btc_update") || url.pathname.endsWith("/sw.js")) {
     event.respondWith(fetch(new Request(request, {cache:"no-store"})));
@@ -164,7 +168,9 @@ self.addEventListener("fetch", (event) => {
       ? "./dca.html"
       : url.pathname.endsWith("/ahr999.html")
         ? "./ahr999.html"
-        : "./index.html";
+        : url.pathname.endsWith("/old-coins.html")
+          ? "./old-coins.html"
+          : "./index.html";
     event.respondWith(networkFirst(request, fallback));
     return;
   }

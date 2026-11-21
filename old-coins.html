@@ -1,0 +1,753 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="old-coins-build" content="27.12.6-20261121" />
+  <title>老比特币异动筛选器 · Sats Garden</title>
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
+  <style>
+    :root{
+      --bg:#f3f4f6;--card:#fff;--fill:#eff1f5;--ink:#11141a;--ink2:#4b5563;--ink3:#8790a0;
+      --hair:rgba(17,20,26,.09);--hair2:rgba(17,20,26,.16);
+      --blue:#2563eb;--green:#16a34a;--green-soft:rgba(22,163,74,.11);
+      --red:#dc2626;--red-soft:rgba(220,38,38,.11);
+      --amber:#c27803;--amber-soft:rgba(194,120,3,.12);--orange:#f7931a;
+      --shadow:0 1px 2px rgba(17,20,26,.04),0 6px 20px rgba(17,20,26,.035);
+      --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Noto Sans CJK SC","Helvetica Neue",system-ui,sans-serif;
+    }
+    @media (prefers-color-scheme:dark){
+      :root:not([data-theme="light"]){
+        --bg:#0d0f13;--card:#151820;--fill:#1f2430;--ink:#f3f4f6;--ink2:#a5adbc;--ink3:#6f7787;
+        --hair:rgba(255,255,255,.09);--hair2:rgba(255,255,255,.18);
+        --green:#34d399;--green-soft:rgba(52,211,153,.14);
+        --red:#f87171;--red-soft:rgba(248,113,113,.15);
+        --amber:#fbbf24;--amber-soft:rgba(251,191,36,.14);
+        --shadow:0 1px 0 rgba(255,255,255,.04) inset,0 10px 26px rgba(0,0,0,.38);
+      }
+    }
+    :root[data-theme="dark"]{
+      --bg:#0d0f13;--card:#151820;--fill:#1f2430;--ink:#f3f4f6;--ink2:#a5adbc;--ink3:#6f7787;
+      --hair:rgba(255,255,255,.09);--hair2:rgba(255,255,255,.18);
+      --green:#34d399;--green-soft:rgba(52,211,153,.14);
+      --red:#f87171;--red-soft:rgba(248,113,113,.15);
+      --amber:#fbbf24;--amber-soft:rgba(251,191,36,.14);
+      --shadow:0 1px 0 rgba(255,255,255,.04) inset,0 10px 26px rgba(0,0,0,.38);
+    }
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    body{background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;padding-bottom:48px}
+    .num{font-variant-numeric:tabular-nums lining-nums}
+    .hdr{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--hair)}
+    .hdr-in{max-width:1100px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
+    .bmark{width:30px;height:30px;border-radius:50%;background:var(--orange);color:#fff;font-weight:800;font-size:16px;display:inline-flex;align-items:center;justify-content:center}
+    .btitle{font-size:15px;font-weight:750;line-height:1.2}.bsub{font-size:11px;color:var(--ink3)}
+    .hdr-act{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:11.5px;font-weight:600;background:var(--fill);color:var(--ink2)}
+    .badge.ok{background:var(--green-soft);color:var(--green)}.badge.warn{background:var(--amber-soft);color:var(--amber)}.badge.bad{background:var(--red-soft);color:var(--red)}
+    .badge i{width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block}
+    .wrap{max-width:1100px;margin:16px auto 0;padding:0 16px;display:flex;flex-direction:column;gap:14px}
+    .card{background:var(--card);border:1px solid var(--hair);border-radius:18px;box-shadow:var(--shadow);padding:18px 20px}
+    .card-hd{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-bottom:13px;margin-bottom:15px;border-bottom:1px solid var(--hair)}
+    .card-hd h1,.card-hd h2{font-size:15.5px;font-weight:750}
+    .grid-filter{display:grid;grid-template-columns:1fr;gap:20px}
+    @media (min-width:900px){.grid-filter{grid-template-columns:2fr 1fr;gap:24px}}
+    .side-col{border-top:1px solid var(--hair);padding-top:16px;display:flex;flex-direction:column;gap:16px}
+    @media (min-width:900px){.side-col{border-top:0;border-left:1px solid var(--hair);padding-top:0;padding-left:22px}}
+    .frow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:11px}
+    .flab{width:102px;flex:none;font-size:12.5px;font-weight:600;color:var(--ink2)}
+    .inp{height:36px;padding:0 10px;border-radius:9px;border:1px solid var(--hair2);background:var(--card);color:var(--ink);font:inherit;font-size:13px;outline:none}
+    .inp:focus{border-color:var(--blue)}
+    .inp-wrap{position:relative;display:inline-flex;align-items:center;min-width:170px;flex:1;max-width:250px}
+    .inp-wrap .inp{width:100%;padding-right:46px}
+    .inp-unit{position:absolute;right:10px;font-size:11px;font-weight:600;color:var(--ink3);pointer-events:none}
+    .chips{display:flex;flex-wrap:wrap;gap:6px}
+    .chip{border:1px solid var(--hair);background:var(--fill);color:var(--ink2);border-radius:8px;padding:5px 10px;font:inherit;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+    .chip.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
+    .btn{height:38px;padding:0 16px;border-radius:10px;border:0;font:inherit;font-size:13px;font-weight:650;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+    .btn-blue{background:var(--blue);color:#fff}.btn-green{background:var(--green);color:#fff}.btn-ghost{background:var(--fill);color:var(--ink)}
+    .preset{width:100%;text-align:left;padding:9px 12px;border-radius:10px;border:1px solid rgba(37,99,235,.22);background:rgba(37,99,235,.06);color:var(--ink);font:inherit;cursor:pointer;margin-bottom:7px}
+    .preset b{display:block;font-size:12.5px;font-weight:650}.preset small{display:block;font-size:11px;color:var(--ink2);margin-top:2px}
+    .preset.on{background:var(--blue);color:#fff;border-color:var(--blue)}.preset.on small{color:rgba(255,255,255,.82)}
+    .qstrip{display:flex;flex-wrap:wrap;align-items:center;gap:6px;width:100%;padding-left:110px;margin-top:2px}
+    @media (max-width:640px){.flab{width:100%}.qstrip{padding-left:0}}
+    .hint{font-size:11px;color:var(--ink3);line-height:1.45}.hint.warn{color:var(--amber)}
+    .kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    @media (min-width:860px){.kpis{grid-template-columns:repeat(4,1fr)}}
+    .kpi{background:var(--card);border:1px solid var(--hair);border-radius:16px;padding:15px 16px;box-shadow:var(--shadow)}
+    .kpi small{display:block;font-size:11.5px;color:var(--ink3);font-weight:500}
+    .kpi b{display:block;font-size:21px;font-weight:800;margin:6px 0 4px;letter-spacing:-.02em}
+    .kpi span{display:block;font-size:11.5px;color:var(--ink2)}
+    .modes{display:inline-flex;gap:5px}
+    .mbtn{width:34px;height:32px;border-radius:8px;border:1px solid var(--hair);background:var(--card);color:var(--ink2);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-weight:700}
+    .mbtn.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
+    .chart-meta{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;font-size:12px;color:var(--ink2);margin-bottom:8px}
+    .leg{display:flex;flex-wrap:wrap;gap:12px}.leg span{display:inline-flex;align-items:center;gap:5px}.leg i{display:inline-block;width:10px;height:10px;border-radius:2px}
+    .cv-box{position:relative;height:290px;width:100%;touch-action:pan-y}.cv-box canvas{position:absolute;inset:0;width:100%;height:100%}
+    .sum-hero{text-align:center;padding:24px 16px;border-radius:14px;background:var(--fill);margin-bottom:16px}
+    .sum-hero b{display:block;font-size:32px;font-weight:800;color:var(--red);margin:6px 0}
+    .cbar{display:grid;grid-template-columns:76px 1fr 90px;align-items:center;gap:10px;font-size:12px;margin-bottom:8px}
+    .ctrack{height:9px;border-radius:99px;background:var(--fill);overflow:hidden}.cfill{height:100%;border-radius:99px;background:var(--red)}
+    .tbl-wrap{overflow-x:auto}
+    table{width:100%;border-collapse:collapse;font-size:12.5px}
+    th{text-align:left;padding:10px 12px;font-weight:600;color:var(--ink3);border-bottom:1px solid var(--hair);background:var(--fill);white-space:nowrap}
+    td{padding:10px 12px;border-bottom:1px solid var(--hair);white-space:nowrap}
+    th.r,td.r{text-align:right}
+    tbody tr{cursor:pointer}tbody tr:hover{background:var(--fill)}
+    .up{color:var(--green);font-weight:650}.dn{color:var(--red);font-weight:650}
+    .detail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+    @media (min-width:640px){.detail-grid{grid-template-columns:repeat(4,1fr)}}
+    @media (min-width:900px){.detail-grid{grid-template-columns:repeat(6,1fr)}}
+    .dcell{padding:9px 11px;border-radius:10px;background:var(--fill);font-size:12px}.dcell small{display:block;color:var(--ink3)}.dcell b{display:block;font-size:13.5px;margin-top:2px}
+    .empty{padding:36px 16px;text-align:center;color:var(--ink3);font-size:13px}
+    .modal{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px}
+    .modal[hidden],[hidden]{display:none!important}
+    .mpanel{background:var(--card);border:1px solid var(--hair);border-radius:16px;padding:18px 20px;width:100%;max-width:360px}
+    .mpanel h3{font-size:15px;margin-bottom:12px}.mpanel .inp{width:100%;margin-bottom:12px}
+    .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:60;background:var(--ink);color:var(--card);padding:8px 16px;border-radius:999px;font-size:12.5px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s}
+    .toast.show{opacity:1}
+  </style>
+</head>
+<body>
+  <header class="hdr">
+    <div class="hdr-in">
+      <a class="brand" href="./index.html">
+        <span class="bmark" aria-hidden="true">₿</span>
+        <div>
+          <div class="btitle">老比特币异动筛选器</div>
+          <div class="bsub">Bitview 公开全历史数据（2011 至今） · Sats Garden</div>
+        </div>
+      </a>
+      <div class="hdr-act">
+        <span class="badge warn" id="netBadge"><i></i><span id="netText">正在连接 Bitview…</span></span>
+        <button type="button" class="chip" id="refreshBtn">刷新数据</button>
+        <button type="button" class="chip" id="themeBtn" aria-label="切换主题">☾</button>
+        <a class="chip" href="./index.html">V27 首页</a>
+        <a class="chip" href="./v28/">V28</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- 1. 高级筛选 -->
+    <section class="card">
+      <div class="card-hd">
+        <h1>高级筛选 <span style="font-size:11.5px;font-weight:500;color:var(--ink3);margin-left:6px;">多条件 AND 组合 · 支持 2011 年至今任意日历区间</span></h1>
+        <div class="chips" id="quickRanges">
+          <button type="button" class="chip" data-r="30">近 30 天</button>
+          <button type="button" class="chip" data-r="90">近 90 天</button>
+          <button type="button" class="chip on" data-r="365">近 1 年</button>
+          <button type="button" class="chip" data-r="1095">近 3 年</button>
+          <button type="button" class="chip" data-r="2024">2024 年</button>
+          <button type="button" class="chip" data-r="2021">2021 年</button>
+          <button type="button" class="chip" data-r="all">全部 (2011–今)</button>
+        </div>
+      </div>
+
+      <div class="grid-filter">
+        <div>
+          <div class="frow">
+            <span class="flab">筛选时间范围</span>
+            <input id="dateStart" type="date" class="inp num" min="2011-01-01" />
+            <span style="font-size:12px;color:var(--ink3);">至</span>
+            <input id="dateEnd" type="date" class="inp num" min="2011-01-01" />
+          </div>
+
+          <div class="frow" style="align-items:flex-start;">
+            <span class="flab" style="padding-top:6px;">老币币龄档位</span>
+            <div style="flex:1;">
+              <div class="chips" id="ageBar">
+                <button type="button" class="chip" data-age="1y">≥ 1 年</button>
+                <button type="button" class="chip" data-age="2y">≥ 2 年</button>
+                <button type="button" class="chip on" data-age="3y">≥ 3 年（经典老币）</button>
+                <button type="button" class="chip" data-age="5y">≥ 5 年</button>
+                <button type="button" class="chip" data-age="7y">≥ 7 年</button>
+                <button type="button" class="chip" data-age="10y">≥ 10 年（远古币）</button>
+              </div>
+              <div class="hint" id="ageHint" style="margin-top:6px;"></div>
+            </div>
+          </div>
+
+          <div id="rulesBox"></div>
+
+          <div class="frow" style="margin-top:6px;">
+            <span class="flab"></span>
+            <select id="addField" class="inp">
+              <option value="oldVol">老币单日移动量 (BTC)</option>
+              <option value="whaleDelta">巨鲸持仓净变化 (≥1K BTC)</option>
+              <option value="lthProfit">LTH 当日已实现利润 (USD)</option>
+              <option value="priceChg">当日 BTC 涨跌幅 (%)</option>
+            </select>
+            <button type="button" class="chip" id="addRuleBtn" style="height:36px;">+ 添加筛选条件</button>
+          </div>
+
+          <div class="frow" style="margin-top:14px;margin-bottom:0;">
+            <button type="button" class="btn btn-blue" id="searchBtn">搜索筛选</button>
+            <button type="button" class="btn btn-green" id="saveBtn">保存筛选条件</button>
+            <button type="button" class="btn btn-ghost" id="resetBtn">重置默认</button>
+            <button type="button" class="btn btn-ghost" id="csvBtn" style="margin-left:auto;">导出 CSV</button>
+          </div>
+        </div>
+
+        <aside class="side-col">
+          <div>
+            <div style="font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:8px;">热门搜索</div>
+            <div id="hotPresets">
+              <button type="button" class="preset on" data-preset="gt10k"><b>&gt; 1 万枚老币异动（风险预警）</b><small>≥3年 &gt; 10,000 BTC · 巨鲸 &lt; -3,000 · 利润 &gt; $1亿</small></button>
+              <button type="button" class="preset" data-preset="pure10k"><b>纯老币 &gt; 1 万枚（不限利润）</b><small>≥3年老币单日移动量 &gt; 10,000 BTC</small></button>
+              <button type="button" class="preset" data-preset="ancient"><b>早期远古币苏醒</b><small>≥7年老币单日移动量 &gt; 1,500 BTC</small></button>
+              <button type="button" class="preset" data-preset="profitDump"><b>高利润集中派发</b><small>≥3年 &gt; 5,000 BTC · 巨鲸 &lt; -5,000 · 利润 &gt; $3亿</small></button>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:8px;">保存的筛选条件</div>
+            <div style="display:flex;gap:6px;">
+              <select id="savedSel" class="inp" style="flex:1;"></select>
+              <button type="button" class="chip" id="delSavedBtn" style="height:36px;">删</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 2. 核心预警统计卡 -->
+    <section class="kpis">
+      <div class="kpi"><small>当前警报状态</small><b class="num" id="kCalm">—</b><span class="num" id="kCalmSub">等待 Bitview 数据</span></div>
+      <div class="kpi"><small>变化量统计（触发日老币合计）</small><b class="num" id="kVol" style="color:var(--red);">—</b><span class="num" id="kVolSub">—</span></div>
+      <div class="kpi"><small>符合条件异动天数</small><b class="num" id="kDays">—</b><span class="num" id="kDaysSub">—</span></div>
+      <div class="kpi"><small>触发后 30 日 BTC 中位涨跌</small><b class="num" id="kFwd">—</b><span class="num" id="kFwdSub">—</span></div>
+    </section>
+
+    <!-- 3. 结果展示（Σ / 走势图 / 明细表） -->
+    <section class="card" style="padding:0;overflow:hidden;">
+      <div class="card-hd" style="padding:14px 18px;margin-bottom:0;">
+        <div><h2 id="resTitle" style="display:inline;">异动监测走势与触发点</h2> <span class="num" id="resSpan" style="font-size:12px;color:var(--ink3);margin-left:8px;"></span></div>
+        <div class="modes" id="modes">
+          <button type="button" class="mbtn" data-m="sum" title="汇总统计">Σ</button>
+          <button type="button" class="mbtn on" data-m="chart" title="走势对照图">📈</button>
+          <button type="button" class="mbtn" data-m="table" title="异动日明细表">▦</button>
+        </div>
+      </div>
+
+      <div id="pSum" hidden style="padding:18px 20px;">
+        <div class="sum-hero">
+          <div style="font-size:12px;color:var(--ink3);font-weight:600;">筛选区间内触发日老币异动总量</div>
+          <b class="num" id="sumBig">—</b>
+          <div class="num" id="sumSub" style="font-size:12px;color:var(--ink2);"></div>
+        </div>
+        <div style="font-size:12.5px;font-weight:700;color:var(--ink2);margin-bottom:10px;">触发日老币币龄构成拆解</div>
+        <div id="sumBars"></div>
+      </div>
+
+      <div id="pChart" style="padding:16px 20px 18px;">
+        <div class="chart-meta">
+          <div class="leg">
+            <span><i style="background:var(--red);"></i>触发异动日</span>
+            <span><i style="background:rgba(148,163,184,.55);"></i>普通日移动量</span>
+            <span><i style="background:var(--ink);height:2px;width:12px;"></i>BTC 价格（对数右轴）</span>
+          </div>
+          <span class="num" id="cvTip">滑动或悬停图表查看每日数值</span>
+        </div>
+        <div class="cv-box" id="cvWrap"><canvas id="cv"></canvas></div>
+      </div>
+
+      <div id="pTable" hidden>
+        <div style="padding:10px 18px;border-bottom:1px solid var(--hair);display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;color:var(--ink2);">
+          <span>点击任意行查看当日 12 档币龄拆解</span>
+          <select id="sortSel" class="inp" style="height:30px;font-size:12px;">
+            <option value="date_desc">按日期降序（最新在前）</option>
+            <option value="vol_desc">按老币移动量降序</option>
+            <option value="fwd30_asc">按 30 日跌幅最大排序</option>
+          </select>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>日期</th><th class="r">老币移动量</th><th class="r">巨鲸净变化</th><th class="r">LTH 已实现利润</th>
+                <th class="r">当日 BTC 价格</th><th class="r">后 7 日</th><th class="r">后 30 日</th>
+              </tr>
+            </thead>
+            <tbody id="tBody" class="num"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="detailCard" hidden>
+      <div class="card-hd" style="padding-bottom:10px;margin-bottom:12px;">
+        <h2 id="detailTitle">各币龄老币移动拆解</h2>
+        <button type="button" class="chip" id="closeDetail">收起</button>
+      </div>
+      <div class="detail-grid num" id="detailGrid"></div>
+    </section>
+  </main>
+
+  <div class="modal" id="saveModal" hidden>
+    <div class="mpanel" role="dialog" aria-modal="true" aria-label="保存筛选条件">
+      <h3>保存当前筛选条件</h3>
+      <input id="presetName" type="text" class="inp" placeholder="例如：3年以上老币 > 1万枚预警" />
+      <div style="display:flex;justify-content:flex-end;gap:8px;">
+        <button type="button" class="btn btn-ghost" id="cancelSave" style="height:34px;">取消</button>
+        <button type="button" class="btn btn-green" id="confirmSave" style="height:34px;">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+  (function () {
+    "use strict";
+    var API = "https://bitview.space/api/series/bulk";
+    var DB_NAME = "sg-old-coins-v1", DB_STORE = "cache", DB_KEY = "full_2011", TTL = 6 * 3600 * 1000;
+    var SAVE_KEY = "sg_old_coins_presets_v1";
+    var COHORTS = [
+      { k: "1y", l: "1y–18m", s: "age_1y_to_18m_transfer_volume_sum_24h", m: 1 },
+      { k: "18m", l: "18m–2y", s: "age_18m_to_2y_transfer_volume_sum_24h", m: 1.5 },
+      { k: "2y", l: "2y–3y", s: "age_2y_to_3y_transfer_volume_sum_24h", m: 2 },
+      { k: "3y", l: "3y–4y", s: "age_3y_to_4y_transfer_volume_sum_24h", m: 3 },
+      { k: "4y", l: "4y–5y", s: "age_4y_to_5y_transfer_volume_sum_24h", m: 4 },
+      { k: "5y", l: "5y–6y", s: "age_5y_to_6y_transfer_volume_sum_24h", m: 5 },
+      { k: "6y", l: "6y–7y", s: "age_6y_to_7y_transfer_volume_sum_24h", m: 6 },
+      { k: "7y", l: "7y–8y", s: "age_7y_to_8y_transfer_volume_sum_24h", m: 7 },
+      { k: "8y", l: "8y–10y", s: "age_8y_to_10y_transfer_volume_sum_24h", m: 8 },
+      { k: "10y", l: "10y–12y", s: "age_10y_to_12y_transfer_volume_sum_24h", m: 10 },
+      { k: "12y", l: "12y–15y", s: "age_12y_to_15y_transfer_volume_sum_24h", m: 12 },
+      { k: "15y", l: "15y+", s: "age_over_15y_transfer_volume_sum_24h", m: 15 }
+    ];
+    var AGE_MIN = { "1y": 1, "2y": 2, "3y": 3, "5y": 5, "7y": 7, "10y": 10 };
+    var FMETA = {
+      oldVol: { l: "老币移动量", u: "BTC" },
+      whaleDelta: { l: "巨鲸净变化", u: "BTC" },
+      lthProfit: { l: "LTH 已实现利润", u: "USD" },
+      priceChg: { l: "BTC 当日涨跌", u: "%" }
+    };
+
+    var ROWS = [], SCOPED = [], HITS = [], hover = -1, cvMap = null, profitMode = "24h";
+    var S = {
+      start: "", end: "", ageKey: "3y", mode: "chart", sort: "date_desc",
+      rules: [
+        { id: "r1", f: "oldVol", op: "gt", v: 10000 },
+        { id: "r2", f: "whaleDelta", op: "lt", v: -3000 },
+        { id: "r3", f: "lthProfit", op: "gt", v: 100000000 }
+      ]
+    };
+
+    function $(id) { return document.getElementById(id); }
+    function cssv(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+    function toast(msg) { var t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove("show"); }, 2200); }
+    function fmtUsd(v) { if (v == null || !isFinite(v)) return "—"; var a = Math.abs(v); return (v < 0 ? "−" : "") + "$" + (a >= 1e9 ? (a / 1e9).toFixed(2) + "B" : a >= 1e6 ? (a / 1e6).toFixed(1) + "M" : a >= 1e3 ? Math.round(a / 1e3) + "K" : Math.round(a)); }
+    function fmtBtc(v) { return Math.round(v).toLocaleString("en-US"); }
+
+    // IndexedDB helpers (full 2011+ history is ~2-3MB, safe in IndexedDB)
+    function openDb() {
+      return new Promise(function (res) {
+        if (!window.indexedDB) return res(null);
+        try {
+          var req = indexedDB.open(DB_NAME, 1);
+          req.onupgradeneeded = function () { req.result.createObjectStore(DB_STORE); };
+          req.onsuccess = function () { res(req.result); };
+          req.onerror = function () { res(null); };
+        } catch (e) { res(null); }
+      });
+    }
+    function dbGet() {
+      return openDb().then(function (db) {
+        if (!db) return null;
+        return new Promise(function (res) {
+          try { var r = db.transaction(DB_STORE, "readonly").objectStore(DB_STORE).get(DB_KEY); r.onsuccess = function () { res(r.result || null); }; r.onerror = function () { res(null); }; } catch (e) { res(null); }
+        });
+      });
+    }
+    function dbPut(val) {
+      return openDb().then(function (db) {
+        if (!db) return;
+        try { db.transaction(DB_STORE, "readwrite").objectStore(DB_STORE).put(val, DB_KEY); } catch (e) {}
+      });
+    }
+
+    function setNet(cls, txt) {
+      var b = $("netBadge"); b.className = "badge " + cls; $("netText").textContent = txt;
+    }
+
+    function fetchBulk(seriesList) {
+      var u = new URL(API);
+      u.searchParams.set("index", "day1");
+      u.searchParams.set("start", "2011-01-01");
+      u.searchParams.set("series", seriesList.join(","));
+      return fetch(u.toString(), { mode: "cors", cache: "no-store" }).then(function (r) {
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      }).then(function (j) {
+        if (!Array.isArray(j) || !j[0] || !Array.isArray(j[0].data)) throw new Error("bad shape");
+        return j;
+      });
+    }
+
+    function buildRows(arr, div) {
+      var dates = arr[0].data, prices = arr[1].data, w1 = arr[2].data, w2 = arr[3].data, w3 = arr[4].data;
+      var prof = arr[5 + COHORTS.length].data, out = [], today = new Date().toISOString().slice(0, 10);
+      for (var i = 0; i < dates.length; i++) {
+        var d = dates[i];
+        if (!d || d >= today) continue;
+        var p = +prices[i] || 0;
+        if (!(p > 0)) continue;
+        var prevP = out.length ? out[out.length - 1].p : p;
+        var c = [];
+        for (var j = 0; j < COHORTS.length; j++) c.push(Math.round(+arr[5 + j].data[i] || 0));
+        var wd = Math.round((+w1[i] || 0) + (+w2[i] || 0) + (+w3[i] || 0));
+        out.push({ d: d, p: Math.round(p), pc: +((p / prevP - 1) * 100).toFixed(2), c: c, w: wd, pr: Math.round((+prof[i] || 0) / div) });
+      }
+      return out;
+    }
+
+    async function loadData(force) {
+      var cached = await dbGet();
+      if (cached && Array.isArray(cached.rows) && cached.rows.length > 100) {
+        ROWS = cached.rows; profitMode = cached.pm || "24h";
+        initDatesIfEmpty(); compute();
+        if (!force && Date.now() - cached.ts < TTL) {
+          setNet("ok", "Bitview 数据 · " + ROWS[ROWS.length - 1].d + "（本机缓存）");
+          return;
+        }
+      }
+      setNet("warn", "正在拉取 Bitview 全历史（2011–今）…");
+      var base = ["date", "price", "balance_1k_to_10k_btc_supply_delta_24h", "balance_10k_to_100k_btc_supply_delta_24h", "balance_over_100k_btc_supply_delta_24h"]
+        .concat(COHORTS.map(function (x) { return x.s; }));
+      try {
+        var arr, div = 1;
+        try { arr = await fetchBulk(base.concat(["lth_realized_profit_sum_24h"])); profitMode = "24h"; }
+        catch (_) { arr = await fetchBulk(base.concat(["lth_realized_profit_sum_1w"])); div = 7; profitMode = "1w/7"; }
+        var rows = buildRows(arr, div);
+        if (rows.length < 100) throw new Error("too short");
+        ROWS = rows;
+        await dbPut({ ts: Date.now(), pm: profitMode, rows: rows });
+        initDatesIfEmpty(); compute();
+        setNet("ok", "Bitview 实时 · " + ROWS[0].d + " 至 " + ROWS[ROWS.length - 1].d + "（" + ROWS.length + " 天）");
+      } catch (e) {
+        if (ROWS.length) {
+          setNet("warn", "更新失败，沿用本机缓存 · " + ROWS[ROWS.length - 1].d);
+        } else {
+          setNet("bad", "暂时连不上 Bitview 接口，请稍后点「刷新数据」");
+          $("cvTip").textContent = "Bitview 接口暂时不可达，未使用模拟数据。";
+        }
+      }
+    }
+
+    function initDatesIfEmpty() {
+      if (!ROWS.length) return;
+      var first = ROWS[0].d, last = ROWS[ROWS.length - 1].d;
+      $("dateStart").min = first; $("dateStart").max = last;
+      $("dateEnd").min = first; $("dateEnd").max = last;
+      if (!S.end || S.end > last) S.end = last;
+      if (!S.start) S.start = ROWS[Math.max(0, ROWS.length - 365)].d;
+      $("dateStart").value = S.start; $("dateEnd").value = S.end;
+    }
+
+    function oldVol(row) {
+      var minYr = AGE_MIN[S.ageKey] || 3, s = 0;
+      for (var i = 0; i < COHORTS.length; i++) if (COHORTS[i].m >= minYr) s += row.c[i];
+      return s;
+    }
+    function fieldVal(row, f) { return f === "oldVol" ? oldVol(row) : f === "whaleDelta" ? row.w : f === "lthProfit" ? row.pr : row.pc; }
+    function match(row) {
+      for (var i = 0; i < S.rules.length; i++) {
+        var r = S.rules[i], t = +r.v; if (!isFinite(t)) continue;
+        var v = fieldVal(row, r.f);
+        if (r.op === "gt" && !(v > t)) return false;
+        if (r.op === "lt" && !(v < t)) return false;
+      }
+      return true;
+    }
+
+    function renderRules() {
+      $("rulesBox").innerHTML = S.rules.map(function (r) {
+        var m = FMETA[r.f] || { l: r.f, u: "" };
+        var isP = r.f === "lthProfit";
+        var q = isP ? '<div class="qstrip"><span class="hint">快捷档位：</span>'
+          + [100000000, 300000000, 500000000].map(function (qv) {
+            return '<button type="button" class="chip pq' + (+r.v === qv ? " on" : "") + '" data-qv="' + qv + '">' + (qv / 1e8) + ' 亿 ($' + (qv / 1e6) + 'M)</button>';
+          }).join("")
+          + (+r.v > 0 && +r.v < 20000000 ? '<span class="hint warn">提示：Bitview 为全网 LTH 合计，日常约数千万美元，建议 ≥ 1 亿</span>' : '')
+          + '</div>' : '';
+        return '<div class="frow" data-rid="' + r.id + '"><span class="flab">' + m.l + '</span>'
+          + '<select class="inp rop"><option value="gt"' + (r.op === "gt" ? " selected" : "") + '>大于</option><option value="lt"' + (r.op === "lt" ? " selected" : "") + '>小于</option></select>'
+          + '<span class="inp-wrap"><input type="number" step="any" value="' + r.v + '" class="inp num rval" /><span class="inp-unit">' + m.u + '</span></span>'
+          + '<button type="button" class="chip rdel" style="height:36px;color:var(--red);">✕</button>' + q + '</div>';
+      }).join("");
+      var minYr = AGE_MIN[S.ageKey] || 3, act = COHORTS.filter(function (c) { return c.m >= minYr; });
+      $("ageHint").textContent = "聚合 Bitview 公开序列：" + act[0].l + " 至 " + act[act.length - 1].l + "（共 " + act.length + " 档日度移动量合计；利润口径：" + (profitMode === "24h" ? "lth_realized_profit_sum_24h" : "lth_realized_profit_sum_1w ÷ 7") + "）";
+    }
+
+    function compute() {
+      if (!ROWS.length) return;
+      SCOPED = [];
+      for (var i = 0; i < ROWS.length; i++) {
+        var r = ROWS[i];
+        if (r.d >= S.start && r.d <= S.end) {
+          var f7 = i + 7 < ROWS.length ? (ROWS[i + 7].p / r.p - 1) * 100 : null;
+          var f30 = i + 30 < ROWS.length ? (ROWS[i + 30].p / r.p - 1) * 100 : null;
+          SCOPED.push({ d: r.d, p: r.p, pc: r.pc, c: r.c, w: r.w, pr: r.pr, ov: oldVol(r), hit: match(r), f7: f7, f30: f30 });
+        }
+      }
+      HITS = SCOPED.filter(function (x) { return x.hit; });
+
+      // 连续平静天数（基于全历史最新日往回找）
+      var calm = 0, lastHit = null;
+      for (var j = ROWS.length - 1; j >= 0; j--) {
+        if (match(ROWS[j])) { lastHit = ROWS[j].d; break; }
+        calm++;
+      }
+      var kc = $("kCalm");
+      if (calm === 0) { kc.textContent = "最新交易日触发！"; kc.style.color = "var(--red)"; }
+      else { kc.textContent = "连续 " + calm + " 天无异动"; kc.style.color = calm >= 7 ? "var(--green)" : "var(--amber)"; }
+      $("kCalmSub").textContent = lastHit ? ("最近一次触发：" + lastHit) : "全历史均未触发此条件";
+
+      var hitVol = HITS.reduce(function (a, x) { return a + x.ov; }, 0);
+      var allVol = SCOPED.reduce(function (a, x) { return a + x.ov; }, 0);
+      var wSum = HITS.reduce(function (a, x) { return a + x.w; }, 0);
+      var pSum = HITS.reduce(function (a, x) { return a + x.pr; }, 0);
+      $("kVol").textContent = (hitVol > 0 ? "−" : "") + fmtBtc(hitVol) + " BTC";
+      $("kVolSub").textContent = "占同期老币总移动量的 " + (allVol > 0 ? (hitVol / allVol * 100).toFixed(1) : "0.0") + "%";
+      $("kDays").textContent = HITS.length + " 天";
+      $("kDaysSub").textContent = "区间共 " + SCOPED.length + " 天（占比 " + (SCOPED.length ? (HITS.length / SCOPED.length * 100).toFixed(1) : "0.0") + "%）";
+
+      var f30s = HITS.map(function (x) { return x.f30; }).filter(function (v) { return v != null; }).sort(function (a, b) { return a - b; });
+      var f7s = HITS.map(function (x) { return x.f7; }).filter(function (v) { return v != null; }).sort(function (a, b) { return a - b; });
+      var med = function (a) { return a.length ? a[Math.floor(a.length / 2)] : null; };
+      var m30 = med(f30s), m7 = med(f7s), kf = $("kFwd");
+      if (m30 == null) { kf.textContent = "—"; kf.style.color = "var(--ink3)"; $("kFwdSub").textContent = "样本不足（需触发满 30 天）"; }
+      else {
+        kf.textContent = (m30 >= 0 ? "+" : "−") + Math.abs(m30).toFixed(1) + "%";
+        kf.style.color = m30 < 0 ? "var(--red)" : "var(--green)";
+        var dn = Math.round(f30s.filter(function (v) { return v < 0; }).length / f30s.length * 100);
+        $("kFwdSub").textContent = "7 日中位 " + (m7 == null ? "—" : (m7 >= 0 ? "+" : "−") + Math.abs(m7).toFixed(1) + "%") + " · 30 日下跌概率 " + dn + "%";
+      }
+
+      $("resSpan").textContent = S.start + " ~ " + S.end;
+      $("sumBig").textContent = (hitVol > 0 ? "−" : "") + fmtBtc(hitVol) + " BTC";
+      $("sumSub").textContent = "触发日巨鲸净变化合计 " + (wSum >= 0 ? "+" : "−") + fmtBtc(Math.abs(wSum)) + " BTC · LTH 已实现利润合计 " + fmtUsd(pSum);
+
+      var minYr = AGE_MIN[S.ageKey] || 3, cTotals = [];
+      COHORTS.forEach(function (c, idx) {
+        if (c.m < minYr) return;
+        cTotals.push({ l: c.l, s: HITS.reduce(function (a, x) { return a + x.c[idx]; }, 0) });
+      });
+      var mx = Math.max.apply(null, [1].concat(cTotals.map(function (x) { return x.s; })));
+      $("sumBars").innerHTML = cTotals.map(function (x) {
+        return '<div class="cbar num"><span>' + x.l + '</span><div class="ctrack"><div class="cfill" style="width:' + (x.s / mx * 100).toFixed(1) + '%"></div></div><b style="text-align:right;">' + fmtBtc(x.s) + '</b></div>';
+      }).join("");
+
+      drawChart();
+      renderTable();
+    }
+
+    function drawChart() {
+      var cv = $("cv"), box = $("cvWrap"), W = box.clientWidth, H = box.clientHeight;
+      if (!W || !H || !SCOPED.length) return;
+      var dpr = Math.min(3, window.devicePixelRatio || 1);
+      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+      var g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+      var n = SCOPED.length, padL = 46, padR = 50, padT = 10, padB = 22, pw = W - padL - padR, ph = H - padT - padB;
+      var vmax = 1, pmin = Infinity, pmax = 0;
+      for (var i = 0; i < n; i++) {
+        if (SCOPED[i].ov > vmax) vmax = SCOPED[i].ov;
+        if (SCOPED[i].p > 0) { if (SCOPED[i].p < pmin) pmin = SCOPED[i].p; if (SCOPED[i].p > pmax) pmax = SCOPED[i].p; }
+      }
+      vmax *= 1.08;
+      var lmin = Math.log(pmin * 0.92), lmax = Math.log(pmax * 1.08), spanL = (lmax - lmin) || 1;
+      var bw = pw / n, X = function (k) { return padL + k * bw; }, YV = function (v) { return padT + ph - (v / vmax) * ph; }, YP = function (p) { return padT + ph - (Math.log(p) - lmin) / spanL * ph; };
+      var ink = cssv("--ink"), ink3 = cssv("--ink3"), hair = cssv("--hair"), red = cssv("--red");
+
+      g.font = "10px -apple-system,system-ui,sans-serif"; g.textBaseline = "middle";
+      for (var t = 0; t <= 3; t++) {
+        var val = vmax * t / 3, y = Math.round(YV(val)) + 0.5;
+        g.strokeStyle = hair; g.lineWidth = 1; g.beginPath(); g.moveTo(padL, y); g.lineTo(padL + pw, y); g.stroke();
+        g.fillStyle = ink3; g.textAlign = "right"; g.fillText(val >= 1000 ? (val / 1000).toFixed(0) + "K" : Math.round(val), padL - 5, y);
+      }
+      g.textAlign = "left";
+      [pmin, Math.sqrt(pmin * pmax), pmax].forEach(function (px) {
+        g.fillText(px >= 1000 ? "$" + Math.round(px / 1000) + "K" : "$" + Math.round(px), padL + pw + 6, YP(px));
+      });
+
+      // Bars
+      for (i = 0; i < n; i++) {
+        var row = SCOPED[i], y1 = YV(row.ov), h = Math.max(1, padT + ph - y1);
+        g.fillStyle = row.hit ? red : "rgba(148,163,184,0.42)";
+        g.globalAlpha = hover === i ? 1 : (row.hit ? 0.9 : 0.7);
+        g.fillRect(X(i), y1, Math.max(1, bw - (bw > 3 ? 0.8 : 0)), h);
+      }
+      g.globalAlpha = 1;
+
+      // BTC log price line
+      g.strokeStyle = ink; g.lineWidth = 1.6; g.lineJoin = "round"; g.beginPath();
+      for (i = 0; i < n; i++) { var cx = X(i) + bw / 2, cy = YP(SCOPED[i].p); if (i) g.lineTo(cx, cy); else g.moveTo(cx, cy); }
+      g.stroke();
+
+      // X axis
+      g.fillStyle = ink3; g.textBaseline = "alphabetic";
+      g.textAlign = "left"; g.fillText(SCOPED[0].d.slice(0, 7), padL, H - 5);
+      g.textAlign = "center"; g.fillText(SCOPED[n >> 1].d.slice(0, 7), padL + pw / 2, H - 5);
+      g.textAlign = "right"; g.fillText(SCOPED[n - 1].d.slice(0, 7), padL + pw, H - 5);
+
+      var ix = hover >= 0 && hover < n ? hover : n - 1, cur = SCOPED[ix];
+      if (hover >= 0 && hover < n) {
+        var hx = Math.round(X(hover) + bw / 2) + 0.5;
+        g.strokeStyle = ink3; g.lineWidth = 1; g.beginPath(); g.moveTo(hx, padT); g.lineTo(hx, padT + ph); g.stroke();
+      }
+      $("cvTip").textContent = cur.d + " · 老币 " + fmtBtc(cur.ov) + " BTC · 巨鲸 " + (cur.w >= 0 ? "+" : "−") + fmtBtc(Math.abs(cur.w)) + " · 利润 " + fmtUsd(cur.pr) + " · BTC $" + fmtBtc(cur.p) + (cur.hit ? " [触发]" : "");
+      cvMap = { padL: padL, bw: bw, n: n };
+    }
+
+    function renderTable() {
+      var list = HITS.slice();
+      if (S.sort === "date_desc") list.sort(function (a, b) { return b.d.localeCompare(a.d); });
+      else if (S.sort === "vol_desc") list.sort(function (a, b) { return b.ov - a.ov; });
+      else list.sort(function (a, b) { return (a.f30 == null ? 999 : a.f30) - (b.f30 == null ? 999 : b.f30); });
+      var fp = function (v) { return v == null ? '<span style="color:var(--ink3);">—</span>' : '<span class="' + (v < 0 ? "dn" : "up") + '">' + (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(1) + '%</span>'; };
+      $("tBody").innerHTML = list.length ? list.map(function (r) {
+        return '<tr data-dd="' + r.d + '"><td><b>' + r.d + '</b></td><td class="r dn">' + fmtBtc(r.ov) + ' BTC</td><td class="r ' + (r.w < 0 ? "dn" : "up") + '">' + (r.w >= 0 ? "+" : "−") + fmtBtc(Math.abs(r.w)) + '</td><td class="r">' + fmtUsd(r.pr) + '</td><td class="r">$' + fmtBtc(r.p) + '</td><td class="r">' + fp(r.f7) + '</td><td class="r">' + fp(r.f30) + '</td></tr>';
+      }).join("") : '<tr><td colspan="7" class="empty">当前筛选条件下没有符合的异动日</td></tr>';
+    }
+
+    function setMode(m) {
+      S.mode = m;
+      document.querySelectorAll("#modes [data-m]").forEach(function (b) { b.classList.toggle("on", b.dataset.m === m); });
+      $("pSum").hidden = m !== "sum"; $("pChart").hidden = m !== "chart"; $("pTable").hidden = m !== "table";
+      $("resTitle").textContent = { sum: "变化量汇总统计 (Σ)", chart: "异动监测走势与触发点", table: "符合条件的异动日明细" }[m];
+      if (m === "chart") drawChart();
+    }
+
+    function applyPreset(k) {
+      document.querySelectorAll("#hotPresets [data-preset]").forEach(function (b) { b.classList.toggle("on", b.dataset.preset === k); });
+      if (k === "gt10k") { S.ageKey = "3y"; S.rules = [{ id: "r1", f: "oldVol", op: "gt", v: 10000 }, { id: "r2", f: "whaleDelta", op: "lt", v: -3000 }, { id: "r3", f: "lthProfit", op: "gt", v: 100000000 }]; }
+      else if (k === "pure10k") { S.ageKey = "3y"; S.rules = [{ id: "r1", f: "oldVol", op: "gt", v: 10000 }]; }
+      else if (k === "ancient") { S.ageKey = "7y"; S.rules = [{ id: "r1", f: "oldVol", op: "gt", v: 1500 }]; }
+      else if (k === "profitDump") { S.ageKey = "3y"; S.rules = [{ id: "r1", f: "oldVol", op: "gt", v: 5000 }, { id: "r2", f: "whaleDelta", op: "lt", v: -5000 }, { id: "r3", f: "lthProfit", op: "gt", v: 300000000 }]; }
+      document.querySelectorAll("#ageBar [data-age]").forEach(function (b) { b.classList.toggle("on", b.dataset.age === S.ageKey); });
+      renderRules(); compute();
+    }
+
+    function loadPresets() { try { return JSON.parse(localStorage.getItem(SAVE_KEY)) || []; } catch (e) { return []; } }
+    function paintSaved() {
+      var L = loadPresets();
+      $("savedSel").innerHTML = '<option value="">已保存条件（' + L.length + '）</option>' + L.map(function (p, i) { return '<option value="' + i + '">' + p.name + '</option>'; }).join("");
+    }
+
+    // Events
+    $("quickRanges").addEventListener("click", function (e) {
+      var b = e.target.closest("[data-r]"); if (!b || !ROWS.length) return;
+      document.querySelectorAll("#quickRanges [data-r]").forEach(function (x) { x.classList.toggle("on", x === b); });
+      var r = b.dataset.r, last = ROWS[ROWS.length - 1].d, first = ROWS[0].d;
+      if (r === "all") { S.start = first; S.end = last; }
+      else if (r === "2024") { S.start = "2024-01-01"; S.end = "2024-12-31"; }
+      else if (r === "2021") { S.start = "2021-01-01"; S.end = "2021-12-31"; }
+      else { S.end = last; S.start = ROWS[Math.max(0, ROWS.length - (+r))].d; }
+      $("dateStart").value = S.start; $("dateEnd").value = S.end; compute();
+    });
+    $("ageBar").addEventListener("click", function (e) {
+      var b = e.target.closest("[data-age]"); if (!b) return;
+      S.ageKey = b.dataset.age;
+      document.querySelectorAll("#ageBar [data-age]").forEach(function (x) { x.classList.toggle("on", x === b); });
+      renderRules(); compute();
+    });
+    $("rulesBox").addEventListener("change", function (e) {
+      var row = e.target.closest("[data-rid]"); if (!row) return;
+      var r = S.rules.filter(function (x) { return x.id === row.dataset.rid; })[0]; if (!r) return;
+      if (e.target.classList.contains("rop")) r.op = e.target.value;
+      if (e.target.classList.contains("rval")) r.v = +e.target.value;
+    });
+    $("rulesBox").addEventListener("click", function (e) {
+      var pq = e.target.closest(".pq");
+      if (pq) {
+        var row = pq.closest("[data-rid]"), r = S.rules.filter(function (x) { return x.id === row.dataset.rid; })[0];
+        if (r) { r.v = +pq.dataset.qv; renderRules(); compute(); }
+        return;
+      }
+      if (!e.target.classList.contains("rdel")) return;
+      var row2 = e.target.closest("[data-rid]");
+      S.rules = S.rules.filter(function (x) { return x.id !== row2.dataset.rid; });
+      renderRules(); compute();
+    });
+    $("addRuleBtn").addEventListener("click", function () {
+      var f = $("addField").value, def = { oldVol: ["gt", 10000], whaleDelta: ["lt", -5000], lthProfit: ["gt", 100000000], priceChg: ["lt", -2] }[f];
+      S.rules.push({ id: "r" + Date.now(), f: f, op: def[0], v: def[1] });
+      renderRules(); compute();
+    });
+    $("searchBtn").addEventListener("click", function () {
+      S.start = $("dateStart").value || S.start; S.end = $("dateEnd").value || S.end;
+      document.querySelectorAll("#rulesBox [data-rid]").forEach(function (el) {
+        var r = S.rules.filter(function (x) { return x.id === el.dataset.rid; })[0];
+        if (r) { r.op = el.querySelector(".rop").value; r.v = +el.querySelector(".rval").value; }
+      });
+      renderRules(); compute(); toast("筛选完成：命中 " + HITS.length + " 天");
+    });
+    $("resetBtn").addEventListener("click", function () {
+      if (ROWS.length) { S.end = ROWS[ROWS.length - 1].d; S.start = ROWS[Math.max(0, ROWS.length - 365)].d; $("dateStart").value = S.start; $("dateEnd").value = S.end; }
+      applyPreset("gt10k"); toast("已重置");
+    });
+    $("hotPresets").addEventListener("click", function (e) { var b = e.target.closest("[data-preset]"); if (b) applyPreset(b.dataset.preset); });
+    $("modes").addEventListener("click", function (e) { var b = e.target.closest("[data-m]"); if (b) setMode(b.dataset.m); });
+    $("sortSel").addEventListener("change", function (e) { S.sort = e.target.value; renderTable(); });
+    $("tBody").addEventListener("click", function (e) {
+      var tr = e.target.closest("[data-dd]"); if (!tr) return;
+      var row = ROWS.filter(function (x) { return x.d === tr.dataset.dd; })[0]; if (!row) return;
+      $("detailTitle").textContent = row.d + " 各币龄老币移动拆解（BTC $" + fmtBtc(row.p) + "）";
+      $("detailGrid").innerHTML = COHORTS.map(function (c, i) { return '<div class="dcell"><small>' + c.l + '</small><b>' + fmtBtc(row.c[i]) + ' BTC</b></div>'; }).join("");
+      $("detailCard").hidden = false;
+    });
+    $("closeDetail").addEventListener("click", function () { $("detailCard").hidden = true; });
+    $("saveBtn").addEventListener("click", function () { $("presetName").value = ""; $("saveModal").hidden = false; });
+    $("cancelSave").addEventListener("click", function () { $("saveModal").hidden = true; });
+    $("confirmSave").addEventListener("click", function () {
+      var name = $("presetName").value.trim(); if (!name) { toast("请输入名称"); return; }
+      var L = loadPresets(); L.push({ name: name, ageKey: S.ageKey, rules: JSON.parse(JSON.stringify(S.rules)) });
+      try { localStorage.setItem(SAVE_KEY, JSON.stringify(L)); } catch (e) {}
+      paintSaved(); $("saveModal").hidden = true; toast("已保存");
+    });
+    $("savedSel").addEventListener("change", function (e) {
+      if (e.target.value === "") return;
+      var p = loadPresets()[+e.target.value]; if (!p) return;
+      S.ageKey = p.ageKey; S.rules = JSON.parse(JSON.stringify(p.rules));
+      document.querySelectorAll("#ageBar [data-age]").forEach(function (b) { b.classList.toggle("on", b.dataset.age === S.ageKey); });
+      renderRules(); compute(); toast("已载入：" + p.name);
+    });
+    $("delSavedBtn").addEventListener("click", function () {
+      var sel = $("savedSel"); if (sel.value === "") return;
+      var L = loadPresets(); L.splice(+sel.value, 1);
+      try { localStorage.setItem(SAVE_KEY, JSON.stringify(L)); } catch (e) {}
+      paintSaved(); toast("已删除");
+    });
+    $("csvBtn").addEventListener("click", function () {
+      var hd = "日期,老币移动量(BTC),巨鲸净变化(BTC),LTH已实现利润(USD),BTC价格($),后7日涨跌(%),后30日涨跌(%)";
+      var lines = HITS.map(function (r) { return [r.d, r.ov, r.w, r.pr, r.p, r.f7 == null ? "" : r.f7.toFixed(2), r.f30 == null ? "" : r.f30.toFixed(2)].join(","); });
+      var blob = new Blob(["\uFEFF" + [hd].concat(lines).join("\n")], { type: "text/csv;charset=utf-8;" });
+      var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "old-btc-alerts-" + S.start + "-" + S.end + ".csv"; a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    });
+    $("refreshBtn").addEventListener("click", function () { loadData(true); });
+    $("themeBtn").addEventListener("click", function () {
+      var cur = document.documentElement.dataset.theme || (matchMedia("(prefers-color-scheme:dark)").matches ? "dark" : "light");
+      var nx = cur === "dark" ? "light" : "dark"; document.documentElement.dataset.theme = nx;
+      $("themeBtn").textContent = nx === "dark" ? "☀" : "☾"; drawChart();
+    });
+    var cv = $("cv");
+    function pick(ev) {
+      if (!cvMap) return;
+      var rc = cv.getBoundingClientRect(), x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - rc.left;
+      hover = Math.max(0, Math.min(cvMap.n - 1, Math.floor((x - cvMap.padL) / cvMap.bw)));
+      drawChart();
+    }
+    cv.addEventListener("pointermove", pick); cv.addEventListener("pointerdown", pick);
+    cv.addEventListener("pointerleave", function () { hover = -1; drawChart(); });
+    if ("ResizeObserver" in window) new ResizeObserver(drawChart).observe($("cvWrap"));
+
+    paintSaved(); renderRules(); loadData(false);
+  })();
+  </script>
+</body>
+</html>
