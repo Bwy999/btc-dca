@@ -1,6 +1,6 @@
 "use strict";
 
-const SW_BUILD = "27.1.3-20261121";
+const SW_BUILD = "27.1.4-20261121";
 const CACHE_NAME = "btc-intelligence-v" + SW_BUILD.replace(/\./g, "-");
 const CACHE_PREFIX = "btc-site:" + self.registration.scope + ":";
 const SCOPED_CACHE = CACHE_PREFIX + CACHE_NAME;
