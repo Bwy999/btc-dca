@@ -6,7 +6,7 @@
   <meta name="color-scheme" content="light dark" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="old-coins-build" content="27.1.4-20261121" />
+  <meta name="old-coins-build" content="27.1.6-20261121" />
   <title>老比特币异动筛选器 · Sats Garden</title>
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
@@ -178,7 +178,7 @@
             <span class="flab"></span>
             <select id="addField" class="inp">
               <option value="oldVol">老币单日移动量 (BTC)</option>
-              <option value="whaleDelta">巨鲸持仓净变化 (≥1K BTC)</option>
+              <option value="whaleDelta">LTH 当日持仓净变化 (BTC)</option>
               <option value="lthProfit">LTH 当日已实现利润 (USD)</option>
               <option value="priceChg">当日 BTC 涨跌幅 (%)</option>
             </select>
@@ -269,7 +269,7 @@
           <table>
             <thead>
               <tr>
-                <th>日期</th><th class="r">老币移动量</th><th class="r">巨鲸净变化</th><th class="r">LTH 已实现利润</th>
+                <th>日期</th><th class="r">老币移动量</th><th class="r">LTH 净变化</th><th class="r">LTH 已实现利润</th>
                 <th class="r">当日 BTC 价格</th><th class="r">后 7 日</th><th class="r">后 30 日</th>
               </tr>
             </thead>
@@ -325,7 +325,7 @@
     var AGE_MIN = { "1y": 1, "2y": 2, "3y": 3, "5y": 5, "7y": 7, "10y": 10 };
     var FMETA = {
       oldVol: { l: "老币移动量", u: "BTC" },
-      whaleDelta: { l: "巨鲸净变化", u: "BTC" },
+      whaleDelta: { l: "LTH 净变化", u: "BTC" },
       lthProfit: { l: "LTH 已实现利润", u: "USD" },
       priceChg: { l: "BTC 当日涨跌", u: "%" }
     };
@@ -446,7 +446,7 @@
         var p = alignCol(pos0, coreMap.price, i);
         if (!(p > 0)) continue;
         var prevP = out.length ? out[out.length - 1].p : p;
-        var wd = Math.round(alignCol(pos0, coreMap.balance_1k_to_10k_btc_supply_delta_24h, i) + alignCol(pos0, coreMap.balance_10k_to_100k_btc_supply_delta_24h, i) + alignCol(pos0, coreMap.balance_over_100k_btc_supply_delta_24h, i));
+        var lthNow = alignCol(pos0, coreMap.lth_supply, i), lthPrev = i > 0 ? alignCol(pos0, coreMap.lth_supply, i - 1) : 0, wd = (lthNow > 0 && lthPrev > 0) ? Math.round(lthNow - lthPrev) : 0;
         var pr = Math.round(alignCol(pos0, coreMap[pKey], i) / pDiv);
         var c = [], aPos = ageIdx[d];
         for (var j = 0; j < COHORTS.length; j++) c.push(aPos != null ? Math.round(alignCol(agePos0, ageMap[COHORTS[j].s], aPos)) : 0);
@@ -461,7 +461,7 @@
     }
 
     async function fetchDirect(startVal) {
-      var coreNames = ["price", "balance_1k_to_10k_btc_supply_delta_24h", "balance_10k_to_100k_btc_supply_delta_24h", "balance_over_100k_btc_supply_delta_24h", "lth_realized_profit_sum_24h", "lth_realized_profit_sum_1w", "realized_profit_sum_24h", "realized_profit_sum_1w"];
+      var coreNames = ["price", "lth_supply", "lth_realized_profit_sum_24h", "lth_realized_profit_sum_1w", "realized_profit_sum_24h", "realized_profit_sum_1w"];
       var ageNames = COHORTS.map(function (x) { return x.s; });
       var pair = await Promise.all([fetchBulk(coreNames, startVal), fetchBulk(ageNames, startVal)]);
       return buildRowsFromTwo(pair[0], pair[1]);
@@ -623,7 +623,7 @@
 
       $("resSpan").textContent = S.start + " ~ " + S.end;
       $("sumBig").textContent = (hitVol > 0 ? "−" : "") + fmtBtc(hitVol) + " BTC";
-      $("sumSub").textContent = "触发日巨鲸净变化合计 " + (wSum >= 0 ? "+" : "−") + fmtBtc(Math.abs(wSum)) + " BTC · LTH 已实现利润合计 " + fmtUsd(pSum);
+      $("sumSub").textContent = "触发日 LTH 持仓净变化合计 " + (wSum >= 0 ? "+" : "−") + fmtBtc(Math.abs(wSum)) + " BTC · LTH 已实现利润合计 " + fmtUsd(pSum);
 
       var minYr = AGE_MIN[S.ageKey] || 3, cTotals = [];
       COHORTS.forEach(function (c, idx) {
@@ -692,7 +692,7 @@
         var hx = Math.round(X(hover) + bw / 2) + 0.5;
         g.strokeStyle = ink3; g.lineWidth = 1; g.beginPath(); g.moveTo(hx, padT); g.lineTo(hx, padT + ph); g.stroke();
       }
-      $("cvTip").textContent = cur.d + " · 老币 " + fmtBtc(cur.ov) + " BTC · 巨鲸 " + (cur.w >= 0 ? "+" : "−") + fmtBtc(Math.abs(cur.w)) + " · 利润 " + fmtUsd(cur.pr) + " · BTC $" + fmtBtc(cur.p) + (cur.hit ? " [触发]" : "");
+      $("cvTip").textContent = cur.d + " · 老币 " + fmtBtc(cur.ov) + " BTC · LTH 净变化 " + (cur.w >= 0 ? "+" : "−") + fmtBtc(Math.abs(cur.w)) + " · 利润 " + fmtUsd(cur.pr) + " · BTC $" + fmtBtc(cur.p) + (cur.hit ? " [触发]" : "");
       cvMap = { padL: padL, bw: bw, n: n };
     }
 
@@ -817,7 +817,7 @@
       paintSaved(); toast("已删除");
     });
     $("csvBtn").addEventListener("click", function () {
-      var hd = "日期,老币移动量(BTC),巨鲸净变化(BTC),LTH已实现利润(USD),BTC价格($),后7日涨跌(%),后30日涨跌(%)";
+      var hd = "日期,老币移动量(BTC),LTH当日净变化(BTC),LTH已实现利润(USD),BTC价格($),后7日涨跌(%),后30日涨跌(%)";
       var lines = HITS.map(function (r) { return [r.d, r.ov, r.w, r.pr, r.p, r.f7 == null ? "" : r.f7.toFixed(2), r.f30 == null ? "" : r.f30.toFixed(2)].join(","); });
       var blob = new Blob(["\uFEFF" + [hd].concat(lines).join("\n")], { type: "text/csv;charset=utf-8;" });
       var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "old-btc-alerts-" + S.start + "-" + S.end + ".csv"; a.click();

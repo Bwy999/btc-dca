@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""预计算老比特币异动筛选器全历史数据（2011 至今，V27.12.10）
+"""预计算老比特币异动筛选器全历史数据（2011 至今，V27.1.6）
 
 从 Bitview 公开 API 拉取 2011-01-01 至今的日度数据：
   - BTC 价格（price）
-  - 巨鲸 24h 持仓净变化（1k–10k、10k–100k、>100k BTC）
+  - 长期持有者当日持仓净变化（由 lth_supply 逐日差分计算，剔除交易所归集干扰）
   - 长期持有者已实现利润（依次尝试 24h / 1w / 全网 24h / 1w，按周序列自动 ÷7 折算日均 USD）
   - 12 档老币每日移动量（age_1y_to_18m … age_over_15y）
 
@@ -42,11 +42,7 @@ COHORTS = [
     "age_over_15y_transfer_volume_sum_24h",
 ]
 
-WHALE_SERIES = [
-    "balance_1k_to_10k_btc_supply_delta_24h",
-    "balance_10k_to_100k_btc_supply_delta_24h",
-    "balance_over_100k_btc_supply_delta_24h",
-]
+LTH_SERIES = ["lth_supply"]
 
 PROFIT_CANDIDATES = [
     ("lth_realized_profit_sum_24h", 1.0, "24h"),
@@ -142,7 +138,7 @@ def bulk_safe(names, start="2011-01-01", chunk_size=2):
 
 def main():
     out_path = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_OUT
-    all_names = ["price"] + WHALE_SERIES + [c[0] for c in PROFIT_CANDIDATES] + COHORTS
+    all_names = ["price"] + LTH_SERIES + [c[0] for c in PROFIT_CANDIDATES] + COHORTS
     dates, cols = bulk_safe(all_names, start="2011-01-01", chunk_size=2)
 
     if not dates or "price" not in cols:
@@ -158,7 +154,9 @@ def main():
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     rows = []
     prev_p = None
+    prev_lth = None
     price_map = cols["price"]
+    lth_map = cols.get("lth_supply", {})
 
     for d in dates:
         if not d or d >= today:
@@ -170,7 +168,11 @@ def main():
         pc = round(((p / prev_p) - 1) * 100, 2) if prev_p else 0.0
         prev_p = p
 
-        w = round(sum(float(cols[wk].get(d) or 0) for wk in WHALE_SERIES if wk in cols))
+        lth_raw = lth_map.get(d)
+        lth_val = float(lth_raw) if lth_raw is not None else None
+        w = round(lth_val - prev_lth) if (lth_val is not None and prev_lth is not None) else 0
+        if lth_val is not None:
+            prev_lth = lth_val
         pr = round(float(cols[profit_key].get(d) or 0) / profit_div) if profit_key else 0
         cvals = [round(float(cols[s].get(d) or 0)) if s in cols else 0 for s in COHORTS]
 
