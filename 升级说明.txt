@@ -1,3 +1,6 @@
+V27.12.10（27.12.10-20261121）
+修复 precompute_old_coins.py 与 old-coins.html 触发 Bitview 单次请求权重上限（weight_exceeded: maximum 320000）的问题：改为每批 2 个序列分批拉取，并在遇到 weight_exceeded 时自动拆半重试。
+
 V27.12.9（27.12.9-20261121）
 修复 precompute_old_coins.py 与 old-coins.html 请求 Bitview 时因单个序列名不存在导致整批 HTTP 400 失败的问题：遇到 400/404 自动解析并跳过缺失序列后重试，并内置多组利润序列候选自动回退。
 

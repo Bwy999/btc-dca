@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="color-scheme" content="light dark" />
-  <meta name="old-coins-build" content="27.12.9-20261121" />
+  <meta name="old-coins-build" content="27.12.10-20261121" />
   <title>老比特币异动筛选器 · Sats Garden</title>
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
@@ -407,6 +407,12 @@
           var j = JSON.parse(txt), map = { _ref: j[0] };
           active.forEach(function (nm, idx) { map[nm] = j[1 + idx]; });
           return map;
+        }
+        if (r.status === 400 && /weight_exceeded/i.test(txt) && active.length > 1) {
+          var mid = Math.ceil(active.length / 2);
+          var p1 = await fetchBulk(active.slice(0, mid), startVal);
+          var p2 = await fetchBulk(active.slice(mid), startVal);
+          return Object.assign({}, p1, p2, { _ref: (p1._ref && p1._ref.data && p1._ref.data.length) ? p1._ref : p2._ref });
         }
         var m = /'([a-z0-9_]+)'\s+not\s+found/i.exec(txt);
         if ((r.status === 400 || r.status === 404) && m && active.indexOf(m[1]) >= 0) {

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""预计算老比特币异动筛选器全历史数据（2011 至今，V27.12.9）
+"""预计算老比特币异动筛选器全历史数据（2011 至今，V27.12.10）
 
 从 Bitview 公开 API 拉取 2011-01-01 至今的日度数据：
   - BTC 价格（price）
@@ -7,7 +7,10 @@
   - 长期持有者已实现利润（依次尝试 24h / 1w / 全网 24h / 1w，按周序列自动 ÷7 折算日均 USD）
   - 12 档老币每日移动量（age_1y_to_18m … age_over_15y）
 
-内置单序列 400/404 自动剔除容错：任意单个序列被 Bitview 改名或下线时，打印提示并跳过该序列，不中断整批任务。
+内置双重容错：
+  1. 按 Bitview 最大单次权重 320,000 限制，每次仅拉 2 个序列（加 date 共 3 列），遇 weight_exceeded 自动退化为单序列拉取；
+  2. 遇 400/404 单个序列不存在时自动剔除并继续，不中断整批任务。
+
 仅使用 Python 标准库；写入紧凑格式 data/old-coins.json（带 v=1 校验）。
 用法：python3 tools/precompute_old_coins.py [data/old-coins.json]
 """
@@ -21,7 +24,7 @@ import urllib.request
 from datetime import datetime, timezone
 
 BASE = "https://bitview.space/api/series/bulk"
-UA = {"User-Agent": "sats-garden-old-coins/1.1", "Accept": "application/json"}
+UA = {"User-Agent": "sats-garden-old-coins/1.2", "Accept": "application/json"}
 DEFAULT_OUT = "data/old-coins.json"
 
 COHORTS = [
@@ -75,8 +78,8 @@ def fetch_raw(url, tries=3):
     raise last
 
 
-def bulk_safe(names, start="2011-01-01"):
-    """安全批量拉取：遇到 400/404 提示某个序列不存在时自动剔除该序列并重试。"""
+def fetch_chunk(names, start="2011-01-01"):
+    """拉取一小批序列（<=2 个）；若仍触发 weight_exceeded 则拆成单个拉取；遇 not found 自动跳过。"""
     active = list(names)
     skipped = []
     for _ in range(len(names) + 2):
@@ -92,66 +95,84 @@ def bulk_safe(names, start="2011-01-01"):
             for name, col in zip(active, arr[1:]):
                 cstart = int(col.get("start") or 0)
                 cdata = col.get("data") or []
-                aligned = []
-                for i in range(len(dates)):
+                aligned = {}
+                for i, d in enumerate(dates):
                     idx = pos0 + i - cstart
-                    aligned.append(cdata[idx] if 0 <= idx < len(cdata) else None)
+                    if 0 <= idx < len(cdata) and cdata[idx] is not None:
+                        aligned[d] = cdata[idx]
                 cols[name] = aligned
-            if skipped:
-                print(f"WARN: skipped unavailable series: {', '.join(skipped)}", file=sys.stderr)
-            return dates, cols
+            return dates, cols, skipped
+        if code == 400 and "weight_exceeded" in body and len(active) > 1:
+            # 自动拆半重拉
+            mid = len(active) // 2
+            d1, c1, s1 = fetch_chunk(active[:mid], start)
+            time.sleep(0.25)
+            d2, c2, s2 = fetch_chunk(active[mid:], start)
+            c1.update(c2)
+            return (d1 or d2), c1, skipped + s1 + s2
         m = re.search(r"'([a-z0-9_]+)'\s+not\s+found", body, re.I)
         if m and m.group(1) in active:
             bad = m.group(1)
             skipped.append(bad)
             active.remove(bad)
             if not active:
-                return [], {}
+                return [], {}, skipped
             continue
         raise RuntimeError(f"HTTP {code} for {url[:140]}: {body[:300]}")
-    raise RuntimeError("too many retries in bulk_safe")
+    raise RuntimeError("too many retries in fetch_chunk")
+
+
+def bulk_safe(names, start="2011-01-01", chunk_size=2):
+    """按 2 个序列一组分批拉取（避免超过 Bitview 320,000 单次权重上限）。"""
+    all_dates = []
+    all_cols = {}
+    all_skipped = []
+    for i in range(0, len(names), chunk_size):
+        part = names[i:i + chunk_size]
+        dates, cols, skipped = fetch_chunk(part, start)
+        if len(dates) > len(all_dates):
+            all_dates = dates
+        all_cols.update(cols)
+        all_skipped.extend(skipped)
+        time.sleep(0.25)
+    if all_skipped:
+        print(f"WARN: skipped unavailable series: {', '.join(all_skipped)}", file=sys.stderr)
+    return all_dates, all_cols
 
 
 def main():
     out_path = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_OUT
-    core_names = ["price"] + WHALE_SERIES + [c[0] for c in PROFIT_CANDIDATES]
-    dates1, core = bulk_safe(core_names)
-    if not dates1 or "price" not in core:
+    all_names = ["price"] + WHALE_SERIES + [c[0] for c in PROFIT_CANDIDATES] + COHORTS
+    dates, cols = bulk_safe(all_names, start="2011-01-01", chunk_size=2)
+
+    if not dates or "price" not in cols:
         raise RuntimeError("failed to fetch price series from Bitview")
 
     profit_key, profit_div, profit_mode = None, 1.0, "none"
     for k, div, mode in PROFIT_CANDIDATES:
-        if k in core:
+        if k in cols and cols[k]:
             profit_key, profit_div, profit_mode = k, div, mode
             break
     print(f"INFO: profit series = {profit_key} ({profit_mode})")
 
-    time.sleep(0.4)
-    dates2, age = bulk_safe(COHORTS)
-    age_by_date = {d: i for i, d in enumerate(dates2)}
-
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     rows = []
     prev_p = None
+    price_map = cols["price"]
 
-    for i, d in enumerate(dates1):
+    for d in dates:
         if not d or d >= today:
             continue
-        p_raw = core["price"][i]
+        p_raw = price_map.get(d)
         if p_raw is None or float(p_raw) <= 0:
             continue
         p = round(float(p_raw))
         pc = round(((p / prev_p) - 1) * 100, 2) if prev_p else 0.0
         prev_p = p
 
-        w = round(sum(float(core[wk][i] or 0) for wk in WHALE_SERIES if wk in core))
-        pr = round(float(core[profit_key][i] or 0) / profit_div) if profit_key else 0
-
-        ai = age_by_date.get(d)
-        if ai is not None:
-            cvals = [round(float(age[s][ai] or 0)) if s in age else 0 for s in COHORTS]
-        else:
-            cvals = [0] * len(COHORTS)
+        w = round(sum(float(cols[wk].get(d) or 0) for wk in WHALE_SERIES if wk in cols))
+        pr = round(float(cols[profit_key].get(d) or 0) / profit_div) if profit_key else 0
+        cvals = [round(float(cols[s].get(d) or 0)) if s in cols else 0 for s in COHORTS]
 
         rows.append([d, p, pc, w, pr, cvals])
 
