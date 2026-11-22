@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="color-scheme" content="light dark" />
-  <meta name="old-coins-build" content="27.12.8-20261121" />
+  <meta name="old-coins-build" content="27.12.9-20261121" />
   <title>老比特币异动筛选器 · Sats Garden</title>
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
@@ -389,15 +389,34 @@
       });
     }
 
-    function fetchBulk(seriesList, startVal) {
-      var u = new URL(API);
-      u.searchParams.set("index", "day1");
-      u.searchParams.set("start", String(startVal));
-      u.searchParams.set("series", ["date"].concat(seriesList).join(","));
-      return fetchJsonTimeout(u.toString(), startVal === "2011-01-01" ? 45000 : 25000).then(function (j) {
-        if (!Array.isArray(j) || !j[0] || !Array.isArray(j[0].data)) throw new Error("返回格式异常");
-        return j;
-      });
+    async function fetchBulk(seriesList, startVal) {
+      var active = seriesList.slice();
+      for (var tries = 0; tries < seriesList.length + 2; tries++) {
+        var u = new URL(API);
+        u.searchParams.set("index", "day1");
+        u.searchParams.set("start", String(startVal));
+        u.searchParams.set("series", ["date"].concat(active).join(","));
+        var ctl = ("AbortController" in window) ? new AbortController() : null;
+        var tm = setTimeout(function () { if (ctl) ctl.abort(); }, startVal === "2011-01-01" ? 45000 : 25000);
+        var r;
+        try { r = await fetch(u.toString(), { mode: "cors", cache: "no-store", signal: ctl ? ctl.signal : undefined }); }
+        catch (err) { clearTimeout(tm); throw new Error(err && err.name === "AbortError" ? "请求超时" : "网络不可达"); }
+        clearTimeout(tm);
+        var txt = await r.text();
+        if (r.ok) {
+          var j = JSON.parse(txt), map = { _ref: j[0] };
+          active.forEach(function (nm, idx) { map[nm] = j[1 + idx]; });
+          return map;
+        }
+        var m = /'([a-z0-9_]+)'\s+not\s+found/i.exec(txt);
+        if ((r.status === 400 || r.status === 404) && m && active.indexOf(m[1]) >= 0) {
+          active = active.filter(function (x) { return x !== m[1]; });
+          if (!active.length) return { _ref: { data: [], start: 0 } };
+          continue;
+        }
+        throw new Error("HTTP " + r.status);
+      }
+      throw new Error("重试过多");
     }
 
     function alignCol(refStart, col, i) {
@@ -406,21 +425,24 @@
       return k >= 0 && k < col.data.length ? (+col.data[k] || 0) : 0;
     }
 
-    function buildRowsFromTwo(coreArr, ageArr) {
-      var ref = coreArr[0], dates = ref.data, pos0 = +ref.start || 0;
-      var ageRef = ageArr[0], agePos0 = +ageRef.start || 0, ageIdx = {};
+    function buildRowsFromTwo(coreMap, ageMap) {
+      var ref = coreMap._ref, dates = ref.data || [], pos0 = +ref.start || 0;
+      var ageRef = ageMap._ref || { data: [], start: 0 }, agePos0 = +ageRef.start || 0, ageIdx = {};
       for (var ai = 0; ai < ageRef.data.length; ai++) ageIdx[ageRef.data[ai]] = ai;
+      var pKey = coreMap.lth_realized_profit_sum_24h ? "lth_realized_profit_sum_24h" : coreMap.lth_realized_profit_sum_1w ? "lth_realized_profit_sum_1w" : coreMap.realized_profit_sum_24h ? "realized_profit_sum_24h" : "realized_profit_sum_1w";
+      var pDiv = /_1w$/.test(pKey) ? 7 : 1;
+      profitMode = pKey + (pDiv === 7 ? " ÷ 7" : "");
       var out = [], today = new Date().toISOString().slice(0, 10);
       for (var i = 0; i < dates.length; i++) {
         var d = dates[i];
         if (!d || d >= today) continue;
-        var p = alignCol(pos0, coreArr[1], i);
+        var p = alignCol(pos0, coreMap.price, i);
         if (!(p > 0)) continue;
         var prevP = out.length ? out[out.length - 1].p : p;
-        var wd = Math.round(alignCol(pos0, coreArr[2], i) + alignCol(pos0, coreArr[3], i) + alignCol(pos0, coreArr[4], i));
-        var pr = Math.round(alignCol(pos0, coreArr[5], i) / 7);
+        var wd = Math.round(alignCol(pos0, coreMap.balance_1k_to_10k_btc_supply_delta_24h, i) + alignCol(pos0, coreMap.balance_10k_to_100k_btc_supply_delta_24h, i) + alignCol(pos0, coreMap.balance_over_100k_btc_supply_delta_24h, i));
+        var pr = Math.round(alignCol(pos0, coreMap[pKey], i) / pDiv);
         var c = [], aPos = ageIdx[d];
-        for (var j = 0; j < COHORTS.length; j++) c.push(aPos != null ? Math.round(alignCol(agePos0, ageArr[1 + j], aPos)) : 0);
+        for (var j = 0; j < COHORTS.length; j++) c.push(aPos != null ? Math.round(alignCol(agePos0, ageMap[COHORTS[j].s], aPos)) : 0);
         out.push({ d: d, p: Math.round(p), pc: +((p / prevP - 1) * 100).toFixed(2), c: c, w: wd, pr: pr });
       }
       return out;
@@ -432,7 +454,7 @@
     }
 
     async function fetchDirect(startVal) {
-      var coreNames = ["price", "balance_1k_to_10k_btc_supply_delta_24h", "balance_10k_to_100k_btc_supply_delta_24h", "balance_over_100k_btc_supply_delta_24h", "lth_realized_profit_sum_1w"];
+      var coreNames = ["price", "balance_1k_to_10k_btc_supply_delta_24h", "balance_10k_to_100k_btc_supply_delta_24h", "balance_over_100k_btc_supply_delta_24h", "lth_realized_profit_sum_24h", "lth_realized_profit_sum_1w", "realized_profit_sum_24h", "realized_profit_sum_1w"];
       var ageNames = COHORTS.map(function (x) { return x.s; });
       var pair = await Promise.all([fetchBulk(coreNames, startVal), fetchBulk(ageNames, startVal)]);
       return buildRowsFromTwo(pair[0], pair[1]);

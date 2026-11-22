@@ -1,3 +1,6 @@
+V27.12.9（27.12.9-20261121）
+修复 precompute_old_coins.py 与 old-coins.html 请求 Bitview 时因单个序列名不存在导致整批 HTTP 400 失败的问题：遇到 400/404 自动解析并跳过缺失序列后重试，并内置多组利润序列候选自动回退。
+
 V27.12.8（27.12.8-20261121）
 修复 old-coins.html（老比特币异动筛选器）手机端连不上 Bitview 的问题：
 1. 去掉 Bitview 不存在的 lth_realized_profit_sum_24h，统一使用已验证的 lth_realized_profit_sum_1w（÷7 折算日均），并将 18 个序列拆成两组轻量并发请求、按 col.start 严格对齐。
