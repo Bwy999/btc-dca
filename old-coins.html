@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="color-scheme" content="light dark" />
-  <meta name="old-coins-build" content="27.12.6-20261121" />
+  <meta name="old-coins-build" content="27.12.8-20261121" />
   <title>老比特币异动筛选器 · Sats Garden</title>
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
@@ -302,8 +302,9 @@
   <script>
   (function () {
     "use strict";
-    var API = "https://bitview.space/api/series/bulk";
-    var DB_NAME = "sg-old-coins-v1", DB_STORE = "cache", DB_KEY = "full_2011", TTL = 6 * 3600 * 1000;
+    var API = "https://bitview.space/api/series/bulk", LOCAL_DATA = "./data/old-coins.json";
+    var DB_NAME = "sg-old-coins-v2", DB_STORE = "cache", DB_KEY = "rows_v2", TTL = 6 * 3600 * 1000;
+    var hasFullHistory = false, loadingFull = false;
     var SAVE_KEY = "sg_old_coins_presets_v1";
     var COHORTS = [
       { k: "1y", l: "1y–18m", s: "age_1y_to_18m_transfer_volume_sum_24h", m: 1 },
@@ -374,66 +375,129 @@
       var b = $("netBadge"); b.className = "badge " + cls; $("netText").textContent = txt;
     }
 
-    function fetchBulk(seriesList) {
-      var u = new URL(API);
-      u.searchParams.set("index", "day1");
-      u.searchParams.set("start", "2011-01-01");
-      u.searchParams.set("series", seriesList.join(","));
-      return fetch(u.toString(), { mode: "cors", cache: "no-store" }).then(function (r) {
+    function fetchJsonTimeout(url, ms) {
+      var ctl = ("AbortController" in window) ? new AbortController() : null;
+      var tm = setTimeout(function () { if (ctl) ctl.abort(); }, ms || 25000);
+      return fetch(url, { mode: "cors", cache: "no-store", signal: ctl ? ctl.signal : undefined }).then(function (r) {
+        clearTimeout(tm);
         if (!r.ok) throw new Error("HTTP " + r.status);
         return r.json();
-      }).then(function (j) {
-        if (!Array.isArray(j) || !j[0] || !Array.isArray(j[0].data)) throw new Error("bad shape");
+      }, function (err) {
+        clearTimeout(tm);
+        if (err && err.name === "AbortError") throw new Error("请求超时");
+        throw err;
+      });
+    }
+
+    function fetchBulk(seriesList, startVal) {
+      var u = new URL(API);
+      u.searchParams.set("index", "day1");
+      u.searchParams.set("start", String(startVal));
+      u.searchParams.set("series", ["date"].concat(seriesList).join(","));
+      return fetchJsonTimeout(u.toString(), startVal === "2011-01-01" ? 45000 : 25000).then(function (j) {
+        if (!Array.isArray(j) || !j[0] || !Array.isArray(j[0].data)) throw new Error("返回格式异常");
         return j;
       });
     }
 
-    function buildRows(arr, div) {
-      var dates = arr[0].data, prices = arr[1].data, w1 = arr[2].data, w2 = arr[3].data, w3 = arr[4].data;
-      var prof = arr[5 + COHORTS.length].data, out = [], today = new Date().toISOString().slice(0, 10);
+    function alignCol(refStart, col, i) {
+      if (!col || !Array.isArray(col.data)) return 0;
+      var k = refStart + i - (+col.start || 0);
+      return k >= 0 && k < col.data.length ? (+col.data[k] || 0) : 0;
+    }
+
+    function buildRowsFromTwo(coreArr, ageArr) {
+      var ref = coreArr[0], dates = ref.data, pos0 = +ref.start || 0;
+      var ageRef = ageArr[0], agePos0 = +ageRef.start || 0, ageIdx = {};
+      for (var ai = 0; ai < ageRef.data.length; ai++) ageIdx[ageRef.data[ai]] = ai;
+      var out = [], today = new Date().toISOString().slice(0, 10);
       for (var i = 0; i < dates.length; i++) {
         var d = dates[i];
         if (!d || d >= today) continue;
-        var p = +prices[i] || 0;
+        var p = alignCol(pos0, coreArr[1], i);
         if (!(p > 0)) continue;
         var prevP = out.length ? out[out.length - 1].p : p;
-        var c = [];
-        for (var j = 0; j < COHORTS.length; j++) c.push(Math.round(+arr[5 + j].data[i] || 0));
-        var wd = Math.round((+w1[i] || 0) + (+w2[i] || 0) + (+w3[i] || 0));
-        out.push({ d: d, p: Math.round(p), pc: +((p / prevP - 1) * 100).toFixed(2), c: c, w: wd, pr: Math.round((+prof[i] || 0) / div) });
+        var wd = Math.round(alignCol(pos0, coreArr[2], i) + alignCol(pos0, coreArr[3], i) + alignCol(pos0, coreArr[4], i));
+        var pr = Math.round(alignCol(pos0, coreArr[5], i) / 7);
+        var c = [], aPos = ageIdx[d];
+        for (var j = 0; j < COHORTS.length; j++) c.push(aPos != null ? Math.round(alignCol(agePos0, ageArr[1 + j], aPos)) : 0);
+        out.push({ d: d, p: Math.round(p), pc: +((p / prevP - 1) * 100).toFixed(2), c: c, w: wd, pr: pr });
       }
       return out;
     }
 
+    function unpackLocal(j) {
+      if (!j || j.v !== 1 || !Array.isArray(j.rows) || j.rows.length < 100) return null;
+      return j.rows.map(function (r) { return { d: r[0], p: r[1], pc: r[2], w: r[3], pr: r[4], c: r[5] }; });
+    }
+
+    async function fetchDirect(startVal) {
+      var coreNames = ["price", "balance_1k_to_10k_btc_supply_delta_24h", "balance_10k_to_100k_btc_supply_delta_24h", "balance_over_100k_btc_supply_delta_24h", "lth_realized_profit_sum_1w"];
+      var ageNames = COHORTS.map(function (x) { return x.s; });
+      var pair = await Promise.all([fetchBulk(coreNames, startVal), fetchBulk(ageNames, startVal)]);
+      return buildRowsFromTwo(pair[0], pair[1]);
+    }
+
+    async function loadFullHistory() {
+      if (hasFullHistory || loadingFull) return;
+      loadingFull = true;
+      setNet("warn", "正在按需补拉 2011–2023 全历史…");
+      try {
+        var rows = await fetchDirect("2011-01-01");
+        if (rows.length < 200) throw new Error("全历史数据不足");
+        ROWS = rows; hasFullHistory = true; profitMode = "1w/7";
+        await dbPut({ ts: Date.now(), full: true, pm: profitMode, rows: rows });
+        initDatesIfEmpty(); renderRules(); compute();
+        setNet("ok", "Bitview 全历史 · " + ROWS[0].d + " 至 " + ROWS[ROWS.length - 1].d + "（" + ROWS.length + " 天）");
+      } catch (e) {
+        setNet("warn", "全历史补拉失败（" + (e && e.message || "网络异常") + "），当前显示近 3 年");
+      } finally { loadingFull = false; }
+    }
+
     async function loadData(force) {
+      profitMode = "1w/7";
+      // 1. 优先读取同源预计算文件 data/old-coins.json（零跨域、手机 0.1 秒秒开）
+      try {
+        var lr = await fetch(LOCAL_DATA, { cache: force ? "reload" : "no-cache" });
+        if (lr.ok) {
+          var lj = await lr.json(), lrows = unpackLocal(lj);
+          if (lrows) {
+            ROWS = lrows; hasFullHistory = true; profitMode = lj.pm || "1w/7";
+            await dbPut({ ts: Date.now(), full: true, pm: profitMode, rows: lrows });
+            initDatesIfEmpty(); renderRules(); compute();
+            setNet("ok", "预计算全历史 · " + ROWS[0].d + " 至 " + ROWS[ROWS.length - 1].d + "（" + ROWS.length + " 天）");
+            return;
+          }
+        }
+      } catch (_) {}
+
+      // 2. 本机 IndexedDB 缓存
       var cached = await dbGet();
       if (cached && Array.isArray(cached.rows) && cached.rows.length > 100) {
-        ROWS = cached.rows; profitMode = cached.pm || "24h";
-        initDatesIfEmpty(); compute();
+        ROWS = cached.rows; hasFullHistory = !!cached.full; profitMode = cached.pm || "1w/7";
+        initDatesIfEmpty(); renderRules(); compute();
         if (!force && Date.now() - cached.ts < TTL) {
-          setNet("ok", "Bitview 数据 · " + ROWS[ROWS.length - 1].d + "（本机缓存）");
+          setNet("ok", "Bitview 缓存 · " + ROWS[0].d + " 至 " + ROWS[ROWS.length - 1].d);
           return;
         }
       }
-      setNet("warn", "正在拉取 Bitview 全历史（2011–今）…");
-      var base = ["date", "price", "balance_1k_to_10k_btc_supply_delta_24h", "balance_10k_to_100k_btc_supply_delta_24h", "balance_over_100k_btc_supply_delta_24h"]
-        .concat(COHORTS.map(function (x) { return x.s; }));
+
+      // 3. 直连 Bitview：先拉近 3 年日线（-1100，小包秒开）；选更早日期再按需补全历史
+      setNet("warn", "正在拉取 Bitview 近 3 年日线…");
       try {
-        var arr, div = 1;
-        try { arr = await fetchBulk(base.concat(["lth_realized_profit_sum_24h"])); profitMode = "24h"; }
-        catch (_) { arr = await fetchBulk(base.concat(["lth_realized_profit_sum_1w"])); div = 7; profitMode = "1w/7"; }
-        var rows = buildRows(arr, div);
-        if (rows.length < 100) throw new Error("too short");
-        ROWS = rows;
-        await dbPut({ ts: Date.now(), pm: profitMode, rows: rows });
-        initDatesIfEmpty(); compute();
-        setNet("ok", "Bitview 实时 · " + ROWS[0].d + " 至 " + ROWS[ROWS.length - 1].d + "（" + ROWS.length + " 天）");
+        var rows = await fetchDirect(-1100);
+        if (rows.length < 100) throw new Error("返回条数不足");
+        ROWS = rows; hasFullHistory = false;
+        await dbPut({ ts: Date.now(), full: false, pm: profitMode, rows: rows });
+        initDatesIfEmpty(); renderRules(); compute();
+        setNet("ok", "Bitview 实时 · " + ROWS[0].d + " 至 " + ROWS[ROWS.length - 1].d + "（选更早日期自动补全）");
       } catch (e) {
+        var why = (e && e.message) ? e.message : "网络不可达";
         if (ROWS.length) {
-          setNet("warn", "更新失败，沿用本机缓存 · " + ROWS[ROWS.length - 1].d);
+          setNet("warn", "刷新失败（" + why + "），沿用本机缓存 · " + ROWS[ROWS.length - 1].d);
         } else {
-          setNet("bad", "暂时连不上 Bitview 接口，请稍后点「刷新数据」");
-          $("cvTip").textContent = "Bitview 接口暂时不可达，未使用模拟数据。";
+          setNet("bad", "Bitview 拉取失败（" + why + "），请稍后点「刷新数据」");
+          $("cvTip").textContent = "Bitview 暂不可达（" + why + "），未使用模拟数据。";
         }
       }
     }
@@ -441,8 +505,8 @@
     function initDatesIfEmpty() {
       if (!ROWS.length) return;
       var first = ROWS[0].d, last = ROWS[ROWS.length - 1].d;
-      $("dateStart").min = first; $("dateStart").max = last;
-      $("dateEnd").min = first; $("dateEnd").max = last;
+      $("dateStart").min = "2011-01-01"; $("dateStart").max = last;
+      $("dateEnd").min = "2011-01-01"; $("dateEnd").max = last;
       if (!S.end || S.end > last) S.end = last;
       if (!S.start) S.start = ROWS[Math.max(0, ROWS.length - 365)].d;
       $("dateStart").value = S.start; $("dateEnd").value = S.end;
@@ -643,9 +707,9 @@
       var b = e.target.closest("[data-r]"); if (!b || !ROWS.length) return;
       document.querySelectorAll("#quickRanges [data-r]").forEach(function (x) { x.classList.toggle("on", x === b); });
       var r = b.dataset.r, last = ROWS[ROWS.length - 1].d, first = ROWS[0].d;
-      if (r === "all") { S.start = first; S.end = last; }
-      else if (r === "2024") { S.start = "2024-01-01"; S.end = "2024-12-31"; }
-      else if (r === "2021") { S.start = "2021-01-01"; S.end = "2021-12-31"; }
+      if (r === "all") { S.start = "2011-01-01"; S.end = last; if (!hasFullHistory) loadFullHistory(); }
+      else if (r === "2024") { S.start = "2024-01-01"; S.end = "2024-12-31"; if ("2024-01-01" < first && !hasFullHistory) loadFullHistory(); }
+      else if (r === "2021") { S.start = "2021-01-01"; S.end = "2021-12-31"; if (!hasFullHistory) loadFullHistory(); }
       else { S.end = last; S.start = ROWS[Math.max(0, ROWS.length - (+r))].d; }
       $("dateStart").value = S.start; $("dateEnd").value = S.end; compute();
     });
@@ -680,6 +744,7 @@
     });
     $("searchBtn").addEventListener("click", function () {
       S.start = $("dateStart").value || S.start; S.end = $("dateEnd").value || S.end;
+      if (ROWS.length && S.start < ROWS[0].d && !hasFullHistory) loadFullHistory();
       document.querySelectorAll("#rulesBox [data-rid]").forEach(function (el) {
         var r = S.rules.filter(function (x) { return x.id === el.dataset.rid; })[0];
         if (r) { r.op = el.querySelector(".rop").value; r.v = +el.querySelector(".rval").value; }
