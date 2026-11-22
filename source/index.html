@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BUILD: 27.1.6-20261121 · SATS-GARDEN-V27.11 -->
+<!-- BUILD: 27.2.0-20261121 · SATS-GARDEN-V27.11 -->
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -9,7 +9,7 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Sats Garden" />
-  <meta name="btc-dca-build" content="27.1.6-20261121" />
+  <meta name="btc-dca-build" content="27.2.0-20261121" />
   <script>
 (function(){
   "use strict";
@@ -304,7 +304,7 @@
 })();
 </script>
 <script>(function(){var l=null;try{l=localStorage.getItem("btc_lang_v1")}catch(e){}if(l!=="zh"&&l!=="en"){var n=(navigator.languages&&navigator.languages[0])||navigator.language||"";l=/^zh/i.test(n)?"zh":"en"}window.BTC_LANG=l;var d=document.documentElement;d.lang=l==="en"?"en":"zh-CN";if(l==="en"){d.classList.add("i18n-pending");setTimeout(function(){d.classList.remove("i18n-pending")},2500)}})();</script>
-<script>const BUILD_ID="27.1.6-20261121";const BUILD_LABEL="V27.1.6";function sgLabel(){return window.BTC_LANG==="en"?BUILD_LABEL.replace(/\s*正式版$/,""):BUILD_LABEL}(function(){var T="btc_theme_v1",t=null;try{t=localStorage.getItem(T)}catch(e){}if(t!=="light"&&t!=="dark"){t=null}window.__themePinned=!!t;if(!t)t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.dataset.theme=t;})();</script>
+<script>const BUILD_ID="27.2.0-20261121";const BUILD_LABEL="V27.2";function sgLabel(){return window.BTC_LANG==="en"?BUILD_LABEL.replace(/\s*正式版$/,""):BUILD_LABEL}(function(){var T="btc_theme_v1",t=null;try{t=localStorage.getItem(T)}catch(e){}if(t!=="light"&&t!=="dark"){t=null}window.__themePinned=!!t;if(!t)t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.dataset.theme=t;})();</script>
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
   <link rel="manifest" href="./manifest.webmanifest" id="pwaManifest" />
@@ -519,7 +519,7 @@ body.noscript p{font-size:13px;line-height:1.6;max-width:640px}
 .dca-assumptions .form-row{gap:12px;align-items:flex-end}
 .dca-assumptions input{max-width:100%;min-height:44px}
 .dca-assumptions label{display:flex;flex-direction:column;gap:6px;font-size:.875rem}
-/* === V27.1.6 三层共振信号卡片 === */
+/* === V27.2 三层共振信号卡片 === */
 .rs-wrap{display:flex;flex-direction:column;gap:12px}
 .rs-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:560px){.rs-grid{grid-template-columns:1fr}}
@@ -547,7 +547,7 @@ body.noscript p{font-size:13px;line-height:1.6;max-width:640px}
 .rs-bar-fill{height:100%;border-radius:99px;width:0;transition:width .4s ease}
 .rs-bar-fill.crash{background:linear-gradient(90deg,#f59e0b,#ef4444)}
 .rs-bar-fill.rally{background:linear-gradient(90deg,#3b82f6,#10b981)}
-.rs-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.rs-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 @media(max-width:680px){.rs-strip{grid-template-columns:repeat(2,1fr)}}
 .rs-mini{background:var(--surface-raised,rgba(127,127,127,.05));border:1px solid var(--border-subtle,rgba(127,127,127,.12));border-radius:11px;padding:9px 11px}
 .rs-mini-k{font-size:11px;font-weight:600;color:var(--text-secondary)}
@@ -4219,37 +4219,37 @@ details:has(>#executionReview)>summary{padding:10px 0;cursor:pointer}
       <p class="ct-note">门槛为过去 4 年分位，每月只用当时已知的数据。上表是样本内的历史观察：规则是在看过历史之后设定的，样本只有约 4 轮周期，顶部区可能提前数月出现；不代表未来的准确率。</p></details>
     <p class="ct-note tb-why">估值类指标高度重复（MVRV 与 NUPL 相关 1.00），先在类内平均再合成，避免重复计算。</p>
   </section></details>
-<details class="module-fold" data-module="resonance" id="resonanceFold"><summary><span><b>三层共振信号</b><small data-fold-live="resonance" data-fold-default="大跌预警 15/30/55 · 大涨启动 20/45/35">大跌预警 15/30/55 · 大涨启动 20/45/35</small></span></summary><section class="sec" id="resonanceSec" aria-label="三层共振信号">
+<details class="module-fold" data-module="resonance" id="resonanceFold"><summary><span><b>三层共振信号</b><small data-fold-live="resonance" data-fold-default="大跌预警 10/25/65 · 大涨启动 15/25/60">大跌预警 10/25/65 · 大涨启动 15/25/60</small></span></summary><section class="sec" id="resonanceSec" aria-label="三层共振信号">
   <div class="rs-wrap">
     <div class="rs-grid">
       <div class="rs-box" id="rsCrashBox">
         <div class="rs-top">
-          <div><div class="rs-name">大跌预警</div><div class="rs-wt">非对称权重 15 / 30 / 55</div></div>
+          <div><div class="rs-name">大跌预警</div><div class="rs-wt">资金情绪主导 10 / 25 / 65</div></div>
           <span class="rs-badge" id="rsCrashBadge">计算中</span>
         </div>
         <div class="rs-score-row">
           <div class="rs-num" id="rsCrashScore">—<small>/100</small></div>
-          <div class="rs-gate" id="rsCrashGate">门控：≥65 且至少 2 层达半</div>
+          <div class="rs-gate" id="rsCrashGate">门控：≥65 且资金情绪层 ≥33</div>
         </div>
         <div class="rs-bars">
-          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>估值</span><span id="rsCL1">0/15</span></div><div class="rs-bar-track"><div class="rs-bar-fill crash" id="rsCB1"></div></div></div>
-          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>链上</span><span id="rsCL2">0/30</span></div><div class="rs-bar-track"><div class="rs-bar-fill crash" id="rsCB2"></div></div></div>
-          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>资金</span><span id="rsCL3">0/55</span></div><div class="rs-bar-track"><div class="rs-bar-fill crash" id="rsCB3"></div></div></div>
+          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>估值</span><span id="rsCL1">0/10</span></div><div class="rs-bar-track"><div class="rs-bar-fill crash" id="rsCB1"></div></div></div>
+          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>链上</span><span id="rsCL2">0/25</span></div><div class="rs-bar-track"><div class="rs-bar-fill crash" id="rsCB2"></div></div></div>
+          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>资金情绪</span><span id="rsCL3">0/65</span></div><div class="rs-bar-track"><div class="rs-bar-fill crash" id="rsCB3"></div></div></div>
         </div>
       </div>
       <div class="rs-box" id="rsRallyBox">
         <div class="rs-top">
-          <div><div class="rs-name">大涨启动</div><div class="rs-wt">非对称权重 20 / 45 / 35</div></div>
+          <div><div class="rs-name">大涨启动</div><div class="rs-wt">资金情绪主导 15 / 25 / 60</div></div>
           <span class="rs-badge" id="rsRallyBadge">计算中</span>
         </div>
         <div class="rs-score-row">
           <div class="rs-num" id="rsRallyScore">—<small>/100</small></div>
-          <div class="rs-gate" id="rsRallyGate">门控：≥65 且资金层 ≥18</div>
+          <div class="rs-gate" id="rsRallyGate">门控：≥65 且资金情绪层 ≥32</div>
         </div>
         <div class="rs-bars">
-          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>估值</span><span id="rsRL1">0/20</span></div><div class="rs-bar-track"><div class="rs-bar-fill rally" id="rsRB1"></div></div></div>
-          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>链上</span><span id="rsRL2">0/45</span></div><div class="rs-bar-track"><div class="rs-bar-fill rally" id="rsRB2"></div></div></div>
-          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>资金</span><span id="rsRL3">0/35</span></div><div class="rs-bar-track"><div class="rs-bar-fill rally" id="rsRB3"></div></div></div>
+          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>估值</span><span id="rsRL1">0/15</span></div><div class="rs-bar-track"><div class="rs-bar-fill rally" id="rsRB1"></div></div></div>
+          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>链上</span><span id="rsRL2">0/25</span></div><div class="rs-bar-track"><div class="rs-bar-fill rally" id="rsRB2"></div></div></div>
+          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>资金情绪</span><span id="rsRL3">0/60</span></div><div class="rs-bar-track"><div class="rs-bar-fill rally" id="rsRB3"></div></div></div>
         </div>
       </div>
     </div>
@@ -4258,6 +4258,8 @@ details:has(>#executionReview)>summary{padding:10px 0;cursor:pointer}
       <div class="rs-mini"><div class="rs-mini-k">Coinbase 溢价</div><div class="rs-mini-v" id="rsValCb">—</div><div class="rs-mini-s" id="rsSubCb">加载中</div></div>
       <div class="rs-mini"><div class="rs-mini-k">合约 OI 7日变化</div><div class="rs-mini-v" id="rsValOi">—</div><div class="rs-mini-s" id="rsSubOi">加载中</div></div>
       <div class="rs-mini"><div class="rs-mini-k">ETF 5日净流</div><div class="rs-mini-v" id="rsValEtf">—</div><div class="rs-mini-s" id="rsSubEtf">加载中</div></div>
+      <div class="rs-mini"><div class="rs-mini-k">稳定币 7日净增</div><div class="rs-mini-v" id="rsValStb">—</div><div class="rs-mini-s" id="rsSubStb">加载中</div></div>
+      <div class="rs-mini"><div class="rs-mini-k">恐惧贪婪 F&amp;G</div><div class="rs-mini-v" id="rsValFng">—</div><div class="rs-mini-s" id="rsSubFng">加载中</div></div>
       <div class="rs-mini"><div class="rs-mini-k">STH 成本 / SOPR</div><div class="rs-mini-v" id="rsValSth">—</div><div class="rs-mini-s" id="rsSubSth">加载中</div></div>
     </div>
 
@@ -4275,7 +4277,7 @@ details:has(>#executionReview)>summary{padding:10px 0;cursor:pointer}
     <div class="rs-list" id="rsDetailList"></div>
 
     <div class="rs-foot">
-      <span>数据：Bitview · Binance / OKX · Coinbase · ETF 预计算</span>
+      <span>数据：Bitview · Binance / OKX · Coinbase · DefiLlama · Alternative.me · ETF</span>
       <a href="./old-coins.html">打开老币异动筛选器 →</a>
     </div>
   </div>
@@ -4701,7 +4703,7 @@ details:has(>#executionReview)>summary{padding:10px 0;cursor:pointer}
 
 <details class="health health-center" id="healthPanel">
     <summary><span>数据健康中心</span><span id="healthSummary">等待检查</span></summary>
-    <div class="health-center-body"><div class="focus-runtime"><span>版本 <b class="num" id="buildBadge">V27.1.6</b></span><span>UTC 日期 <b class="num" id="heroDate">--</b></span><span class="hbadge" id="healthBadge">--</span></div>
+    <div class="health-center-body"><div class="focus-runtime"><span>版本 <b class="num" id="buildBadge">V27.2</b></span><span>UTC 日期 <b class="num" id="heroDate">--</b></span><span class="hbadge" id="healthBadge">--</span></div>
       <div class="health-hero">
         <div class="health-score-ring" id="healthScoreRing" role="img" aria-label="数据健康度等待检查"><b class="num" id="healthScore">--</b><small>HEALTH</small></div>
         <div class="health-hero-copy">
@@ -16544,7 +16546,7 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
 (function(){
   if(window.__sgResonanceInit)return;
   window.__sgResonanceInit=true;
-  var CACHE_KEY="sg_resonance_v1",CACHE_TTL=5*60*1000;
+  var CACHE_KEY="sg_resonance_v3",CACHE_TTL=5*60*1000;
   var activeTab="crash",lastState=null,busy=false;
 
   function $(id){return document.getElementById(id)}
@@ -16579,26 +16581,19 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
   }
 
   function fetchBitview(){
-    var u1="https://bitview.space/api/series/bulk?series=date,mvrv,sth_nupl&index=day1&from=-1465";
-    var u2="https://bitview.space/api/series/bulk?series=date,sth_realized_price,sopr_24h,lth_supply&index=day1&from=-35";
-    return Promise.all([fetchJson(u1,11000),fetchJson(u2,11000)]).then(function(res){
+    var u1="https://bitview.space/api/series/bulk?index=day1&series=date,mvrv,sth_nupl&start=-1465";
+    var u2="https://bitview.space/api/series/bulk?index=day1&series=date,sth_realized_price,sopr_24h,lth_supply&start=-35";
+    return Promise.all([fetchJson(u1,12000),fetchJson(u2,12000)]).then(function(res){
       var a=res[0],b=res[1];
-      function extract(resp,name){
-        if(!resp)return [];
-        if(Array.isArray(resp)){
-          for(var i=0;i<resp.length;i++){
-            if(resp[i]&&(resp[i].series===name||resp[i].name===name))return resp[i].data||[];
-          }
-        }
-        if(resp.series&&resp.series[name])return resp.series[name];
-        if(resp[name])return resp[name];
-        return [];
+      function pick(resp,idx){
+        if(!Array.isArray(resp)||!resp[idx]||!Array.isArray(resp[idx].data))return [];
+        return resp[idx].data.filter(function(x){return typeof x==="number"&&isFinite(x)});
       }
-      var mvrvArr=extract(a,"mvrv").filter(function(x){return typeof x==="number"&&isFinite(x)});
-      var sthNuplArr=extract(a,"sth_nupl").filter(function(x){return typeof x==="number"&&isFinite(x)});
-      var sthRpArr=extract(b,"sth_realized_price").filter(function(x){return typeof x==="number"&&isFinite(x)});
-      var soprArr=extract(b,"sopr_24h").filter(function(x){return typeof x==="number"&&isFinite(x)});
-      var lthSupArr=extract(b,"lth_supply").filter(function(x){return typeof x==="number"&&isFinite(x)});
+      var mvrvArr=pick(a,1);
+      var sthNuplArr=pick(a,2);
+      var sthRpArr=pick(b,1);
+      var soprArr=pick(b,2);
+      var lthSupArr=pick(b,3);
 
       var mvrv=mvrvArr.length?mvrvArr[mvrvArr.length-1]:null;
       var mvrvPct=null;
@@ -16608,11 +16603,7 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
         mvrvPct=le/mvrvArr.length*100;
       }
       var sthNupl=sthNuplArr.length?sthNuplArr[sthNuplArr.length-1]:null;
-      var sthNupl14Min=null;
-      if(sthNuplArr.length){
-        var sl=sthNuplArr.slice(-14);
-        sthNupl14Min=Math.min.apply(null,sl);
-      }
+      var sthNupl14Min=sthNuplArr.length?Math.min.apply(null,sthNuplArr.slice(-14)):null;
       var sthRp=sthRpArr.length?sthRpArr[sthRpArr.length-1]:null;
       var soprNow=soprArr.length?soprArr[soprArr.length-1]:null;
       var sopr14Min=soprArr.length?Math.min.apply(null,soprArr.slice(-14)):null;
@@ -16680,6 +16671,35 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
     });
   }
 
+  function fetchStablecoin(){
+    return fetchJson("https://stablecoins.llama.fi/stablecoincharts/all",12000).then(function(arr){
+      if(!Array.isArray(arr)||arr.length<35)throw new Error("bad stablecoin");
+      var vals=[];
+      for(var i=Math.max(0,arr.length-45);i<arr.length;i++){
+        var x=arr[i];
+        var v=x&&x.totalCirculatingUSD&&typeof x.totalCirculatingUSD.peggedUSD==="number"?x.totalCirculatingUSD.peggedUSD:(x&&x.totalCirculating&&typeof x.totalCirculating.peggedUSD==="number"?x.totalCirculating.peggedUSD:null);
+        if(v!=null&&isFinite(v)&&v>0)vals.push(v);
+      }
+      if(vals.length<31)throw new Error("short stablecoin");
+      var n=vals.length;
+      var now=vals[n-1],d7=now-vals[n-8],d30=now-vals[n-31];
+      return {now:now,d7:d7,d30:d30};
+    });
+  }
+
+  function fetchFng(){
+    return fetchJson("https://api.alternative.me/fng/?limit=10",8000).then(function(j){
+      var arr=j&&Array.isArray(j.data)?j.data:[];
+      if(arr.length<3)throw new Error("bad fng");
+      var vals=arr.slice(0,7).map(function(x){return parseInt(x.value,10)}).filter(function(v){return isFinite(v)});
+      if(!vals.length)throw new Error("empty fng");
+      var now=vals[0];
+      var min7=Math.min.apply(null,vals);
+      var max7=Math.max.apply(null,vals);
+      return {now:now,min7:min7,max7:max7,cls:(arr[0]&&arr[0].value_classification)||""};
+    });
+  }
+
   function fetchDerivatives(){
     var oiP=fetchJson("https://fapi.binance.com/futures/data/openInterestHist?symbol=BTCUSDT&period=1d&limit=10",8500).then(function(arr){
       if(!Array.isArray(arr)||arr.length<8)throw new Error("bad oi");
@@ -16732,7 +16752,7 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
       var spot=bnL&&+bnL.price?+bnL.price:null;
       var cbSpot=cbL&&+cbL.price?+cbL.price:null;
       var livePrem=(spot&&cbSpot)?((cbSpot-spot)/spot*100):null;
-      var is30dHigh=false,belowSth14=false,bnCloses=[];
+      var is30dHigh=false,bnCloses=[];
       if(Array.isArray(bnK)&&bnK.length>=15){
         bnCloses=bnK.map(function(k){return +k[4]||0});
         var lastClose=spot||bnCloses[bnCloses.length-1];
@@ -16780,76 +16800,90 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
   }
 
   function evaluate(data){
-    var bv=data.bv||{},oc=data.oc,etf=data.etf,drv=data.drv||{},cb=data.cb||{};
+    var bv=data.bv||{},oc=data.oc,etf=data.etf,drv=data.drv||{},cb=data.cb||{},stb=data.stb,fng=data.fng;
     var spot=cb.spot||(oc&&oc.lastPrice)||null;
     var ahr=readAhrFromDom();
 
-    // === 1. 大跌预警 (15 / 30 / 55) ===
+    // === 1. 大跌预警 (估值 10 / 链上 25 / 资金与情绪 65) ===
     var crashItems=[];
-    // L1: 估值拥挤 (15)
-    var c1a={layer:"估值",lIdx:0,name:"MVRV 4年分位",max:10,avail:bv.mvrvPct!=null,sc:0,val:bv.mvrvPct!=null?("MVRV "+bv.mvrv.toFixed(2)+" · "+bv.mvrvPct.toFixed(0)+"% 分位"):"暂缺"};
-    if(c1a.avail){c1a.sc=bv.mvrvPct>=85?10:(bv.mvrvPct>=75?5:0)}
+    // L1: 估值 (10)
+    var c1a={layer:"估值",lIdx:0,name:"MVRV 4年分位",max:6,avail:bv.mvrvPct!=null,sc:0,val:bv.mvrvPct!=null?("MVRV "+bv.mvrv.toFixed(2)+" · "+bv.mvrvPct.toFixed(0)+"% 分位"):"暂缺"};
+    if(c1a.avail){c1a.sc=bv.mvrvPct>=85?6:(bv.mvrvPct>=75?3:0)}
     crashItems.push(c1a);
 
-    var c1b={layer:"估值",lIdx:0,name:"STH 短线浮盈 (sth_nupl)",max:5,avail:bv.sthNupl!=null,sc:0,val:bv.sthNupl!=null?bv.sthNupl.toFixed(3):"暂缺"};
-    if(c1b.avail){c1b.sc=bv.sthNupl>0.25?5:(bv.sthNupl>0.15?3:0)}
+    var c1b={layer:"估值",lIdx:0,name:"STH 短线浮盈 (sth_nupl)",max:4,avail:bv.sthNupl!=null,sc:0,val:bv.sthNupl!=null?bv.sthNupl.toFixed(3):"暂缺"};
+    if(c1b.avail){c1b.sc=bv.sthNupl>0.25?4:(bv.sthNupl>0.15?2:0)}
     crashItems.push(c1b);
 
-    // L2: 链上派发 (30)
-    var c2a={layer:"链上",lIdx:1,name:"老币异动 + LTH 利润",max:18,avail:!!oc,sc:0,val:oc?("近3日触发 "+oc.hits3+" 次 · 峰值 "+Math.round(oc.maxOv3).toLocaleString("en-US")+" BTC"):"暂缺"};
+    // L2: 链上 (25)
+    var c2a={layer:"链上",lIdx:1,name:"老币异动 + LTH 利润",max:15,avail:!!oc,sc:0,val:oc?("近3日触发 "+oc.hits3+" 次 · 峰值 "+Math.round(oc.maxOv3).toLocaleString("en-US")+" BTC"):"暂缺"};
     if(c2a.avail){
-      if(oc.hits3>=2||(oc.maxOv3>10000&&oc.maxPr3>3e8))c2a.sc=18;
-      else if(oc.hits3>=1)c2a.sc=11;
+      if(oc.hits3>=2||(oc.maxOv3>10000&&oc.maxPr3>3e8))c2a.sc=15;
+      else if(oc.hits3>=1)c2a.sc=9;
     }
     crashItems.push(c2a);
 
-    var c2b={layer:"链上",lIdx:1,name:"LTH 7日持仓净变化",max:12,avail:bv.lth7d!=null,sc:0,val:bv.lth7d!=null?(fmtBtc(bv.lth7d)+(bv.lthNeg3?"（连跌3日）":"")):"暂缺"};
+    var c2b={layer:"链上",lIdx:1,name:"LTH 7日持仓净变化",max:10,avail:bv.lth7d!=null,sc:0,val:bv.lth7d!=null?(fmtBtc(bv.lth7d)+(bv.lthNeg3?"（连跌3日）":"")):"暂缺"};
     if(c2b.avail){
-      if(bv.lth7d<-35000)c2b.sc=12;
-      else if(bv.lthNeg3&&bv.lth3d<-15000)c2b.sc=7;
+      if(bv.lth7d<-35000)c2b.sc=10;
+      else if(bv.lthNeg3&&bv.lth3d<-15000)c2b.sc=6;
     }
     crashItems.push(c2b);
 
-    // L3: 资金与杠杆踩踏 (55)
+    // L3: 资金与情绪 (65 = 16 + 16 + 13 + 12 + 8)
     var oiOk=!!(drv.oi&&isFinite(drv.oi.oi7dPct));
     var frOk=drv.frAnn!=null&&isFinite(drv.frAnn);
-    var c3a={layer:"资金",lIdx:2,name:"合约 OI 7日增幅 + 费率",max:22,avail:(oiOk||frOk),sc:0,val:(oiOk?("OI "+fmtPct(drv.oi.oi7dPct,1)):"OI 缺")+" · "+(frOk?("费率 "+fmtPct(drv.frAnn,1)):"费率 缺")};
+    var c3a={layer:"资金",lIdx:2,name:"合约 OI 7日增幅 + 费率",max:16,avail:(oiOk||frOk),sc:0,val:(oiOk?("OI "+fmtPct(drv.oi.oi7dPct,1)):"OI 缺")+" · "+(frOk?("费率 "+fmtPct(drv.frAnn,1)):"费率 缺")};
     if(oiOk&&frOk){
-      if(drv.oi.oi7dPct>20&&drv.frAnn>35)c3a.sc=22;
-      else if(drv.oi.oi7dPct>10&&drv.frAnn>18)c3a.sc=14;
-      else if(drv.oi.oi7dPct>12||drv.frAnn>25)c3a.sc=7;
+      if(drv.oi.oi7dPct>20&&drv.frAnn>35)c3a.sc=16;
+      else if(drv.oi.oi7dPct>10&&drv.frAnn>18)c3a.sc=10;
+      else if(drv.oi.oi7dPct>12||drv.frAnn>25)c3a.sc=5;
     }else if(oiOk){
-      if(drv.oi.oi7dPct>20)c3a.sc=16;else if(drv.oi.oi7dPct>10)c3a.sc=9;
+      if(drv.oi.oi7dPct>20)c3a.sc=12;else if(drv.oi.oi7dPct>10)c3a.sc=7;
     }else if(frOk){
-      if(drv.frAnn>35)c3a.sc=16;else if(drv.frAnn>20)c3a.sc=9;
+      if(drv.frAnn>35)c3a.sc=12;else if(drv.frAnn>20)c3a.sc=7;
     }
     crashItems.push(c3a);
 
-    var c3b={layer:"资金",lIdx:2,name:"ETF 5日滚动净流出",max:20,avail:!!etf,sc:0,val:etf?(fmtUsdM(etf.sum5)+(etf.neg3?" · 连流3日":"")):"暂缺"};
+    var c3b={layer:"资金",lIdx:2,name:"ETF 5日滚动净流出",max:16,avail:!!etf,sc:0,val:etf?(fmtUsdM(etf.sum5)+(etf.neg3?" · 连流3日":"")):"暂缺"};
     if(c3b.avail){
-      if(etf.sum5<-8e8||(etf.neg3&&etf.sum5<-2e8))c3b.sc=20;
-      else if(etf.sum5<-2e8)c3b.sc=11;
+      if(etf.sum5<-8e8||(etf.neg3&&etf.sum5<-2e8))c3b.sc=16;
+      else if(etf.sum5<-2e8)c3b.sc=9;
     }
     crashItems.push(c3b);
 
-    var c3c={layer:"资金",lIdx:2,name:"Coinbase 负溢价背离",max:13,avail:cb.prem7!=null,sc:0,val:cb.prem7!=null?("7日均 "+fmtPct(cb.prem7,3)+(cb.is30dHigh?" · 近30日新高":"")):"暂缺"};
+    var c3s={layer:"资金",lIdx:2,name:"稳定币 7日/30日净收缩",max:13,avail:!!stb,sc:0,val:stb?("7日 "+fmtUsdM(stb.d7)+" · 30日 "+fmtUsdM(stb.d30)):"暂缺"};
+    if(c3s.avail){
+      if(stb.d7<-5e8&&stb.d30<-2e9)c3s.sc=13;
+      else if(stb.d7<-5e8||stb.d30<-2e9)c3s.sc=7;
+    }
+    crashItems.push(c3s);
+
+    var c3c={layer:"资金",lIdx:2,name:"Coinbase 负溢价背离",max:12,avail:cb.prem7!=null,sc:0,val:cb.prem7!=null?("7日均 "+fmtPct(cb.prem7,3)+(cb.is30dHigh?" · 近30日新高":"")):"暂缺"};
     if(c3c.avail){
-      if(cb.prem7<-0.05||(cb.is30dHigh&&(cb.prem3||0)<-0.02))c3c.sc=13;
-      else if(cb.prem7<-0.03||(cb.livePrem!=null&&cb.livePrem<-0.05))c3c.sc=7;
+      if(cb.prem7<-0.05||(cb.is30dHigh&&(cb.prem3||0)<-0.02))c3c.sc=12;
+      else if(cb.prem7<-0.03||(cb.livePrem!=null&&cb.livePrem<-0.05))c3c.sc=6;
     }
     crashItems.push(c3c);
 
-    // === 2. 大涨启动 (20 / 45 / 35) ===
+    var c3f={layer:"情绪",lIdx:2,name:"F&G 极度贪婪见顶拐点",max:8,avail:!!fng,sc:0,val:fng?("当前 "+fng.now+" · 7日高 "+fng.max7):"暂缺"};
+    if(c3f.avail){
+      if(fng.max7>=75&&fng.now<=fng.max7-3)c3f.sc=8;
+      else if(fng.now>=78)c3f.sc=5;
+    }
+    crashItems.push(c3f);
+
+    // === 2. 大涨启动 (估值 15 / 链上 25 / 资金与情绪 60) ===
     var rallyItems=[];
-    // L1: 赔率与支撑 (20)
+    // L1: 估值 (15)
     var r1aAvail=(ahr!=null||bv.mvrvPct!=null);
     var r1aVal=[];
     if(ahr!=null)r1aVal.push("AHR999 "+ahr.toFixed(2));
     if(bv.mvrvPct!=null)r1aVal.push("MVRV 分位 "+bv.mvrvPct.toFixed(0)+"%");
-    var r1a={layer:"估值",lIdx:0,name:"AHR999 / MVRV 赔率区",max:12,avail:r1aAvail,sc:0,val:r1aAvail?r1aVal.join(" · "):"暂缺"};
+    var r1a={layer:"估值",lIdx:0,name:"AHR999 / MVRV 赔率区",max:9,avail:r1aAvail,sc:0,val:r1aAvail?r1aVal.join(" · "):"暂缺"};
     if(r1aAvail){
-      if((ahr!=null&&ahr<0.45)||(bv.mvrvPct!=null&&bv.mvrvPct<=20))r1a.sc=12;
-      else if((ahr!=null&&ahr<0.8)||(bv.mvrvPct!=null&&bv.mvrvPct<=35))r1a.sc=7;
+      if((ahr!=null&&ahr<0.45)||(bv.mvrvPct!=null&&bv.mvrvPct<=20))r1a.sc=9;
+      else if((ahr!=null&&ahr<0.8)||(bv.mvrvPct!=null&&bv.mvrvPct<=35))r1a.sc=5;
     }
     rallyItems.push(r1a);
 
@@ -16860,20 +16894,20 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
       var min14=Math.min.apply(null,cb.bnCloses14);
       if(min14<bv.sthRp*0.90&&spot>=bv.sthRp)r1bReclaim=true;
     }
-    var r1b={layer:"估值",lIdx:0,name:"STH 成本线支撑",max:8,avail:r1bAvail,sc:0,val:r1bAvail?("$"+Math.round(bv.sthRp).toLocaleString("en-US")+"（偏离 "+fmtPct(r1bDiff,1)+"）"):"暂缺"};
+    var r1b={layer:"估值",lIdx:0,name:"STH 成本线支撑",max:6,avail:r1bAvail,sc:0,val:r1bAvail?("$"+Math.round(bv.sthRp).toLocaleString("en-US")+"（偏离 "+fmtPct(r1bDiff,1)+"）"):"暂缺"};
     if(r1bAvail){
-      if(Math.abs(r1bDiff)<=3||r1bReclaim)r1b.sc=8;
-      else if(r1bDiff<-3)r1b.sc=4;
+      if(Math.abs(r1bDiff)<=3||r1bReclaim)r1b.sc=6;
+      else if(r1bDiff<-3)r1b.sc=3;
     }
     rallyItems.push(r1b);
 
-    // L2: 链上出清 (45)
+    // L2: 链上 (25)
     var r2aAvail=(bv.soprNow!=null&&bv.sthNupl!=null);
     var hadCap=(bv.sopr14Min!=null&&bv.sopr14Min<0.985&&bv.sthNupl14Min!=null&&bv.sthNupl14Min<-0.08);
-    var r2a={layer:"链上",lIdx:1,name:"STH 割肉投降与修复",max:22,avail:r2aAvail,sc:0,val:r2aAvail?("SOPR "+bv.soprNow.toFixed(3)+" · 14日低 "+(bv.sopr14Min!=null?bv.sopr14Min.toFixed(3):"—")):"暂缺"};
+    var r2a={layer:"链上",lIdx:1,name:"STH 割肉投降与修复",max:13,avail:r2aAvail,sc:0,val:r2aAvail?("SOPR "+bv.soprNow.toFixed(3)+" · 14日低 "+(bv.sopr14Min!=null?bv.sopr14Min.toFixed(3):"—")):"暂缺"};
     if(r2aAvail){
-      if(hadCap&&bv.soprNow>=1.00)r2a.sc=22;
-      else if(bv.soprNow<0.985||bv.sthNupl<-0.08)r2a.sc=12;
+      if(hadCap&&bv.soprNow>=1.00)r2a.sc=13;
+      else if(bv.soprNow<0.985||bv.sthNupl<-0.08)r2a.sc=7;
     }
     rallyItems.push(r2a);
 
@@ -16881,23 +16915,16 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
     var r2bParts=[];
     if(oc)r2bParts.push("老币静默 "+oc.quietDays+" 天");
     if(bv.lth7d!=null)r2bParts.push("LTH 7日 "+fmtBtc(bv.lth7d));
-    var r2b={layer:"链上",lIdx:1,name:"老币停抛 + LTH 回补",max:23,avail:r2bAvail,sc:0,val:r2bAvail?r2bParts.join(" · "):"暂缺"};
+    var r2b={layer:"链上",lIdx:1,name:"老币停抛 + LTH 回补",max:12,avail:r2bAvail,sc:0,val:r2bAvail?r2bParts.join(" · "):"暂缺"};
     if(r2bAvail){
       var sc2b=0;
-      if(oc&&oc.quietDays>=7)sc2b+=11;
-      if(bv.lth7d!=null){if(bv.lth7d>10000)sc2b+=12;else if(bv.lth7d>0)sc2b+=6;}
+      if(oc&&oc.quietDays>=7)sc2b+=6;
+      if(bv.lth7d!=null){if(bv.lth7d>10000)sc2b+=6;else if(bv.lth7d>0)sc2b+=3;}
       r2b.sc=sc2b;
     }
     rallyItems.push(r2b);
 
-    // L3: 去杠杆与资金回流 (35)
-    var r3a={layer:"资金",lIdx:2,name:"杠杆出清 (OI 回落 + 费率)",max:13,avail:(oiOk||frOk),sc:0,val:(oiOk?("距7日高点 "+fmtPct(drv.oi.oiFromHighPct,1)):"OI 缺")+" · "+(frOk?("费率 "+fmtPct(drv.frAnn,1)):"费率 缺")};
-    if(oiOk&&frOk){
-      if(drv.oi.oiFromHighPct<-12&&drv.frAnn<8)r3a.sc=13;
-      else if((drv.oi.oiFromHighPct<-6&&drv.frAnn<10)||drv.frAnn<0)r3a.sc=7;
-    }else if(frOk&&drv.frAnn<0){r3a.sc=7}
-    rallyItems.push(r3a);
-
+    // L3: 资金与情绪 (60 = 14 + 14 + 12 + 12 + 8)
     var r3b={layer:"资金",lIdx:2,name:"ETF 5日净流入回暖",max:14,avail:!!etf,sc:0,val:etf?(fmtUsdM(etf.sum5)+(etf.pos3?" · 连入3日":"")):"暂缺"};
     if(r3b.avail){
       if(etf.sum5>8e8||(etf.pos3&&etf.sum5>2e8))r3b.sc=14;
@@ -16905,12 +16932,33 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
     }
     rallyItems.push(r3b);
 
-    var r3c={layer:"资金",lIdx:2,name:"Coinbase 正溢价吸筹",max:8,avail:cb.prem3!=null,sc:0,val:cb.prem3!=null?("3日均 "+fmtPct(cb.prem3,3)):"暂缺"};
+    var r3s={layer:"资金",lIdx:2,name:"稳定币 7日/30日净增发",max:14,avail:!!stb,sc:0,val:stb?("7日 "+fmtUsdM(stb.d7)+" · 30日 "+fmtUsdM(stb.d30)):"暂缺"};
+    if(r3s.avail){
+      if(stb.d7>1e9&&stb.d30>3e9)r3s.sc=14;
+      else if(stb.d7>5e8||stb.d30>1.5e9)r3s.sc=8;
+    }
+    rallyItems.push(r3s);
+
+    var r3a={layer:"资金",lIdx:2,name:"杠杆出清 (OI 回落 + 费率)",max:12,avail:(oiOk||frOk),sc:0,val:(oiOk?("距7日高点 "+fmtPct(drv.oi.oiFromHighPct,1)):"OI 缺")+" · "+(frOk?("费率 "+fmtPct(drv.frAnn,1)):"费率 缺")};
+    if(oiOk&&frOk){
+      if(drv.oi.oiFromHighPct<-12&&drv.frAnn<8)r3a.sc=12;
+      else if((drv.oi.oiFromHighPct<-6&&drv.frAnn<10)||drv.frAnn<0)r3a.sc=6;
+    }else if(frOk&&drv.frAnn<0){r3a.sc=6}
+    rallyItems.push(r3a);
+
+    var r3c={layer:"资金",lIdx:2,name:"Coinbase 正溢价吸筹",max:12,avail:cb.prem3!=null,sc:0,val:cb.prem3!=null?("3日均 "+fmtPct(cb.prem3,3)):"暂缺"};
     if(r3c.avail){
-      if(cb.prem3>0.05)r3c.sc=8;
-      else if(cb.prem3>0.02||(cb.livePrem!=null&&cb.livePrem>0.05))r3c.sc=4;
+      if(cb.prem3>0.05)r3c.sc=12;
+      else if(cb.prem3>0.02||(cb.livePrem!=null&&cb.livePrem>0.05))r3c.sc=6;
     }
     rallyItems.push(r3c);
+
+    var r3f={layer:"情绪",lIdx:2,name:"F&G 极度恐惧回升拐点",max:8,avail:!!fng,sc:0,val:fng?("当前 "+fng.now+" · 7日低 "+fng.min7):"暂缺"};
+    if(r3f.avail){
+      if(fng.min7<=25&&fng.now>=fng.min7+4)r3f.sc=8;
+      else if(fng.now<=20)r3f.sc=4;
+    }
+    rallyItems.push(r3f);
 
     function tally(items,layerMax){
       var raw=0,availMax=0,missing=0,lSc=[0,0,0],lAvail=[0,0,0];
@@ -16927,21 +16975,19 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
       return {score:norm,raw:raw,availMax:availMax,missing:missing,lSc:lNorm,lMax:layerMax,items:items};
     }
 
-    var crash=tally(crashItems,[15,30,55]);
-    var halfCount=0;
-    for(var h=0;h<3;h++){if(crash.lSc[h]>=crash.lMax[h]*0.5)halfCount++}
-    crash.gatePass=(crash.score>=65&&halfCount>=2);
+    var crash=tally(crashItems,[10,25,65]);
+    crash.gatePass=(crash.score>=65&&crash.lSc[2]>=33);
     crash.level=crash.gatePass?"danger":(crash.score>=40?"warn":"ok");
     crash.label=crash.level==="danger"?"高危预警":(crash.level==="warn"?"警戒":"正常");
-    crash.gateText=crash.gatePass?"已通过（"+halfCount+"/3 层达半）":"需 ≥65 且 2 层达半（当前 "+halfCount+"/3）";
+    crash.gateText=crash.gatePass?"已通过（资金情绪 "+crash.lSc[2]+"/65）":"需 ≥65 且资金情绪 ≥33（当前 "+crash.lSc[2]+"）";
 
-    var rally=tally(rallyItems,[20,45,35]);
-    rally.gatePass=(rally.score>=65&&rally.lSc[2]>=18);
+    var rally=tally(rallyItems,[15,25,60]);
+    rally.gatePass=(rally.score>=65&&rally.lSc[2]>=32);
     rally.level=rally.gatePass?"go":(rally.score>=40?"ready":"ok");
     rally.label=rally.level==="go"?"启动确认":(rally.level==="ready"?"蓄力区":"磨底观望");
-    rally.gateText=rally.gatePass?"已通过（资金层 "+rally.lSc[2]+"/35）":"需 ≥65 且资金层 ≥18（当前 "+rally.lSc[2]+"）";
+    rally.gateText=rally.gatePass?"已通过（资金情绪 "+rally.lSc[2]+"/60）":"需 ≥65 且资金情绪 ≥32（当前 "+rally.lSc[2]+"）";
 
-    return {crash:crash,rally:rally,meta:{cb:cb,drv:drv,etf:etf,bv:bv,ts:Date.now()}};
+    return {crash:crash,rally:rally,meta:{cb:cb,drv:drv,etf:etf,bv:bv,stb:stb,fng:fng,ts:Date.now()}};
   }
 
   function render(st){
@@ -16949,14 +16995,12 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
     lastState=st;
     var c=st.crash,r=st.rally,m=st.meta;
 
-    // Summary live line
     var live=document.querySelector('[data-fold-live="resonance"]');
     if(live){
       live.textContent="大跌预警 "+c.score+" · "+c.label+" ｜ 大涨启动 "+r.score+" · "+r.label;
       live.classList.add("live");
     }
 
-    // Crash box
     var cBox=$("rsCrashBox");
     if(cBox){
       cBox.className="rs-box"+(c.level==="danger"?" is-danger":(c.level==="warn"?" is-warn":""));
@@ -16970,7 +17014,6 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
       }
     }
 
-    // Rally box
     var rBox=$("rsRallyBox");
     if(rBox){
       rBox.className="rs-box"+(r.level==="go"?" is-go":(r.level==="ready"?" is-ready":""));
@@ -16984,7 +17027,6 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
       }
     }
 
-    // Microstructure strip
     if($("rsValCb")){
       $("rsValCb").textContent=m.cb&&m.cb.livePrem!=null?fmtPct(m.cb.livePrem,3):"—";
       $("rsSubCb").textContent=m.cb&&m.cb.prem7!=null?("7日均 "+fmtPct(m.cb.prem7,3)):"未获取";
@@ -16997,12 +17039,19 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
       $("rsValEtf").textContent=m.etf?fmtUsdM(m.etf.sum5):"—";
       $("rsSubEtf").textContent=m.etf?(m.etf.thru?("截至 "+m.etf.thru):"本地/公开数据"):"未获取";
     }
+    if($("rsValStb")){
+      $("rsValStb").textContent=m.stb?fmtUsdM(m.stb.d7):"—";
+      $("rsSubStb").textContent=m.stb?("30日 "+fmtUsdM(m.stb.d30)):"未获取";
+    }
+    if($("rsValFng")){
+      $("rsValFng").textContent=m.fng?String(m.fng.now):"—";
+      $("rsSubFng").textContent=m.fng?("7日 "+m.fng.min7+"–"+m.fng.max7):"未获取";
+    }
     if($("rsValSth")){
       $("rsValSth").textContent=m.bv&&m.bv.sthRp?("$"+Math.round(m.bv.sthRp).toLocaleString("en-US")):"—";
       $("rsSubSth").textContent=m.bv&&m.bv.soprNow!=null?("24h SOPR "+m.bv.soprNow.toFixed(3)):"未获取";
     }
 
-    // Status meta
     var totalMiss=Math.max(c.missing,r.missing);
     var d=new Date(m.ts);
     var hh=String(d.getHours()).padStart(2,"0"),mm=String(d.getMinutes()).padStart(2,"0");
@@ -17049,9 +17098,11 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
       fetchOldCoins().catch(function(){return null}),
       fetchEtf().catch(function(){return null}),
       fetchDerivatives().catch(function(){return {}}),
-      fetchCoinbasePremium().catch(function(){return {}})
+      fetchCoinbasePremium().catch(function(){return {}}),
+      fetchStablecoin().catch(function(){return null}),
+      fetchFng().catch(function(){return null})
     ]).then(function(res){
-      var st=evaluate({bv:res[0],oc:res[1],etf:res[2],drv:res[3],cb:res[4]});
+      var st=evaluate({bv:res[0],oc:res[1],etf:res[2],drv:res[3],cb:res[4],stb:res[5],fng:res[6]});
       try{localStorage.setItem(CACHE_KEY,JSON.stringify(st))}catch(e){}
       render(st);
       busy=false;
@@ -17069,7 +17120,6 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
     }
     if(rb)rb.addEventListener("click",function(){run(true)});
     if(fold)fold.addEventListener("toggle",function(){if(fold.open&&!lastState)run(false)});
-    // Auto-run gently after initial paint so collapsed summary shows live scores
     setTimeout(function(){run(false)},1200);
   }
 
