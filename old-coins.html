@@ -4,7 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="color-scheme" content="light dark" />
-  <meta name="old-coins-build" content="27.1.0-20261121" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="old-coins-build" content="27.1.3-20261121" />
   <title>老比特币异动筛选器 · Sats Garden</title>
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
@@ -37,9 +39,9 @@
       --shadow:0 1px 0 rgba(255,255,255,.04) inset,0 10px 26px rgba(0,0,0,.38);
     }
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-    body{background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;padding-bottom:48px}
+    body{background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;padding-bottom:calc(48px + env(safe-area-inset-bottom,0px))}
     .num{font-variant-numeric:tabular-nums lining-nums}
-    .hdr{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--hair)}
+    .hdr{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--hair);padding-top:env(safe-area-inset-top,0px)}
     .hdr-in{max-width:1100px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
     .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
     .bmark{width:30px;height:30px;border-radius:50%;background:var(--orange);color:#fff;font-weight:800;font-size:16px;display:inline-flex;align-items:center;justify-content:center}
@@ -106,7 +108,7 @@
     .modal[hidden],[hidden]{display:none!important}
     .mpanel{background:var(--card);border:1px solid var(--hair);border-radius:16px;padding:18px 20px;width:100%;max-width:360px}
     .mpanel h3{font-size:15px;margin-bottom:12px}.mpanel .inp{width:100%;margin-bottom:12px}
-    .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:60;background:var(--ink);color:var(--card);padding:8px 16px;border-radius:999px;font-size:12.5px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s}
+    .toast{position:fixed;top:calc(16px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:60;background:var(--ink);color:var(--card);padding:8px 16px;border-radius:999px;font-size:12.5px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s}
     .toast.show{opacity:1}
   </style>
 </head>
