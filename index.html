@@ -393,7 +393,7 @@
   </div>
   <div class="rs-sync-msg" id="homeRsMsg">正在同步资金情绪与链上共振状态…</div>
   <div class="rs-sync-foot">
-    <span>大跌 10/25/65 · 大涨 15/25/60</span>
+    <span>30/90日极端共振 · 回测跑赢基准才激活</span>
     <button type="button" class="rs-link-btn" id="homeRsJump">查看三层明细 →</button>
   </div>
 </section>
@@ -517,37 +517,37 @@
       <p class="ct-note">门槛为过去 4 年分位，每月只用当时已知的数据。上表是样本内的历史观察：规则是在看过历史之后设定的，样本只有约 4 轮周期，顶部区可能提前数月出现；不代表未来的准确率。</p></details>
     <p class="ct-note tb-why">估值类指标高度重复（MVRV 与 NUPL 相关 1.00），先在类内平均再合成，避免重复计算。</p>
   </section></details>
-<details class="module-fold" data-module="resonance" id="resonanceFold"><summary><span><b>三层共振信号</b><small data-fold-live="resonance" data-fold-default="大跌预警 10/25/65 · 大涨启动 15/25/60">大跌预警 10/25/65 · 大涨启动 15/25/60</small></span></summary><section class="sec" id="resonanceSec" aria-label="三层共振信号">
+<details class="module-fold" data-module="resonance" id="resonanceFold"><summary><span><b>极端三层共振（30/90日）</b><small data-fold-live="resonance" data-fold-default="极值条件 · 仅保留回测跑赢基准的信号">极值条件 · 仅保留回测跑赢基准的信号</small></span></summary><section class="sec" id="resonanceSec" aria-label="极端三层共振信号">
   <div class="rs-wrap">
     <div class="rs-grid">
       <div class="rs-box" id="rsCrashBox">
         <div class="rs-top">
-          <div><div class="rs-name">大跌预警</div><div class="rs-wt">资金情绪主导 10 / 25 / 65</div></div>
-          <span class="rs-badge" id="rsCrashBadge">计算中</span>
+          <div><div class="rs-name">极端派发 · 大跌共振</div><div class="rs-wt">3 项严苛条件同向满足（30/90日）</div></div>
+          <span class="rs-badge" id="rsCrashBadge">检验中</span>
         </div>
         <div class="rs-score-row">
-          <div class="rs-num" id="rsCrashScore">—<small>/100</small></div>
-          <div class="rs-gate" id="rsCrashGate">门控：≥65 且资金情绪层 ≥33</div>
+          <div class="rs-num" id="rsCrashScore">—<small>/3</small></div>
+          <div class="rs-gate" id="rsCrashGate">回测校验中…</div>
         </div>
         <div class="rs-bars">
-          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>估值</span><span id="rsCL1">0/10</span></div><div class="rs-bar-track"><div class="rs-bar-fill crash" id="rsCB1"></div></div></div>
-          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>链上</span><span id="rsCL2">0/25</span></div><div class="rs-bar-track"><div class="rs-bar-fill crash" id="rsCB2"></div></div></div>
-          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>资金情绪</span><span id="rsCL3">0/65</span></div><div class="rs-bar-track"><div class="rs-bar-fill crash" id="rsCB3"></div></div></div>
+          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>高位拥挤</span><span id="rsCL1">0/1</span></div><div class="rs-bar-track"><div class="rs-bar-fill crash" id="rsCB1"></div></div></div>
+          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>链上派发</span><span id="rsCL2">0/1</span></div><div class="rs-bar-track"><div class="rs-bar-fill crash" id="rsCB2"></div></div></div>
+          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>资金拐弱</span><span id="rsCL3">0/1</span></div><div class="rs-bar-track"><div class="rs-bar-fill crash" id="rsCB3"></div></div></div>
         </div>
       </div>
       <div class="rs-box" id="rsRallyBox">
         <div class="rs-top">
-          <div><div class="rs-name">大涨启动</div><div class="rs-wt">资金情绪主导 15 / 25 / 60</div></div>
-          <span class="rs-badge" id="rsRallyBadge">计算中</span>
+          <div><div class="rs-name">极端出清 · 大涨共振</div><div class="rs-wt">3 项严苛条件同向满足（30/90日）</div></div>
+          <span class="rs-badge" id="rsRallyBadge">检验中</span>
         </div>
         <div class="rs-score-row">
-          <div class="rs-num" id="rsRallyScore">—<small>/100</small></div>
-          <div class="rs-gate" id="rsRallyGate">门控：≥65 且资金情绪层 ≥32</div>
+          <div class="rs-num" id="rsRallyScore">—<small>/3</small></div>
+          <div class="rs-gate" id="rsRallyGate">回测校验中…</div>
         </div>
         <div class="rs-bars">
-          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>估值</span><span id="rsRL1">0/15</span></div><div class="rs-bar-track"><div class="rs-bar-fill rally" id="rsRB1"></div></div></div>
-          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>链上</span><span id="rsRL2">0/25</span></div><div class="rs-bar-track"><div class="rs-bar-fill rally" id="rsRB2"></div></div></div>
-          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>资金情绪</span><span id="rsRL3">0/60</span></div><div class="rs-bar-track"><div class="rs-bar-fill rally" id="rsRB3"></div></div></div>
+          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>低位赔率</span><span id="rsRL1">0/1</span></div><div class="rs-bar-track"><div class="rs-bar-fill rally" id="rsRB1"></div></div></div>
+          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>投降出清</span><span id="rsRL2">0/1</span></div><div class="rs-bar-track"><div class="rs-bar-fill rally" id="rsRB2"></div></div></div>
+          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>极恐/回流</span><span id="rsRL3">0/1</span></div><div class="rs-bar-track"><div class="rs-bar-fill rally" id="rsRB3"></div></div></div>
         </div>
       </div>
     </div>
@@ -563,8 +563,8 @@
 
     <div class="rs-tabs">
       <div class="rs-seg" role="tablist">
-        <button type="button" id="rsTabCrash" class="active">大跌预警明细</button>
-        <button type="button" id="rsTabRally">大涨启动明细</button>
+        <button type="button" id="rsTabCrash" class="active">大跌极值条件</button>
+        <button type="button" id="rsTabRally">大涨极值条件</button>
       </div>
       <div class="rs-actions">
         <span id="rsStatusMeta">正在同步实时数据…</span>
@@ -573,16 +573,17 @@
     </div>
 
     <div class="rs-list" id="rsDetailList"></div>
+
     <div class="rs-bt" id="rsBacktestBox">
       <div class="rs-bt-hd">
-        <span class="rs-bt-title">历史回测验证（近 4 年真实日线 · 7日去重）</span>
+        <span class="rs-bt-title">历史回测验证（近 4 年真实日线 · 30日去重）</span>
         <span class="rs-bt-sub" id="rsBtMeta">正在计算历史样本…</span>
       </div>
-      <div id="rsBtBody" style="font-size:11px;color:var(--text-secondary)">同步历史序列后自动计算触发后 14 天 / 30 天实际涨跌…</div>
+      <div id="rsBtBody" style="font-size:11px;color:var(--text-secondary)">同步历史序列后自动计算触发后 30 天 / 90 天实际涨跌并校验是否跑赢基准…</div>
     </div>
 
     <div class="rs-foot">
-      <span>数据：Bitview · Binance / OKX · Coinbase · DefiLlama · Alternative.me · ETF</span>
+      <span>规则：回测未显著跑赢基准的信号自动标为「仅观察」且不触发首页警告</span>
       <a href="./old-coins.html">打开老币异动筛选器 →</a>
     </div>
   </div>
@@ -2194,6 +2195,6 @@
 
 <script>window.I18N_SRC="assets/i18n-en.9b8f16ab81.js"</script>
 
-<script src="assets/ext-bundle.b4c19c3ebd.js" data-inline="ext"></script>
+<script src="assets/ext-bundle.359eb39015.js" data-inline="ext"></script>
 </body>
 </html>

@@ -4147,7 +4147,7 @@ details:has(>#executionReview)>summary{padding:10px 0;cursor:pointer}
   </div>
   <div class="rs-sync-msg" id="homeRsMsg">正在同步资金情绪与链上共振状态…</div>
   <div class="rs-sync-foot">
-    <span>大跌 10/25/65 · 大涨 15/25/60</span>
+    <span>30/90日极端共振 · 回测跑赢基准才激活</span>
     <button type="button" class="rs-link-btn" id="homeRsJump">查看三层明细 →</button>
   </div>
 </section>
@@ -4271,37 +4271,37 @@ details:has(>#executionReview)>summary{padding:10px 0;cursor:pointer}
       <p class="ct-note">门槛为过去 4 年分位，每月只用当时已知的数据。上表是样本内的历史观察：规则是在看过历史之后设定的，样本只有约 4 轮周期，顶部区可能提前数月出现；不代表未来的准确率。</p></details>
     <p class="ct-note tb-why">估值类指标高度重复（MVRV 与 NUPL 相关 1.00），先在类内平均再合成，避免重复计算。</p>
   </section></details>
-<details class="module-fold" data-module="resonance" id="resonanceFold"><summary><span><b>三层共振信号</b><small data-fold-live="resonance" data-fold-default="大跌预警 10/25/65 · 大涨启动 15/25/60">大跌预警 10/25/65 · 大涨启动 15/25/60</small></span></summary><section class="sec" id="resonanceSec" aria-label="三层共振信号">
+<details class="module-fold" data-module="resonance" id="resonanceFold"><summary><span><b>极端三层共振（30/90日）</b><small data-fold-live="resonance" data-fold-default="极值条件 · 仅保留回测跑赢基准的信号">极值条件 · 仅保留回测跑赢基准的信号</small></span></summary><section class="sec" id="resonanceSec" aria-label="极端三层共振信号">
   <div class="rs-wrap">
     <div class="rs-grid">
       <div class="rs-box" id="rsCrashBox">
         <div class="rs-top">
-          <div><div class="rs-name">大跌预警</div><div class="rs-wt">资金情绪主导 10 / 25 / 65</div></div>
-          <span class="rs-badge" id="rsCrashBadge">计算中</span>
+          <div><div class="rs-name">极端派发 · 大跌共振</div><div class="rs-wt">3 项严苛条件同向满足（30/90日）</div></div>
+          <span class="rs-badge" id="rsCrashBadge">检验中</span>
         </div>
         <div class="rs-score-row">
-          <div class="rs-num" id="rsCrashScore">—<small>/100</small></div>
-          <div class="rs-gate" id="rsCrashGate">门控：≥65 且资金情绪层 ≥33</div>
+          <div class="rs-num" id="rsCrashScore">—<small>/3</small></div>
+          <div class="rs-gate" id="rsCrashGate">回测校验中…</div>
         </div>
         <div class="rs-bars">
-          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>估值</span><span id="rsCL1">0/10</span></div><div class="rs-bar-track"><div class="rs-bar-fill crash" id="rsCB1"></div></div></div>
-          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>链上</span><span id="rsCL2">0/25</span></div><div class="rs-bar-track"><div class="rs-bar-fill crash" id="rsCB2"></div></div></div>
-          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>资金情绪</span><span id="rsCL3">0/65</span></div><div class="rs-bar-track"><div class="rs-bar-fill crash" id="rsCB3"></div></div></div>
+          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>高位拥挤</span><span id="rsCL1">0/1</span></div><div class="rs-bar-track"><div class="rs-bar-fill crash" id="rsCB1"></div></div></div>
+          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>链上派发</span><span id="rsCL2">0/1</span></div><div class="rs-bar-track"><div class="rs-bar-fill crash" id="rsCB2"></div></div></div>
+          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>资金拐弱</span><span id="rsCL3">0/1</span></div><div class="rs-bar-track"><div class="rs-bar-fill crash" id="rsCB3"></div></div></div>
         </div>
       </div>
       <div class="rs-box" id="rsRallyBox">
         <div class="rs-top">
-          <div><div class="rs-name">大涨启动</div><div class="rs-wt">资金情绪主导 15 / 25 / 60</div></div>
-          <span class="rs-badge" id="rsRallyBadge">计算中</span>
+          <div><div class="rs-name">极端出清 · 大涨共振</div><div class="rs-wt">3 项严苛条件同向满足（30/90日）</div></div>
+          <span class="rs-badge" id="rsRallyBadge">检验中</span>
         </div>
         <div class="rs-score-row">
-          <div class="rs-num" id="rsRallyScore">—<small>/100</small></div>
-          <div class="rs-gate" id="rsRallyGate">门控：≥65 且资金情绪层 ≥32</div>
+          <div class="rs-num" id="rsRallyScore">—<small>/3</small></div>
+          <div class="rs-gate" id="rsRallyGate">回测校验中…</div>
         </div>
         <div class="rs-bars">
-          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>估值</span><span id="rsRL1">0/15</span></div><div class="rs-bar-track"><div class="rs-bar-fill rally" id="rsRB1"></div></div></div>
-          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>链上</span><span id="rsRL2">0/25</span></div><div class="rs-bar-track"><div class="rs-bar-fill rally" id="rsRB2"></div></div></div>
-          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>资金情绪</span><span id="rsRL3">0/60</span></div><div class="rs-bar-track"><div class="rs-bar-fill rally" id="rsRB3"></div></div></div>
+          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>低位赔率</span><span id="rsRL1">0/1</span></div><div class="rs-bar-track"><div class="rs-bar-fill rally" id="rsRB1"></div></div></div>
+          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>投降出清</span><span id="rsRL2">0/1</span></div><div class="rs-bar-track"><div class="rs-bar-fill rally" id="rsRB2"></div></div></div>
+          <div class="rs-bar-item"><div class="rs-bar-lbl"><span>极恐/回流</span><span id="rsRL3">0/1</span></div><div class="rs-bar-track"><div class="rs-bar-fill rally" id="rsRB3"></div></div></div>
         </div>
       </div>
     </div>
@@ -4317,8 +4317,8 @@ details:has(>#executionReview)>summary{padding:10px 0;cursor:pointer}
 
     <div class="rs-tabs">
       <div class="rs-seg" role="tablist">
-        <button type="button" id="rsTabCrash" class="active">大跌预警明细</button>
-        <button type="button" id="rsTabRally">大涨启动明细</button>
+        <button type="button" id="rsTabCrash" class="active">大跌极值条件</button>
+        <button type="button" id="rsTabRally">大涨极值条件</button>
       </div>
       <div class="rs-actions">
         <span id="rsStatusMeta">正在同步实时数据…</span>
@@ -4327,16 +4327,17 @@ details:has(>#executionReview)>summary{padding:10px 0;cursor:pointer}
     </div>
 
     <div class="rs-list" id="rsDetailList"></div>
+
     <div class="rs-bt" id="rsBacktestBox">
       <div class="rs-bt-hd">
-        <span class="rs-bt-title">历史回测验证（近 4 年真实日线 · 7日去重）</span>
+        <span class="rs-bt-title">历史回测验证（近 4 年真实日线 · 30日去重）</span>
         <span class="rs-bt-sub" id="rsBtMeta">正在计算历史样本…</span>
       </div>
-      <div id="rsBtBody" style="font-size:11px;color:var(--text-secondary)">同步历史序列后自动计算触发后 14 天 / 30 天实际涨跌…</div>
+      <div id="rsBtBody" style="font-size:11px;color:var(--text-secondary)">同步历史序列后自动计算触发后 30 天 / 90 天实际涨跌并校验是否跑赢基准…</div>
     </div>
 
     <div class="rs-foot">
-      <span>数据：Bitview · Binance / OKX · Coinbase · DefiLlama · Alternative.me · ETF</span>
+      <span>规则：回测未显著跑赢基准的信号自动标为「仅观察」且不触发首页警告</span>
       <a href="./old-coins.html">打开老币异动筛选器 →</a>
     </div>
   </div>
@@ -16642,7 +16643,7 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
 (function(){
   if(window.__sgResonanceInit)return;
   window.__sgResonanceInit=true;
-  var CACHE_KEY="sg_resonance_v4",CACHE_TTL=5*60*1000;
+  var CACHE_KEY="sg_resonance_v5",CACHE_TTL=5*60*1000;
   var activeTab="crash",lastState=null,busy=false;
 
   function $(id){return document.getElementById(id)}
@@ -16694,17 +16695,11 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
         }
         return m;
       }
-      var mvrvArr=pick(a,1);
-      var sthNuplArr=pick(a,2);
-      var sthRpArr=pick(b,1);
-      var soprArr=pick(b,2);
-      var lthSupArr=pick(b,3);
-
+      var mvrvArr=pick(a,1),sthNuplArr=pick(a,2),sthRpArr=pick(b,1),soprArr=pick(b,2),lthSupArr=pick(b,3);
       var mvrv=mvrvArr.length?mvrvArr[mvrvArr.length-1]:null;
       var mvrvPct=null;
       if(mvrv!=null&&mvrvArr.length>=30){
-        var le=0;
-        for(var k=0;k<mvrvArr.length;k++){if(mvrvArr[k]<=mvrv)le++}
+        var le=0;for(var k=0;k<mvrvArr.length;k++){if(mvrvArr[k]<=mvrv)le++}
         mvrvPct=le/mvrvArr.length*100;
       }
       var sthNupl=sthNuplArr.length?sthNuplArr[sthNuplArr.length-1]:null;
@@ -16712,20 +16707,10 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
       var sthRp=sthRpArr.length?sthRpArr[sthRpArr.length-1]:null;
       var soprNow=soprArr.length?soprArr[soprArr.length-1]:null;
       var sopr14Min=soprArr.length?Math.min.apply(null,soprArr.slice(-14)):null;
-      var lth7d=null,lthNeg3=false,lth3d=null;
-      if(lthSupArr.length>=8){
-        var n=lthSupArr.length;
-        lth7d=lthSupArr[n-1]-lthSupArr[n-8];
-        var d1=lthSupArr[n-1]-lthSupArr[n-2];
-        var d2=lthSupArr[n-2]-lthSupArr[n-3];
-        var d3=lthSupArr[n-3]-lthSupArr[n-4];
-        lthNeg3=(d1<0&&d2<0&&d3<0);
-        lth3d=d1+d2+d3;
-      }
+      var lth7d=lthSupArr.length>=8?(lthSupArr[lthSupArr.length-1]-lthSupArr[lthSupArr.length-8]):null;
       return {
         mvrv:mvrv,mvrvPct:mvrvPct,sthNupl:sthNupl,sthNupl14Min:sthNupl14Min,
-        sthRp:sthRp,soprNow:soprNow,sopr14Min:sopr14Min,
-        lth7d:lth7d,lthNeg3:lthNeg3,lth3d:lth3d,
+        sthRp:sthRp,soprNow:soprNow,sopr14Min:sopr14Min,lth7d:lth7d,
         hist:{mvrv:toMap(a,1),sthNupl:toMap(a,2),sthRp:toMap(b,1),sopr:toMap(b,2),lth:toMap(b,3)}
       };
     });
@@ -16736,41 +16721,42 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
       var rows=j&&Array.isArray(j.rows)?j.rows:[];
       if(!rows.length)return null;
       var n=rows.length;
-      function isHit(r){
+      function parseRow(r){
         var cvals=r[5]||[],ov=0;
         for(var i=0;i<cvals.length;i++)ov+=(+cvals[i]||0);
-        var pr=+r[4]||0;
-        return {hit:(ov>5000&&pr>3e8),ov:ov,pr:pr,d:r[0]};
+        return {ov:ov,pr:+r[4]||0};
       }
-      var hits3=0,maxOv3=0,maxPr3=0;
+      var extreme3=false,maxOv3=0,maxPr3=0;
       for(var i=Math.max(0,n-3);i<n;i++){
-        var h=isHit(rows[i]);
-        if(h.hit)hits3++;
-        if(h.ov>maxOv3){maxOv3=h.ov;maxPr3=h.pr}
+        var x=parseRow(rows[i]);
+        if(x.ov>7000&&x.pr>4e8)extreme3=true;
+        if(x.ov>maxOv3){maxOv3=x.ov;maxPr3=x.pr}
       }
       var quietDays=0;
-      for(var j2=n-1;j2>=Math.max(0,n-60);j2--){
-        if(isHit(rows[j2]).hit)break;
+      for(var q=n-1;q>=Math.max(0,n-60);q--){
+        var xq=parseRow(rows[q]);
+        if(xq.ov>5000&&xq.pr>3e8)break;
         quietDays++;
       }
       var last=rows[n-1];
-      return {hits3:hits3,maxOv3:maxOv3,maxPr3:maxPr3,quietDays:quietDays,lastDate:last[0],lastPrice:+last[1]||null,histRows:rows.slice(-1480)};
+      return {extreme3:extreme3,maxOv3:maxOv3,maxPr3:maxPr3,quietDays:quietDays,lastDate:last[0],lastPrice:+last[1]||null,histRows:rows.slice(-1500)};
     });
   }
 
   function fetchEtf(){
     var parseDays=function(j){
       var arr=(j&&Array.isArray(j.days))?j.days:[];
-      var clean=[];
+      var clean=[],emap={};
       for(var i=0;i<arr.length;i++){
-        if(arr[i]&&typeof arr[i].netFlowUsd==="number")clean.push(arr[i].netFlowUsd);
+        if(arr[i]&&typeof arr[i].netFlowUsd==="number"){
+          clean.push(arr[i].netFlowUsd);
+          if(arr[i].date)emap[arr[i].date.slice(0,10)]=arr[i].netFlowUsd;
+        }
       }
       if(clean.length<5)return null;
       var n=clean.length,sum5=0;
       for(var k=n-5;k<n;k++)sum5+=clean[k];
-      var neg3=(clean[n-1]<0&&clean[n-2]<0&&clean[n-3]<0);
-      var pos3=(clean[n-1]>0&&clean[n-2]>0&&clean[n-3]>0);
-      var emap={};for(var ei=0;ei<arr.length;ei++){if(arr[ei]&&arr[ei].date&&typeof arr[ei].netFlowUsd==="number")emap[arr[ei].date.slice(0,10)]=arr[ei].netFlowUsd}return {sum5:sum5,neg3:neg3,pos3:pos3,last:clean[n-1],thru:(j&&j.updatedThrough)||"",hist:emap};
+      return {sum5:sum5,thru:(j&&j.updatedThrough)||"",hist:emap};
     };
     return fetchJson("./data/etf-flows.json",7000).then(parseDays).catch(function(){
       return fetchJson("https://www.tftc.io/bitcoin-etf-flows/data.json",9000).then(parseDays);
@@ -16786,13 +16772,12 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
         var v=x&&x.totalCirculatingUSD&&typeof x.totalCirculatingUSD.peggedUSD==="number"?x.totalCirculatingUSD.peggedUSD:(x&&x.totalCirculating&&typeof x.totalCirculating.peggedUSD==="number"?x.totalCirculating.peggedUSD:null);
         if(v!=null&&isFinite(v)&&v>0){
           vals.push(v);
-          if(x&&x.date){var dd=new Date((+x.date)*1000).toISOString().slice(0,10);smap[dd]=v}
+          if(x&&x.date)smap[new Date((+x.date)*1000).toISOString().slice(0,10)]=v;
         }
       }
       if(vals.length<31)throw new Error("short stablecoin");
-      var n=vals.length;
-      var now=vals[n-1],d7=now-vals[n-8],d30=now-vals[n-31];
-      return {now:now,d7:d7,d30:d30,hist:smap};
+      var n=vals.length,now=vals[n-1];
+      return {now:now,d7:now-vals[n-8],d30:now-vals[n-31],hist:smap};
     });
   }
 
@@ -16805,10 +16790,9 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
       var fmap={};
       for(var i=0;i<arr.length;i++){
         var v=parseInt(arr[i].value,10),ts=+arr[i].timestamp;
-        if(isFinite(v)&&isFinite(ts)&&ts>0){fmap[new Date(ts*1000).toISOString().slice(0,10)]=v}
+        if(isFinite(v)&&isFinite(ts)&&ts>0)fmap[new Date(ts*1000).toISOString().slice(0,10)]=v;
       }
-      var now=vals[0],min7=Math.min.apply(null,vals),max7=Math.max.apply(null,vals);
-      return {now:now,min7:min7,max7:max7,cls:(arr[0]&&arr[0].value_classification)||"",hist:fmap};
+      return {now:vals[0],min7:Math.min.apply(null,vals),max7:Math.max.apply(null,vals),hist:fmap};
     });
   }
 
@@ -16818,134 +16802,86 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
       var vals=arr.map(function(x){return +(x.sumOpenInterest||0)}).filter(function(v){return v>0});
       if(vals.length<8)throw new Error("short oi");
       var now=vals[vals.length-1],prev7=vals[vals.length-8];
-      var max7=Math.max.apply(null,vals.slice(-8));
-      return {oi7dPct:(now-prev7)/prev7*100,oiFromHighPct:(now-max7)/max7*100,src:"Binance"};
+      return {oi7dPct:(now-prev7)/prev7*100};
     }).catch(function(){
       return fetchJson("https://www.okx.com/api/v5/rubik/stat/contracts/open-interest-volume?ccy=BTC&period=1D",8500).then(function(j){
         var arr=j&&Array.isArray(j.data)?j.data:[];
         if(arr.length<8)throw new Error("okx oi");
         var vals=arr.slice(0,10).map(function(x){return +(x[1]||0)}).reverse();
-        var now=vals[vals.length-1],prev7=vals[vals.length-8];
-        var max7=Math.max.apply(null,vals.slice(-8));
-        return {oi7dPct:(now-prev7)/prev7*100,oiFromHighPct:(now-max7)/max7*100,src:"OKX"};
+        return {oi7dPct:(vals[vals.length-1]-vals[vals.length-8])/vals[vals.length-8]*100};
       });
     });
-
     var frP=fetchJson("https://fapi.binance.com/fapi/v1/premiumIndex?symbol=BTCUSDT",7500).then(function(j){
-      var r=+(j&&j.lastFundingRate);
-      if(!isFinite(r))throw new Error("bad fr");
-      return r*3*365*100;
+      var r=+(j&&j.lastFundingRate);if(!isFinite(r))throw new Error("fr");return r*3*365*100;
     }).catch(function(){
       return fetchJson("https://www.okx.com/api/v5/public/funding-rate?instId=BTC-USDT-SWAP",7500).then(function(j){
-        var r=+(j&&j.data&&j.data[0]&&j.data[0].fundingRate);
-        if(!isFinite(r))throw new Error("okx fr");
-        return r*3*365*100;
+        var r=+(j&&j.data&&j.data[0]&&j.data[0].fundingRate);if(!isFinite(r))throw new Error("okx fr");return r*3*365*100;
       });
     });
-
-    return Promise.all([
-      oiP.catch(function(){return null}),
-      frP.catch(function(){return null})
-    ]).then(function(r){return {oi:r[0],frAnn:r[1]}});
+    return Promise.all([oiP.catch(function(){return null}),frP.catch(function(){return null})]).then(function(r){return {oi:r[0],frAnn:r[1]}});
   }
 
   function fetchCoinbasePremium(){
-    var bnUrl="https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=31";
+    var bnUrl="https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=10";
     var cbUrl="https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=86400";
     var bnLiveUrl="https://data-api.binance.vision/api/v3/ticker/price?symbol=BTCUSDT";
     var cbLiveUrl="https://api.exchange.coinbase.com/products/BTC-USD/ticker";
     return Promise.all([
-      fetchJson(bnUrl,8000).catch(function(){return fetchJson("https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=31",8000)}),
+      fetchJson(bnUrl,8000).catch(function(){return fetchJson("https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=10",8000)}),
       fetchJson(cbUrl,8000).catch(function(){return null}),
       fetchJson(bnLiveUrl,7000).catch(function(){return null}),
       fetchJson(cbLiveUrl,7000).catch(function(){return null})
     ]).then(function(res){
       var bnK=res[0],cbK=res[1],bnL=res[2],cbL=res[3];
-      var spot=bnL&&+bnL.price?+bnL.price:null;
-      var cbSpot=cbL&&+cbL.price?+cbL.price:null;
+      var spot=bnL&&+bnL.price?+bnL.price:null,cbSpot=cbL&&+cbL.price?+cbL.price:null;
       var livePrem=(spot&&cbSpot)?((cbSpot-spot)/spot*100):null;
-      var is30dHigh=false,bnCloses=[];
-      if(Array.isArray(bnK)&&bnK.length>=15){
-        bnCloses=bnK.map(function(k){return +k[4]||0});
-        var lastClose=spot||bnCloses[bnCloses.length-1];
-        var max30=Math.max.apply(null,bnCloses.slice(-30));
-        is30dHigh=(lastClose>=max30*0.995);
-        if(!spot)spot=bnCloses[bnCloses.length-1];
-      }
-      var prem3=null,prem7=null;
+      var prem7=null;
       if(Array.isArray(bnK)&&Array.isArray(cbK)&&cbK.length>=7){
-        var cbMap={};
-        for(var i=0;i<cbK.length;i++){
-          var ts=Math.floor((+cbK[i][0])/86400)*86400;
-          cbMap[ts]=+cbK[i][4];
-        }
+        var cbMap={};for(var i=0;i<cbK.length;i++)cbMap[Math.floor((+cbK[i][0])/86400)*86400]=+cbK[i][4];
         var prems=[];
         for(var j=0;j<bnK.length;j++){
-          var bts=Math.floor((+bnK[j][0]/1000)/86400)*86400;
-          var bc=+bnK[j][4];
+          var bts=Math.floor((+bnK[j][0]/1000)/86400)*86400,bc=+bnK[j][4];
           if(cbMap[bts]&&bc>0)prems.push((cbMap[bts]-bc)/bc*100);
         }
-        if(prems.length>=3){
-          var s3=0;for(var a=prems.length-3;a<prems.length;a++)s3+=prems[a];
-          prem3=s3/3;
-        }
-        if(prems.length>=7){
-          var s7=0;for(var b=prems.length-7;b<prems.length;b++)s7+=prems[b];
-          prem7=s7/7;
-        }
+        if(prems.length>=7){var s7=0;for(var b=prems.length-7;b<prems.length;b++)s7+=prems[b];prem7=s7/7}
       }
-      if(prem3==null&&livePrem!=null)prem3=livePrem;
-      if(prem7==null&&livePrem!=null)prem7=livePrem;
-      return {spot:spot,livePrem:livePrem,prem3:prem3,prem7:prem7,is30dHigh:is30dHigh,bnCloses14:bnCloses.slice(-14)};
+      if(prem7==null)prem7=livePrem;
+      return {spot:spot,livePrem:livePrem,prem7:prem7};
     });
   }
 
-  function readAhrFromDom(){
-    try{
-      var el=document.getElementById("ahrV")||document.querySelector("[data-ahr-val]");
-      if(el){
-        var m=(el.textContent||"").match(/([0-9]+\.[0-9]+)/);
-        if(m)return parseFloat(m[1]);
-      }
-    }catch(e){}
-    return null;
-  }
-
-
+  // Strict 30D/90D Historical Backtest + Automatic Statistical Edge Gate
   function computeBacktest(data){
     var oc=data.oc,bv=data.bv||{},etf=data.etf,stb=data.stb,fng=data.fng;
     var rows=(oc&&Array.isArray(oc.histRows))?oc.histRows:[];
-    if(rows.length<120)return null;
+    if(rows.length<180)return null;
     var bvh=bv.hist||{},em=(etf&&etf.hist)||{},sm=(stb&&stb.hist)||{},fm=(fng&&fng.hist)||{};
     var n=rows.length;
-    var dates=[],prices=[],ovs=[],prs=[],hits=[];
+    var dates=[],prices=[],ovs=[],prs=[];
     for(var i=0;i<n;i++){
       var r=rows[i],cvals=r[5]||[],ov=0;
       for(var c=0;c<cvals.length;c++)ov+=(+cvals[c]||0);
-      var pr=+r[4]||0;
-      dates.push(r[0]);prices.push(+r[1]||0);ovs.push(ov);prs.push(pr);
-      hits.push(ov>5000&&pr>3e8);
+      dates.push(r[0]);prices.push(+r[1]||0);ovs.push(ov);prs.push(+r[4]||0);
     }
-    var mvrvWindow=[],crashEv=[],rallyEv=[],base14=[],base30=[];
-    var lastCrashIdx=-99,lastRallyIdx=-99;
+    var mvrvWin=[],crashEv=[],rallyEv=[],base30=[],base90=[];
+    var lastCrash=-99,lastRally=-99;
     function med(arr){
       if(!arr.length)return null;
-      var s=arr.slice().sort(function(a,b){return a-b});
-      var m=Math.floor(s.length/2);
+      var s=arr.slice().sort(function(a,b){return a-b}),m=Math.floor(s.length/2);
       return s.length%2?s[m]:(s[m-1]+s[m])/2;
     }
-    for(var t=35;t<n-31;t++){
-      var d=dates[t],p0=prices[t],p14=prices[t+14],p30=prices[t+30];
-      if(!(p0>0&&p14>0&&p30>0))continue;
-      var r14=(p14-p0)/p0*100,r30=(p30-p0)/p0*100;
-      base14.push(r14);base30.push(r30);
+    for(var t=35;t<n-91;t++){
+      var d=dates[t],p0=prices[t],p30=prices[t+30],p90=prices[t+90];
+      if(!(p0>0&&p30>0&&p90>0))continue;
+      var r30=(p30-p0)/p0*100,r90=(p90-p0)/p0*100;
+      base30.push(r30);base90.push(r90);
 
       var mv=bvh.mvrv?bvh.mvrv[d]:null;
-      if(mv!=null){mvrvWindow.push(mv);if(mvrvWindow.length>1460)mvrvWindow.shift()}
+      if(mv!=null){mvrvWin.push(mv);if(mvrvWin.length>1460)mvrvWin.shift()}
       var mvPct=null;
-      if(mv!=null&&mvrvWindow.length>=60){
-        var le=0;for(var k=0;k<mvrvWindow.length;k++)if(mvrvWindow[k]<=mv)le++;
-        mvPct=le/mvrvWindow.length*100;
+      if(mv!=null&&mvrvWin.length>=60){
+        var le=0;for(var k=0;k<mvrvWin.length;k++)if(mvrvWin[k]<=mv)le++;
+        mvPct=le/mvrvWin.length*100;
       }
       var sn=bvh.sthNupl?bvh.sthNupl[d]:null;
       var srp=bvh.sthRp?bvh.sthRp[d]:null;
@@ -16953,76 +16889,141 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
       var lth0=bvh.lth?bvh.lth[d]:null,lth7=bvh.lth?bvh.lth[dates[t-7]]:null;
       var lth7d=(lth0!=null&&lth7!=null)?(lth0-lth7):null;
 
-      // 3-day old-coin hits & quiet streak
-      var h3=(hits[t]?1:0)+(hits[t-1]?1:0)+(hits[t-2]?1:0);
-      var quiet=0;for(var q=t;q>=Math.max(0,t-14);q--){if(hits[q])break;quiet++}
+      // Old coins extreme 3d distribution & 7d quiet
+      var extDist3=false;
+      for(var e3=t;e3>=t-2;e3--){if(ovs[e3]>7000&&prs[e3]>4e8)extDist3=true}
+      var quiet=0;for(var q=t;q>=Math.max(0,t-14);q--){if(ovs[q]>5000&&prs[q]>3e8)break;quiet++}
 
-      // ETF 5d rolling (only when present)
-      var etfVals=[];
-      for(var e=t;e>=Math.max(0,t-9)&&etfVals.length<5;e--){if(em[dates[e]]!=null)etfVals.push(em[dates[e]])}
-      var etf5=etfVals.length===5?(etfVals[0]+etfVals[1]+etfVals[2]+etfVals[3]+etfVals[4]):null;
+      // 14d STH capitulation check
+      var hadCap=false;
+      for(var c14=t;c14>=t-13;c14--){
+        var sv=bvh.sopr?bvh.sopr[dates[c14]]:null,nv=bvh.sthNupl?bvh.sthNupl[dates[c14]]:null;
+        if(sv!=null&&sv<0.985&&nv!=null&&nv<-0.08){hadCap=true;break}
+      }
 
-      // Stablecoin 7d & 30d
-      var st0=sm[d],st7=sm[dates[t-7]],st30=sm[dates[t-30]];
-      var stb7=(st0&&st7)?(st0-st7):null,stb30=(st0&&st30)?(st0-st30):null;
+      // ETF 5d
+      var evs=[];for(var e=t;e>=Math.max(0,t-9)&&evs.length<5;e--){if(em[dates[e]]!=null)evs.push(em[dates[e]])}
+      var etf5=evs.length===5?(evs[0]+evs[1]+evs[2]+evs[3]+evs[4]):null;
+
+      // Stablecoin 7d
+      var st0=sm[d],st7=sm[dates[t-7]];
+      var stb7=(st0&&st7)?(st0-st7):null;
 
       // F&G 7d
-      var fg0=fm[d],fgMax=fg0,fgMin=fg0;
-      if(fg0!=null){
-        for(var f=t-1;f>=t-6;f--){var fv=fm[dates[f]];if(fv!=null){if(fv>fgMax)fgMax=fv;if(fv<fgMin)fgMin=fv}}
+      var fg0=fm[d],fgMax=fg0;
+      if(fg0!=null){for(var f=t-1;f>=t-6;f--){var fv=fm[dates[f]];if(fv!=null&&fv>fgMax)fgMax=fv}}
+
+      // === Extreme Crash (3 pillars aligned) ===
+      var cP1=(mvPct!=null&&mvPct>=80&&sn!=null&&sn>0.15);
+      var cP2=(extDist3||(lth7d!=null&&lth7d<-25000));
+      var cP3=((fg0!=null&&fgMax>=78&&fg0<=fgMax-2)||(etf5!=null&&etf5<-3e8)||(stb7!=null&&stb7<-5e8));
+      if(cP1&&cP2&&cP3&&t-lastCrash>=30){
+        crashEv.push({d:d,r30:r30,r90:r90});
+        lastCrash=t;
       }
 
-      // Crash score (normalized over historically available components)
-      var cRaw=0,cMax=0,cFund=0,cFundMax=0;
-      if(mvPct!=null){cMax+=6;cRaw+=(mvPct>=85?6:(mvPct>=75?3:0))}
-      if(sn!=null){cMax+=4;cRaw+=(sn>0.25?4:(sn>0.15?2:0))}
-      cMax+=15;if(h3>=2||(ovs[t]>10000&&prs[t]>3e8))cRaw+=15;else if(h3>=1)cRaw+=9;
-      if(lth7d!=null){cMax+=10;if(lth7d<-35000)cRaw+=10;else if(lth7d<-15000)cRaw+=6}
-      if(etf5!=null){cMax+=16;cFundMax+=16;var es=(etf5<-8e8?16:(etf5<-2e8?9:0));cRaw+=es;cFund+=es}
-      if(stb7!=null&&stb30!=null){cMax+=13;cFundMax+=13;var ss=(stb7<-5e8&&stb30<-2e9?13:((stb7<-5e8||stb30<-2e9)?7:0));cRaw+=ss;cFund+=ss}
-      if(fg0!=null){cMax+=8;cFundMax+=8;var fs=((fgMax>=75&&fg0<=fgMax-3)?8:(fg0>=78?5:0));cRaw+=fs;cFund+=fs}
-      var cSc=cMax>0?Math.round(cRaw/cMax*100):0;
-      var cFundPct=cFundMax>0?(cFund/cFundMax):0;
-      if(cSc>=50&&(cFundMax===0||cFundPct>=0.35)&&t-lastCrashIdx>=7){
-        crashEv.push({d:d,sc:cSc,r14:r14,r30:r30});
-        lastCrashIdx=t;
-      }
-
-      // Rally score (normalized over historically available components)
-      var rRaw=0,rMax=0,rFund=0,rFundMax=0;
-      if(mvPct!=null){rMax+=9;rRaw+=(mvPct<=20?9:(mvPct<=35?5:0))}
-      if(srp!=null&&srp>0){rMax+=6;var diff=(p0-srp)/srp*100;rRaw+=(Math.abs(diff)<=3?6:(diff<-3?3:0))}
-      if(sp!=null&&sn!=null){
-        rMax+=13;
-        var spMin=sp;for(var j=t-1;j>=t-13;j--){var sv=bvh.sopr?bvh.sopr[dates[j]]:null;if(sv!=null&&sv<spMin)spMin=sv}
-        if(spMin<0.985&&sp>=1.00)rRaw+=13;else if(sp<0.985||sn<-0.08)rRaw+=7;
-      }
-      rMax+=12;if(quiet>=7)rRaw+=6;if(lth7d!=null){if(lth7d>10000)rRaw+=6;else if(lth7d>0)rRaw+=3}
-      if(etf5!=null){rMax+=14;rFundMax+=14;var res1=(etf5>8e8?14:(etf5>2e8?8:0));rRaw+=res1;rFund+=res1}
-      if(stb7!=null&&stb30!=null){rMax+=14;rFundMax+=14;var rss=(stb7>1e9&&stb30>3e9?14:((stb7>5e8||stb30>1.5e9)?8:0));rRaw+=rss;rFund+=rss}
-      if(fg0!=null){rMax+=8;rFundMax+=8;var rfs=((fgMin<=25&&fg0>=fgMin+4)?8:(fg0<=20?4:0));rRaw+=rfs;rFund+=rfs}
-      var rSc=rMax>0?Math.round(rRaw/rMax*100):0;
-      var rFundPct=rFundMax>0?(rFund/rFundMax):0;
-      if(rSc>=55&&(rFundMax===0||rFundPct>=0.35)&&t-lastRallyIdx>=7){
-        rallyEv.push({d:d,sc:rSc,r14:r14,r30:r30});
-        lastRallyIdx=t;
+      // === Extreme Rally (3 pillars aligned) ===
+      var rP1=((mvPct!=null&&mvPct<=30)||(srp!=null&&srp>0&&p0<srp));
+      var rP2=(hadCap&&quiet>=7);
+      var rP3=((fg0!=null&&fg0<=25)||(etf5!=null&&etf5>2e8)||(stb7!=null&&stb7>5e8));
+      if(rP1&&rP2&&rP3&&t-lastRally>=30){
+        rallyEv.push({d:d,r30:r30,r90:r90});
+        lastRally=t;
       }
     }
+
+    var b30=med(base30),b90=med(base90);
+    var bDn30=0,bUp90=0;
+    for(var i=0;i<base30.length;i++)if(base30[i]<0)bDn30++;
+    for(var j=0;j<base90.length;j++)if(base90[j]>0)bUp90++;
+    var baseDn30Pct=base30.length?Math.round(bDn30/base30.length*100):50;
+    var baseUp90Pct=base90.length?Math.round(bUp90/base90.length*100):50;
+
     function summarize(evs,isCrash){
-      var a14=evs.map(function(x){return x.r14}),a30=evs.map(function(x){return x.r30});
-      var hit30=0;for(var i=0;i<a30.length;i++){if(isCrash?a30[i]<0:a30[i]>0)hit30++}
-      return {
-        n:evs.length,m14:med(a14),m30:med(a30),
-        rate30:a30.length?Math.round(hit30/a30.length*100):null,
-        recent:evs.slice(-4).reverse()
-      };
+      var a30=evs.map(function(x){return x.r30}),a90=evs.map(function(x){return x.r90});
+      var m30=med(a30),m90=med(a90);
+      var h30=0,h90=0;
+      for(var k=0;k<evs.length;k++){
+        if(isCrash){if(a30[k]<0)h30++;if(a90[k]<0)h90++}
+        else{if(a30[k]>0)h30++;if(a90[k]>0)h90++}
+      }
+      var rate30=evs.length?Math.round(h30/evs.length*100):null;
+      var rate90=evs.length?Math.round(h90/evs.length*100):null;
+      // Strict edge test: need >=3 samples AND clear statistical edge over baseline
+      var valid=false;
+      if(evs.length>=3&&m30!=null&&m90!=null&&b30!=null&&b90!=null){
+        if(isCrash) valid=((m90<=b90-5)||(m30<=b30-4&&rate30>=baseDn30Pct+10));
+        else valid=((m90>=b90+5&&rate90>=60)||(m30>=b30+4&&rate30>=60));
+      }
+      return {n:evs.length,m30:m30,m90:m90,rate30:rate30,rate90:rate90,valid:valid,recent:evs.slice(-4).reverse()};
     }
+
     return {
-      span:dates[35]+" ~ "+dates[n-32],
-      base14:med(base14),base30:med(base30),
+      span:dates[35]+" ~ "+dates[n-92],
+      base30:b30,base90:b90,baseDn30Pct:baseDn30Pct,baseUp90Pct:baseUp90Pct,
       crash:summarize(crashEv,true),
       rally:summarize(rallyEv,false)
     };
+  }
+
+  function evaluate(data){
+    var bv=data.bv||{},oc=data.oc,etf=data.etf,drv=data.drv||{},cb=data.cb||{},stb=data.stb,fng=data.fng;
+    var spot=cb.spot||(oc&&oc.lastPrice)||null;
+    var bt=computeBacktest(data);
+
+    // === Live Extreme Crash (3 pillars) ===
+    var c1Avail=(bv.mvrvPct!=null&&bv.sthNupl!=null);
+    var c1Hit=(c1Avail&&bv.mvrvPct>=80&&bv.sthNupl>0.15);
+    var c2Avail=(!!oc||bv.lth7d!=null);
+    var c2Hit=((oc&&oc.extreme3)||(bv.lth7d!=null&&bv.lth7d<-25000));
+    var c3Parts=[],c3Hit=false,c3Avail=false;
+    if(fng){c3Avail=true;if(fng.max7>=78&&fng.now<=fng.max7-2)c3Hit=true;c3Parts.push("F&G "+fng.now+"(高"+fng.max7+")")}
+    if(etf){c3Avail=true;if(etf.sum5<-3e8)c3Hit=true;c3Parts.push("ETF "+fmtUsdM(etf.sum5))}
+    if(stb){c3Avail=true;if(stb.d7<-5e8)c3Hit=true;c3Parts.push("稳定币 "+fmtUsdM(stb.d7))}
+    if(cb.prem7!=null){c3Avail=true;if(cb.prem7<-0.05)c3Hit=true;c3Parts.push("CB "+fmtPct(cb.prem7,2))}
+    if(drv.oi&&drv.frAnn!=null){c3Avail=true;if(drv.oi.oi7dPct>15&&drv.frAnn>30)c3Hit=true}
+
+    var crashItems=[
+      {layer:"高位",name:"MVRV ≥80% 分位 且 STH 浮盈 >0.15",avail:c1Avail,hit:c1Hit,val:c1Avail?("MVRV "+bv.mvrvPct.toFixed(0)+"% · sth_nupl "+bv.sthNupl.toFixed(3)):"暂缺"},
+      {layer:"派发",name:"老币放量(>7k & $400M) 或 LTH 7日 <-25k",avail:c2Avail,hit:c2Hit,val:(oc?("3日峰值 "+Math.round(oc.maxOv3).toLocaleString("en-US")+" BTC"):"")+(bv.lth7d!=null?(" · LTH "+fmtBtc(bv.lth7d)):"")},
+      {layer:"拐弱",name:"极度贪婪拐头 / ETF流出 / 稳定币收缩 / 负溢价",avail:c3Avail,hit:c3Hit,val:c3Parts.length?c3Parts.join(" · "):"暂缺"}
+    ];
+    var cCnt=(c1Hit?1:0)+(c2Hit?1:0)+(c3Hit?1:0);
+    var cValid=!!(bt&&bt.crash.valid);
+    var crash={
+      cnt:cCnt,hits:[c1Hit?1:0,c2Hit?1:0,c3Hit?1:0],items:crashItems,valid:cValid,
+      active:(cCnt===3&&cValid),
+      level:(cCnt===3&&cValid)?"danger":(cCnt>=2&&cValid?"warn":"ok"),
+      label:!cValid?"未过回测·观察":(cCnt===3?"极端大跌共振":(cCnt===2?"2/3 警戒":"未触发")),
+      gateText:!cValid?"回测未明显跑赢基准，已静默预警":(cCnt===3?"3/3 极值同向满足 · 回测有效":"需 3/3 极值同时满足（回测有效）")
+    };
+
+    // === Live Extreme Rally (3 pillars) ===
+    var r1Avail=(bv.mvrvPct!=null||(spot!=null&&bv.sthRp!=null));
+    var r1Hit=((bv.mvrvPct!=null&&bv.mvrvPct<=30)||(spot!=null&&bv.sthRp!=null&&spot<bv.sthRp));
+    var r2Avail=(bv.sopr14Min!=null&&bv.sthNupl14Min!=null&&!!oc);
+    var r2Hit=(r2Avail&&bv.sopr14Min<0.985&&bv.sthNupl14Min<-0.08&&oc.quietDays>=7);
+    var r3Parts=[],r3Hit=false,r3Avail=false;
+    if(fng){r3Avail=true;if(fng.now<=25)r3Hit=true;r3Parts.push("F&G "+fng.now)}
+    if(etf){r3Avail=true;if(etf.sum5>2e8)r3Hit=true;r3Parts.push("ETF "+fmtUsdM(etf.sum5))}
+    if(stb){r3Avail=true;if(stb.d7>5e8)r3Hit=true;r3Parts.push("稳定币 "+fmtUsdM(stb.d7))}
+
+    var rallyItems=[
+      {layer:"赔率",name:"MVRV ≤30% 分位 或 现价低于 STH 成本线",avail:r1Avail,hit:r1Hit,val:(bv.mvrvPct!=null?("MVRV "+bv.mvrvPct.toFixed(0)+"%"):"")+(bv.sthRp?(" · STH成本 $"+Math.round(bv.sthRp).toLocaleString("en-US")):"")},
+      {layer:"出清",name:"14日内 STH 割肉脉冲 且 老币静默 ≥7天",avail:r2Avail,hit:r2Hit,val:r2Avail?("14日低 SOPR "+bv.sopr14Min.toFixed(3)+" · 静默 "+oc.quietDays+" 天"):"暂缺"},
+      {layer:"极恐",name:"F&G ≤25 极度恐惧 或 ETF/稳定币转正回流",avail:r3Avail,hit:r3Hit,val:r3Parts.length?r3Parts.join(" · "):"暂缺"}
+    ];
+    var rCnt=(r1Hit?1:0)+(r2Hit?1:0)+(r3Hit?1:0);
+    var rValid=!!(bt&&bt.rally.valid);
+    var rally={
+      cnt:rCnt,hits:[r1Hit?1:0,r2Hit?1:0,r3Hit?1:0],items:rallyItems,valid:rValid,
+      active:(rCnt===3&&rValid),
+      level:(rCnt===3&&rValid)?"go":(rCnt>=2&&rValid?"ready":"ok"),
+      label:!rValid?"未过回测·观察":(rCnt===3?"极端大涨共振":(rCnt===2?"2/3 蓄力":"未触发")),
+      gateText:!rValid?"回测未明显跑赢基准，已静默提示":(rCnt===3?"3/3 极值同向满足 · 回测有效":"需 3/3 极值同时满足（回测有效）")
+    };
+
+    return {crash:crash,rally:rally,bt:bt,meta:{cb:cb,drv:drv,etf:etf,bv:bv,stb:stb,fng:fng,ts:Date.now()}};
   }
 
   function renderBacktest(bt){
@@ -17030,7 +17031,7 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
     if(!body)return;
     if(!bt){
       if(meta)meta.textContent="历史样本不足";
-      body.textContent="需加载 old-coins.json 与 Bitview 历史序列后显示回测。";
+      body.textContent="需加载 old-coins.json 与 Bitview 历史序列后显示 30/90 日回测。";
       return;
     }
     if(meta)meta.textContent=bt.span;
@@ -17040,212 +17041,22 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
       return '<span class="'+cls+'">'+(v>=0?"+":"")+v.toFixed(1)+"%</span>";
     }
     var c=bt.crash,r=bt.rally;
-    var h='<table class="rs-bt-tbl"><thead><tr><th>信号类型</th><th>触发次数</th><th>14日中位</th><th>30日中位</th><th>30日胜率</th></tr></thead><tbody>'+
-      '<tr><td>大跌预警 (≥50)</td><td>'+c.n+' 次</td><td>'+fR(c.m14)+'</td><td>'+fR(c.m30)+'</td><td>'+(c.rate30!=null?c.rate30+"% 下跌":"—")+'</td></tr>'+
-      '<tr><td>大涨启动 (≥55)</td><td>'+r.n+' 次</td><td>'+fR(r.m14)+'</td><td>'+fR(r.m30)+'</td><td>'+(r.rate30!=null?r.rate30+"% 上涨":"—")+'</td></tr>'+
-      '<tr><td style="color:var(--text-secondary)">同期任意一天</td><td style="color:var(--text-secondary)">基准</td><td>'+fR(bt.base14)+'</td><td>'+fR(bt.base30)+'</td><td style="color:var(--text-secondary)">对照</td></tr>'+
+    var cTag=c.valid?'<span class="rs-bt-up">✓ 有效</span>':'<span style="color:var(--text-secondary)">未达标</span>';
+    var rTag=r.valid?'<span class="rs-bt-up">✓ 有效</span>':'<span style="color:var(--text-secondary)">未达标</span>';
+    var h='<table class="rs-bt-tbl"><thead><tr><th>极端信号</th><th>次数</th><th>30日中位</th><th>90日中位</th><th>检验</th></tr></thead><tbody>'+
+      '<tr><td>大跌共振 (3/3)</td><td>'+c.n+' 次</td><td>'+fR(c.m30)+'</td><td>'+fR(c.m90)+'</td><td>'+cTag+'</td></tr>'+
+      '<tr><td>大涨共振 (3/3)</td><td>'+r.n+' 次</td><td>'+fR(r.m30)+'</td><td>'+fR(r.m90)+'</td><td>'+rTag+'</td></tr>'+
+      '<tr><td style="color:var(--text-secondary)">同期任意一天</td><td style="color:var(--text-secondary)">基准</td><td>'+fR(bt.base30)+'</td><td>'+fR(bt.base90)+'</td><td style="color:var(--text-secondary)">对照</td></tr>'+
       '</tbody></table>';
     var rec=activeTab==="crash"?c.recent:r.recent;
     if(rec&&rec.length){
       h+='<div class="rs-bt-rec"><span class="rs-bt-chip" style="background:transparent;padding-left:0">最近触发：</span>';
       for(var i=0;i<rec.length;i++){
-        h+='<span class="rs-bt-chip">'+rec[i].d+' ('+rec[i].sc+'分 → 30日 '+fR(rec[i].r30)+')</span>';
+        h+='<span class="rs-bt-chip">'+rec[i].d+' (30日 '+fR(rec[i].r30)+' · 90日 '+fR(rec[i].r90)+')</span>';
       }
       h+='</div>';
     }
     body.innerHTML=h;
-  }
-
-  function evaluate(data){
-    var bv=data.bv||{},oc=data.oc,etf=data.etf,drv=data.drv||{},cb=data.cb||{},stb=data.stb,fng=data.fng;
-    var spot=cb.spot||(oc&&oc.lastPrice)||null;
-    var ahr=readAhrFromDom();
-
-    // === 1. 大跌预警 (估值 10 / 链上 25 / 资金与情绪 65) ===
-    var crashItems=[];
-    // L1: 估值 (10)
-    var c1a={layer:"估值",lIdx:0,name:"MVRV 4年分位",max:6,avail:bv.mvrvPct!=null,sc:0,val:bv.mvrvPct!=null?("MVRV "+bv.mvrv.toFixed(2)+" · "+bv.mvrvPct.toFixed(0)+"% 分位"):"暂缺"};
-    if(c1a.avail){c1a.sc=bv.mvrvPct>=85?6:(bv.mvrvPct>=75?3:0)}
-    crashItems.push(c1a);
-
-    var c1b={layer:"估值",lIdx:0,name:"STH 短线浮盈 (sth_nupl)",max:4,avail:bv.sthNupl!=null,sc:0,val:bv.sthNupl!=null?bv.sthNupl.toFixed(3):"暂缺"};
-    if(c1b.avail){c1b.sc=bv.sthNupl>0.25?4:(bv.sthNupl>0.15?2:0)}
-    crashItems.push(c1b);
-
-    // L2: 链上 (25)
-    var c2a={layer:"链上",lIdx:1,name:"老币异动 + LTH 利润",max:15,avail:!!oc,sc:0,val:oc?("近3日触发 "+oc.hits3+" 次 · 峰值 "+Math.round(oc.maxOv3).toLocaleString("en-US")+" BTC"):"暂缺"};
-    if(c2a.avail){
-      if(oc.hits3>=2||(oc.maxOv3>10000&&oc.maxPr3>3e8))c2a.sc=15;
-      else if(oc.hits3>=1)c2a.sc=9;
-    }
-    crashItems.push(c2a);
-
-    var c2b={layer:"链上",lIdx:1,name:"LTH 7日持仓净变化",max:10,avail:bv.lth7d!=null,sc:0,val:bv.lth7d!=null?(fmtBtc(bv.lth7d)+(bv.lthNeg3?"（连跌3日）":"")):"暂缺"};
-    if(c2b.avail){
-      if(bv.lth7d<-35000)c2b.sc=10;
-      else if(bv.lthNeg3&&bv.lth3d<-15000)c2b.sc=6;
-    }
-    crashItems.push(c2b);
-
-    // L3: 资金与情绪 (65 = 16 + 16 + 13 + 12 + 8)
-    var oiOk=!!(drv.oi&&isFinite(drv.oi.oi7dPct));
-    var frOk=drv.frAnn!=null&&isFinite(drv.frAnn);
-    var c3a={layer:"资金",lIdx:2,name:"合约 OI 7日增幅 + 费率",max:16,avail:(oiOk||frOk),sc:0,val:(oiOk?("OI "+fmtPct(drv.oi.oi7dPct,1)):"OI 缺")+" · "+(frOk?("费率 "+fmtPct(drv.frAnn,1)):"费率 缺")};
-    if(oiOk&&frOk){
-      if(drv.oi.oi7dPct>20&&drv.frAnn>35)c3a.sc=16;
-      else if(drv.oi.oi7dPct>10&&drv.frAnn>18)c3a.sc=10;
-      else if(drv.oi.oi7dPct>12||drv.frAnn>25)c3a.sc=5;
-    }else if(oiOk){
-      if(drv.oi.oi7dPct>20)c3a.sc=12;else if(drv.oi.oi7dPct>10)c3a.sc=7;
-    }else if(frOk){
-      if(drv.frAnn>35)c3a.sc=12;else if(drv.frAnn>20)c3a.sc=7;
-    }
-    crashItems.push(c3a);
-
-    var c3b={layer:"资金",lIdx:2,name:"ETF 5日滚动净流出",max:16,avail:!!etf,sc:0,val:etf?(fmtUsdM(etf.sum5)+(etf.neg3?" · 连流3日":"")):"暂缺"};
-    if(c3b.avail){
-      if(etf.sum5<-8e8||(etf.neg3&&etf.sum5<-2e8))c3b.sc=16;
-      else if(etf.sum5<-2e8)c3b.sc=9;
-    }
-    crashItems.push(c3b);
-
-    var c3s={layer:"资金",lIdx:2,name:"稳定币 7日/30日净收缩",max:13,avail:!!stb,sc:0,val:stb?("7日 "+fmtUsdM(stb.d7)+" · 30日 "+fmtUsdM(stb.d30)):"暂缺"};
-    if(c3s.avail){
-      if(stb.d7<-5e8&&stb.d30<-2e9)c3s.sc=13;
-      else if(stb.d7<-5e8||stb.d30<-2e9)c3s.sc=7;
-    }
-    crashItems.push(c3s);
-
-    var c3c={layer:"资金",lIdx:2,name:"Coinbase 负溢价背离",max:12,avail:cb.prem7!=null,sc:0,val:cb.prem7!=null?("7日均 "+fmtPct(cb.prem7,3)+(cb.is30dHigh?" · 近30日新高":"")):"暂缺"};
-    if(c3c.avail){
-      if(cb.prem7<-0.05||(cb.is30dHigh&&(cb.prem3||0)<-0.02))c3c.sc=12;
-      else if(cb.prem7<-0.03||(cb.livePrem!=null&&cb.livePrem<-0.05))c3c.sc=6;
-    }
-    crashItems.push(c3c);
-
-    var c3f={layer:"情绪",lIdx:2,name:"F&G 极度贪婪见顶拐点",max:8,avail:!!fng,sc:0,val:fng?("当前 "+fng.now+" · 7日高 "+fng.max7):"暂缺"};
-    if(c3f.avail){
-      if(fng.max7>=75&&fng.now<=fng.max7-3)c3f.sc=8;
-      else if(fng.now>=78)c3f.sc=5;
-    }
-    crashItems.push(c3f);
-
-    // === 2. 大涨启动 (估值 15 / 链上 25 / 资金与情绪 60) ===
-    var rallyItems=[];
-    // L1: 估值 (15)
-    var r1aAvail=(ahr!=null||bv.mvrvPct!=null);
-    var r1aVal=[];
-    if(ahr!=null)r1aVal.push("AHR999 "+ahr.toFixed(2));
-    if(bv.mvrvPct!=null)r1aVal.push("MVRV 分位 "+bv.mvrvPct.toFixed(0)+"%");
-    var r1a={layer:"估值",lIdx:0,name:"AHR999 / MVRV 赔率区",max:9,avail:r1aAvail,sc:0,val:r1aAvail?r1aVal.join(" · "):"暂缺"};
-    if(r1aAvail){
-      if((ahr!=null&&ahr<0.45)||(bv.mvrvPct!=null&&bv.mvrvPct<=20))r1a.sc=9;
-      else if((ahr!=null&&ahr<0.8)||(bv.mvrvPct!=null&&bv.mvrvPct<=35))r1a.sc=5;
-    }
-    rallyItems.push(r1a);
-
-    var r1bAvail=(spot!=null&&bv.sthRp!=null&&bv.sthRp>0);
-    var r1bDiff=r1bAvail?((spot-bv.sthRp)/bv.sthRp*100):null;
-    var r1bReclaim=false;
-    if(r1bAvail&&cb.bnCloses14&&cb.bnCloses14.length){
-      var min14=Math.min.apply(null,cb.bnCloses14);
-      if(min14<bv.sthRp*0.90&&spot>=bv.sthRp)r1bReclaim=true;
-    }
-    var r1b={layer:"估值",lIdx:0,name:"STH 成本线支撑",max:6,avail:r1bAvail,sc:0,val:r1bAvail?("$"+Math.round(bv.sthRp).toLocaleString("en-US")+"（偏离 "+fmtPct(r1bDiff,1)+"）"):"暂缺"};
-    if(r1bAvail){
-      if(Math.abs(r1bDiff)<=3||r1bReclaim)r1b.sc=6;
-      else if(r1bDiff<-3)r1b.sc=3;
-    }
-    rallyItems.push(r1b);
-
-    // L2: 链上 (25)
-    var r2aAvail=(bv.soprNow!=null&&bv.sthNupl!=null);
-    var hadCap=(bv.sopr14Min!=null&&bv.sopr14Min<0.985&&bv.sthNupl14Min!=null&&bv.sthNupl14Min<-0.08);
-    var r2a={layer:"链上",lIdx:1,name:"STH 割肉投降与修复",max:13,avail:r2aAvail,sc:0,val:r2aAvail?("SOPR "+bv.soprNow.toFixed(3)+" · 14日低 "+(bv.sopr14Min!=null?bv.sopr14Min.toFixed(3):"—")):"暂缺"};
-    if(r2aAvail){
-      if(hadCap&&bv.soprNow>=1.00)r2a.sc=13;
-      else if(bv.soprNow<0.985||bv.sthNupl<-0.08)r2a.sc=7;
-    }
-    rallyItems.push(r2a);
-
-    var r2bAvail=(!!oc||bv.lth7d!=null);
-    var r2bParts=[];
-    if(oc)r2bParts.push("老币静默 "+oc.quietDays+" 天");
-    if(bv.lth7d!=null)r2bParts.push("LTH 7日 "+fmtBtc(bv.lth7d));
-    var r2b={layer:"链上",lIdx:1,name:"老币停抛 + LTH 回补",max:12,avail:r2bAvail,sc:0,val:r2bAvail?r2bParts.join(" · "):"暂缺"};
-    if(r2bAvail){
-      var sc2b=0;
-      if(oc&&oc.quietDays>=7)sc2b+=6;
-      if(bv.lth7d!=null){if(bv.lth7d>10000)sc2b+=6;else if(bv.lth7d>0)sc2b+=3;}
-      r2b.sc=sc2b;
-    }
-    rallyItems.push(r2b);
-
-    // L3: 资金与情绪 (60 = 14 + 14 + 12 + 12 + 8)
-    var r3b={layer:"资金",lIdx:2,name:"ETF 5日净流入回暖",max:14,avail:!!etf,sc:0,val:etf?(fmtUsdM(etf.sum5)+(etf.pos3?" · 连入3日":"")):"暂缺"};
-    if(r3b.avail){
-      if(etf.sum5>8e8||(etf.pos3&&etf.sum5>2e8))r3b.sc=14;
-      else if(etf.sum5>2e8)r3b.sc=8;
-    }
-    rallyItems.push(r3b);
-
-    var r3s={layer:"资金",lIdx:2,name:"稳定币 7日/30日净增发",max:14,avail:!!stb,sc:0,val:stb?("7日 "+fmtUsdM(stb.d7)+" · 30日 "+fmtUsdM(stb.d30)):"暂缺"};
-    if(r3s.avail){
-      if(stb.d7>1e9&&stb.d30>3e9)r3s.sc=14;
-      else if(stb.d7>5e8||stb.d30>1.5e9)r3s.sc=8;
-    }
-    rallyItems.push(r3s);
-
-    var r3a={layer:"资金",lIdx:2,name:"杠杆出清 (OI 回落 + 费率)",max:12,avail:(oiOk||frOk),sc:0,val:(oiOk?("距7日高点 "+fmtPct(drv.oi.oiFromHighPct,1)):"OI 缺")+" · "+(frOk?("费率 "+fmtPct(drv.frAnn,1)):"费率 缺")};
-    if(oiOk&&frOk){
-      if(drv.oi.oiFromHighPct<-12&&drv.frAnn<8)r3a.sc=12;
-      else if((drv.oi.oiFromHighPct<-6&&drv.frAnn<10)||drv.frAnn<0)r3a.sc=6;
-    }else if(frOk&&drv.frAnn<0){r3a.sc=6}
-    rallyItems.push(r3a);
-
-    var r3c={layer:"资金",lIdx:2,name:"Coinbase 正溢价吸筹",max:12,avail:cb.prem3!=null,sc:0,val:cb.prem3!=null?("3日均 "+fmtPct(cb.prem3,3)):"暂缺"};
-    if(r3c.avail){
-      if(cb.prem3>0.05)r3c.sc=12;
-      else if(cb.prem3>0.02||(cb.livePrem!=null&&cb.livePrem>0.05))r3c.sc=6;
-    }
-    rallyItems.push(r3c);
-
-    var r3f={layer:"情绪",lIdx:2,name:"F&G 极度恐惧回升拐点",max:8,avail:!!fng,sc:0,val:fng?("当前 "+fng.now+" · 7日低 "+fng.min7):"暂缺"};
-    if(r3f.avail){
-      if(fng.min7<=25&&fng.now>=fng.min7+4)r3f.sc=8;
-      else if(fng.now<=20)r3f.sc=4;
-    }
-    rallyItems.push(r3f);
-
-    function tally(items,layerMax){
-      var raw=0,availMax=0,missing=0,lSc=[0,0,0],lAvail=[0,0,0];
-      for(var i=0;i<items.length;i++){
-        var it=items[i];
-        if(it.avail){raw+=it.sc;availMax+=it.max;lSc[it.lIdx]+=it.sc;lAvail[it.lIdx]+=it.max}
-        else missing++;
-      }
-      var norm=availMax>0?Math.round(raw/availMax*100):0;
-      var lNorm=[0,0,0];
-      for(var k=0;k<3;k++){
-        lNorm[k]=lAvail[k]>0?Math.round(lSc[k]/lAvail[k]*layerMax[k]):0;
-      }
-      return {score:norm,raw:raw,availMax:availMax,missing:missing,lSc:lNorm,lMax:layerMax,items:items};
-    }
-
-    var crash=tally(crashItems,[10,25,65]);
-    crash.gatePass=(crash.score>=65&&crash.lSc[2]>=33);
-    crash.level=crash.gatePass?"danger":(crash.score>=40?"warn":"ok");
-    crash.label=crash.level==="danger"?"高危预警":(crash.level==="warn"?"警戒":"正常");
-    crash.gateText=crash.gatePass?"已通过（资金情绪 "+crash.lSc[2]+"/65）":"需 ≥65 且资金情绪 ≥33（当前 "+crash.lSc[2]+"）";
-
-    var rally=tally(rallyItems,[15,25,60]);
-    rally.gatePass=(rally.score>=65&&rally.lSc[2]>=32);
-    rally.level=rally.gatePass?"go":(rally.score>=40?"ready":"ok");
-    rally.label=rally.level==="go"?"启动确认":(rally.level==="ready"?"蓄力区":"磨底观望");
-    rally.gateText=rally.gatePass?"已通过（资金情绪 "+rally.lSc[2]+"/60）":"需 ≥65 且资金情绪 ≥32（当前 "+rally.lSc[2]+"）";
-
-    var bt=computeBacktest(data);
-    return {crash:crash,rally:rally,bt:bt,meta:{cb:cb,drv:drv,etf:etf,bv:bv,stb:stb,fng:fng,ts:Date.now()}};
   }
 
   function render(st){
@@ -17255,7 +17066,7 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
 
     var live=document.querySelector('[data-fold-live="resonance"]');
     if(live){
-      live.textContent="大跌预警 "+c.score+" · "+c.label+" ｜ 大涨启动 "+r.score+" · "+r.label;
+      live.textContent="大跌 "+c.cnt+"/3 ("+c.label+") ｜ 大涨 "+r.cnt+"/3 ("+r.label+")";
       live.classList.add("live");
     }
 
@@ -17264,11 +17075,11 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
       cBox.className="rs-box"+(c.level==="danger"?" is-danger":(c.level==="warn"?" is-warn":""));
       $("rsCrashBadge").className="rs-badge"+(c.level==="danger"?" danger":(c.level==="warn"?" warn":""));
       $("rsCrashBadge").textContent=c.label;
-      $("rsCrashScore").innerHTML=c.score+"<small>/100</small>";
+      $("rsCrashScore").innerHTML=c.cnt+"<small>/3</small>";
       $("rsCrashGate").textContent=c.gateText;
       for(var i=0;i<3;i++){
-        $("rsCL"+(i+1)).textContent=c.lSc[i]+"/"+c.lMax[i];
-        $("rsCB"+(i+1)).style.width=Math.min(100,Math.round(c.lSc[i]/c.lMax[i]*100))+"%";
+        $("rsCL"+(i+1)).textContent=c.hits[i]+"/1";
+        $("rsCB"+(i+1)).style.width=(c.hits[i]?100:0)+"%";
       }
     }
 
@@ -17277,11 +17088,11 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
       rBox.className="rs-box"+(r.level==="go"?" is-go":(r.level==="ready"?" is-ready":""));
       $("rsRallyBadge").className="rs-badge"+(r.level==="go"?" go":(r.level==="ready"?" ready":""));
       $("rsRallyBadge").textContent=r.label;
-      $("rsRallyScore").innerHTML=r.score+"<small>/100</small>";
+      $("rsRallyScore").innerHTML=r.cnt+"<small>/3</small>";
       $("rsRallyGate").textContent=r.gateText;
       for(var j=0;j<3;j++){
-        $("rsRL"+(j+1)).textContent=r.lSc[j]+"/"+r.lMax[j];
-        $("rsRB"+(j+1)).style.width=Math.min(100,Math.round(r.lSc[j]/r.lMax[j]*100))+"%";
+        $("rsRL"+(j+1)).textContent=r.hits[j]+"/1";
+        $("rsRB"+(j+1)).style.width=(r.hits[j]?100:0)+"%";
       }
     }
 
@@ -17310,12 +17121,9 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
       $("rsSubSth").textContent=m.bv&&m.bv.soprNow!=null?("24h SOPR "+m.bv.soprNow.toFixed(3)):"未获取";
     }
 
-    var totalMiss=Math.max(c.missing,r.missing);
     var d=new Date(m.ts);
     var hh=String(d.getHours()).padStart(2,"0"),mm=String(d.getMinutes()).padStart(2,"0");
-    if($("rsStatusMeta")){
-      $("rsStatusMeta").textContent=(totalMiss>0?("已归一化 · 缺 "+totalMiss+" 项 · "):"数据完整 · ")+hh+":"+mm;
-    }
+    if($("rsStatusMeta"))$("rsStatusMeta").textContent="已检验 · "+hh+":"+mm;
 
     renderList();
     renderBacktest(st.bt);
@@ -17327,22 +17135,21 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
     var cCls="rs-sync-pill"+(c.level==="danger"?" danger":(c.level==="warn"?" warn":""));
     var rCls="rs-sync-pill"+(r.level==="go"?" go":(r.level==="ready"?" ready":""));
     var hc=$("homeRsCrash"),hr=$("homeRsRally"),hm=$("homeRsMsg");
-    if(hc){hc.className=cCls;hc.textContent="大跌 "+c.score+" · "+c.label}
-    if(hr){hr.className=rCls;hr.textContent="大涨 "+r.score+" · "+r.label}
+    if(hc){hc.className=cCls;hc.textContent="大跌 "+c.cnt+"/3 · "+c.label}
+    if(hr){hr.className=rCls;hr.textContent="大涨 "+r.cnt+"/3 · "+r.label}
     var homeTxt="";
-    if(c.level==="danger")homeTxt="大跌高危共振已触发（资金情绪 "+c.lSc[2]+"/65）：暂停额外追高，注意防守与分批风控。";
-    else if(r.level==="go")homeTxt="大涨启动已确认（资金情绪 "+r.lSc[2]+"/60）：去杠杆与资金回流共振，适合按计划加码。";
-    else if(c.level==="warn")homeTxt="资金情绪面偏弱（大跌 "+c.score+" 警戒 · 大涨 "+r.score+" "+r.label+"）：左侧按定投纪律执行，暂不急于打光储备金。";
-    else homeTxt="当前无极端大跌或大涨共振，按常规估值分区与定投节奏平稳执行。";
+    if(c.active)homeTxt="极端派发大跌共振（3/3，回测有效）：高位拥挤+老币派发+资金拐弱同向确认，注意防守。";
+    else if(r.active)homeTxt="极端出清大涨共振（3/3，回测有效）：低位赔率+STH割肉出清+极恐/回流同向确认，适合按计划加码。";
+    else homeTxt="当前未触发经回测验证的 3/3 极端大跌或大涨共振，按常规估值分区与定投纪律执行即可。";
     if(hm)hm.textContent=homeTxt;
 
     var dc=$("dcaRsCrash"),dr=$("dcaRsRally"),dm=$("dcaRsMsg");
-    if(dc){dc.className=cCls;dc.textContent="大跌 "+c.score+" · "+c.label}
-    if(dr){dr.className=rCls;dr.textContent="大涨 "+r.score+" · "+r.label}
+    if(dc){dc.className=cCls;dc.textContent="大跌 "+c.cnt+"/3"}
+    if(dr){dr.className=rCls;dr.textContent="大涨 "+r.cnt+"/3"}
     var dcaTxt="";
-    if(r.level==="go")dcaTxt="右侧启动确认（"+r.score+" 分）：除本月常规/加倍定投外，可按计划集中释放储备金。";
-    else if(c.level==="danger")dcaTxt="大跌高危预警（"+c.score+" 分）：建议仅保留基础定投或暂缓额外加仓，留足现金等待洗盘。";
-    else dcaTxt="大涨启动 "+r.score+" 分（"+r.label+"）：底部区继续执行本月定投，但储备金建议先保留大部，等资金情绪层转强再集中投入。";
+    if(r.active)dcaTxt="极端出清大涨共振已通过回测并触发（3/3）：除常规/加倍定投外，可按计划分批释放储备金。";
+    else if(c.active)dcaTxt="极端派发大跌共振已通过回测并触发（3/3）：建议暂缓额外加仓，留足现金。";
+    else dcaTxt="未触发经回测验证的 3/3 极端共振：底部区照常执行本月定投，不因短期波动频繁折腾。";
     if(dm)dm.textContent=dcaTxt;
   }
 
@@ -17354,8 +17161,8 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
     var html="";
     for(var i=0;i<items.length;i++){
       var it=items[i];
-      var scTxt=it.avail?(it.sc+"/"+it.max):"缺";
-      var scCls="rs-row-sc"+(it.avail&&it.sc>0?(" "+hitCls):"");
+      var scTxt=!it.avail?"缺":(it.hit?"✓ 满足":"未满足");
+      var scCls="rs-row-sc"+(it.avail&&it.hit?(" "+hitCls):"");
       html+='<div class="rs-row"><span class="rs-tag">'+it.layer+'</span><div class="rs-row-main"><div class="rs-row-t">'+it.name+'</div><div class="rs-row-v">'+it.val+'</div></div><div class="'+scCls+'">'+scTxt+'</div></div>';
     }
     box.innerHTML=html;
@@ -17376,7 +17183,7 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
       }catch(e){}
     }
     busy=true;
-    if($("rsStatusMeta"))$("rsStatusMeta").textContent="正在同步实时数据…";
+    if($("rsStatusMeta"))$("rsStatusMeta").textContent="正在同步实时与 4 年历史数据…";
     Promise.all([
       fetchBitview().catch(function(){return {}}),
       fetchOldCoins().catch(function(){return null}),
@@ -17387,7 +17194,10 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
       fetchFng().catch(function(){return null})
     ]).then(function(res){
       var st=evaluate({bv:res[0],oc:res[1],etf:res[2],drv:res[3],cb:res[4],stb:res[5],fng:res[6]});
-      try{var lite={crash:st.crash,rally:st.rally,bt:st.bt,meta:{cb:{livePrem:st.meta.cb&&st.meta.cb.livePrem,prem7:st.meta.cb&&st.meta.cb.prem7},drv:st.meta.drv,etf:st.meta.etf?{sum5:st.meta.etf.sum5,thru:st.meta.etf.thru}:null,bv:{sthRp:st.meta.bv&&st.meta.bv.sthRp,soprNow:st.meta.bv&&st.meta.bv.soprNow},stb:st.meta.stb?{d7:st.meta.stb.d7,d30:st.meta.stb.d30}:null,fng:st.meta.fng?{now:st.meta.fng.now,min7:st.meta.fng.min7,max7:st.meta.fng.max7}:null,ts:st.meta.ts}};localStorage.setItem(CACHE_KEY,JSON.stringify(lite))}catch(e){}
+      try{
+        var lite={crash:st.crash,rally:st.rally,bt:st.bt,meta:{cb:{livePrem:st.meta.cb&&st.meta.cb.livePrem,prem7:st.meta.cb&&st.meta.cb.prem7},drv:st.meta.drv,etf:st.meta.etf?{sum5:st.meta.etf.sum5,thru:st.meta.etf.thru}:null,bv:{sthRp:st.meta.bv&&st.meta.bv.sthRp,soprNow:st.meta.bv&&st.meta.bv.soprNow},stb:st.meta.stb?{d7:st.meta.stb.d7,d30:st.meta.stb.d30}:null,fng:st.meta.fng?{now:st.meta.fng.now,min7:st.meta.fng.min7,max7:st.meta.fng.max7}:null,ts:st.meta.ts}};
+        localStorage.setItem(CACHE_KEY,JSON.stringify(lite));
+      }catch(e){}
       render(st);
       busy=false;
     },function(){
@@ -17409,6 +17219,7 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
 
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",bind);
   else bind();
+
   function jumpToResonance(){
     try{
       if(typeof switchTab==="function")switchTab("value");
@@ -17426,7 +17237,6 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
   if(hj)hj.addEventListener("click",jumpToResonance);
   if(dj)dj.addEventListener("click",jumpToResonance);
 
-  // === V27.3 正式版 本机持仓一键备份与恢复 ===
   (function initBackup(){
     var SKIP_RE=/(cache|history|daily|monthly|lth_|etf_flows|sg_resonance|addr_dist|cost_bands|age_cost|mining|holder_cohorts|deep_loss|bitview_floor|before_restore|before_import)/i;
     function collectPayload(){
