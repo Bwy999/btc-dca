@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BUILD: 27.2.0-20261121 · SATS-GARDEN-V27.11 -->
+<!-- BUILD: 27.3.0-20261121 · SATS-GARDEN-V27.11 -->
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -9,7 +9,7 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Sats Garden" />
-  <meta name="btc-dca-build" content="27.2.0-20261121" />
+  <meta name="btc-dca-build" content="27.3.0-20261121" />
   <script>
 (function(){
   "use strict";
@@ -304,7 +304,7 @@
 })();
 </script>
 <script>(function(){var l=null;try{l=localStorage.getItem("btc_lang_v1")}catch(e){}if(l!=="zh"&&l!=="en"){var n=(navigator.languages&&navigator.languages[0])||navigator.language||"";l=/^zh/i.test(n)?"zh":"en"}window.BTC_LANG=l;var d=document.documentElement;d.lang=l==="en"?"en":"zh-CN";if(l==="en"){d.classList.add("i18n-pending");setTimeout(function(){d.classList.remove("i18n-pending")},2500)}})();</script>
-<script>const BUILD_ID="27.2.0-20261121";const BUILD_LABEL="V27.2";function sgLabel(){return window.BTC_LANG==="en"?BUILD_LABEL.replace(/\s*正式版$/,""):BUILD_LABEL}(function(){var T="btc_theme_v1",t=null;try{t=localStorage.getItem(T)}catch(e){}if(t!=="light"&&t!=="dark"){t=null}window.__themePinned=!!t;if(!t)t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.dataset.theme=t;})();</script>
+<script>const BUILD_ID="27.3.0-20261121";const BUILD_LABEL="V27.3 正式版";function sgLabel(){return window.BTC_LANG==="en"?BUILD_LABEL.replace(/\s*正式版$/,""):BUILD_LABEL}(function(){var T="btc_theme_v1",t=null;try{t=localStorage.getItem(T)}catch(e){}if(t!=="light"&&t!=="dark"){t=null}window.__themePinned=!!t;if(!t)t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.dataset.theme=t;})();</script>
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
   <link rel="manifest" href="./manifest.webmanifest" id="pwaManifest" />
@@ -519,7 +519,7 @@ body.noscript p{font-size:13px;line-height:1.6;max-width:640px}
 .dca-assumptions .form-row{gap:12px;align-items:flex-end}
 .dca-assumptions input{max-width:100%;min-height:44px}
 .dca-assumptions label{display:flex;flex-direction:column;gap:6px;font-size:.875rem}
-/* === V27.2 三层共振信号卡片 === */
+/* === V27.3 正式版 三层共振信号卡片 === */
 .rs-wrap{display:flex;flex-direction:column;gap:12px}
 .rs-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:560px){.rs-grid{grid-template-columns:1fr}}
@@ -572,6 +572,44 @@ body.noscript p{font-size:13px;line-height:1.6;max-width:640px}
 .rs-row-sc.hit-rally{color:#10b981}
 .rs-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--text-secondary);line-height:1.5}
 .rs-foot a{color:var(--brand-ink,#f7931a);text-decoration:none;font-weight:600}
+
+/* === V27.3 正式版 共振联动条 & 本机持仓一键备份卡 === */
+.rs-sync-card,.rs-backup-card{background:var(--surface-1,#fff);border:1px solid var(--border-subtle,rgba(127,127,127,.14));border-radius:16px;padding:13px 16px;margin:10px 0;box-shadow:var(--soft-shadow,0 4px 16px rgba(0,0,0,.04))}
+.rs-sync-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.rs-sync-title{font-size:13px;font-weight:700;color:var(--text-primary);display:flex;align-items:center;gap:6px}
+.rs-sync-pills{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.rs-sync-pill{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--surface-card-muted,rgba(127,127,127,.13));color:var(--text-secondary);font-variant-numeric:tabular-nums}
+.rs-sync-pill.danger{background:rgba(239,68,68,.16);color:#ef4444}
+.rs-sync-pill.warn{background:rgba(245,158,11,.17);color:#d97706}
+.rs-sync-pill.go{background:rgba(16,185,129,.17);color:#10b981}
+.rs-sync-pill.ready{background:rgba(59,130,246,.16);color:#3b82f6}
+.rs-sync-msg{font-size:12px;font-weight:600;color:var(--text-secondary);margin-top:7px;line-height:1.5}
+.rs-sync-foot{display:flex;align-items:center;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--text-secondary)}
+.rs-link-btn{border:0;background:transparent;color:var(--brand-ink,#f7931a);font-size:12px;font-weight:700;cursor:pointer;padding:0;font-family:inherit}
+.rs-bk-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.rs-bk-title{font-size:14px;font-weight:700;color:var(--text-primary)}
+.rs-bk-sub{font-size:12px;color:var(--text-secondary);font-weight:500;margin-top:2px}
+.rs-bk-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.rs-bk-btn{border:1px solid var(--border-subtle,rgba(127,127,127,.2));background:var(--surface-raised,rgba(127,127,127,.06));color:var(--text-primary);font-size:12px;font-weight:700;padding:8px 6px;border-radius:10px;cursor:pointer;font-family:inherit;text-align:center}
+.rs-bk-btn.primary{background:var(--brand-tint,rgba(247,147,26,.14));border-color:rgba(247,147,26,.35);color:var(--brand-ink,#f7931a)}
+.rs-bk-panel{display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--hairline,rgba(127,127,127,.12))}
+.rs-bk-panel.open{display:block}
+.rs-bk-area{width:100%;min-height:76px;border:1px solid var(--border-subtle,rgba(127,127,127,.22));border-radius:10px;background:var(--surface-raised,rgba(127,127,127,.05));color:var(--text-primary);padding:8px 10px;font-size:11px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;resize:vertical}
+.rs-bk-status{font-size:11px;font-weight:600;color:var(--text-secondary);margin-top:7px;min-height:16px}
+
+/* === V27.3 正式版 正式版 · 三层共振历史回测 === */
+.rs-bt{margin-top:4px;border:1px solid var(--border-subtle,rgba(127,127,127,.14));border-radius:12px;padding:11px 13px;background:var(--surface-raised,rgba(127,127,127,.04))}
+.rs-bt-hd{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.rs-bt-title{font-size:12px;font-weight:700;color:var(--text-primary)}
+.rs-bt-sub{font-size:11px;color:var(--text-secondary)}
+.rs-bt-tbl{width:100%;border-collapse:collapse;font-size:11px;font-variant-numeric:tabular-nums}
+.rs-bt-tbl th{text-align:left;padding:5px 6px;color:var(--text-secondary);font-weight:600;border-bottom:1px solid var(--hairline,rgba(127,127,127,.14))}
+.rs-bt-tbl td{padding:6px;border-bottom:1px solid var(--hairline,rgba(127,127,127,.1));color:var(--text-primary);font-weight:600}
+.rs-bt-tbl tr:last-child td{border-bottom:0}
+.rs-bt-up{color:#10b981;font-weight:700}
+.rs-bt-dn{color:#ef4444;font-weight:700}
+.rs-bt-rec{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.rs-bt-chip{font-size:11px;font-weight:600;padding:3px 8px;border-radius:8px;background:var(--surface-card-muted,rgba(127,127,127,.12));color:var(--text-secondary);font-variant-numeric:tabular-nums}
 </style>
   <noscript><style>body.booting{display:block!important;background:#fff}</style><div style="max-width:700px;margin:0 auto;padding:40px 20px;font-family:system-ui;color:#333"><h1>Sats Garden</h1><p>本页面需要启用 JavaScript 才能加载实时行情与链上指标。请在浏览器设置中开启 JavaScript 后重新访问。</p></div></noscript>
   <style>/* V24.5 C-1 · single source of truth: dark defaults, light overrides */
@@ -2079,7 +2117,7 @@ html.pwa-tab-reset,
 .phase-card .regime-detail small{display:block;color:var(--text-tertiary);font-size:11px;font-weight:700}
 .phase-card .regime-detail b{display:block;margin-top:5px;font-size:16px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .phase-card .regime-detail span{display:block;margin-top:3px;color:var(--text-tertiary);font-size:11px;line-height:1.35}
-.phase-card .regime-phase-drivers{width:100%;display:flex;flex-wrap:wrap;gap:6px;overflow:visible}   /* V27.2.5：放不下就换行，不再横向藏起最后一个 */
+.phase-card .regime-phase-drivers{width:100%;display:flex;flex-wrap:wrap;gap:6px;overflow:visible}   /* V27.3 正式版.5：放不下就换行，不再横向藏起最后一个 */
 .phase-card .regime-phase-drivers::-webkit-scrollbar{display:none}
 
 @media(max-width:640px){
@@ -3731,7 +3769,7 @@ details[data-module="coststate"][open]>summary small.live{display:none!important
 /* V27.0.2：结构简化——折叠栏直接放数据日；表格区不再借用模块标题行（避免 iPhone Safari 上整块不显示） */
 .hd-toolbar{display:flex;justify-content:flex-end;margin:0 0 8px}
 details[data-module="walletdist"][open]>#walletDist,details[data-module="walletdist"][open]>#walletDist .hd-panel{display:block!important;visibility:visible!important;opacity:1!important;height:auto!important;max-height:none!important;overflow:visible!important;content-visibility:visible!important}
-/* —— V27.2：新增「定投」分区 —— 本月信号定投卡片；原「定投执行」不再显示 */
+/* —— V27.3 正式版：新增「定投」分区 —— 本月信号定投卡片；原「定投执行」不再显示 */
 details[data-module="coststate"]{display:none!important}
 .sig-plan{--sg:#12a170;--sb:#4466ee;--so:#e8890c;--sr:#e5484d;--sv:#7b61ff;--z:var(--sb);margin:4px 0 12px}
 .sig-plan[data-z="b"]{--z:var(--sg)}
@@ -3880,7 +3918,7 @@ button.sp-row{cursor:pointer}
 .cc-rows{margin-top:10px;border-top:1px solid var(--border-subtle)}
 .cc-row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-subtle);font-size:12px}
 .cc-row span{color:var(--text-tertiary)}.cc-row b{font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
-/* —— V27.2 正式版：全站精致风格（与「定投」页统一）：每个模块独立卡片、大圆角、去描边、柔和投影、统一配色、状态胶囊、分段按钮、标题彩色图标 —— */
+/* —— V27.3 正式版 正式版：全站精致风格（与「定投」页统一）：每个模块独立卡片、大圆角、去描边、柔和投影、统一配色、状态胶囊、分段按钮、标题彩色图标 —— */
 :root{--market-positive:#12a170;--market-negative:#e5484d;--market-caution:#e8890c;--page-bg:#f4f4f7;--sg-shadow:0 1px 1px rgba(20,20,40,.03),0 10px 30px rgba(20,20,40,.05)}
 :root[data-theme="dark"]{--market-positive:#2bc48a;--market-negative:#ff6b6b;--market-caution:#f2a03a}
 body{background:var(--page-bg)!important}
@@ -3941,7 +3979,7 @@ body{background:var(--page-bg)!important}
 #twentyone .sec-title::before{content:"";display:inline-block;width:28px;height:28px;margin:0 10px 0 0;border-radius:50%;vertical-align:-7px;background:rgba(247,147,26,.13) url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23f7931a%22%20stroke-width%3D%221.9%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%228.5%22/%3E%3Cpath%20d%3D%22M9.5%207.5h3.6a2%202%200%200%201%200%204H9.5zM9.5%2011.5h4.2a2%202%200%200%201%200%204H9.5zM9.5%207.5v8M11%206v1.5M11%2015.5V17%22/%3E%3C/svg%3E") center/16px 16px no-repeat;flex:none}
 #custody .sec-title::before{content:"";display:inline-block;width:28px;height:28px;margin:0 10px 0 0;border-radius:50%;vertical-align:-7px;background:rgba(247,147,26,.13) url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23f7931a%22%20stroke-width%3D%221.9%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%2215%22%20r%3D%224%22/%3E%3Cpath%20d%3D%22M11%2012l8-8M16%207l2.5%202.5M14%209l2%202%22/%3E%3C/svg%3E") center/16px 16px no-repeat;flex:none}
 
-/* —— V27.2.3：日期标签统一 ——
+/* —— V27.3 正式版.3：日期标签统一 ——
    折叠栏：标题和日期在同一行（日期是小号文字 + 状态圆点，不再是大胶囊），说明文字在下一行；
    所有日期统一写法：正常「11-05」，滞后「滞后 · 11-01」，月度数据「11 月」。 */
 .module-fold > summary > span{display:grid!important;grid-template-columns:auto 1fr;align-items:center;column-gap:8px;row-gap:3px}
@@ -3953,7 +3991,7 @@ body{background:var(--page-bg)!important}
 .module-fold > summary .fold-date.warn{color:var(--market-caution)!important}.module-fold > summary .fold-date.warn::before{background:var(--market-caution)}
 .module-fold > summary .fold-date.bad{color:var(--market-negative)!important}.module-fold > summary .fold-date.bad::before{background:var(--market-negative)}
 .module-fold > summary .fold-date:not(.good):not(.warn):not(.bad)::before{background:var(--text-tertiary)}
-/* —— V27.2.4：日期标签只在异常时显示 ——
+/* —— V27.3 正式版.4：日期标签只在异常时显示 ——
    折叠栏：数据正常不显示；滞后（橙）/ 暂不可用（红）才出现；「等待数据」打开后 15 秒内不显示。
    模块里面：正常日期是右上角淡灰小字（无底色、无圆点）；异常仍是彩色小胶囊。 */
 .module-fold > summary .fold-date.is-ok,.module-fold > summary .fold-date.good:not(.warn):not(.bad){display:none!important}
@@ -4099,6 +4137,20 @@ details:has(>#executionReview)>summary{padding:10px 0;cursor:pointer}
   
   </div>
 </div><!-- /home-left -->
+<section class="rs-sync-card" id="homeResonanceBar" aria-label="三层共振联动">
+  <div class="rs-sync-head">
+    <div class="rs-sync-title"><span>三层共振联动</span></div>
+    <div class="rs-sync-pills">
+      <span class="rs-sync-pill" id="homeRsCrash">大跌预警 计算中</span>
+      <span class="rs-sync-pill" id="homeRsRally">大涨启动 计算中</span>
+    </div>
+  </div>
+  <div class="rs-sync-msg" id="homeRsMsg">正在同步资金情绪与链上共振状态…</div>
+  <div class="rs-sync-foot">
+    <span>大跌 10/25/65 · 大涨 15/25/60</span>
+    <button type="button" class="rs-link-btn" id="homeRsJump">查看三层明细 →</button>
+  </div>
+</section>
 <section class="sec" id="ahr" aria-label="AHR999 周期估值">
     <div class="focus-ahr-head"><h2 class="sec-title">AHR999 走势</h2><div class="focus-model-tabs" role="group" aria-label="AHR999 显示模型"><button type="button" data-focus-model="refit" aria-pressed="true" onclick="setFocusAhrModel('refit')">新拟合</button><button type="button" data-focus-model="classic" aria-pressed="false" onclick="setFocusAhrModel('classic')">经典</button></div></div>
     <div class="focus-ahr-meta hero-meta"><span id="homeAhrModelName">2026 新拟合</span><span class="fresh-badge" id="freshAhr">等待数据</span></div>
@@ -4275,6 +4327,13 @@ details:has(>#executionReview)>summary{padding:10px 0;cursor:pointer}
     </div>
 
     <div class="rs-list" id="rsDetailList"></div>
+    <div class="rs-bt" id="rsBacktestBox">
+      <div class="rs-bt-hd">
+        <span class="rs-bt-title">历史回测验证（近 4 年真实日线 · 7日去重）</span>
+        <span class="rs-bt-sub" id="rsBtMeta">正在计算历史样本…</span>
+      </div>
+      <div id="rsBtBody" style="font-size:11px;color:var(--text-secondary)">同步历史序列后自动计算触发后 14 天 / 30 天实际涨跌…</div>
+    </div>
 
     <div class="rs-foot">
       <span>数据：Bitview · Binance / OKX · Coinbase · DefiLlama · Alternative.me · ETF</span>
@@ -4703,7 +4762,7 @@ details:has(>#executionReview)>summary{padding:10px 0;cursor:pointer}
 
 <details class="health health-center" id="healthPanel">
     <summary><span>数据健康中心</span><span id="healthSummary">等待检查</span></summary>
-    <div class="health-center-body"><div class="focus-runtime"><span>版本 <b class="num" id="buildBadge">V27.2</b></span><span>UTC 日期 <b class="num" id="heroDate">--</b></span><span class="hbadge" id="healthBadge">--</span></div>
+    <div class="health-center-body"><div class="focus-runtime"><span>版本 <b class="num" id="buildBadge">V27.3 正式版</b></span><span>UTC 日期 <b class="num" id="heroDate">--</b></span><span class="hbadge" id="healthBadge">--</span></div>
       <div class="health-hero">
         <div class="health-score-ring" id="healthScoreRing" role="img" aria-label="数据健康度等待检查"><b class="num" id="healthScore">--</b><small>HEALTH</small></div>
         <div class="health-hero-copy">
@@ -5420,6 +5479,21 @@ details:has(>#executionReview)>summary{padding:10px 0;cursor:pointer}
 
 <header class="focus-page-intro" id="dcaIntro"><h1>定投</h1></header>
 <section class="sig-plan" id="sigPlan" aria-label="本月信号定投"><div class="sp-card sp-empty">等待数据</div></section>
+<section class="rs-sync-card" id="dcaResonanceSync" aria-label="三层共振与储备金节奏">
+  <div class="rs-sync-head">
+    <div class="rs-sync-title"><span>三层共振 · 储备金节奏</span></div>
+    <div class="rs-sync-pills">
+      <span class="rs-sync-pill" id="dcaRsCrash">大跌 --</span>
+      <span class="rs-sync-pill" id="dcaRsRally">大涨 --</span>
+    </div>
+  </div>
+  <div class="rs-sync-msg" id="dcaRsMsg">正在结合资金情绪层评估储备金释放节奏…</div>
+  <div class="rs-sync-foot">
+    <span>左侧定投看估值，右侧储备金看共振</span>
+    <button type="button" class="rs-link-btn" id="dcaRsJump">展开共振面板 →</button>
+  </div>
+</section>
+
 <header class="focus-page-intro" id="mineIntro"><h1>我的</h1><p>核对本月计划，记录实际投入。</p></header>
 <section class="focus-plan" id="homePlan" aria-label="本月定投进度">
     <div class="focus-plan-head"><h2>本月定投</h2><button type="button" onclick="focusOpenSection('personal')">计划与记录 →</button></div>
@@ -5427,6 +5501,28 @@ details:has(>#executionReview)>summary{padding:10px 0;cursor:pointer}
     <progress id="homePlanProgress" max="2000" value="0" aria-label="本月已记录投入占计划额度"></progress>
     <p class="focus-plan-note" id="homePlanNote" hidden></p>
   </section>
+<section class="rs-backup-card" id="backupCard" aria-label="本机持仓一键备份与恢复">
+  <div class="rs-bk-head">
+    <div>
+      <div class="rs-bk-title">本机持仓一键备份与恢复</div>
+      <div class="rs-bk-sub" id="rsBkMeta">纯本地保存，换手机或清缓存前建议导出备份</div>
+    </div>
+  </div>
+  <div class="rs-bk-btns">
+    <button type="button" class="rs-bk-btn primary" id="rsBkExport">导出备份文件</button>
+    <button type="button" class="rs-bk-btn" id="rsBkCopy">复制备份码</button>
+    <button type="button" class="rs-bk-btn" id="rsBkToggleImport">导入 / 恢复</button>
+  </div>
+  <div class="rs-bk-panel" id="rsBkPanel">
+    <textarea class="rs-bk-area" id="rsBkInput" placeholder="粘贴备份码（JSON），或点击下方选择备份文件…"></textarea>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;flex-wrap:wrap">
+      <label class="rs-bk-btn" style="padding:6px 12px;cursor:pointer">选择 .json 文件<input type="file" id="rsBkFile" accept=".json,application/json" style="display:none"></label>
+      <button type="button" class="rs-bk-btn primary" id="rsBkApply" style="padding:6px 14px">确认恢复到本机</button>
+    </div>
+  </div>
+  <div class="rs-bk-status" id="rsBkStatus"></div>
+</section>
+
 <details class="module-fold" data-module="coststate"><summary><span><b>定投执行</b><small data-fold-live="state" data-fold-default="本期基础定投与额外加仓">本期基础定投与额外加仓</small></span></summary><section class="sec cost-state-section" id="coststate" aria-label="BTC 成本结构状态机">
     <div class="module-head">
       <div class="module-title-row"><h2 class="sec-title">定投执行</h2><div class="module-status head-status"><span class="fresh-badge warn" id="freshCostState">等待数据</span></div><button class="mini-toggle" id="costStateRefresh" type="button" onclick="refreshCostStructureState(true)">更新</button></div>
@@ -12241,14 +12337,14 @@ fetchLive=async function(force=false){
 try{if("scrollRestoration" in history)history.scrollRestoration="manual"}catch(e){}
 const TAB_KEY="btc_active_tab_v1";
 const TAB_DEFS=[
-  {id:"now",label:"行情",secs:["today","ahr","tributeEntry","homeLadder","homeFoot"]},
+  {id:"now",label:"行情",secs:["today","homeResonanceBar","ahr","tributeEntry","homeLadder","homeFoot"]},
   {id:"value",label:"分析",secs:["analysisIntro","cycleZones","resonanceSec","todayCard","cycleDrawdown","valuation","decision","powerlaw","floor","radar","liquidity","oldCoinsEntry","ma","healthPanel"]},
   {id:"chain",label:"链上",secs:["chainIntro","costbasis","capitalized","lthpsil","lthchips","lthpulse","holders","distribution","lossdepth","mining","market"]},
-  {id:"dca",label:"定投",secs:["dcaIntro","sigPlan","dcalab"]},
-  {id:"mine",label:"我的",secs:["mineIntro","homePlan","coststate","personal","twentyone","custody"]}
+  {id:"dca",label:"定投",secs:["dcaIntro","sigPlan","dcaResonanceSync","dcalab"]},
+  {id:"mine",label:"我的",secs:["mineIntro","homePlan","backupCard","coststate","personal","twentyone","custody"]}
 ];
 const SEC_TAB={};TAB_DEFS.forEach(t=>t.secs.forEach(id=>SEC_TAB[id]=t.id));
-SEC_TAB.plan="mine";SEC_TAB.holding="mine";SEC_TAB.cycleThermo="value";SEC_TAB.oldCoinsEntry="value";SEC_TAB.resonanceSec="value";SEC_TAB.resonanceFold="value";SEC_TAB.chainCard_cost="chain";SEC_TAB.chainCard_holders="chain";SEC_TAB.chainCard_miners="chain";SEC_TAB.chainCard_quantum="chain";SEC_TAB.indicatorDetail="value";SEC_TAB.cycleBottom="value";SEC_TAB.cycleTop="value";
+SEC_TAB.plan="mine";SEC_TAB.holding="mine";SEC_TAB.cycleThermo="value";SEC_TAB.oldCoinsEntry="value";SEC_TAB.resonanceSec="value";SEC_TAB.resonanceFold="value";SEC_TAB.homeResonanceBar="now";SEC_TAB.dcaResonanceSync="dca";SEC_TAB.backupCard="mine";SEC_TAB.chainCard_cost="chain";SEC_TAB.chainCard_holders="chain";SEC_TAB.chainCard_miners="chain";SEC_TAB.chainCard_quantum="chain";SEC_TAB.indicatorDetail="value";SEC_TAB.cycleBottom="value";SEC_TAB.cycleTop="value";
 let ACTIVE_TAB=TAB_DEFS[0].id;
 let sectionNavRefresh=null;
 let NAV_DOCK_JUMP_UNTIL=0;
@@ -15529,7 +15625,7 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
 </script><script>
 (function(){
   "use strict";
-  // V27.2：本月信号定投（与「定投策略对比」里的信号定投同一套规则）
+  // V27.3 正式版：本月信号定投（与「定投策略对比」里的信号定投同一套规则）
   //   每月预算 = 1 份。底部区 2 份（多出的 1 份从储备金拿，不够就有多少拿多少）；中性 1 份；顶部区 0.5 份（另一半存进储备金）。
   //   牛市后期风控当月：提示卖出现货持仓的 1/3，所得可手动加进储备金。
   function $(id){return document.getElementById(id)}
@@ -16338,7 +16434,7 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
 <script>
 (function(){
   "use strict";
-  // V27.2.3：所有「数据日」标签统一写法——正常只写日期「11-05」，滞后「滞后 · 11-01」，月度数据「11 月」
+  // V27.3 正式版.3：所有「数据日」标签统一写法——正常只写日期「11-05」，滞后「滞后 · 11-01」，月度数据「11 月」
   function norm(t){
     var m;
     if((m=/^(?:数据日|Data date) · (\d{4})-(\d{2})-(\d{2})$/.exec(t)))return m[2]+"-"+m[3];
@@ -16348,7 +16444,7 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
     if((m=/^(滞后|Stale) · \d{4}-(\d{2})$/.exec(t)))return m[1]+" · "+(window.BTC_LANG==="en"?["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+m[2]-1]:(+m[2])+" 月");
     return null;
   }
-  // V27.2.4：只在异常时显示——正常的日期标 is-ok（折叠栏里隐藏，模块里变成淡灰小字）；读取中的标 is-wait（打开后前 15 秒不显示）
+  // V27.3 正式版.4：只在异常时显示——正常的日期标 is-ok（折叠栏里隐藏，模块里变成淡灰小字）；读取中的标 is-wait（打开后前 15 秒不显示）
   var WAIT=/^(等待数据|同步中|链上同步中|检查中|正在读取|Syncing|Waiting for data|Loading)/;
   function fix(el){if(!el||!el.classList||!el.classList.contains("fresh-badge"))return;var t=(el.textContent||"").trim(),n=norm(t);if(n&&n!==t){el.textContent=n;t=n}
     var ok=/^(\d{2}-\d{2}|\d{1,2} 月|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|刚刚|更新 · 刚刚)$/.test(t)||el.classList.contains("good")&&!/滞后|Stale|不可用|Unavailable/.test(t);
@@ -16546,7 +16642,7 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
 (function(){
   if(window.__sgResonanceInit)return;
   window.__sgResonanceInit=true;
-  var CACHE_KEY="sg_resonance_v3",CACHE_TTL=5*60*1000;
+  var CACHE_KEY="sg_resonance_v4",CACHE_TTL=5*60*1000;
   var activeTab="crash",lastState=null,busy=false;
 
   function $(id){return document.getElementById(id)}
@@ -16582,12 +16678,21 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
 
   function fetchBitview(){
     var u1="https://bitview.space/api/series/bulk?index=day1&series=date,mvrv,sth_nupl&start=-1465";
-    var u2="https://bitview.space/api/series/bulk?index=day1&series=date,sth_realized_price,sopr_24h,lth_supply&start=-35";
-    return Promise.all([fetchJson(u1,12000),fetchJson(u2,12000)]).then(function(res){
+    var u2="https://bitview.space/api/series/bulk?index=day1&series=date,sth_realized_price,sopr_24h,lth_supply&start=-1465";
+    return Promise.all([fetchJson(u1,14000),fetchJson(u2,14000)]).then(function(res){
       var a=res[0],b=res[1];
       function pick(resp,idx){
         if(!Array.isArray(resp)||!resp[idx]||!Array.isArray(resp[idx].data))return [];
         return resp[idx].data.filter(function(x){return typeof x==="number"&&isFinite(x)});
+      }
+      function toMap(resp,idx){
+        var m={};
+        if(!Array.isArray(resp)||!resp[0]||!resp[idx])return m;
+        var ds=resp[0].data||[],vs=resp[idx].data||[];
+        for(var i=0;i<ds.length&&i<vs.length;i++){
+          if(typeof ds[i]==="string"&&typeof vs[i]==="number"&&isFinite(vs[i]))m[ds[i].slice(0,10)]=vs[i];
+        }
+        return m;
       }
       var mvrvArr=pick(a,1);
       var sthNuplArr=pick(a,2);
@@ -16620,7 +16725,8 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
       return {
         mvrv:mvrv,mvrvPct:mvrvPct,sthNupl:sthNupl,sthNupl14Min:sthNupl14Min,
         sthRp:sthRp,soprNow:soprNow,sopr14Min:sopr14Min,
-        lth7d:lth7d,lthNeg3:lthNeg3,lth3d:lth3d
+        lth7d:lth7d,lthNeg3:lthNeg3,lth3d:lth3d,
+        hist:{mvrv:toMap(a,1),sthNupl:toMap(a,2),sthRp:toMap(b,1),sopr:toMap(b,2),lth:toMap(b,3)}
       };
     });
   }
@@ -16648,7 +16754,7 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
         quietDays++;
       }
       var last=rows[n-1];
-      return {hits3:hits3,maxOv3:maxOv3,maxPr3:maxPr3,quietDays:quietDays,lastDate:last[0],lastPrice:+last[1]||null};
+      return {hits3:hits3,maxOv3:maxOv3,maxPr3:maxPr3,quietDays:quietDays,lastDate:last[0],lastPrice:+last[1]||null,histRows:rows.slice(-1480)};
     });
   }
 
@@ -16664,7 +16770,7 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
       for(var k=n-5;k<n;k++)sum5+=clean[k];
       var neg3=(clean[n-1]<0&&clean[n-2]<0&&clean[n-3]<0);
       var pos3=(clean[n-1]>0&&clean[n-2]>0&&clean[n-3]>0);
-      return {sum5:sum5,neg3:neg3,pos3:pos3,last:clean[n-1],thru:(j&&j.updatedThrough)||""};
+      var emap={};for(var ei=0;ei<arr.length;ei++){if(arr[ei]&&arr[ei].date&&typeof arr[ei].netFlowUsd==="number")emap[arr[ei].date.slice(0,10)]=arr[ei].netFlowUsd}return {sum5:sum5,neg3:neg3,pos3:pos3,last:clean[n-1],thru:(j&&j.updatedThrough)||"",hist:emap};
     };
     return fetchJson("./data/etf-flows.json",7000).then(parseDays).catch(function(){
       return fetchJson("https://www.tftc.io/bitcoin-etf-flows/data.json",9000).then(parseDays);
@@ -16674,29 +16780,35 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
   function fetchStablecoin(){
     return fetchJson("https://stablecoins.llama.fi/stablecoincharts/all",12000).then(function(arr){
       if(!Array.isArray(arr)||arr.length<35)throw new Error("bad stablecoin");
-      var vals=[];
-      for(var i=Math.max(0,arr.length-45);i<arr.length;i++){
+      var vals=[],smap={};
+      for(var i=Math.max(0,arr.length-1520);i<arr.length;i++){
         var x=arr[i];
         var v=x&&x.totalCirculatingUSD&&typeof x.totalCirculatingUSD.peggedUSD==="number"?x.totalCirculatingUSD.peggedUSD:(x&&x.totalCirculating&&typeof x.totalCirculating.peggedUSD==="number"?x.totalCirculating.peggedUSD:null);
-        if(v!=null&&isFinite(v)&&v>0)vals.push(v);
+        if(v!=null&&isFinite(v)&&v>0){
+          vals.push(v);
+          if(x&&x.date){var dd=new Date((+x.date)*1000).toISOString().slice(0,10);smap[dd]=v}
+        }
       }
       if(vals.length<31)throw new Error("short stablecoin");
       var n=vals.length;
       var now=vals[n-1],d7=now-vals[n-8],d30=now-vals[n-31];
-      return {now:now,d7:d7,d30:d30};
+      return {now:now,d7:d7,d30:d30,hist:smap};
     });
   }
 
   function fetchFng(){
-    return fetchJson("https://api.alternative.me/fng/?limit=10",8000).then(function(j){
+    return fetchJson("https://api.alternative.me/fng/?limit=1500",10000).then(function(j){
       var arr=j&&Array.isArray(j.data)?j.data:[];
       if(arr.length<3)throw new Error("bad fng");
       var vals=arr.slice(0,7).map(function(x){return parseInt(x.value,10)}).filter(function(v){return isFinite(v)});
       if(!vals.length)throw new Error("empty fng");
-      var now=vals[0];
-      var min7=Math.min.apply(null,vals);
-      var max7=Math.max.apply(null,vals);
-      return {now:now,min7:min7,max7:max7,cls:(arr[0]&&arr[0].value_classification)||""};
+      var fmap={};
+      for(var i=0;i<arr.length;i++){
+        var v=parseInt(arr[i].value,10),ts=+arr[i].timestamp;
+        if(isFinite(v)&&isFinite(ts)&&ts>0){fmap[new Date(ts*1000).toISOString().slice(0,10)]=v}
+      }
+      var now=vals[0],min7=Math.min.apply(null,vals),max7=Math.max.apply(null,vals);
+      return {now:now,min7:min7,max7:max7,cls:(arr[0]&&arr[0].value_classification)||"",hist:fmap};
     });
   }
 
@@ -16797,6 +16909,151 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
       }
     }catch(e){}
     return null;
+  }
+
+
+  function computeBacktest(data){
+    var oc=data.oc,bv=data.bv||{},etf=data.etf,stb=data.stb,fng=data.fng;
+    var rows=(oc&&Array.isArray(oc.histRows))?oc.histRows:[];
+    if(rows.length<120)return null;
+    var bvh=bv.hist||{},em=(etf&&etf.hist)||{},sm=(stb&&stb.hist)||{},fm=(fng&&fng.hist)||{};
+    var n=rows.length;
+    var dates=[],prices=[],ovs=[],prs=[],hits=[];
+    for(var i=0;i<n;i++){
+      var r=rows[i],cvals=r[5]||[],ov=0;
+      for(var c=0;c<cvals.length;c++)ov+=(+cvals[c]||0);
+      var pr=+r[4]||0;
+      dates.push(r[0]);prices.push(+r[1]||0);ovs.push(ov);prs.push(pr);
+      hits.push(ov>5000&&pr>3e8);
+    }
+    var mvrvWindow=[],crashEv=[],rallyEv=[],base14=[],base30=[];
+    var lastCrashIdx=-99,lastRallyIdx=-99;
+    function med(arr){
+      if(!arr.length)return null;
+      var s=arr.slice().sort(function(a,b){return a-b});
+      var m=Math.floor(s.length/2);
+      return s.length%2?s[m]:(s[m-1]+s[m])/2;
+    }
+    for(var t=35;t<n-31;t++){
+      var d=dates[t],p0=prices[t],p14=prices[t+14],p30=prices[t+30];
+      if(!(p0>0&&p14>0&&p30>0))continue;
+      var r14=(p14-p0)/p0*100,r30=(p30-p0)/p0*100;
+      base14.push(r14);base30.push(r30);
+
+      var mv=bvh.mvrv?bvh.mvrv[d]:null;
+      if(mv!=null){mvrvWindow.push(mv);if(mvrvWindow.length>1460)mvrvWindow.shift()}
+      var mvPct=null;
+      if(mv!=null&&mvrvWindow.length>=60){
+        var le=0;for(var k=0;k<mvrvWindow.length;k++)if(mvrvWindow[k]<=mv)le++;
+        mvPct=le/mvrvWindow.length*100;
+      }
+      var sn=bvh.sthNupl?bvh.sthNupl[d]:null;
+      var srp=bvh.sthRp?bvh.sthRp[d]:null;
+      var sp=bvh.sopr?bvh.sopr[d]:null;
+      var lth0=bvh.lth?bvh.lth[d]:null,lth7=bvh.lth?bvh.lth[dates[t-7]]:null;
+      var lth7d=(lth0!=null&&lth7!=null)?(lth0-lth7):null;
+
+      // 3-day old-coin hits & quiet streak
+      var h3=(hits[t]?1:0)+(hits[t-1]?1:0)+(hits[t-2]?1:0);
+      var quiet=0;for(var q=t;q>=Math.max(0,t-14);q--){if(hits[q])break;quiet++}
+
+      // ETF 5d rolling (only when present)
+      var etfVals=[];
+      for(var e=t;e>=Math.max(0,t-9)&&etfVals.length<5;e--){if(em[dates[e]]!=null)etfVals.push(em[dates[e]])}
+      var etf5=etfVals.length===5?(etfVals[0]+etfVals[1]+etfVals[2]+etfVals[3]+etfVals[4]):null;
+
+      // Stablecoin 7d & 30d
+      var st0=sm[d],st7=sm[dates[t-7]],st30=sm[dates[t-30]];
+      var stb7=(st0&&st7)?(st0-st7):null,stb30=(st0&&st30)?(st0-st30):null;
+
+      // F&G 7d
+      var fg0=fm[d],fgMax=fg0,fgMin=fg0;
+      if(fg0!=null){
+        for(var f=t-1;f>=t-6;f--){var fv=fm[dates[f]];if(fv!=null){if(fv>fgMax)fgMax=fv;if(fv<fgMin)fgMin=fv}}
+      }
+
+      // Crash score (normalized over historically available components)
+      var cRaw=0,cMax=0,cFund=0,cFundMax=0;
+      if(mvPct!=null){cMax+=6;cRaw+=(mvPct>=85?6:(mvPct>=75?3:0))}
+      if(sn!=null){cMax+=4;cRaw+=(sn>0.25?4:(sn>0.15?2:0))}
+      cMax+=15;if(h3>=2||(ovs[t]>10000&&prs[t]>3e8))cRaw+=15;else if(h3>=1)cRaw+=9;
+      if(lth7d!=null){cMax+=10;if(lth7d<-35000)cRaw+=10;else if(lth7d<-15000)cRaw+=6}
+      if(etf5!=null){cMax+=16;cFundMax+=16;var es=(etf5<-8e8?16:(etf5<-2e8?9:0));cRaw+=es;cFund+=es}
+      if(stb7!=null&&stb30!=null){cMax+=13;cFundMax+=13;var ss=(stb7<-5e8&&stb30<-2e9?13:((stb7<-5e8||stb30<-2e9)?7:0));cRaw+=ss;cFund+=ss}
+      if(fg0!=null){cMax+=8;cFundMax+=8;var fs=((fgMax>=75&&fg0<=fgMax-3)?8:(fg0>=78?5:0));cRaw+=fs;cFund+=fs}
+      var cSc=cMax>0?Math.round(cRaw/cMax*100):0;
+      var cFundPct=cFundMax>0?(cFund/cFundMax):0;
+      if(cSc>=50&&(cFundMax===0||cFundPct>=0.35)&&t-lastCrashIdx>=7){
+        crashEv.push({d:d,sc:cSc,r14:r14,r30:r30});
+        lastCrashIdx=t;
+      }
+
+      // Rally score (normalized over historically available components)
+      var rRaw=0,rMax=0,rFund=0,rFundMax=0;
+      if(mvPct!=null){rMax+=9;rRaw+=(mvPct<=20?9:(mvPct<=35?5:0))}
+      if(srp!=null&&srp>0){rMax+=6;var diff=(p0-srp)/srp*100;rRaw+=(Math.abs(diff)<=3?6:(diff<-3?3:0))}
+      if(sp!=null&&sn!=null){
+        rMax+=13;
+        var spMin=sp;for(var j=t-1;j>=t-13;j--){var sv=bvh.sopr?bvh.sopr[dates[j]]:null;if(sv!=null&&sv<spMin)spMin=sv}
+        if(spMin<0.985&&sp>=1.00)rRaw+=13;else if(sp<0.985||sn<-0.08)rRaw+=7;
+      }
+      rMax+=12;if(quiet>=7)rRaw+=6;if(lth7d!=null){if(lth7d>10000)rRaw+=6;else if(lth7d>0)rRaw+=3}
+      if(etf5!=null){rMax+=14;rFundMax+=14;var res1=(etf5>8e8?14:(etf5>2e8?8:0));rRaw+=res1;rFund+=res1}
+      if(stb7!=null&&stb30!=null){rMax+=14;rFundMax+=14;var rss=(stb7>1e9&&stb30>3e9?14:((stb7>5e8||stb30>1.5e9)?8:0));rRaw+=rss;rFund+=rss}
+      if(fg0!=null){rMax+=8;rFundMax+=8;var rfs=((fgMin<=25&&fg0>=fgMin+4)?8:(fg0<=20?4:0));rRaw+=rfs;rFund+=rfs}
+      var rSc=rMax>0?Math.round(rRaw/rMax*100):0;
+      var rFundPct=rFundMax>0?(rFund/rFundMax):0;
+      if(rSc>=55&&(rFundMax===0||rFundPct>=0.35)&&t-lastRallyIdx>=7){
+        rallyEv.push({d:d,sc:rSc,r14:r14,r30:r30});
+        lastRallyIdx=t;
+      }
+    }
+    function summarize(evs,isCrash){
+      var a14=evs.map(function(x){return x.r14}),a30=evs.map(function(x){return x.r30});
+      var hit30=0;for(var i=0;i<a30.length;i++){if(isCrash?a30[i]<0:a30[i]>0)hit30++}
+      return {
+        n:evs.length,m14:med(a14),m30:med(a30),
+        rate30:a30.length?Math.round(hit30/a30.length*100):null,
+        recent:evs.slice(-4).reverse()
+      };
+    }
+    return {
+      span:dates[35]+" ~ "+dates[n-32],
+      base14:med(base14),base30:med(base30),
+      crash:summarize(crashEv,true),
+      rally:summarize(rallyEv,false)
+    };
+  }
+
+  function renderBacktest(bt){
+    var meta=$("rsBtMeta"),body=$("rsBtBody");
+    if(!body)return;
+    if(!bt){
+      if(meta)meta.textContent="历史样本不足";
+      body.textContent="需加载 old-coins.json 与 Bitview 历史序列后显示回测。";
+      return;
+    }
+    if(meta)meta.textContent=bt.span;
+    function fR(v){
+      if(v==null||!isFinite(v))return "—";
+      var cls=v>=0?"rs-bt-up":"rs-bt-dn";
+      return '<span class="'+cls+'">'+(v>=0?"+":"")+v.toFixed(1)+"%</span>";
+    }
+    var c=bt.crash,r=bt.rally;
+    var h='<table class="rs-bt-tbl"><thead><tr><th>信号类型</th><th>触发次数</th><th>14日中位</th><th>30日中位</th><th>30日胜率</th></tr></thead><tbody>'+
+      '<tr><td>大跌预警 (≥50)</td><td>'+c.n+' 次</td><td>'+fR(c.m14)+'</td><td>'+fR(c.m30)+'</td><td>'+(c.rate30!=null?c.rate30+"% 下跌":"—")+'</td></tr>'+
+      '<tr><td>大涨启动 (≥55)</td><td>'+r.n+' 次</td><td>'+fR(r.m14)+'</td><td>'+fR(r.m30)+'</td><td>'+(r.rate30!=null?r.rate30+"% 上涨":"—")+'</td></tr>'+
+      '<tr><td style="color:var(--text-secondary)">同期任意一天</td><td style="color:var(--text-secondary)">基准</td><td>'+fR(bt.base14)+'</td><td>'+fR(bt.base30)+'</td><td style="color:var(--text-secondary)">对照</td></tr>'+
+      '</tbody></table>';
+    var rec=activeTab==="crash"?c.recent:r.recent;
+    if(rec&&rec.length){
+      h+='<div class="rs-bt-rec"><span class="rs-bt-chip" style="background:transparent;padding-left:0">最近触发：</span>';
+      for(var i=0;i<rec.length;i++){
+        h+='<span class="rs-bt-chip">'+rec[i].d+' ('+rec[i].sc+'分 → 30日 '+fR(rec[i].r30)+')</span>';
+      }
+      h+='</div>';
+    }
+    body.innerHTML=h;
   }
 
   function evaluate(data){
@@ -16987,7 +17244,8 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
     rally.label=rally.level==="go"?"启动确认":(rally.level==="ready"?"蓄力区":"磨底观望");
     rally.gateText=rally.gatePass?"已通过（资金情绪 "+rally.lSc[2]+"/60）":"需 ≥65 且资金情绪 ≥32（当前 "+rally.lSc[2]+"）";
 
-    return {crash:crash,rally:rally,meta:{cb:cb,drv:drv,etf:etf,bv:bv,stb:stb,fng:fng,ts:Date.now()}};
+    var bt=computeBacktest(data);
+    return {crash:crash,rally:rally,bt:bt,meta:{cb:cb,drv:drv,etf:etf,bv:bv,stb:stb,fng:fng,ts:Date.now()}};
   }
 
   function render(st){
@@ -17060,6 +17318,32 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
     }
 
     renderList();
+    renderBacktest(st.bt);
+    syncHomeAndDca(st);
+  }
+
+  function syncHomeAndDca(st){
+    var c=st.crash,r=st.rally;
+    var cCls="rs-sync-pill"+(c.level==="danger"?" danger":(c.level==="warn"?" warn":""));
+    var rCls="rs-sync-pill"+(r.level==="go"?" go":(r.level==="ready"?" ready":""));
+    var hc=$("homeRsCrash"),hr=$("homeRsRally"),hm=$("homeRsMsg");
+    if(hc){hc.className=cCls;hc.textContent="大跌 "+c.score+" · "+c.label}
+    if(hr){hr.className=rCls;hr.textContent="大涨 "+r.score+" · "+r.label}
+    var homeTxt="";
+    if(c.level==="danger")homeTxt="大跌高危共振已触发（资金情绪 "+c.lSc[2]+"/65）：暂停额外追高，注意防守与分批风控。";
+    else if(r.level==="go")homeTxt="大涨启动已确认（资金情绪 "+r.lSc[2]+"/60）：去杠杆与资金回流共振，适合按计划加码。";
+    else if(c.level==="warn")homeTxt="资金情绪面偏弱（大跌 "+c.score+" 警戒 · 大涨 "+r.score+" "+r.label+"）：左侧按定投纪律执行，暂不急于打光储备金。";
+    else homeTxt="当前无极端大跌或大涨共振，按常规估值分区与定投节奏平稳执行。";
+    if(hm)hm.textContent=homeTxt;
+
+    var dc=$("dcaRsCrash"),dr=$("dcaRsRally"),dm=$("dcaRsMsg");
+    if(dc){dc.className=cCls;dc.textContent="大跌 "+c.score+" · "+c.label}
+    if(dr){dr.className=rCls;dr.textContent="大涨 "+r.score+" · "+r.label}
+    var dcaTxt="";
+    if(r.level==="go")dcaTxt="右侧启动确认（"+r.score+" 分）：除本月常规/加倍定投外，可按计划集中释放储备金。";
+    else if(c.level==="danger")dcaTxt="大跌高危预警（"+c.score+" 分）：建议仅保留基础定投或暂缓额外加仓，留足现金等待洗盘。";
+    else dcaTxt="大涨启动 "+r.score+" 分（"+r.label+"）：底部区继续执行本月定投，但储备金建议先保留大部，等资金情绪层转强再集中投入。";
+    if(dm)dm.textContent=dcaTxt;
   }
 
   function renderList(){
@@ -17103,7 +17387,7 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
       fetchFng().catch(function(){return null})
     ]).then(function(res){
       var st=evaluate({bv:res[0],oc:res[1],etf:res[2],drv:res[3],cb:res[4],stb:res[5],fng:res[6]});
-      try{localStorage.setItem(CACHE_KEY,JSON.stringify(st))}catch(e){}
+      try{var lite={crash:st.crash,rally:st.rally,bt:st.bt,meta:{cb:{livePrem:st.meta.cb&&st.meta.cb.livePrem,prem7:st.meta.cb&&st.meta.cb.prem7},drv:st.meta.drv,etf:st.meta.etf?{sum5:st.meta.etf.sum5,thru:st.meta.etf.thru}:null,bv:{sthRp:st.meta.bv&&st.meta.bv.sthRp,soprNow:st.meta.bv&&st.meta.bv.soprNow},stb:st.meta.stb?{d7:st.meta.stb.d7,d30:st.meta.stb.d30}:null,fng:st.meta.fng?{now:st.meta.fng.now,min7:st.meta.fng.min7,max7:st.meta.fng.max7}:null,ts:st.meta.ts}};localStorage.setItem(CACHE_KEY,JSON.stringify(lite))}catch(e){}
       render(st);
       busy=false;
     },function(){
@@ -17115,8 +17399,8 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
   function bind(){
     var tc=$("rsTabCrash"),tr=$("rsTabRally"),rb=$("rsRefreshBtn"),fold=$("resonanceFold");
     if(tc&&tr){
-      tc.addEventListener("click",function(){activeTab="crash";tc.classList.add("active");tr.classList.remove("active");renderList()});
-      tr.addEventListener("click",function(){activeTab="rally";tr.classList.add("active");tc.classList.remove("active");renderList()});
+      tc.addEventListener("click",function(){activeTab="crash";tc.classList.add("active");tr.classList.remove("active");renderList();if(lastState)renderBacktest(lastState.bt)});
+      tr.addEventListener("click",function(){activeTab="rally";tr.classList.add("active");tc.classList.remove("active");renderList();if(lastState)renderBacktest(lastState.bt)});
     }
     if(rb)rb.addEventListener("click",function(){run(true)});
     if(fold)fold.addEventListener("toggle",function(){if(fold.open&&!lastState)run(false)});
@@ -17125,6 +17409,108 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
 
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",bind);
   else bind();
+  function jumpToResonance(){
+    try{
+      if(typeof switchTab==="function")switchTab("value");
+      else{
+        var tabBtn=document.querySelector('[data-tab-btn="value"],[data-tab="value"]');
+        if(tabBtn)tabBtn.click();
+      }
+      setTimeout(function(){
+        var fold=$("resonanceFold");
+        if(fold){fold.open=true;fold.scrollIntoView({behavior:"smooth",block:"start"})}
+      },80);
+    }catch(e){}
+  }
+  var hj=$("homeRsJump"),dj=$("dcaRsJump");
+  if(hj)hj.addEventListener("click",jumpToResonance);
+  if(dj)dj.addEventListener("click",jumpToResonance);
+
+  // === V27.3 正式版 本机持仓一键备份与恢复 ===
+  (function initBackup(){
+    var SKIP_RE=/(cache|history|daily|monthly|lth_|etf_flows|sg_resonance|addr_dist|cost_bands|age_cost|mining|holder_cohorts|deep_loss|bitview_floor|before_restore|before_import)/i;
+    function collectPayload(){
+      var data={},count=0;
+      for(var i=0;i<localStorage.length;i++){
+        var k=localStorage.key(i);
+        if(!k||SKIP_RE.test(k))continue;
+        if(/^(btc_|sg_|dca_|plan_|hold_)/i.test(k)){
+          data[k]=localStorage.getItem(k);
+          count++;
+        }
+      }
+      return {app:"SatsGarden",v:"27.3",exportedAt:new Date().toISOString(),count:count,keys:data};
+    }
+    function setStatus(msg,isErr){
+      var el=$("rsBkStatus");
+      if(!el)return;
+      el.style.color=isErr?"#ef4444":"var(--text-secondary)";
+      el.textContent=msg;
+    }
+    function applyJsonStr(raw){
+      try{
+        var obj=JSON.parse((raw||"").trim());
+        var keys=obj&&obj.keys&&typeof obj.keys==="object"?obj.keys:(obj&&typeof obj==="object"?obj:null);
+        if(!keys||!Object.keys(keys).length)throw new Error("empty");
+        try{localStorage.setItem("btc_v27_before_restore",JSON.stringify(collectPayload()))}catch(e){}
+        var n=0;
+        Object.keys(keys).forEach(function(k){
+          if(typeof keys[k]==="string"){localStorage.setItem(k,keys[k]);n++}
+        });
+        setStatus("已恢复 "+n+" 项本机记录，正在刷新页面…",false);
+        setTimeout(function(){location.reload()},700);
+      }catch(e){
+        setStatus("备份格式无效，请检查 JSON 内容是否完整。",true);
+      }
+    }
+    var expBtn=$("rsBkExport"),cpBtn=$("rsBkCopy"),tgBtn=$("rsBkToggleImport"),apBtn=$("rsBkApply"),fi=$("rsBkFile"),pn=$("rsBkPanel");
+    var meta=$("rsBkMeta");
+    if(meta){
+      try{
+        var c=collectPayload().count;
+        meta.textContent="当前已检测到 "+c+" 项本机持仓/设置记录 · 纯本地无服务器";
+      }catch(e){}
+    }
+    if(expBtn)expBtn.addEventListener("click",function(){
+      var p=collectPayload();
+      var blob=new Blob([JSON.stringify(p,null,2)],{type:"application/json;charset=utf-8"});
+      var a=document.createElement("a");
+      a.href=URL.createObjectURL(blob);
+      a.download="sats-garden-backup-"+new Date().toISOString().slice(0,10)+".json";
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setStatus("已导出 "+p.count+" 项本机记录为 JSON 备份文件。",false);
+    });
+    if(cpBtn)cpBtn.addEventListener("click",function(){
+      var txt=JSON.stringify(collectPayload());
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(txt).then(function(){setStatus("已复制备份码到剪贴板，可粘贴到备忘录保存。",false)},function(){
+          if(pn)pn.classList.add("open");
+          var inp=$("rsBkInput");if(inp){inp.value=txt;inp.select()}
+          setStatus("已填入下方文本框，请全选复制保存。",false);
+        });
+      }else{
+        if(pn)pn.classList.add("open");
+        var inp=$("rsBkInput");if(inp){inp.value=txt;inp.select()}
+        try{document.execCommand("copy");setStatus("已复制备份码到剪贴板。",false)}catch(e){setStatus("请长按下方文本框复制保存。",false)}
+      }
+    });
+    if(tgBtn&&pn)tgBtn.addEventListener("click",function(){pn.classList.toggle("open")});
+    if(fi)fi.addEventListener("change",function(e){
+      var f=e.target.files&&e.target.files[0];
+      if(!f)return;
+      var rd=new FileReader();
+      rd.onload=function(){
+        var inp=$("rsBkInput");
+        if(inp)inp.value=String(rd.result||"");
+        setStatus("已载入文件 "+f.name+"，点击「确认恢复到本机」生效。",false);
+      };
+      rd.readAsText(f);
+    });
+    if(apBtn)apBtn.addEventListener("click",function(){
+      var inp=$("rsBkInput");
+      applyJsonStr(inp?inp.value:"");
+    });
+  })();
   window.__sgResonance={refresh:function(){run(true)}};
 })();
 </script>
