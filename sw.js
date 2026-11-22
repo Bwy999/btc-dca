@@ -1,6 +1,6 @@
 "use strict";
 
-const SW_BUILD = "27.12.10-20261121";
+const SW_BUILD = "27.1.0-20261121";
 const CACHE_NAME = "btc-intelligence-v" + SW_BUILD.replace(/\./g, "-");
 const CACHE_PREFIX = "btc-site:" + self.registration.scope + ":";
 const SCOPED_CACHE = CACHE_PREFIX + CACHE_NAME;
@@ -14,7 +14,7 @@ const ASSETS = /*ASSETS*/[
   "./assets/ext-bundle.dde1fb2048.js",
 ]/*END*/;
 // 按需下载的资源（英文对照表）：不预缓存，但版本切换时不删除
-const OPTIONAL_ASSETS = /*OPTIONAL*/["./assets/i18n-en.3d4cc58f98.js"]/*OEND*/;
+const OPTIONAL_ASSETS = /*OPTIONAL*/["./assets/i18n-en.9b8f16ab81.js"]/*OEND*/;
 const ASSET_CACHE = CACHE_PREFIX + "assets";
 const CORE = [
   "./",

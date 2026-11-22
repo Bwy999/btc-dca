@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="color-scheme" content="light dark" />
-  <meta name="old-coins-build" content="27.12.10-20261121" />
+  <meta name="old-coins-build" content="27.1.0-20261121" />
   <title>老比特币异动筛选器 · Sats Garden</title>
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
@@ -195,10 +195,10 @@
           <div>
             <div style="font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:8px;">热门搜索</div>
             <div id="hotPresets">
-              <button type="button" class="preset on" data-preset="gt10k"><b>&gt; 1 万枚老币异动（风险预警）</b><small>≥3年 &gt; 10,000 BTC · 巨鲸 &lt; -3,000 · 利润 &gt; $1亿</small></button>
+              <button type="button" class="preset on" data-preset="rec5k"><b>&gt; 5,000 枚老币 + 利润 &gt; $3 亿（推荐预警）</b><small>≥3年 &gt; 5,000 BTC · LTH 利润 &gt; $3亿</small></button>
+              <button type="button" class="preset" data-preset="gt10k"><b>&gt; 1 万枚老币大额异动（推文同款）</b><small>≥3年 &gt; 10,000 BTC · LTH 利润 &gt; $3亿</small></button>
               <button type="button" class="preset" data-preset="pure10k"><b>纯老币 &gt; 1 万枚（不限利润）</b><small>≥3年老币单日移动量 &gt; 10,000 BTC</small></button>
               <button type="button" class="preset" data-preset="ancient"><b>早期远古币苏醒</b><small>≥7年老币单日移动量 &gt; 1,500 BTC</small></button>
-              <button type="button" class="preset" data-preset="profitDump"><b>高利润集中派发</b><small>≥3年 &gt; 5,000 BTC · 巨鲸 &lt; -5,000 · 利润 &gt; $3亿</small></button>
             </div>
           </div>
 
@@ -332,9 +332,8 @@
     var S = {
       start: "", end: "", ageKey: "3y", mode: "chart", sort: "date_desc",
       rules: [
-        { id: "r1", f: "oldVol", op: "gt", v: 10000 },
-        { id: "r2", f: "whaleDelta", op: "lt", v: -3000 },
-        { id: "r3", f: "lthProfit", op: "gt", v: 100000000 }
+        { id: "r1", f: "oldVol", op: "gt", v: 5000 },
+        { id: "r2", f: "lthProfit", op: "gt", v: 300000000 }
       ]
     };
 
@@ -716,10 +715,10 @@
 
     function applyPreset(k) {
       document.querySelectorAll("#hotPresets [data-preset]").forEach(function (b) { b.classList.toggle("on", b.dataset.preset === k); });
-      if (k === "gt10k") { S.ageKey = "3y"; S.rules = [{ id: "r1", f: "oldVol", op: "gt", v: 10000 }, { id: "r2", f: "whaleDelta", op: "lt", v: -3000 }, { id: "r3", f: "lthProfit", op: "gt", v: 100000000 }]; }
+      if (k === "rec5k") { S.ageKey = "3y"; S.rules = [{ id: "r1", f: "oldVol", op: "gt", v: 5000 }, { id: "r2", f: "lthProfit", op: "gt", v: 300000000 }]; }
+      else if (k === "gt10k") { S.ageKey = "3y"; S.rules = [{ id: "r1", f: "oldVol", op: "gt", v: 10000 }, { id: "r2", f: "lthProfit", op: "gt", v: 300000000 }]; }
       else if (k === "pure10k") { S.ageKey = "3y"; S.rules = [{ id: "r1", f: "oldVol", op: "gt", v: 10000 }]; }
       else if (k === "ancient") { S.ageKey = "7y"; S.rules = [{ id: "r1", f: "oldVol", op: "gt", v: 1500 }]; }
-      else if (k === "profitDump") { S.ageKey = "3y"; S.rules = [{ id: "r1", f: "oldVol", op: "gt", v: 5000 }, { id: "r2", f: "whaleDelta", op: "lt", v: -5000 }, { id: "r3", f: "lthProfit", op: "gt", v: 300000000 }]; }
       document.querySelectorAll("#ageBar [data-age]").forEach(function (b) { b.classList.toggle("on", b.dataset.age === S.ageKey); });
       renderRules(); compute();
     }
@@ -781,7 +780,7 @@
     });
     $("resetBtn").addEventListener("click", function () {
       if (ROWS.length) { S.end = ROWS[ROWS.length - 1].d; S.start = ROWS[Math.max(0, ROWS.length - 365)].d; $("dateStart").value = S.start; $("dateEnd").value = S.end; }
-      applyPreset("gt10k"); toast("已重置");
+      applyPreset("rec5k"); toast("已重置");
     });
     $("hotPresets").addEventListener("click", function (e) { var b = e.target.closest("[data-preset]"); if (b) applyPreset(b.dataset.preset); });
     $("modes").addEventListener("click", function (e) { var b = e.target.closest("[data-m]"); if (b) setMode(b.dataset.m); });
