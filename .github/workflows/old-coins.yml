@@ -1,0 +1,34 @@
+name: Precompute Old Coins Screener
+
+on:
+  schedule:
+    - cron: "40 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: old-coins
+  cancel-in-progress: false
+
+jobs:
+  precompute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Fetch Bitview old-coins history
+        run: python3 tools/precompute_old_coins.py data/old-coins.json
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
+          git add data/old-coins.json
+          if git diff --cached --quiet; then echo "no change"; exit 0; fi
+          git commit -m "data: old coins $(date -u +%F)"
+          git pull --rebase --autostash
+          git push
