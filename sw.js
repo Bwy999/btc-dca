@@ -1,20 +1,18 @@
 "use strict";
 
-const SW_BUILD = "27.3.0-20261122";
+const SW_BUILD = "27.3.0-20261124";
 const CACHE_NAME = "btc-intelligence-v" + SW_BUILD.replace(/\./g, "-");
 const CACHE_PREFIX = "btc-site:" + self.registration.scope + ":";
 const SCOPED_CACHE = CACHE_PREFIX + CACHE_NAME;
 // 带内容哈希的静态资源。文件内容不变，文件名就不变，更新时无需重新下载。
 const ASSETS = /*ASSETS*/[
-  "./assets/app.fae88833be.css",
-  "./assets/lightweight-charts.682f74d8c4.js",
+  "./assets/app.40f1343004.css",
   "./assets/seed-cycle.5a6f45f52a.js",
-  "./assets/app.a59ebd731f.js",
+  "./assets/app.5f97b7c9d9.js",
   "./assets/insight.67c8b7276d.js",
-  "./assets/ext-bundle.ad6881bb17.js",
 ]/*END*/;
 // 按需下载的资源（英文对照表）：不预缓存，但版本切换时不删除
-const OPTIONAL_ASSETS = /*OPTIONAL*/["./assets/i18n-en.9b8f16ab81.js"]/*OEND*/;
+const OPTIONAL_ASSETS = /*OPTIONAL*/["./assets/lightweight-charts.682f74d8c4.js", "./assets/i18n-en.9b8f16ab81.js", "./assets/ext-bundle.941b242e43.js"]/*OEND*/;
 const ASSET_CACHE = CACHE_PREFIX + "assets";
 const CORE = [
   "./",
@@ -115,8 +113,6 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
-  // 放行 /v28 与 /v28/*（含不带末尾斜杠时的 301 跳转），不交由 V27 首页兜底
-  if (/\/v28(\/|$)/.test(url.pathname)) return;
 
   if (url.searchParams.has("_btc_update") || url.pathname.endsWith("/sw.js")) {
     event.respondWith(fetch(new Request(request, {cache:"no-store"})));
@@ -160,10 +156,6 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (request.mode === "navigate") {
-    if (url.pathname.includes("/v28/")) {
-      event.respondWith(networkFirst(request, null));
-      return;
-    }
     const fallback = url.pathname.endsWith("/dca.html")
       ? "./dca.html"
       : url.pathname.endsWith("/ahr999.html")

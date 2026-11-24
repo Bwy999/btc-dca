@@ -62,8 +62,18 @@ def split(src, out):
         s = s[:m.start()] + tag + s[m.end():]
     # 2. 图表库：原为延迟注入的 text/plain 块，改为普通脚本文件
     m = re.search(r'<script id="lwcVendor" type="text/plain">(.*?)</script>', s, re.S)
-    vendor_fn = emit('lightweight-charts', 'js', m.group(1)) if m else None
-    if m: s = s[:m.start()] + f'<script src="{vendor_fn}" data-inline="vendor"></script>' + s[m.end():]
+    vendor_fn = emit('lightweight-charts', 'js', m.group(1), precache=False) if m else None
+    if m:
+        lwc_loader = (
+            f'<script data-inline="vendor">window.LWC_SRC="{vendor_fn}";'
+            '(function(){var p=false;function load(){if(p||window.LightweightCharts)return;p=true;'
+            'var sc=document.createElement("script");sc.src=window.LWC_SRC;sc.async=true;'
+            'sc.onload=function(){try{window.dispatchEvent(new Event("resize"))}catch(e){}};'
+            'document.head.appendChild(sc)}window.__loadLwc=load;'
+            'function trig(){load()}["pointerdown","touchstart","keydown"].forEach(function(ev){window.addEventListener(ev,trig,{once:true,passive:true})});'
+            'if(typeof requestIdleCallback==="function")requestIdleCallback(load,{timeout:1400});else setTimeout(load,1100);})();</script>'
+        )
+        s = s[:m.start()] + lwc_loader + s[m.end():]
     # 3. 主脚本与扩展脚本（<body> 内无属性的内联 <script>）
     body_start = s.index('<body')
     scripts = [m for m in re.finditer(r'<script>(.*?)</script>', s[body_start:], re.S)]
@@ -93,9 +103,17 @@ def split(src, out):
             tags = ''
         pieces.append((body_start + m.start(), body_start + m.end(), tags))
     if ext_codes and ext_slot is not None:
-        ext_fn = emit("ext-bundle", "js", "\n;/*EXT_SEP*/\n".join(ext_codes))
+        ext_fn = emit("ext-bundle", "js", "\n;/*EXT_SEP*/\n".join(ext_codes), precache=False)
         a, b, _ = pieces[ext_slot]
-        pieces[ext_slot] = (a, b, f'<script src="{ext_fn}" data-inline="ext"></script>')
+        ext_loader = (
+            f'<script data-inline="ext">window.EXT_SRC="{ext_fn}";'
+            '(function(){var p=false;function load(){if(p)return;p=true;'
+            'var sc=document.createElement("script");sc.src=window.EXT_SRC;sc.async=true;document.body.appendChild(sc)}'
+            'window.__loadExt=load;'
+            '["pointerdown","touchstart","keydown","hashchange"].forEach(function(ev){window.addEventListener(ev,load,{once:true,passive:true})});'
+            'if(typeof requestIdleCallback==="function")requestIdleCallback(load,{timeout:800});else setTimeout(load,600);})();</script>'
+        )
+        pieces[ext_slot] = (a, b, ext_loader)
     for a, b, tags in reversed(pieces): s = s[:a] + tags + s[b:]
     with open(os.path.join(out, 'index.html'), 'w', encoding='utf-8') as f: f.write(s)
     # 4. Service Worker：写入资源清单
@@ -114,6 +132,7 @@ def join(dist, dst):
     s = open(os.path.join(dist, 'index.html'), encoding='utf-8').read()
     def read(fn): return open(os.path.join(dist, fn), encoding='utf-8').read()
     s = re.sub(r'<link rel="stylesheet" href="([^"]+)" data-inline="css" />', lambda m: '<style>\n' + read(m.group(1)) + '</style>', s)
+    s = re.sub(r'<script[^>]*data-inline="vendor"[^>]*>window\.LWC_SRC="([^"]+)".*?</script>', lambda m: '<script id="lwcVendor" type="text/plain">' + read(m.group(1)) + '</script>', s, flags=re.S)
     s = re.sub(r'<script src="([^"]+)" data-inline="vendor"></script>', lambda m: '<script id="lwcVendor" type="text/plain">' + read(m.group(1)) + '</script>', s)
     seed = re.search(r'<script src="([^"]+)" data-inline="seed"></script>\n', s)
     seed_code = read(seed.group(1)) if seed else ''
@@ -128,6 +147,7 @@ def join(dist, dst):
     def join_ext(m):
         parts = read(m.group(1)).split('\n;/*EXT_SEP*/\n')
         return '\n'.join('<script>' + p + '</script>' for p in parts)
+    s = re.sub(r'<script[^>]*data-inline="ext"[^>]*>window\.EXT_SRC="([^"]+)".*?</script>', join_ext, s, flags=re.S)
     s = re.sub(r'<script src="([^"]+)" data-inline="ext"></script>', join_ext, s)
     with open(dst, 'w', encoding='utf-8') as f: f.write(s)
 

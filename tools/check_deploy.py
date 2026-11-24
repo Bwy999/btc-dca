@@ -68,7 +68,7 @@ def main():
 
     # 2. 页面引用的本地资源
     refs = set(re.findall(r'(?:src|href)="(?:\./)?((?:assets/)[^"?#]+)"', html))
-    refs |= set(re.findall(r'I18N_SRC="(?:\./)?(assets/[^"]+)"', html))
+    refs |= set(re.findall(r'(?:I18N_SRC|LWC_SRC|EXT_SRC)="(?:\./)?(assets/[^"]+)"', html))
     for p in ("apple-touch-icon.png",):
         if f'href="./{p}"' in html or f'href="{p}"' in html:
             refs.add(p)
