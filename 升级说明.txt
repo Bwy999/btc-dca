@@ -1,3 +1,11 @@
+V28.0 (2026-11-24)
+- 版本号正式升级至 V28.0（构建号 28.0.0-20261124），彻底解决 27.12.x 老用户因版本号数字比较（3 < 12）无法收到更新提示的问题
+- Service Worker 离线兜底升级：networkFirst 新增 3.5 秒超时自动回退缓存，移除不存在的 dca.html 预缓存项
+- 移除 Bitview 已下线的 capital_sentiment_phase / capital_sentiment_score 请求，消除每次冷启动的 404 重试
+- 首页主脚本（seed-cycle、app、insight）全部启用 defer 非阻塞加载，叠加非首屏 536 KB 懒加载进一步提升首屏渲染速度
+- 修正 PWA 图标尺寸：将 btc-logo.png 升级为真实 512×512 像素以匹配 manifest.webmanifest
+- 全站页面添加 Referrer-Policy (no-referrer) 防护，避免 URL 参数中的 API Key 外泄
+
 V27.3 正式版 (2026-11-24)
 - 「链上 → 持有者」新增「大户持币总量走势」双轴交互图表（默认 10k~100k BTC 持币总量 vs BTC 价格，支持切换 1k~10k / 100~1k / ≥100k / 10~100 及 1月~全部时间范围，直连 Bitview 日线数据）
 - 清理包内遗留的 v28/ 预览目录、脚本与 SW 特殊分支；将非首屏重模块（lightweight-charts 192 KB + ext-bundle 344 KB，合计 536 KB）改为首屏渲染后空闲/交互按需懒加载，大幅降低 iPhone 冷启动首屏阻塞

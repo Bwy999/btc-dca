@@ -88,14 +88,14 @@ def split(src, out):
             if seed:
                 seed_fn = emit('seed-cycle', 'js', seed.group(0).strip() + '\n')
                 code = code[:seed.start()] + '\n/*CYCLE_SEED*/\n' + code[seed.end():]  # 记下原位置，join 时放回
-                tags += f'<script src="{seed_fn}" data-inline="seed"></script>\n'
-            tags += f'<script src="{emit("app", "js", code)}" data-inline="app"></script>'
+                tags += f'<script defer src="{seed_fn}" data-inline="seed"></script>\n'
+            tags += f'<script defer src="{emit("app", "js", code)}" data-inline="app"></script>'
         elif code.lstrip().startswith('window.I18N_EN='):
             # V26.4：英文对照表只在切换到英文时下载（不预缓存，首次使用后由 Service Worker 缓存）
             tags = f'<script>window.I18N_SRC="{emit("i18n-en", "js", code, precache=False)}"</script>'
         elif 'window.BTCInsight={' in code:
             # 保持 BTCInsight 独立成文件，便于 tests/reliability_test.mjs 单独沙箱加载
-            tags = f'<script src="{emit("insight", "js", code)}" data-inline="ext"></script>'
+            tags = f'<script defer src="{emit("insight", "js", code)}" data-inline="ext"></script>'
         else:
             # V27.12.3：合并其余扩展脚本为单个文件，减少移动端请求与 SW 预缓存开销
             ext_codes.append(code)
@@ -110,8 +110,10 @@ def split(src, out):
             '(function(){var p=false;function load(){if(p)return;p=true;'
             'var sc=document.createElement("script");sc.src=window.EXT_SRC;sc.async=true;document.body.appendChild(sc)}'
             'window.__loadExt=load;'
+            'function arm(){'
             '["pointerdown","touchstart","keydown","hashchange"].forEach(function(ev){window.addEventListener(ev,load,{once:true,passive:true})});'
-            'if(typeof requestIdleCallback==="function")requestIdleCallback(load,{timeout:800});else setTimeout(load,600);})();</script>'
+            'if(typeof requestIdleCallback==="function")requestIdleCallback(load,{timeout:600});else setTimeout(load,400);}'
+            'if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",arm,{once:true});else arm();})();</script>'
         )
         pieces[ext_slot] = (a, b, ext_loader)
     for a, b, tags in reversed(pieces): s = s[:a] + tags + s[b:]
@@ -134,21 +136,21 @@ def join(dist, dst):
     s = re.sub(r'<link rel="stylesheet" href="([^"]+)" data-inline="css" />', lambda m: '<style>\n' + read(m.group(1)) + '</style>', s)
     s = re.sub(r'<script[^>]*data-inline="vendor"[^>]*>window\.LWC_SRC="([^"]+)".*?</script>', lambda m: '<script id="lwcVendor" type="text/plain">' + read(m.group(1)) + '</script>', s, flags=re.S)
     s = re.sub(r'<script src="([^"]+)" data-inline="vendor"></script>', lambda m: '<script id="lwcVendor" type="text/plain">' + read(m.group(1)) + '</script>', s)
-    seed = re.search(r'<script src="([^"]+)" data-inline="seed"></script>\n', s)
+    seed = re.search(r'<script(?: defer)? src="([^"]+)" data-inline="seed"></script>\n', s)
     seed_code = read(seed.group(1)) if seed else ''
     if seed: s = s[:seed.start()] + s[seed.end():]
     def app(m):
         code = read(m.group(1))
         if '\n/*CYCLE_SEED*/\n' in code: return '<script>' + code.replace('\n/*CYCLE_SEED*/\n', '\n' + seed_code, 1) + '</script>'
         return '<script>\n' + seed_code + code + '</script>'
-    s = re.sub(r'<script src="([^"]+)" data-inline="app"></script>', app, s)
+    s = re.sub(r'<script(?: defer)? src="([^"]+)" data-inline="app"></script>', app, s)
     # V26.4：英文对照表还原为内联脚本
     s = re.sub(r'<script>window\.I18N_SRC="([^"]+)"</script>', lambda m: '<script>' + read(m.group(1)) + '</script>', s)
     def join_ext(m):
         parts = read(m.group(1)).split('\n;/*EXT_SEP*/\n')
         return '\n'.join('<script>' + p + '</script>' for p in parts)
     s = re.sub(r'<script[^>]*data-inline="ext"[^>]*>window\.EXT_SRC="([^"]+)".*?</script>', join_ext, s, flags=re.S)
-    s = re.sub(r'<script src="([^"]+)" data-inline="ext"></script>', join_ext, s)
+    s = re.sub(r'<script(?: defer)? src="([^"]+)" data-inline="ext"></script>', join_ext, s)
     with open(dst, 'w', encoding='utf-8') as f: f.write(s)
 
 if __name__ == '__main__':

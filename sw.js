@@ -1,6 +1,6 @@
 "use strict";
 
-const SW_BUILD = "27.3.0-20261124";
+const SW_BUILD = "28.0.0-20261124";
 const CACHE_NAME = "btc-intelligence-v" + SW_BUILD.replace(/\./g, "-");
 const CACHE_PREFIX = "btc-site:" + self.registration.scope + ":";
 const SCOPED_CACHE = CACHE_PREFIX + CACHE_NAME;
@@ -8,18 +8,17 @@ const SCOPED_CACHE = CACHE_PREFIX + CACHE_NAME;
 const ASSETS = /*ASSETS*/[
   "./assets/app.40f1343004.css",
   "./assets/seed-cycle.5a6f45f52a.js",
-  "./assets/app.5f97b7c9d9.js",
+  "./assets/app.7b85c014d3.js",
   "./assets/insight.67c8b7276d.js",
 ]/*END*/;
 // 按需下载的资源（英文对照表）：不预缓存，但版本切换时不删除
-const OPTIONAL_ASSETS = /*OPTIONAL*/["./assets/lightweight-charts.682f74d8c4.js", "./assets/i18n-en.9b8f16ab81.js", "./assets/ext-bundle.941b242e43.js"]/*OEND*/;
+const OPTIONAL_ASSETS = /*OPTIONAL*/["./assets/lightweight-charts.682f74d8c4.js", "./assets/i18n-en.9b8f16ab81.js", "./assets/ext-bundle.ab7963b7d6.js"]/*OEND*/;
 const ASSET_CACHE = CACHE_PREFIX + "assets";
 const CORE = [
   "./",
   "./index.html",
   "./ahr999.html",
   "./old-coins.html",
-  "./dca.html",
   "./apple-touch-icon.png",
   "./manifest.webmanifest",
 ];
@@ -82,13 +81,17 @@ self.addEventListener("message", (event) => {
 
 async function networkFirst(request, fallbackUrl) {
   const cache = await caches.open(SCOPED_CACHE).catch(() => null);
+  const ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+  const timer = ctrl ? setTimeout(() => { try { ctrl.abort(); } catch (_) {} }, 3500) : null;
   try {
-    const response = await fetch(request);
+    const response = await fetch(request, ctrl ? { signal: ctrl.signal } : undefined);
+    if (timer) clearTimeout(timer);
     if (response?.type === "opaqueredirect") return response;
     if (!response?.ok) throw new Error(`HTTP ${response?.status || 0}`);
     if(cache)try { await cache.put(request, response.clone()); } catch (_) {}
     return response;
   } catch {
+    if (timer) clearTimeout(timer);
     return (cache ? await cache.match(request).catch(() => null) : null)
       || (cache && fallbackUrl ? await cache.match(fallbackUrl).catch(() => null) : null)
       || Response.error();
@@ -156,9 +159,7 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (request.mode === "navigate") {
-    const fallback = url.pathname.endsWith("/dca.html")
-      ? "./dca.html"
-      : url.pathname.endsWith("/ahr999.html")
+    const fallback = url.pathname.endsWith("/ahr999.html")
         ? "./ahr999.html"
         : url.pathname.endsWith("/old-coins.html")
           ? "./old-coins.html"
