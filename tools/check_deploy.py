@@ -51,6 +51,8 @@ def main():
     }
     if exists("ahr999.html"):
         ids["AHR999 专页"] = re.search(r"(\d+\.\d+\.\d+-\d{8})", read("ahr999.html"))
+    if exists("old-coins.html"):
+        ids["老币异动页"] = re.search(r'<meta name="old-coins-build" content="([^"]+)"', read("old-coins.html"))
     vals = {k: (m.group(1) if m else None) for k, m in ids.items()}
     missing = [k for k, v in vals.items() if not v]
     if missing:
@@ -69,8 +71,8 @@ def main():
     # 2. 页面引用的本地资源
     refs = set(re.findall(r'(?:src|href)="(?:\./)?((?:assets/)[^"?#]+)"', html))
     refs |= set(re.findall(r'(?:I18N_SRC|LWC_SRC|EXT_SRC)="(?:\./)?(assets/[^"]+)"', html))
-    for p in ("apple-touch-icon.png",):
-        if f'href="./{p}"' in html or f'href="{p}"' in html:
+    for p in ("apple-touch-icon.png", "btc-logo.png", "manifest.webmanifest"):
+        if f'="./{p}"' in html or f'="{p}"' in html:
             refs.add(p)
     for p in sorted(refs):
         if not exists(p):
@@ -108,9 +110,14 @@ def main():
 
     # 6. 预计算数据
     now = datetime.now(timezone.utc)
-    for p, need in (("data/monthly.json", "groups"), ("data/lth-chips.json", "daily"), ("data/daily-state.json", "today"), ("data/quantum.json", "bips")):
+    core_data = (("data/monthly.json", "groups", True), ("data/lth-chips.json", "daily", True), ("data/daily-state.json", "today", True), ("data/quantum.json", "bips", True),
+                 ("data/etf-flows.json", "days", False), ("data/old-coins.json", "rows", False), ("data/stablecoins.json", "days", False), ("data/mining.json", "raw", False))
+    for p, need, req in core_data:
         if not exists(p):
-            (fails if require_data else notes).append(f"{p} 不存在" + ("" if require_data else "（由 GitHub 定时任务生成，部署包不含属正常）"))
+            if require_data and req:
+                fails.append(f"{p} 不存在")
+            elif req:
+                notes.append(f"{p} 不存在（由 GitHub 定时任务生成，部署包不含属正常）")
             continue
         try:
             j = json.loads(read(p))

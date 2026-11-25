@@ -10,7 +10,6 @@
 
 只使用 Python 标准库。
 """
-import re
 import hashlib, os, re, sys, shutil
 
 def h(data): return hashlib.sha256(data.encode('utf-8')).hexdigest()[:10]
@@ -91,8 +90,12 @@ def split(src, out):
                 tags += f'<script defer src="{seed_fn}" data-inline="seed"></script>\n'
             tags += f'<script defer src="{emit("app", "js", code)}" data-inline="app"></script>'
         elif code.lstrip().startswith('window.I18N_EN='):
-            # V26.4：英文对照表只在切换到英文时下载（不预缓存，首次使用后由 Service Worker 缓存）
-            tags = f'<script>window.I18N_SRC="{emit("i18n-en", "js", code, precache=False)}"</script>'
+            # V26.4 / V28.0.3：英文对照表只在英文模式下下载；英文模式同步预加载并立即拉取扩展包，消除串行白屏等待
+            i18n_fn = emit("i18n-en", "js", code, precache=False)
+            tags = (
+                f'<script data-inline="i18n">window.I18N_SRC="{i18n_fn}";'
+                'if(window.BTC_LANG==="en"){var l=document.createElement("link");l.rel="preload";l.as="script";l.href=window.I18N_SRC;document.head.appendChild(l)}</script>'
+            )
         elif 'window.BTCInsight={' in code:
             # 保持 BTCInsight 独立成文件，便于 tests/reliability_test.mjs 单独沙箱加载
             tags = f'<script defer src="{emit("insight", "js", code)}" data-inline="ext"></script>'
@@ -110,6 +113,7 @@ def split(src, out):
             '(function(){var p=false;function load(){if(p)return;p=true;'
             'var sc=document.createElement("script");sc.src=window.EXT_SRC;sc.async=true;document.body.appendChild(sc)}'
             'window.__loadExt=load;'
+            'if(window.BTC_LANG==="en"){load();return}'
             'function arm(){'
             '["pointerdown","touchstart","keydown","hashchange"].forEach(function(ev){window.addEventListener(ev,load,{once:true,passive:true})});'
             'if(typeof requestIdleCallback==="function")requestIdleCallback(load,{timeout:600});else setTimeout(load,400);}'
@@ -122,6 +126,8 @@ def split(src, out):
     sw_src = os.path.join(os.path.dirname(src), 'sw.js')
     if not os.path.exists(sw_src):  # 合并源码放在 source/ 时，使用仓库根目录的 sw.js
         sw_src = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(src))), 'sw.js')
+    if not os.path.exists(sw_src):
+        sw_src = os.path.join(out, 'sw.js')
     sw = open(sw_src, encoding='utf-8').read()
     lst = '[\n' + ''.join(f'  "./{a}",\n' for a in assets) + ']'
     sw = re.sub(r'/\*ASSETS\*/.*?/\*END\*/', '/*ASSETS*/' + lst + '/*END*/', sw, flags=re.S)
@@ -145,7 +151,7 @@ def join(dist, dst):
         return '<script>\n' + seed_code + code + '</script>'
     s = re.sub(r'<script(?: defer)? src="([^"]+)" data-inline="app"></script>', app, s)
     # V26.4：英文对照表还原为内联脚本
-    s = re.sub(r'<script>window\.I18N_SRC="([^"]+)"</script>', lambda m: '<script>' + read(m.group(1)) + '</script>', s)
+    s = re.sub(r'<script[^>]*>window\.I18N_SRC="([^"]+)".*?</script>', lambda m: '<script>' + read(m.group(1)) + '</script>', s, flags=re.S)
     def join_ext(m):
         parts = read(m.group(1)).split('\n;/*EXT_SEP*/\n')
         return '\n'.join('<script>' + p + '</script>' for p in parts)

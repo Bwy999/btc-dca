@@ -29,24 +29,31 @@ def http(url, method="GET", data=None, headers=None):
         return 0, str(e)
 
 
+import re
+
+
 def check_series(names):
     """每批最多 30 个；遇到「找不到」就记下来、去掉再试，直到这一批全部能取到。"""
     missing, errors = [], []
     for i in range(0, len(names), 30):
         batch = list(names[i:i + 30])
-        for _ in range(40):
+        for _ in range(len(batch) + 5):
             if not batch:
                 break
             st, t = http(f"{BASE}/api/series/bulk?index=day1&series=date,{','.join(batch)}&start=-1")
             if st == 200:
                 break
             bad = None
-            if st == 404:
+            if st in (400, 404):
                 try:
-                    msg = json.loads(t).get("error", {}).get("message", "")
+                    msg = json.loads(t).get("error", {}).get("message", "") or t
                 except Exception:
                     msg = t
-                bad = next((n for n in batch if f"'{n}'" in msg), None)
+                m = re.search(r"'([a-z0-9_]+)'\s+not\s+found", msg, re.I)
+                if m and m.group(1) in batch:
+                    bad = m.group(1)
+                else:
+                    bad = next((n for n in batch if f"'{n}'" in msg), None)
             if bad:
                 missing.append(bad)
                 batch.remove(bad)

@@ -78,7 +78,8 @@ def stablecoins():
     for d in days:
         last = p.get(d, last)
         prices.append(round(last, 2))
-    return {"ts": int(time.time() * 1000), "src": src, "days": days,
+    return {"v": 1, "generated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "ts": int(time.time() * 1000), "src": src, "days": days,
             "u": [round(u[d]) for d in days], "c": [round(c[d]) for d in days], "p": prices}
 
 
@@ -87,13 +88,14 @@ def mining():
         try:
             j = get(url, timeout=120)
             if isinstance(j, dict) and len(j.get("hashrates") or []) > 100 and len(j.get("difficulty") or []) > 20:
-                return {"ts": int(time.time() * 1000), "src": url.split("/")[2], "raw": j}
+                return {"v": 1, "generated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        "ts": int(time.time() * 1000), "src": url.split("/")[2], "raw": j}
         except Exception as e:
             print("  ", url, e)
     raise ValueError("mining sources failed")
 
 
-SITE = "https://bwy999.github.io/btc-dca/"
+SITE = os.environ.get("SITE_URL", "https://9992100.xyz/")
 
 
 def bark(title, body):

@@ -20,7 +20,9 @@ CSS = {"field-sizing": 99, "interpolate-size": 99, "scrollbar-gutter": 99, "anch
        "color-mix(": 16.2, ":has(": 15.4, "dvh": 15.4, "lvh": 15.4, "svh": 15.4, "@property": 16.4}
 
 def main():
-    src = sys.argv[1]; ios = float(sys.argv[sys.argv.index("--ios") + 1]) if "--ios" in sys.argv else 17.0
+    pos = [a for a in sys.argv[1:] if not a.startswith("--") and (sys.argv.index(a) == 0 or sys.argv[sys.argv.index(a) - 1] != "--ios")]
+    src = pos[0] if pos else "source/index.html"
+    ios = float(sys.argv[sys.argv.index("--ios") + 1]) if "--ios" in sys.argv else 17.0
     s = open(src, encoding="utf-8").read()
     css = "\n".join(re.findall(r"<style[^>]*>(.*?)</style>", s, re.S))
     js = "\n".join(b for a, b in re.findall(r"<script(\s[^>]*)?>(.*?)</script>", s, re.S) if not (a and "src=" in a))

@@ -1,6 +1,6 @@
 "use strict";
 
-const SW_BUILD = "28.0.2-20261124";
+const SW_BUILD = "28.0.3-20261125";
 const CACHE_NAME = "btc-intelligence-v" + SW_BUILD.replace(/\./g, "-");
 const CACHE_PREFIX = "btc-site:" + self.registration.scope + ":";
 const SCOPED_CACHE = CACHE_PREFIX + CACHE_NAME;
@@ -8,11 +8,11 @@ const SCOPED_CACHE = CACHE_PREFIX + CACHE_NAME;
 const ASSETS = /*ASSETS*/[
   "./assets/app.40f1343004.css",
   "./assets/seed-cycle.5a6f45f52a.js",
-  "./assets/app.c21192f0d7.js",
+  "./assets/app.8ac3594c22.js",
   "./assets/insight.67c8b7276d.js",
 ]/*END*/;
 // 按需下载的资源（英文对照表）：不预缓存，但版本切换时不删除
-const OPTIONAL_ASSETS = /*OPTIONAL*/["./assets/lightweight-charts.682f74d8c4.js", "./assets/i18n-en.9b8f16ab81.js", "./assets/ext-bundle.ac284d6a92.js"]/*OEND*/;
+const OPTIONAL_ASSETS = /*OPTIONAL*/["./assets/lightweight-charts.682f74d8c4.js", "./assets/i18n-en.dede1b668f.js", "./assets/ext-bundle.d4631c734b.js"]/*OEND*/;
 const ASSET_CACHE = CACHE_PREFIX + "assets";
 const CORE = [
   "./",
@@ -20,6 +20,7 @@ const CORE = [
   "./ahr999.html",
   "./old-coins.html",
   "./apple-touch-icon.png",
+  "./btc-logo.png",
   "./manifest.webmanifest",
 ];
 
@@ -87,7 +88,10 @@ async function networkFirst(request, fallbackUrl) {
     const response = await fetch(request, ctrl ? { signal: ctrl.signal } : undefined);
     if (timer) clearTimeout(timer);
     if (response?.type === "opaqueredirect") return response;
-    if (!response?.ok) throw new Error(`HTTP ${response?.status || 0}`);
+    if (!response?.ok) {
+      if (response?.status === 404 && !fallbackUrl) return response;
+      throw new Error(`HTTP ${response?.status || 0}`);
+    }
     if(cache)try { await cache.put(request, response.clone()); } catch (_) {}
     return response;
   } catch {
@@ -102,12 +106,12 @@ async function staleWhileRevalidate(request, event) {
   const cache = await caches.open(SCOPED_CACHE).catch(() => null);
   const cached = cache ? await cache.match(request).catch(() => null) : null;
   const update = fetch(request).then(async (response) => {
-    if (!response?.ok) return null;
-    if(cache)try { await cache.put(request, response.clone()); } catch (_) {}
+    if (response?.ok && cache) try { await cache.put(request, response.clone()); } catch (_) {}
     return response;
   }).catch(() => null);
   event.waitUntil(update);
-  return cached || await update || Response.error();
+  if (cached) return cached;
+  return await update || Response.error();
 }
 
 self.addEventListener("fetch", (event) => {
@@ -159,11 +163,14 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (request.mode === "navigate") {
-    const fallback = url.pathname.endsWith("/ahr999.html")
+    const p = url.pathname;
+    const fallback = p.endsWith("/ahr999.html")
         ? "./ahr999.html"
-        : url.pathname.endsWith("/old-coins.html")
+        : p.endsWith("/old-coins.html")
           ? "./old-coins.html"
-          : "./index.html";
+          : (p.endsWith("/") || p.endsWith("/index.html"))
+            ? "./index.html"
+            : null;
     event.respondWith(networkFirst(request, fallback));
     return;
   }

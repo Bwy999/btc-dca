@@ -7,10 +7,12 @@
   <meta name="color-scheme" content="light dark" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="old-coins-build" content="28.0.2-20261124" />
+  <meta name="old-coins-build" content="28.0.3-20261125" />
+  <script>(function(){var l=null;try{l=localStorage.getItem("btc_lang_v1")}catch(e){}if(l!=="zh"&&l!=="en"){var n=(navigator.languages&&navigator.languages[0])||navigator.language||"";l=/^zh/i.test(n)?"zh":"en"}window.BTC_LANG=l;document.documentElement.lang=l==="en"?"en":"zh-CN";var T="btc_theme_v1",t=null;try{t=localStorage.getItem(T)}catch(e){}if(t!=="light"&&t!=="dark")t=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t;})();</script>
   <title>老比特币异动筛选器 · Sats Garden</title>
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
+  <link rel="manifest" href="./manifest.webmanifest" />
   <style>
     :root{
       --bg:#f3f4f6;--card:#fff;--fill:#eff1f5;--ink:#11141a;--ink2:#4b5563;--ink3:#8790a0;
@@ -48,6 +50,9 @@
     .bmark{width:30px;height:30px;border-radius:50%;background:var(--orange);color:#fff;font-weight:800;font-size:16px;display:inline-flex;align-items:center;justify-content:center}
     .btitle{font-size:15px;font-weight:750;line-height:1.2}.bsub{font-size:11px;color:var(--ink3)}
     .hdr-act{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .lang-seg{display:inline-flex;align-items:center;padding:2px;border-radius:999px;background:var(--fill);border:1px solid var(--hair)}
+    .lang-seg button{border:0;background:transparent;color:var(--ink2);border-radius:999px;padding:3px 8px;font:inherit;font-size:11.5px;font-weight:650;cursor:pointer}
+    .lang-seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
     .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:11.5px;font-weight:600;background:var(--fill);color:var(--ink2)}
     .badge.ok{background:var(--green-soft);color:var(--green)}.badge.warn{background:var(--amber-soft);color:var(--amber)}.badge.bad{background:var(--red-soft);color:var(--red)}
     .badge i{width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block}
@@ -124,11 +129,11 @@
         </div>
       </a>
       <div class="hdr-act">
-        <span class="badge warn" id="netBadge"><i></i><span id="netText">正在连接 Bitview…</span></span>
-        <button type="button" class="chip" id="refreshBtn">刷新数据</button>
+        <span class="badge warn" id="netBadge"><i></i><span id="netText">同步中…</span></span>
+        <div class="lang-seg" translate="no" role="group" aria-label="语言 Language"><button type="button" data-lang-btn="zh">中</button><button type="button" data-lang-btn="en">EN</button></div>
+        <button type="button" class="chip" id="refreshBtn">更新数据</button>
         <button type="button" class="chip" id="themeBtn" aria-label="切换主题">☾</button>
-        <a class="chip" href="./index.html">返回首页</a>
-        
+        <a class="chip" id="backHomeBtn" href="./index.html">返回首页</a>
       </div>
     </div>
   </header>
@@ -137,12 +142,13 @@
     <!-- 1. 高级筛选 -->
     <section class="card">
       <div class="card-hd">
-        <h1>高级筛选 <span style="font-size:11.5px;font-weight:500;color:var(--ink3);margin-left:6px;">多条件 AND 组合 · 支持 2011 年至今任意日历区间</span></h1>
+        <h1 id="filterHeading">高级筛选 <span style="font-size:11.5px;font-weight:500;color:var(--ink3);margin-left:6px;">多条件 AND 组合 · 支持 2011 年至今任意日历区间</span></h1>
         <div class="chips" id="quickRanges">
           <button type="button" class="chip" data-r="30">近 30 天</button>
           <button type="button" class="chip" data-r="90">近 90 天</button>
           <button type="button" class="chip on" data-r="365">近 1 年</button>
           <button type="button" class="chip" data-r="1095">近 3 年</button>
+          <button type="button" class="chip" data-r="2025">2025 年</button>
           <button type="button" class="chip" data-r="2024">2024 年</button>
           <button type="button" class="chip" data-r="2021">2021 年</button>
           <button type="button" class="chip" data-r="all">全部 (2011–今)</button>
@@ -324,14 +330,20 @@
       { k: "15y", l: "15y+", s: "age_over_15y_transfer_volume_sum_24h", m: 15 }
     ];
     var AGE_MIN = { "1y": 1, "2y": 2, "3y": 3, "5y": 5, "7y": 7, "10y": 10 };
+    function en() { return window.BTC_LANG === "en"; }
+    function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]; }); }
+    function addDays(ymd, days) {
+      var ms = Date.parse(ymd + "T00:00:00Z");
+      return isFinite(ms) ? new Date(ms + days * 86400000).toISOString().slice(0, 10) : "";
+    }
     var FMETA = {
-      oldVol: { l: "老币移动量", u: "BTC" },
-      whaleDelta: { l: "LTH 净变化", u: "BTC" },
-      lthProfit: { l: "LTH 已实现利润", u: "USD" },
-      priceChg: { l: "BTC 当日涨跌", u: "%" }
+      oldVol: { l: "老币移动量", en: "Old-coin volume", u: "BTC" },
+      whaleDelta: { l: "LTH 净变化", en: "LTH net change", u: "BTC" },
+      lthProfit: { l: "LTH 已实现利润", en: "LTH realized profit", u: "USD" },
+      priceChg: { l: "BTC 当日涨跌", en: "BTC daily change", u: "%" }
     };
 
-    var ROWS = [], SCOPED = [], HITS = [], hover = -1, cvMap = null, profitMode = "24h";
+    var ROWS = [], SCOPED = [], HITS = [], hover = -1, cvMap = null, profitMode = "1w/7";
     var S = {
       start: "", end: "", ageKey: "3y", mode: "chart", sort: "date_desc",
       rules: [
@@ -345,6 +357,12 @@
     function toast(msg) { var t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove("show"); }, 2200); }
     function fmtUsd(v) { if (v == null || !isFinite(v)) return "—"; var a = Math.abs(v); return (v < 0 ? "−" : "") + "$" + (a >= 1e9 ? (a / 1e9).toFixed(2) + "B" : a >= 1e6 ? (a / 1e6).toFixed(1) + "M" : a >= 1e3 ? Math.round(a / 1e3) + "K" : Math.round(a)); }
     function fmtBtc(v) { return Math.round(v).toLocaleString("en-US"); }
+    function profitLabel(pm) {
+      if (pm === "24h" || pm === "lth_realized_profit_sum_24h") return "lth_realized_profit_sum_24h";
+      if (pm === "all-24h" || pm === "realized_profit_sum_24h") return "realized_profit_sum_24h";
+      if (pm === "all-1w/7" || pm === "realized_profit_sum_1w ÷ 7") return "realized_profit_sum_1w ÷ 7";
+      return "lth_realized_profit_sum_1w ÷ 7";
+    }
 
     // IndexedDB helpers (full 2011+ history is ~2-3MB, safe in IndexedDB)
     function openDb() {
@@ -377,20 +395,6 @@
       var b = $("netBadge"); b.className = "badge " + cls; $("netText").textContent = txt;
     }
 
-    function fetchJsonTimeout(url, ms) {
-      var ctl = ("AbortController" in window) ? new AbortController() : null;
-      var tm = setTimeout(function () { if (ctl) ctl.abort(); }, ms || 25000);
-      return fetch(url, { mode: "cors", cache: "no-store", signal: ctl ? ctl.signal : undefined }).then(function (r) {
-        clearTimeout(tm);
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return r.json();
-      }, function (err) {
-        clearTimeout(tm);
-        if (err && err.name === "AbortError") throw new Error("请求超时");
-        throw err;
-      });
-    }
-
     async function fetchBulk(seriesList, startVal) {
       var active = seriesList.slice();
       for (var tries = 0; tries < seriesList.length + 2; tries++) {
@@ -402,7 +406,7 @@
         var tm = setTimeout(function () { if (ctl) ctl.abort(); }, startVal === "2011-01-01" ? 45000 : 25000);
         var r;
         try { r = await fetch(u.toString(), { mode: "cors", cache: "no-store", signal: ctl ? ctl.signal : undefined }); }
-        catch (err) { clearTimeout(tm); throw new Error(err && err.name === "AbortError" ? "请求超时" : "网络不可达"); }
+        catch (err) { clearTimeout(tm); throw new Error(err && err.name === "AbortError" ? (en() ? "Timeout" : "请求超时") : (en() ? "Network error" : "网络不可达")); }
         clearTimeout(tm);
         var txt = await r.text();
         if (r.ok) {
@@ -424,7 +428,7 @@
         }
         throw new Error("HTTP " + r.status);
       }
-      throw new Error("重试过多");
+      throw new Error(en() ? "Too many retries" : "重试过多");
     }
 
     function alignCol(refStart, col, i) {
@@ -439,7 +443,7 @@
       for (var ai = 0; ai < ageRef.data.length; ai++) ageIdx[ageRef.data[ai]] = ai;
       var pKey = coreMap.lth_realized_profit_sum_24h ? "lth_realized_profit_sum_24h" : coreMap.lth_realized_profit_sum_1w ? "lth_realized_profit_sum_1w" : coreMap.realized_profit_sum_24h ? "realized_profit_sum_24h" : "realized_profit_sum_1w";
       var pDiv = /_1w$/.test(pKey) ? 7 : 1;
-      profitMode = pKey + (pDiv === 7 ? " ÷ 7" : "");
+      var pm = pKey === "lth_realized_profit_sum_24h" ? "24h" : pKey === "lth_realized_profit_sum_1w" ? "1w/7" : pKey === "realized_profit_sum_24h" ? "all-24h" : "all-1w/7";
       var out = [], today = new Date().toISOString().slice(0, 10);
       for (var i = 0; i < dates.length; i++) {
         var d = dates[i];
@@ -453,6 +457,7 @@
         for (var j = 0; j < COHORTS.length; j++) c.push(aPos != null ? Math.round(alignCol(agePos0, ageMap[COHORTS[j].s], aPos)) : 0);
         out.push({ d: d, p: Math.round(p), pc: +((p / prevP - 1) * 100).toFixed(2), c: c, w: wd, pr: pr });
       }
+      out._pm = pm;
       return out;
     }
 
@@ -468,34 +473,49 @@
       return buildRowsFromTwo(pair[0], pair[1]);
     }
 
+    function mergeRecentRows(base, recent) {
+      if (!recent || !recent.length) return base;
+      var byD = {};
+      base.forEach(function (r) { byD[r.d] = r; });
+      recent.forEach(function (r) { byD[r.d] = r; });
+      return Object.keys(byD).sort().map(function (k) { return byD[k]; });
+    }
+
     async function loadFullHistory() {
       if (hasFullHistory || loadingFull) return;
       loadingFull = true;
-      setNet("warn", "正在按需补拉 2011–2023 全历史…");
+      setNet("warn", en() ? "Fetching 2011–present full history…" : "正在按需补拉 2011–2023 全历史…");
       try {
         var rows = await fetchDirect("2011-01-01");
-        if (rows.length < 200) throw new Error("全历史数据不足");
-        ROWS = rows; hasFullHistory = true; profitMode = "1w/7";
+        if (rows.length < 200) throw new Error(en() ? "Insufficient history" : "全历史数据不足");
+        ROWS = rows; hasFullHistory = true; profitMode = rows._pm || profitMode || "1w/7";
         await dbPut({ ts: Date.now(), full: true, pm: profitMode, rows: rows });
         initDatesIfEmpty(); renderRules(); compute();
-        setNet("ok", "Bitview 全历史 · " + ROWS[0].d + " 至 " + ROWS[ROWS.length - 1].d + "（" + ROWS.length + " 天）");
+        setNet("ok", (en() ? "Bitview full · " : "Bitview 全历史 · ") + ROWS[0].d + (en() ? " to " : " 至 ") + ROWS[ROWS.length - 1].d + " (" + ROWS.length + (en() ? "d)" : " 天）"));
       } catch (e) {
-        setNet("warn", "全历史补拉失败（" + (e && e.message || "网络异常") + "），当前显示近 3 年");
+        setNet("warn", (en() ? "Full history failed (" : "全历史补拉失败（") + (e && e.message || (en() ? "error" : "网络异常")) + (en() ? "), showing 3Y" : "），当前显示近 3 年"));
       } finally { loadingFull = false; }
     }
 
     async function loadData(force) {
-      profitMode = "1w/7";
-      // 1. 优先读取同源预计算文件 data/old-coins.json（零跨域、手机 0.1 秒秒开）
+      // 1. 优先读取同源预计算文件 data/old-coins.json（零跨域、手机秒开；点按「更新数据」时再补拉最新实时日线）
       try {
         var lr = await fetch(LOCAL_DATA, { cache: force ? "reload" : "no-cache" });
         if (lr.ok) {
           var lj = await lr.json(), lrows = unpackLocal(lj);
           if (lrows) {
-            ROWS = lrows; hasFullHistory = true; profitMode = lj.pm || "1w/7";
+            profitMode = lj.pm || "1w/7";
+            if (force) {
+              try {
+                setNet("warn", en() ? "Syncing latest Bitview days…" : "正在从 Bitview 同步最新日线…");
+                var tail = await fetchDirect(-60);
+                if (tail && tail.length) lrows = mergeRecentRows(lrows, tail);
+              } catch (_) {}
+            }
+            ROWS = lrows; hasFullHistory = true;
             await dbPut({ ts: Date.now(), full: true, pm: profitMode, rows: lrows });
             initDatesIfEmpty(); renderRules(); compute();
-            setNet("ok", "预计算全历史 · " + ROWS[0].d + " 至 " + ROWS[ROWS.length - 1].d + "（" + ROWS.length + " 天）");
+            setNet("ok", (en() ? "Data date · " : "数据日 · ") + ROWS[ROWS.length - 1].d.slice(5) + " · " + ROWS[0].d + "–" + ROWS[ROWS.length - 1].d);
             return;
           }
         }
@@ -507,34 +527,36 @@
         ROWS = cached.rows; hasFullHistory = !!cached.full; profitMode = cached.pm || "1w/7";
         initDatesIfEmpty(); renderRules(); compute();
         if (!force && Date.now() - cached.ts < TTL) {
-          setNet("ok", "Bitview 缓存 · " + ROWS[0].d + " 至 " + ROWS[ROWS.length - 1].d);
+          setNet("ok", (en() ? "Cached · " : "本机缓存 · ") + ROWS[0].d + (en() ? " to " : " 至 ") + ROWS[ROWS.length - 1].d);
           return;
         }
       }
 
       // 3. 直连 Bitview：先拉近 3 年日线（-1100，小包秒开）；选更早日期再按需补全历史
-      setNet("warn", "正在拉取 Bitview 近 3 年日线…");
+      setNet("warn", en() ? "Syncing 3Y daily data from Bitview…" : "正在同步 Bitview 近 3 年日线…");
       try {
         var rows = await fetchDirect(-1100);
-        if (rows.length < 100) throw new Error("返回条数不足");
-        ROWS = rows; hasFullHistory = false;
-        await dbPut({ ts: Date.now(), full: false, pm: profitMode, rows: rows });
+        if (rows.length < 100) throw new Error(en() ? "Too few rows" : "返回条数不足");
+        profitMode = rows._pm || "1w/7";
+        ROWS = (ROWS.length && hasFullHistory && force) ? mergeRecentRows(ROWS, rows) : rows;
+        if (!(ROWS.length > rows.length)) hasFullHistory = false;
+        await dbPut({ ts: Date.now(), full: hasFullHistory, pm: profitMode, rows: ROWS });
         initDatesIfEmpty(); renderRules(); compute();
-        setNet("ok", "Bitview 实时 · " + ROWS[0].d + " 至 " + ROWS[ROWS.length - 1].d + "（选更早日期自动补全）");
+        setNet("ok", (en() ? "Data date · " : "数据日 · ") + ROWS[ROWS.length - 1].d.slice(5) + " · " + ROWS[0].d + "–" + ROWS[ROWS.length - 1].d);
       } catch (e) {
-        var why = (e && e.message) ? e.message : "网络不可达";
+        var why = (e && e.message) ? e.message : (en() ? "Unreachable" : "网络不可达");
         if (ROWS.length) {
-          setNet("warn", "刷新失败（" + why + "），沿用本机缓存 · " + ROWS[ROWS.length - 1].d);
+          setNet("warn", (en() ? "Update failed (" : "更新失败（") + why + (en() ? "), keeping cache · " : "），沿用本机缓存 · ") + ROWS[ROWS.length - 1].d);
         } else {
-          setNet("bad", "Bitview 拉取失败（" + why + "），请稍后点「刷新数据」");
-          $("cvTip").textContent = "Bitview 暂不可达（" + why + "），未使用模拟数据。";
+          setNet("bad", en() ? "Unavailable (" + why + "). Tap Update to retry." : "暂不可用（" + why + "）。点按「更新数据」重试。");
+          $("cvTip").textContent = en() ? "Bitview unavailable (" + why + "); no simulated data used." : "Bitview 暂不可用（" + why + "），未使用模拟数据。";
         }
       }
     }
 
     function initDatesIfEmpty() {
       if (!ROWS.length) return;
-      var first = ROWS[0].d, last = ROWS[ROWS.length - 1].d;
+      var last = ROWS[ROWS.length - 1].d;
       $("dateStart").min = "2011-01-01"; $("dateStart").max = last;
       $("dateEnd").min = "2011-01-01"; $("dateEnd").max = last;
       if (!S.end || S.end > last) S.end = last;
@@ -559,32 +581,39 @@
     }
 
     function renderRules() {
+      var E = en();
       $("rulesBox").innerHTML = S.rules.map(function (r) {
-        var m = FMETA[r.f] || { l: r.f, u: "" };
+        var m = FMETA[r.f] || { l: r.f, en: r.f, u: "" };
         var isP = r.f === "lthProfit";
-        var q = isP ? '<div class="qstrip"><span class="hint">快捷档位：</span>'
+        var q = isP ? '<div class="qstrip"><span class="hint">' + (E ? "Quick:" : "快捷档位：") + '</span>'
           + [100000000, 300000000, 500000000].map(function (qv) {
-            return '<button type="button" class="chip pq' + (+r.v === qv ? " on" : "") + '" data-qv="' + qv + '">' + (qv / 1e8) + ' 亿 ($' + (qv / 1e6) + 'M)</button>';
+            return '<button type="button" class="chip pq' + (+r.v === qv ? " on" : "") + '" data-qv="' + qv + '">' + (E ? "$" + (qv / 1e6) + "M" : (qv / 1e8) + " 亿 ($" + (qv / 1e6) + "M)") + '</button>';
           }).join("")
-          + (+r.v > 0 && +r.v < 20000000 ? '<span class="hint warn">提示：Bitview 为全网 LTH 合计，日常约数千万美元，建议 ≥ 1 亿</span>' : '')
+          + (+r.v > 0 && +r.v < 20000000 ? '<span class="hint warn">' + (E ? "Note: Network-wide LTH daily profit is usually tens of millions; ≥ $100M recommended" : "提示：Bitview 为全网 LTH 合计，日常约数千万美元，建议 ≥ 1 亿") + '</span>' : '')
           + '</div>' : '';
-        return '<div class="frow" data-rid="' + r.id + '"><span class="flab">' + m.l + '</span>'
-          + '<select class="inp rop"><option value="gt"' + (r.op === "gt" ? " selected" : "") + '>大于</option><option value="lt"' + (r.op === "lt" ? " selected" : "") + '>小于</option></select>'
-          + '<span class="inp-wrap"><input type="number" step="any" value="' + r.v + '" class="inp num rval" /><span class="inp-unit">' + m.u + '</span></span>'
+        return '<div class="frow" data-rid="' + esc(r.id) + '"><span class="flab">' + esc(E ? m.en : m.l) + '</span>'
+          + '<select class="inp rop"><option value="gt"' + (r.op === "gt" ? " selected" : "") + '>' + (E ? ">" : "大于") + '</option><option value="lt"' + (r.op === "lt" ? " selected" : "") + '>' + (E ? "<" : "小于") + '</select>'
+          + '<span class="inp-wrap"><input type="number" step="any" value="' + (+r.v || 0) + '" class="inp num rval" /><span class="inp-unit">' + esc(m.u) + '</span></span>'
           + '<button type="button" class="chip rdel" style="height:36px;color:var(--red);">✕</button>' + q + '</div>';
       }).join("");
       var minYr = AGE_MIN[S.ageKey] || 3, act = COHORTS.filter(function (c) { return c.m >= minYr; });
-      $("ageHint").textContent = "聚合 Bitview 公开序列：" + act[0].l + " 至 " + act[act.length - 1].l + "（共 " + act.length + " 档日度移动量合计；利润口径：" + (profitMode === "24h" ? "lth_realized_profit_sum_24h" : "lth_realized_profit_sum_1w ÷ 7") + "）";
+      $("ageHint").textContent = E
+        ? ("Bitview cohorts: " + act[0].l + " to " + act[act.length - 1].l + " (" + act.length + " bands summed; profit series: " + profitLabel(profitMode) + ")")
+        : ("聚合 Bitview 公开序列：" + act[0].l + " 至 " + act[act.length - 1].l + "（共 " + act.length + " 档日度移动量合计；利润口径：" + profitLabel(profitMode) + "）");
     }
 
     function compute() {
       if (!ROWS.length) return;
+      var E = en();
+      var byDate = {};
+      for (var di = 0; di < ROWS.length; di++) byDate[ROWS[di].d] = ROWS[di];
       SCOPED = [];
       for (var i = 0; i < ROWS.length; i++) {
         var r = ROWS[i];
         if (r.d >= S.start && r.d <= S.end) {
-          var f7 = i + 7 < ROWS.length ? (ROWS[i + 7].p / r.p - 1) * 100 : null;
-          var f30 = i + 30 < ROWS.length ? (ROWS[i + 30].p / r.p - 1) * 100 : null;
+          var r7 = byDate[addDays(r.d, 7)], r30 = byDate[addDays(r.d, 30)];
+          var f7 = (r7 && r7.p > 0) ? (r7.p / r.p - 1) * 100 : null;
+          var f30 = (r30 && r30.p > 0) ? (r30.p / r.p - 1) * 100 : null;
           SCOPED.push({ d: r.d, p: r.p, pc: r.pc, c: r.c, w: r.w, pr: r.pr, ov: oldVol(r), hit: match(r), f7: f7, f30: f30 });
         }
       }
@@ -597,34 +626,34 @@
         calm++;
       }
       var kc = $("kCalm");
-      if (calm === 0) { kc.textContent = "最新交易日触发！"; kc.style.color = "var(--red)"; }
-      else { kc.textContent = "连续 " + calm + " 天无异动"; kc.style.color = calm >= 7 ? "var(--green)" : "var(--amber)"; }
-      $("kCalmSub").textContent = lastHit ? ("最近一次触发：" + lastHit) : "全历史均未触发此条件";
+      if (calm === 0) { kc.textContent = E ? "Triggered on latest day!" : "最新交易日触发！"; kc.style.color = "var(--red)"; }
+      else { kc.textContent = E ? (calm + " quiet days in a row") : ("连续 " + calm + " 天无异动"); kc.style.color = calm >= 7 ? "var(--green)" : "var(--amber)"; }
+      $("kCalmSub").textContent = lastHit ? ((E ? "Last trigger: " : "最近一次触发：") + lastHit) : (E ? "Never triggered in history" : "全历史均未触发此条件");
 
       var hitVol = HITS.reduce(function (a, x) { return a + x.ov; }, 0);
       var allVol = SCOPED.reduce(function (a, x) { return a + x.ov; }, 0);
       var wSum = HITS.reduce(function (a, x) { return a + x.w; }, 0);
       var pSum = HITS.reduce(function (a, x) { return a + x.pr; }, 0);
-      $("kVol").textContent = (hitVol > 0 ? "−" : "") + fmtBtc(hitVol) + " BTC";
-      $("kVolSub").textContent = "占同期老币总移动量的 " + (allVol > 0 ? (hitVol / allVol * 100).toFixed(1) : "0.0") + "%";
-      $("kDays").textContent = HITS.length + " 天";
-      $("kDaysSub").textContent = "区间共 " + SCOPED.length + " 天（占比 " + (SCOPED.length ? (HITS.length / SCOPED.length * 100).toFixed(1) : "0.0") + "%）";
+      $("kVol").textContent = fmtBtc(hitVol) + " BTC";
+      $("kVolSub").textContent = (E ? "Share of range old-coin flow: " : "占同期老币总移动量的 ") + (allVol > 0 ? (hitVol / allVol * 100).toFixed(1) : "0.0") + "%";
+      $("kDays").textContent = HITS.length + (E ? " days" : " 天");
+      $("kDaysSub").textContent = (E ? "Out of " : "区间共 ") + SCOPED.length + (E ? " days (" : " 天（占比 ") + (SCOPED.length ? (HITS.length / SCOPED.length * 100).toFixed(1) : "0.0") + (E ? "%)" : "%）");
 
       var f30s = HITS.map(function (x) { return x.f30; }).filter(function (v) { return v != null; }).sort(function (a, b) { return a - b; });
       var f7s = HITS.map(function (x) { return x.f7; }).filter(function (v) { return v != null; }).sort(function (a, b) { return a - b; });
-      var med = function (a) { return a.length ? a[Math.floor(a.length / 2)] : null; };
+      var med = function (a) { if (!a.length) return null; var m = Math.floor(a.length / 2); return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2; };
       var m30 = med(f30s), m7 = med(f7s), kf = $("kFwd");
-      if (m30 == null) { kf.textContent = "—"; kf.style.color = "var(--ink3)"; $("kFwdSub").textContent = "样本不足（需触发满 30 天）"; }
+      if (m30 == null) { kf.textContent = "—"; kf.style.color = "var(--ink3)"; $("kFwdSub").textContent = E ? "Needs 30d after trigger" : "样本不足（需触发满 30 天）"; }
       else {
         kf.textContent = (m30 >= 0 ? "+" : "−") + Math.abs(m30).toFixed(1) + "%";
         kf.style.color = m30 < 0 ? "var(--red)" : "var(--green)";
         var dn = Math.round(f30s.filter(function (v) { return v < 0; }).length / f30s.length * 100);
-        $("kFwdSub").textContent = "7 日中位 " + (m7 == null ? "—" : (m7 >= 0 ? "+" : "−") + Math.abs(m7).toFixed(1) + "%") + " · 30 日下跌概率 " + dn + "%";
+        $("kFwdSub").textContent = (E ? "7d med " : "7 日中位 ") + (m7 == null ? "—" : (m7 >= 0 ? "+" : "−") + Math.abs(m7).toFixed(1) + "%") + (E ? " · 30d down " : " · 30 日下跌概率 ") + dn + "%";
       }
 
       $("resSpan").textContent = S.start + " ~ " + S.end;
-      $("sumBig").textContent = (hitVol > 0 ? "−" : "") + fmtBtc(hitVol) + " BTC";
-      $("sumSub").textContent = "触发日 LTH 持仓净变化合计 " + (wSum >= 0 ? "+" : "−") + fmtBtc(Math.abs(wSum)) + " BTC · LTH 已实现利润合计 " + fmtUsd(pSum);
+      $("sumBig").textContent = fmtBtc(hitVol) + " BTC";
+      $("sumSub").textContent = (E ? "Trigger-day LTH net change " : "触发日 LTH 持仓净变化合计 ") + (wSum >= 0 ? "+" : "−") + fmtBtc(Math.abs(wSum)) + (E ? " BTC · LTH realized profit " : " BTC · LTH 已实现利润合计 ") + fmtUsd(pSum);
 
       var minYr = AGE_MIN[S.ageKey] || 3, cTotals = [];
       COHORTS.forEach(function (c, idx) {
@@ -633,7 +662,7 @@
       });
       var mx = Math.max.apply(null, [1].concat(cTotals.map(function (x) { return x.s; })));
       $("sumBars").innerHTML = cTotals.map(function (x) {
-        return '<div class="cbar num"><span>' + x.l + '</span><div class="ctrack"><div class="cfill" style="width:' + (x.s / mx * 100).toFixed(1) + '%"></div></div><b style="text-align:right;">' + fmtBtc(x.s) + '</b></div>';
+        return '<div class="cbar num"><span>' + esc(x.l) + '</span><div class="ctrack"><div class="cfill" style="width:' + (x.s / mx * 100).toFixed(1) + '%"></div></div><b style="text-align:right;">' + fmtBtc(x.s) + '</b></div>';
       }).join("");
 
       drawChart();
@@ -643,6 +672,7 @@
     function drawChart() {
       var cv = $("cv"), box = $("cvWrap"), W = box.clientWidth, H = box.clientHeight;
       if (!W || !H || !SCOPED.length) return;
+      var E = en();
       var dpr = Math.min(3, window.devicePixelRatio || 1);
       cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
       var g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
@@ -693,26 +723,30 @@
         var hx = Math.round(X(hover) + bw / 2) + 0.5;
         g.strokeStyle = ink3; g.lineWidth = 1; g.beginPath(); g.moveTo(hx, padT); g.lineTo(hx, padT + ph); g.stroke();
       }
-      $("cvTip").textContent = cur.d + " · 老币 " + fmtBtc(cur.ov) + " BTC · LTH 净变化 " + (cur.w >= 0 ? "+" : "−") + fmtBtc(Math.abs(cur.w)) + " · 利润 " + fmtUsd(cur.pr) + " · BTC $" + fmtBtc(cur.p) + (cur.hit ? " [触发]" : "");
+      $("cvTip").textContent = cur.d + (E ? " · Old " : " · 老币 ") + fmtBtc(cur.ov) + (E ? " BTC · LTH Δ " : " BTC · LTH 净变化 ") + (cur.w >= 0 ? "+" : "−") + fmtBtc(Math.abs(cur.w)) + (E ? " · Profit " : " · 利润 ") + fmtUsd(cur.pr) + " · BTC $" + fmtBtc(cur.p) + (cur.hit ? (E ? " [HIT]" : " [触发]") : "");
       cvMap = { padL: padL, bw: bw, n: n };
     }
 
     function renderTable() {
+      var E = en();
       var list = HITS.slice();
       if (S.sort === "date_desc") list.sort(function (a, b) { return b.d.localeCompare(a.d); });
       else if (S.sort === "vol_desc") list.sort(function (a, b) { return b.ov - a.ov; });
       else list.sort(function (a, b) { return (a.f30 == null ? 999 : a.f30) - (b.f30 == null ? 999 : b.f30); });
       var fp = function (v) { return v == null ? '<span style="color:var(--ink3);">—</span>' : '<span class="' + (v < 0 ? "dn" : "up") + '">' + (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(1) + '%</span>'; };
       $("tBody").innerHTML = list.length ? list.map(function (r) {
-        return '<tr data-dd="' + r.d + '"><td><b>' + r.d + '</b></td><td class="r dn">' + fmtBtc(r.ov) + ' BTC</td><td class="r ' + (r.w < 0 ? "dn" : "up") + '">' + (r.w >= 0 ? "+" : "−") + fmtBtc(Math.abs(r.w)) + '</td><td class="r">' + fmtUsd(r.pr) + '</td><td class="r">$' + fmtBtc(r.p) + '</td><td class="r">' + fp(r.f7) + '</td><td class="r">' + fp(r.f30) + '</td></tr>';
-      }).join("") : '<tr><td colspan="7" class="empty">当前筛选条件下没有符合的异动日</td></tr>';
+        return '<tr data-dd="' + esc(r.d) + '"><td><b>' + esc(r.d) + '</b></td><td class="r dn">' + fmtBtc(r.ov) + ' BTC</td><td class="r ' + (r.w < 0 ? "dn" : "up") + '">' + (r.w >= 0 ? "+" : "−") + fmtBtc(Math.abs(r.w)) + '</td><td class="r">' + fmtUsd(r.pr) + '</td><td class="r">$' + fmtBtc(r.p) + '</td><td class="r">' + fp(r.f7) + '</td><td class="r">' + fp(r.f30) + '</td></tr>';
+      }).join("") : '<tr><td colspan="7" class="empty">' + (E ? "No matching movement days in the selected range" : "当前筛选条件下没有符合的异动日") + '</td></tr>';
     }
 
     function setMode(m) {
+      var E = en();
       S.mode = m;
       document.querySelectorAll("#modes [data-m]").forEach(function (b) { b.classList.toggle("on", b.dataset.m === m); });
       $("pSum").hidden = m !== "sum"; $("pChart").hidden = m !== "chart"; $("pTable").hidden = m !== "table";
-      $("resTitle").textContent = { sum: "变化量汇总统计 (Σ)", chart: "异动监测走势与触发点", table: "符合条件的异动日明细" }[m];
+      $("resTitle").textContent = (E
+        ? { sum: "Movement Summary (Σ)", chart: "Old-Coin Movement & Triggers", table: "Triggered Movement Days" }
+        : { sum: "变化量汇总统计 (Σ)", chart: "异动监测走势与触发点", table: "符合条件的异动日明细" })[m];
       if (m === "chart") drawChart();
     }
 
@@ -728,16 +762,89 @@
 
     function loadPresets() { try { return JSON.parse(localStorage.getItem(SAVE_KEY)) || []; } catch (e) { return []; } }
     function paintSaved() {
-      var L = loadPresets();
-      $("savedSel").innerHTML = '<option value="">已保存条件（' + L.length + '）</option>' + L.map(function (p, i) { return '<option value="' + i + '">' + p.name + '</option>'; }).join("");
+      var L = loadPresets(), E = en();
+      $("savedSel").innerHTML = '<option value="">' + (E ? "Saved filters (" : "已保存条件（") + L.length + (E ? ")" : "）") + '</option>'
+        + L.map(function (p, i) { return '<option value="' + i + '">' + esc(p.name) + '</option>'; }).join("");
+    }
+
+    function applyStaticI18n() {
+      document.querySelectorAll("[data-lang-btn]").forEach(function (b) {
+        var on = b.dataset.langBtn === (window.BTC_LANG || "zh");
+        b.classList.toggle("on", on);
+        b.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+      if (!en()) return;
+      document.title = "Old Bitcoin Movement Screener · Sats Garden";
+      var mapText = {
+        "老比特币异动筛选器": "Old Bitcoin Movement Screener",
+        "Bitview 公开全历史数据（2011 至今） · Sats Garden": "Bitview Public Full History (2011–Present) · Sats Garden",
+        "同步中…": "Syncing…",
+        "更新数据": "Update",
+        "返回首页": "Back",
+        "近 30 天": "30D", "近 90 天": "90D", "近 1 年": "1Y", "近 3 年": "3Y",
+        "2025 年": "2025", "2024 年": "2024", "2021 年": "2021", "全部 (2011–今)": "All (2011–Now)",
+        "筛选时间范围": "Date range", "至": "to",
+        "老币币龄档位": "Coin age tier",
+        "≥ 1 年": "≥ 1Y", "≥ 2 年": "≥ 2Y", "≥ 3 年（经典老币）": "≥ 3Y (Classic)",
+        "≥ 5 年": "≥ 5Y", "≥ 7 年": "≥ 7Y", "≥ 10 年（远古币）": "≥ 10Y (Ancient)",
+        "老币单日移动量 (BTC)": "Old-coin daily volume (BTC)",
+        "LTH 当日持仓净变化 (BTC)": "LTH daily net change (BTC)",
+        "LTH 当日已实现利润 (USD)": "LTH daily realized profit (USD)",
+        "当日 BTC 涨跌幅 (%)": "BTC daily change (%)",
+        "+ 添加筛选条件": "+ Add condition",
+        "搜索筛选": "Apply filter", "保存筛选条件": "Save filter", "重置默认": "Reset", "导出 CSV": "Export CSV",
+        "热门搜索": "Presets", "保存的筛选条件": "Saved filters", "删": "Del",
+        "当前警报状态": "Alert status", "等待 Bitview 数据": "Waiting for data",
+        "变化量统计（触发日老币合计）": "Triggered old-coin volume",
+        "符合条件异动天数": "Triggered days",
+        "触发后 30 日 BTC 中位涨跌": "Median BTC 30d after trigger",
+        "异动监测走势与触发点": "Old-Coin Movement & Triggers",
+        "筛选区间内触发日老币异动总量": "Total old-coin volume on triggered days",
+        "触发日老币币龄构成拆解": "Triggered volume by coin-age band",
+        "触发异动日": "Triggered day", "普通日移动量": "Regular day", "BTC 价格（对数右轴）": "BTC price (log right)",
+        "滑动或悬停图表查看每日数值": "Touch or hover chart to inspect daily values",
+        "点击任意行查看当日 12 档币龄拆解": "Tap any row to inspect 12 coin-age cohorts",
+        "按日期降序（最新在前）": "Newest first", "按老币移动量降序": "Largest old-coin volume", "按 30 日跌幅最大排序": "Largest 30d drop",
+        "日期": "Date", "老币移动量": "Old-coin vol", "LTH 净变化": "LTH Δ", "LTH 已实现利润": "LTH profit",
+        "当日 BTC 价格": "BTC price", "后 7 日": "After 7d", "后 30 日": "After 30d",
+        "各币龄老币移动拆解": "Breakdown by Coin Age", "收起": "Close",
+        "保存当前筛选条件": "Save current filter", "取消": "Cancel", "保存": "Save"
+      };
+      var fh = $("filterHeading");
+      if (fh) fh.innerHTML = 'Filter Rules <span style="font-size:11.5px;font-weight:500;color:var(--ink3);margin-left:6px;">Multi-rule AND · Any calendar range since 2011</span>';
+      var presetsEn = {
+        rec5k: ["> 5,000 BTC Old Coins + Profit > $300M (Recommended)", "≥3Y > 5,000 BTC · LTH profit > $300M"],
+        gt10k: ["> 10,000 BTC Large Movement", "≥3Y > 10,000 BTC · LTH profit > $300M"],
+        pure10k: ["Old Coins > 10,000 BTC (Any profit)", "≥3Y daily volume > 10,000 BTC"],
+        ancient: ["Ancient Coins Awakening", "≥7Y daily volume > 1,500 BTC"]
+      };
+      document.querySelectorAll("#hotPresets [data-preset]").forEach(function (b) {
+        var pr = presetsEn[b.dataset.preset];
+        if (pr) b.innerHTML = "<b>" + esc(pr[0]) + "</b><small>" + esc(pr[1]) + "</small>";
+      });
+      if ($("presetName")) $("presetName").placeholder = "e.g. ≥3Y > 10k BTC alert";
+      var w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      var n;
+      while ((n = w.nextNode())) {
+        var t = n.nodeValue.trim();
+        if (t && mapText[t]) n.nodeValue = n.nodeValue.replace(t, mapText[t]);
+      }
     }
 
     // Events
+    document.addEventListener("click", function (e) {
+      var lb = e.target.closest && e.target.closest("[data-lang-btn]");
+      if (lb && lb.dataset.langBtn !== (window.BTC_LANG || "zh")) {
+        try { localStorage.setItem("btc_lang_v1", lb.dataset.langBtn); } catch (_) {}
+        location.reload();
+      }
+    });
     $("quickRanges").addEventListener("click", function (e) {
       var b = e.target.closest("[data-r]"); if (!b || !ROWS.length) return;
       document.querySelectorAll("#quickRanges [data-r]").forEach(function (x) { x.classList.toggle("on", x === b); });
       var r = b.dataset.r, last = ROWS[ROWS.length - 1].d, first = ROWS[0].d;
       if (r === "all") { S.start = "2011-01-01"; S.end = last; if (!hasFullHistory) loadFullHistory(); }
+      else if (r === "2025") { S.start = "2025-01-01"; S.end = "2025-12-31"; if ("2025-01-01" < first && !hasFullHistory) loadFullHistory(); }
       else if (r === "2024") { S.start = "2024-01-01"; S.end = "2024-12-31"; if ("2024-01-01" < first && !hasFullHistory) loadFullHistory(); }
       else if (r === "2021") { S.start = "2021-01-01"; S.end = "2021-12-31"; if (!hasFullHistory) loadFullHistory(); }
       else { S.end = last; S.start = ROWS[Math.max(0, ROWS.length - (+r))].d; }
@@ -779,11 +886,11 @@
         var r = S.rules.filter(function (x) { return x.id === el.dataset.rid; })[0];
         if (r) { r.op = el.querySelector(".rop").value; r.v = +el.querySelector(".rval").value; }
       });
-      renderRules(); compute(); toast("筛选完成：命中 " + HITS.length + " 天");
+      renderRules(); compute(); toast(en() ? ("Matched " + HITS.length + " days") : ("筛选完成：命中 " + HITS.length + " 天"));
     });
     $("resetBtn").addEventListener("click", function () {
       if (ROWS.length) { S.end = ROWS[ROWS.length - 1].d; S.start = ROWS[Math.max(0, ROWS.length - 365)].d; $("dateStart").value = S.start; $("dateEnd").value = S.end; }
-      applyPreset("rec5k"); toast("已重置");
+      applyPreset("rec5k"); toast(en() ? "Reset" : "已重置");
     });
     $("hotPresets").addEventListener("click", function (e) { var b = e.target.closest("[data-preset]"); if (b) applyPreset(b.dataset.preset); });
     $("modes").addEventListener("click", function (e) { var b = e.target.closest("[data-m]"); if (b) setMode(b.dataset.m); });
@@ -791,44 +898,56 @@
     $("tBody").addEventListener("click", function (e) {
       var tr = e.target.closest("[data-dd]"); if (!tr) return;
       var row = ROWS.filter(function (x) { return x.d === tr.dataset.dd; })[0]; if (!row) return;
-      $("detailTitle").textContent = row.d + " 各币龄老币移动拆解（BTC $" + fmtBtc(row.p) + "）";
-      $("detailGrid").innerHTML = COHORTS.map(function (c, i) { return '<div class="dcell"><small>' + c.l + '</small><b>' + fmtBtc(row.c[i]) + ' BTC</b></div>'; }).join("");
+      $("detailTitle").textContent = row.d + (en() ? " Breakdown by Coin Age (BTC $" : " 各币龄老币移动拆解（BTC $") + fmtBtc(row.p) + (en() ? ")" : "）");
+      $("detailGrid").innerHTML = COHORTS.map(function (c, i) { return '<div class="dcell"><small>' + esc(c.l) + '</small><b>' + fmtBtc(row.c[i]) + ' BTC</b></div>'; }).join("");
       $("detailCard").hidden = false;
     });
     $("closeDetail").addEventListener("click", function () { $("detailCard").hidden = true; });
     $("saveBtn").addEventListener("click", function () { $("presetName").value = ""; $("saveModal").hidden = false; });
     $("cancelSave").addEventListener("click", function () { $("saveModal").hidden = true; });
     $("confirmSave").addEventListener("click", function () {
-      var name = $("presetName").value.trim(); if (!name) { toast("请输入名称"); return; }
+      var name = $("presetName").value.trim(); if (!name) { toast(en() ? "Enter a name" : "请输入名称"); return; }
       var L = loadPresets(); L.push({ name: name, ageKey: S.ageKey, rules: JSON.parse(JSON.stringify(S.rules)) });
       try { localStorage.setItem(SAVE_KEY, JSON.stringify(L)); } catch (e) {}
-      paintSaved(); $("saveModal").hidden = true; toast("已保存");
+      paintSaved(); $("saveModal").hidden = true; toast(en() ? "Saved" : "已保存");
     });
     $("savedSel").addEventListener("change", function (e) {
       if (e.target.value === "") return;
       var p = loadPresets()[+e.target.value]; if (!p) return;
       S.ageKey = p.ageKey; S.rules = JSON.parse(JSON.stringify(p.rules));
       document.querySelectorAll("#ageBar [data-age]").forEach(function (b) { b.classList.toggle("on", b.dataset.age === S.ageKey); });
-      renderRules(); compute(); toast("已载入：" + p.name);
+      renderRules(); compute(); toast((en() ? "Loaded: " : "已载入：") + p.name);
     });
     $("delSavedBtn").addEventListener("click", function () {
       var sel = $("savedSel"); if (sel.value === "") return;
       var L = loadPresets(); L.splice(+sel.value, 1);
       try { localStorage.setItem(SAVE_KEY, JSON.stringify(L)); } catch (e) {}
-      paintSaved(); toast("已删除");
+      paintSaved(); toast(en() ? "Deleted" : "已删除");
     });
     $("csvBtn").addEventListener("click", function () {
-      var hd = "日期,老币移动量(BTC),LTH当日净变化(BTC),LTH已实现利润(USD),BTC价格($),后7日涨跌(%),后30日涨跌(%)";
+      var hd = en()
+        ? "Date,OldCoinVolume(BTC),LTHNetChange(BTC),LTHRealizedProfit(USD),BTCPrice($),After7d(%),After30d(%)"
+        : "日期,老币移动量(BTC),LTH当日净变化(BTC),LTH已实现利润(USD),BTC价格($),后7日涨跌(%),后30日涨跌(%)";
       var lines = HITS.map(function (r) { return [r.d, r.ov, r.w, r.pr, r.p, r.f7 == null ? "" : r.f7.toFixed(2), r.f30 == null ? "" : r.f30.toFixed(2)].join(","); });
       var blob = new Blob(["\uFEFF" + [hd].concat(lines).join("\n")], { type: "text/csv;charset=utf-8;" });
       var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "old-btc-alerts-" + S.start + "-" + S.end + ".csv"; a.click();
       setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
     });
     $("refreshBtn").addEventListener("click", function () { loadData(true); });
+    function syncThemeUi(t) {
+      document.documentElement.dataset.theme = t;
+      $("themeBtn").textContent = t === "dark" ? "☀" : "☾";
+      $("themeBtn").setAttribute("aria-label", en() ? (t === "dark" ? "Switch to light" : "Switch to dark") : (t === "dark" ? "切换到浅色" : "切换到深色"));
+    }
+    syncThemeUi(document.documentElement.dataset.theme || (matchMedia("(prefers-color-scheme:dark)").matches ? "dark" : "light"));
     $("themeBtn").addEventListener("click", function () {
       var cur = document.documentElement.dataset.theme || (matchMedia("(prefers-color-scheme:dark)").matches ? "dark" : "light");
-      var nx = cur === "dark" ? "light" : "dark"; document.documentElement.dataset.theme = nx;
-      $("themeBtn").textContent = nx === "dark" ? "☀" : "☾"; drawChart();
+      var nx = cur === "dark" ? "light" : "dark";
+      try { localStorage.setItem("btc_theme_v1", nx); } catch (_) {}
+      syncThemeUi(nx); drawChart();
+    });
+    window.addEventListener("storage", function (e) {
+      if (e.key === "btc_theme_v1" && (e.newValue === "light" || e.newValue === "dark")) { syncThemeUi(e.newValue); drawChart(); }
     });
     var cv = $("cv");
     function pick(ev) {
@@ -840,8 +959,9 @@
     cv.addEventListener("pointermove", pick); cv.addEventListener("pointerdown", pick);
     cv.addEventListener("pointerleave", function () { hover = -1; drawChart(); });
     if ("ResizeObserver" in window) new ResizeObserver(drawChart).observe($("cvWrap"));
+    try { if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("./sw.js", { scope: "./", updateViaCache: "none" }).catch(function () {}); } catch (_) {}
 
-    paintSaved(); renderRules(); loadData(false);
+    applyStaticI18n(); paintSaved(); renderRules(); loadData(false);
   })();
   </script>
 </body>

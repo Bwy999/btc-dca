@@ -22,7 +22,7 @@ ok_count, bad = 0, []
 
 def build(dst):
     subprocess.run([sys.executable, os.path.join(tools, "build.py"), "split", src_index, dst], check=True, capture_output=True)
-    for f in ("ahr999.html", "apple-touch-icon.png", "btc-logo.png", "manifest.webmanifest"):
+    for f in ("ahr999.html", "old-coins.html", "apple-touch-icon.png", "btc-logo.png", "manifest.webmanifest"):
         for base in (os.path.dirname(src_index), repo):
             if os.path.exists(os.path.join(base, f)):
                 shutil.copy(os.path.join(base, f), dst); break

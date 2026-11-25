@@ -19,8 +19,8 @@ import zipfile
 
 REPO = os.getcwd()
 SKIP_TOP = {".git", "data", ".github"}
-# 图标文件以仓库里现有的为准：仓库已有就不覆盖（首页、主屏幕图标保持不变）
-KEEP_IF_EXISTS = {"btc-logo.png", "apple-touch-icon.png", "favicon.ico", "favicon.png"}
+# 仅保留压缩包未内置的传统 favicon 文件；包内自带的 PWA 图标（btc-logo.png、apple-touch-icon.png）正常随版本更新
+KEEP_IF_EXISTS = {"favicon.ico", "favicon.png"}
 
 
 def log(msg):

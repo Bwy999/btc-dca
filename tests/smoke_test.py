@@ -23,7 +23,7 @@ async def main(root):
             await pg.route('**/*', lambda r: r.abort() if not r.request.url.startswith('file:') else r.continue_())
             await pg.goto(url); await pg.wait_for_timeout(1500)
             problems = []
-            for tab in ('now', 'value', 'chain', 'mine'):
+            for tab in ('now', 'value', 'chain', 'dca', 'mine'):
                 await pg.evaluate(f"()=>{{setTab('{tab}');document.querySelectorAll('details').forEach(d=>d.open=true)}}")
                 await pg.wait_for_timeout(1200)
                 sw = await pg.evaluate("()=>document.documentElement.scrollWidth")
@@ -41,7 +41,7 @@ async def main(root):
                 await pg.route('**/*', lambda r: r.abort() if not r.request.url.startswith('file:') else r.continue_())
                 await pg.goto(url); await pg.wait_for_timeout(1500)
                 await pg.evaluate("t=>{document.documentElement.dataset.theme=t;window.dispatchEvent(new Event('themechange'))}", theme)
-                for tab in ('now', 'value', 'chain', 'mine'):
+                for tab in ('now', 'value', 'chain', 'dca', 'mine'):
                     await pg.evaluate(f"()=>{{setTab('{tab}');document.querySelectorAll('details').forEach(d=>d.open=true)}}")
                     await pg.wait_for_timeout(1200)
                     await pg.screenshot(path=os.path.join(out, f'{w}_{theme}_{tab}.png'), full_page=True)

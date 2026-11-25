@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BUILD: 28.0.2-20261124 · SATS-GARDEN-V27.11 -->
+<!-- BUILD: 28.0.3-20261125 · SATS-GARDEN-V28.0.3 -->
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -10,7 +10,7 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Sats Garden" />
-  <meta name="btc-dca-build" content="28.0.2-20261124" />
+  <meta name="btc-dca-build" content="28.0.3-20261125" />
   <script>
 (function(){
   "use strict";
@@ -72,7 +72,7 @@
     if(/(^|\.)bitcoin-data\.com$|^api\.bgeometrics\.com$/.test(h))return /\/last$/.test(p)?"live":"daily";
     if(h==="community-api.coinmetrics.io"||h==="stablecoins.llama.fi"||h==="api.blockchain.info")return "daily";
     if(h==="api.coingecko.com"&&/market_chart/.test(p)){var dd=+(u.searchParams.get("days")||0);return dd>0&&dd<=3?"live":"daily"}
-    if(h==="api.alternative.me"&&/limit=(\d{3,})/.test(q))return "daily";
+    if(h==="api.alternative.me"&&/limit=(0|\d{3,})/.test(q))return "daily";
     if(h==="mempool.space"){if(/historical-price|hashrate\/(all|3y)/.test(p))return "daily";if(/hashrate\/3d/.test(p))return "live";return null}
     if(/binance/.test(h)&&/klines/.test(p))return "live";
     return null;
@@ -138,7 +138,7 @@
     if((m=/^utxos_over_(\d+)pct_in_loss_supply$/.exec(n)))return {k:"loss",pct:+m[1],parts:[]};
     if((m=/^addrs_(.+?)_(addr_count|supply(?:_delta_\w+)?)$/.exec(n))&&BAL[m[1]]){var suf=m[2]==="addr_count"?"address_count":m[2];return {k:"sum",parts:BAL[m[1]].map(function(b){return "balance_"+b+"_"+suf})}}
     if((m=/^bedrock_(raw|cointime|coinflow)_floor_pct(\w+)$/.exec(n)))return {k:"alias",parts:["bedrock_"+{raw:"unweighted",cointime:"awake",coinflow:"mobile"}[m[1]]+"_floor_p"+m[2]]};
-    if(/^bedrock_coinflow_\w+_floor_/.test(n)||/^capital_sentiment_/.test(n)||/^rarity_meter_\w+_rank$/.test(n))return {k:"none",parts:[]};   // 新版没有对应数据
+    if(/^bedrock_coinflow_\w+_floor_/.test(n)||/^capital_sentiment_/.test(n)||/^rarity_meter_/.test(n))return {k:"none",parts:[]};   // 新版没有对应数据
     return {k:"alias",parts:[n]};
   }
   function bvGet(u){return native(u,{mode:"cors",cache:"no-store"}).then(function(r){return r.text().then(function(t){var j=null;try{j=JSON.parse(t)}catch(e){}return {ok:r.ok,status:r.status,j:j,t:t}})})}
@@ -295,7 +295,7 @@
   // V27.10：给本机存储瘦身。这几个模块各自把 170～420 KB 的图表数据存进 localStorage（Safari 上限约 5 MB，已用近 3 MB）；
   // 同一份数据网络缓存层已经存在 IndexedDB 里（容量大得多、离线也能用），所以这里不再重复存：写入时直接跳过，并清掉以前存的。
   // 模块下次打开时照常「请求」，由缓存层从本机副本立即返回，不产生网络流量。IndexedDB 不可用（如无痕模式）时保持原样。
-  var BIG={btc_bitview_capitalized_price_v1:1,btc_bitview_lth_psil_v1:1,btc_bitview_cost_basis_v1:1,btc_bitview_revived_v3_1y:1,btc_bitview_lth_nupl_v1:1};
+  var BIG={btc_bitview_capitalized_price_v1:1,btc_bitview_lth_psil_v1:1,btc_bitview_cost_basis_v1:1,btc_bitview_revived_v3_1y:1,btc_bitview_lth_nupl_v1:1,btc_bitview_floor_v2:1,btc_power_history_v2:1,btc_fgi_full_v1:1};
   if(!window.indexedDB||!window.__sgNet)return;
   try{
     var raw=Storage.prototype.setItem;
@@ -305,7 +305,7 @@
 })();
 </script>
 <script>(function(){var l=null;try{l=localStorage.getItem("btc_lang_v1")}catch(e){}if(l!=="zh"&&l!=="en"){var n=(navigator.languages&&navigator.languages[0])||navigator.language||"";l=/^zh/i.test(n)?"zh":"en"}window.BTC_LANG=l;var d=document.documentElement;d.lang=l==="en"?"en":"zh-CN";if(l==="en"){d.classList.add("i18n-pending");setTimeout(function(){d.classList.remove("i18n-pending")},2500)}})();</script>
-<script>const BUILD_ID="28.0.2-20261124";const BUILD_LABEL="V28.0.2";function sgLabel(){return window.BTC_LANG==="en"?BUILD_LABEL.replace(/\s*正式版$/,""):BUILD_LABEL}(function(){var T="btc_theme_v1",t=null;try{t=localStorage.getItem(T)}catch(e){}if(t!=="light"&&t!=="dark"){t=null}window.__themePinned=!!t;if(!t)t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.dataset.theme=t;})();</script>
+<script>const BUILD_ID="28.0.3-20261125";const BUILD_LABEL="V28.0.3";function sgLabel(){return window.BTC_LANG==="en"?BUILD_LABEL.replace(/\s*正式版$/,""):BUILD_LABEL}(function(){var T="btc_theme_v1",t=null;try{t=localStorage.getItem(T)}catch(e){}if(t!=="light"&&t!=="dark"){t=null}window.__themePinned=!!t;if(!t)t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.dataset.theme=t;})();</script>
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
   <link rel="manifest" href="./manifest.webmanifest" id="pwaManifest" />
@@ -383,6 +383,7 @@
 
   
   </div>
+  <section class="today-verdict" id="todayVerdict" data-tab="now" aria-label="今日结论"><div class="tv-head"><h2>今日结论</h2><small id="tvDate"></small></div><p class="tv-main" id="tvMain">计算中…</p><span class="tv-act" id="tvAct"><i></i><span>--</span></span><div class="tv-chips"><button class="tv-chip" type="button" data-go="ahr"><small>AHR999</small><b id="tvAhr">--</b></button><button class="tv-chip" type="button" data-go="tb"><small>顶底区间</small><b id="tvTb">--</b></button><button class="tv-chip" type="button" data-go="risk"><small>牛市风控</small><b id="tvRisk">--</b></button></div><div class="tv-why" id="tvWhy" hidden></div><p class="tv-note">按本站规则汇总，不构成投资建议。</p></section>
 </div><!-- /home-left -->
 <section class="rs-sync-card" id="homeResonanceBar" aria-label="三层共振联动">
   <div class="rs-sync-head">
@@ -554,12 +555,12 @@
     </div>
 
     <div class="rs-strip">
-      <div class="rs-mini"><div class="rs-mini-k">Coinbase 溢价</div><div class="rs-mini-v" id="rsValCb">—</div><div class="rs-mini-s" id="rsSubCb">加载中</div></div>
-      <div class="rs-mini"><div class="rs-mini-k">合约 OI 7日变化</div><div class="rs-mini-v" id="rsValOi">—</div><div class="rs-mini-s" id="rsSubOi">加载中</div></div>
-      <div class="rs-mini"><div class="rs-mini-k">ETF 5日净流</div><div class="rs-mini-v" id="rsValEtf">—</div><div class="rs-mini-s" id="rsSubEtf">加载中</div></div>
-      <div class="rs-mini"><div class="rs-mini-k">稳定币 7日净增</div><div class="rs-mini-v" id="rsValStb">—</div><div class="rs-mini-s" id="rsSubStb">加载中</div></div>
-      <div class="rs-mini"><div class="rs-mini-k">恐惧贪婪 F&amp;G</div><div class="rs-mini-v" id="rsValFng">—</div><div class="rs-mini-s" id="rsSubFng">加载中</div></div>
-      <div class="rs-mini"><div class="rs-mini-k">STH 成本 / SOPR</div><div class="rs-mini-v" id="rsValSth">—</div><div class="rs-mini-s" id="rsSubSth">加载中</div></div>
+      <div class="rs-mini"><div class="rs-mini-k">Coinbase 溢价</div><div class="rs-mini-v" id="rsValCb">—</div><div class="rs-mini-s" id="rsSubCb">展开后读取</div></div>
+      <div class="rs-mini"><div class="rs-mini-k">合约 OI 7日变化</div><div class="rs-mini-v" id="rsValOi">—</div><div class="rs-mini-s" id="rsSubOi">展开后读取</div></div>
+      <div class="rs-mini"><div class="rs-mini-k">ETF 5日净流</div><div class="rs-mini-v" id="rsValEtf">—</div><div class="rs-mini-s" id="rsSubEtf">展开后读取</div></div>
+      <div class="rs-mini"><div class="rs-mini-k">稳定币 7日净增</div><div class="rs-mini-v" id="rsValStb">—</div><div class="rs-mini-s" id="rsSubStb">展开后读取</div></div>
+      <div class="rs-mini"><div class="rs-mini-k">恐惧贪婪 F&amp;G</div><div class="rs-mini-v" id="rsValFng">—</div><div class="rs-mini-s" id="rsSubFng">展开后读取</div></div>
+      <div class="rs-mini"><div class="rs-mini-k">STH 成本 / SOPR</div><div class="rs-mini-v" id="rsValSth">—</div><div class="rs-mini-s" id="rsSubSth">展开后读取</div></div>
     </div>
 
     <div class="rs-tabs">
@@ -569,7 +570,7 @@
       </div>
       <div class="rs-actions">
         <span id="rsStatusMeta">正在计算 12 年实盘回测…</span>
-        <button type="button" class="rs-btn" id="rsRefreshBtn">刷新</button>
+        <button type="button" class="rs-btn" id="rsRefreshBtn">更新</button>
       </div>
     </div>
 
@@ -1120,7 +1121,7 @@
       </div>
     </div>
   </section><section class="sec cband-section" id="costBands" aria-label="持币成本分位带">
-    <div class="module-head"><div class="module-title-row"><h2 class="sec-title">持币成本分位带</h2><div class="module-status head-status"><span class="fresh-badge" id="freshCostBands">等待数据</span></div></div></div>
+    <div class="module-head"><div class="module-title-row"><h2 class="sec-title">持币成本分位带</h2><div class="module-status head-status"><span class="fresh-badge" id="freshCostBands">等待数据</span></div><button class="mini-toggle" type="button" id="costBandsRefreshBtn">更新</button></div></div>
     <div class="cdd-kpis mchg-kpis">
       <article class="cdd-kpi"><small id="cbPosL">现价高于</small><b class="num" id="cbPos">--</b></article>
       <article class="cdd-kpi"><small id="cbMedL">中位成本</small><b class="num" id="cbMed">--</b></article>
@@ -1131,7 +1132,7 @@
         <span class="k-b80"><i></i><em id="cbL80">中间 50% 的币</em></span><span class="k-b50"><i></i><em id="cbL50">中间 20% 的币</em></span>
         <span class="k-med"><i></i><em id="cbLmed">中位成本</em></span><span class="k-px"><i></i><em id="cbLpx">价格</em></span>
       </div>
-      <div class="range-tabs" role="group" aria-label="时间范围"><button class="range-btn" type="button" data-cb-range="365" aria-pressed="true">1年</button><button class="range-btn" type="button" data-cb-range="1095" aria-pressed="false">3年</button><button class="range-btn" type="button" data-cb-range="1825" aria-pressed="false">5年</button><button class="range-btn" type="button" data-cb-range="0" aria-pressed="false">所有</button></div>
+      <div class="range-tabs" role="group" aria-label="时间范围"><button class="range-btn" type="button" data-cb-range="365" aria-pressed="true">1年</button><button class="range-btn" type="button" data-cb-range="1095" aria-pressed="false">3年</button><button class="range-btn" type="button" data-cb-range="1825" aria-pressed="false">5年</button><button class="range-btn" type="button" data-cb-range="0" aria-pressed="false">全部</button></div>
     </div>
     <span class="chart-live" id="cbLive"></span>
     <div class="cdd-chart"><canvas id="cbCanvas" aria-label="持币成本分位带与价格"></canvas><div class="hd-empty" id="cbEmpty">等待数据</div></div>
@@ -1605,8 +1606,8 @@
     <div class="ws-meta">
       <div id="wsLatestVal">最新值：加载中…</div>
       <div class="ws-legend">
-        <span><i class="ws-dot" style="background:#f59e0b"></i><span id="wsLegName">10k~100k</span></span>
-        <span><i class="ws-dot" style="background:#848b99"></i>BTC Price</span>
+        <span><i class="ws-dot" style="background:#2563eb"></i><span id="wsLegName">10k~100k</span></span>
+        <span><i class="ws-dot" style="background:#f7931a"></i>现价</span>
       </div>
     </div>
 
@@ -1617,7 +1618,7 @@
 
     <div class="ws-foot">
       <span id="wsStatus">数据：Bitview 公开日线（按地址余额区间统计）</span>
-      <button type="button" class="ws-btn" id="wsRefreshBtn">刷新</button>
+      <button type="button" class="ws-btn" id="wsRefreshBtn">更新</button>
     </div>
   </div>
 </section></details>
@@ -1800,7 +1801,7 @@
     <button type="button" class="rs-bk-btn" id="rsBkToggleImport">导入 / 恢复</button>
   </div>
   <div class="rs-bk-panel" id="rsBkPanel">
-    <textarea class="rs-bk-area" id="rsBkInput" placeholder="粘贴备份码（JSON），或点击下方选择备份文件…"></textarea>
+    <textarea class="rs-bk-area" id="rsBkInput" placeholder="粘贴备份码（JSON），或点按下方选择备份文件…"></textarea>
     <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;flex-wrap:wrap">
       <label class="rs-bk-btn" style="padding:6px 12px;cursor:pointer">选择 .json 文件<input type="file" id="rsBkFile" accept=".json,application/json" style="display:none"></label>
       <button type="button" class="rs-bk-btn primary" id="rsBkApply" style="padding:6px 14px">确认恢复到本机</button>
@@ -2199,7 +2200,7 @@
 
 <script data-inline="vendor">window.LWC_SRC="assets/lightweight-charts.682f74d8c4.js";(function(){var p=false;function load(){if(p||window.LightweightCharts)return;p=true;var sc=document.createElement("script");sc.src=window.LWC_SRC;sc.async=true;sc.onload=function(){try{window.dispatchEvent(new Event("resize"))}catch(e){}};document.head.appendChild(sc)}window.__loadLwc=load;function trig(){load()}["pointerdown","touchstart","keydown"].forEach(function(ev){window.addEventListener(ev,trig,{once:true,passive:true})});if(typeof requestIdleCallback==="function")requestIdleCallback(load,{timeout:1400});else setTimeout(load,1100);})();</script>
 <script defer src="assets/seed-cycle.5a6f45f52a.js" data-inline="seed"></script>
-<script defer src="assets/app.c21192f0d7.js" data-inline="app"></script>
+<script defer src="assets/app.8ac3594c22.js" data-inline="app"></script>
 
 
 
@@ -2232,9 +2233,9 @@
 
 
 
-<script>window.I18N_SRC="assets/i18n-en.9b8f16ab81.js"</script>
+<script data-inline="i18n">window.I18N_SRC="assets/i18n-en.dede1b668f.js";if(window.BTC_LANG==="en"){var l=document.createElement("link");l.rel="preload";l.as="script";l.href=window.I18N_SRC;document.head.appendChild(l)}</script>
 
 
-<script data-inline="ext">window.EXT_SRC="assets/ext-bundle.ac284d6a92.js";(function(){var p=false;function load(){if(p)return;p=true;var sc=document.createElement("script");sc.src=window.EXT_SRC;sc.async=true;document.body.appendChild(sc)}window.__loadExt=load;function arm(){["pointerdown","touchstart","keydown","hashchange"].forEach(function(ev){window.addEventListener(ev,load,{once:true,passive:true})});if(typeof requestIdleCallback==="function")requestIdleCallback(load,{timeout:600});else setTimeout(load,400);}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",arm,{once:true});else arm();})();</script>
+<script data-inline="ext">window.EXT_SRC="assets/ext-bundle.d4631c734b.js";(function(){var p=false;function load(){if(p)return;p=true;var sc=document.createElement("script");sc.src=window.EXT_SRC;sc.async=true;document.body.appendChild(sc)}window.__loadExt=load;if(window.BTC_LANG==="en"){load();return}function arm(){["pointerdown","touchstart","keydown","hashchange"].forEach(function(ev){window.addEventListener(ev,load,{once:true,passive:true})});if(typeof requestIdleCallback==="function")requestIdleCallback(load,{timeout:600});else setTimeout(load,400);}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",arm,{once:true});else arm();})();</script>
 </body>
 </html>
