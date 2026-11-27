@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/%E7%89%88%E6%9C%AC-V28.2.1-f7931a?style=flat-square" alt="版本 V28.2.1">
+  <img src="https://img.shields.io/badge/%E7%89%88%E6%9C%AC-V28.2.2-f7931a?style=flat-square" alt="版本 V28.2.2">
   <img src="https://img.shields.io/badge/%E8%AF%AD%E8%A8%80-%E4%B8%AD%E6%96%87%20%7C%20English-3a7bd5?style=flat-square" alt="中文 | English">
   <img src="https://img.shields.io/badge/%E6%95%B0%E6%8D%AE-Bitview%20%2F%20BRK-6a5ae0?style=flat-square" alt="数据 Bitview / BRK">
   <img src="https://img.shields.io/badge/%E9%9A%90%E7%A7%81-%E6%97%A0%E8%B4%A6%E5%8F%B7%20%C2%B7%20%E6%97%A0%E5%B9%BF%E5%91%8A-2e9d6a?style=flat-square" alt="无账号 无广告">
@@ -142,7 +142,7 @@ python3 -m http.server 8080
 
 版本规则：
 
-- **正式版**（如 V28.2.1）：版本号与构建号相同（V28.2.1 ↔ 28.2.1-日期；末尾 .0 可省略，V28.0 ↔ 28.0.0-日期），上传 GitHub 压缩包即可自动检查、清理旧资源并上线，VPS 每 5 分钟自动同步。
+- **正式版**（如 V28.2.2）：版本号与构建号相同（V28.2.2 ↔ 28.2.1-日期；末尾 .0 可省略，V28.0 ↔ 28.0.0-日期），上传 GitHub 压缩包即可自动检查、清理旧资源并上线，VPS 每 5 分钟自动同步。
 - **测试版**（如 V26 Beta 24）：只在本地验证，不上传。
 
 手动上传顺序：先上传 `assets/`，再上传页面（`index.html`、`ahr999.html`、`old-coins.html`、`dca.html`、`vhe.html`），最后上传 `sw.js`；保留服务器上已有的 `data/`。
@@ -175,3 +175,7 @@ python3 tests/static_test.py dist                     # 被 try{} 包住调用�
   <sub>致敬九神 · AHR999 的提出者</sub><br>
   <b>我们都是中本聪</b>
 </p>
+
+## V28.2.2 · 波动增币简明版
+
+默认仅展示是否适合继续研究波段、与长期持有/同现金流定投的币量差额、相对单位成本及下一步。简易设置只修改初始 BTC、开始日和波段比例。图表、专业回测和交易明细按需打开。算法、真实账本和数据更新流程沿用 V28.2.1。详见 `docs/V28.2.2_RELEASE.md`。

@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BUILD: 28.2.1-20261127 · SATS-GARDEN-V28.2.1 -->
+<!-- BUILD: 28.2.2-20261127 · SATS-GARDEN-V28.2.2 -->
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
@@ -8,7 +8,7 @@
   <meta name="color-scheme" content="light dark" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="vhe-build" content="28.2.1-20261127" />
+  <meta name="vhe-build" content="28.2.2-20261127" />
   <meta name="description" content="比特币波动增币历史模拟：验证波段交易相比长期持有与定投是否增加 BTC 数量。" />
   <script>(function(){var l=null;try{l=localStorage.getItem("btc_lang_v1")}catch(e){}if(l!=="zh"&&l!=="en"){var n=(navigator.languages&&navigator.languages[0])||navigator.language||"";l=/^zh/i.test(n)?"zh":"en"}window.BTC_LANG=l;document.documentElement.lang=l==="en"?"en":"zh-CN";var T="btc_theme_v1",t=null;try{t=localStorage.getItem(T)}catch(e){}if(t!=="light"&&t!=="dark")t=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t;})();</script>
   <title>波动增币 · Sats Garden</title>
@@ -93,6 +93,64 @@
 
     <!-- ==================== 模式一：极简概览（默认展示） ==================== -->
     <div class="mode-panel" id="overviewPanel">
+      <section class="card simple-decision" aria-labelledby="plainTitle">
+        <div class="simple-kicker" id="plainKicker">历史研究 · 不是真实交易</div>
+        <h1 id="plainTitle" aria-live="polite">正在读取历史数据</h1>
+        <p id="plainReason" class="simple-reason">等待计算结果。</p>
+        <div id="plainResult" hidden>
+          <div class="simple-delta">
+            <div id="plainDeltaLabel" class="simple-label">相比长期持有</div>
+            <div class="simple-value num" id="plainDelta">--</div>
+            <div class="simple-sub num" id="plainPercent">--</div>
+          </div>
+          <div class="simple-compare num">
+            <div><span id="plainBaseLabel">不做波段</span><b id="plainBase">--</b><small id="plainBaseCash"></small></div>
+            <div><span id="plainSwingLabel">做波段</span><b id="plainSwing">--</b><small id="plainSwingCash"></small></div>
+          </div>
+          <p id="plainCashNote" class="simple-foot"></p>
+          <div class="simple-test-row" id="plainCostRow" hidden><span id="plainUnitCostLabel">单位投入成本变化</span><b id="plainUnitCost" class="num">--</b></div>
+          <div class="simple-test-row"><span id="plainTestLabel">测试区间</span><b id="plainWindow" class="num">--</b></div>
+          <div class="simple-test-row"><span id="plainAllocationLabel">模拟设置</span><b id="plainAllocation" class="num">--</b></div>
+          <p id="plainCostNote" class="simple-foot"></p>
+        </div>
+        <p id="plainDirty" class="simple-dirty" hidden></p>
+      </section>
+      <section class="card simple-evidence" aria-labelledby="plainEvidenceHeading">
+        <h2 id="plainEvidenceHeading">为什么这么判断？</h2>
+        <div id="plainEvidence" aria-live="polite">等待历史检验。</div>
+        <p class="simple-foot" id="plainEvidenceNote"></p>
+      </section>
+      <section class="card simple-actions">
+        <h2 id="plainActionHeading">下一步怎么做？</h2>
+        <p id="plainAction">先等待研究完成。不自动交易。</p>
+        <details class="quick-settings" id="plainQuickSettings">
+          <summary><span id="plainQuickHeading">调整模拟（可选）</span><span aria-hidden="true">⌄</span></summary>
+          <form id="plainQuickForm" class="quick-form">
+            <p id="plainQuickHint" class="simple-foot">仅修改这三项。其他研究设置不变。</p>
+            <label for="plainQuickBTC" id="plainQuickBTCLabel">起始持仓（BTC）</label>
+            <input class="inp num" id="plainQuickBTC" type="number" min="0" max="10000" step="any" required value="0.3" />
+            <label for="plainQuickStart" id="plainQuickStartLabel">从哪天开始模拟</label>
+            <input class="inp num" id="plainQuickStart" type="date" required value="2021-11-01" />
+            <label for="plainQuickRatio" id="plainQuickRatioLabel">用于波段的比例（%）</label>
+            <input class="inp num" id="plainQuickRatio" type="number" min="0" max="10" step="any" required value="10" />
+            <p id="plainQuickNotice" class="simple-dirty" role="status" hidden></p>
+            <button id="plainQuickApply" type="submit" class="btn-primary btn-full">重新模拟</button>
+          </form>
+        </details>
+        <div class="simple-controls">
+          <button type="button" class="text-btn btn-full" id="btnGoResearch"><span id="plainSettingsText">完整策略研究</span><span aria-hidden="true"> →</span></button>
+        </div>
+            <div class="pos-bar" id="overviewPosBar">
+              <span class="pos-bar-txt" id="overviewPosText">默认 0.30 BTC 示例仓位，无外部现金流（非你的真实持仓）。</span>
+              <div class="pos-bar-acts">
+                <button type="button" class="text-btn" id="btnOverviewReadLocal" data-i18n="btnOverviewImportLocal">只读导入本机数量</button>
+                <button type="button" class="text-btn" id="btnOverviewResetExample" hidden data-i18n="btnRestoreExample">恢复 0.30 示例</button>
+              </div>
+            </div>
+      </section>
+      <details class="card simple-details" id="plainDetails">
+        <summary><span id="plainDetailsText">查看计算依据与图表</span><span aria-hidden="true">⌄</span></summary>
+        <div class="simple-details-body">
       <!-- 1. 唯一主结论 + 唯一大数字焦点 + 同口径左右对比 -->
       <section class="card hero-card" id="resultSection" aria-label="核心结论与对比">
         <div class="hero-top-grid">
@@ -131,13 +189,7 @@
 
             <div class="holdings-fine num" id="overviewHoldingsLine">实际持币：待计算 · 现金：待计算</div>
 
-            <div class="pos-bar" id="overviewPosBar">
-              <span class="pos-bar-txt" id="overviewPosText">默认 0.30 BTC 示例仓位，无外部现金流（非你的真实持仓）。</span>
-              <div class="pos-bar-acts">
-                <button type="button" class="text-btn" id="btnOverviewReadLocal" data-i18n="btnOverviewImportLocal">只读导入本机数量</button>
-                <button type="button" class="text-btn" id="btnOverviewResetExample" hidden data-i18n="btnRestoreExample">恢复 0.30 示例</button>
-              </div>
-            </div>
+
           </div>
         </div>
       </section>
@@ -187,12 +239,12 @@
 
         <div class="next-box">
           <p class="next-txt" id="nextStepText">正在计算当前策略与基准差异，不生成实盘买卖指令。</p>
-          <button type="button" class="btn-primary btn-full" id="btnGoResearch">
-            <span data-i18n="btnViewResearch">查看研究详情</span>
-            <span aria-hidden="true"> →</span>
-          </button>
+
         </div>
       </section>
+
+        </div>
+      </details>
     </div>
 
     <!-- ==================== 模式二：策略研究（完整保留全部专业能力） ==================== -->

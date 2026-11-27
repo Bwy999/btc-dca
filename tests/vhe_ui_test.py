@@ -72,7 +72,7 @@ async def run_suite(root_dir):
 
     try:
         async with async_playwright() as pw:
-            browser = await pw.chromium.launch()
+            browser = await pw.chromium.launch(**({"executable_path": os.environ["CHROMIUM_PATH"]} if os.environ.get("CHROMIUM_PATH") else {}))
 
             # 2. 主站入口简化与隔离检查（不加载 VHE 引擎，不增加底部 Tab）
             ctx_main = await browser.new_context(viewport={"width": 402, "height": 874})
@@ -161,6 +161,21 @@ async def run_suite(root_dir):
                   24 <= ov_dom["titlePx"] <= 28 and 30 <= ov_dom["satsPx"] <= 36 and ov_dom["btnH"] >= 44,
                   f"title={ov_dom['titlePx']} sats={ov_dom['satsPx']} btnH={ov_dom['btnH']}")
 
+            # New V28.2.2 plain-language view: technical material closed by default.
+            check("默认简明结论、历史结果和候选检验区分清楚", await pg.locator("#plainTitle").inner_text() == "暂不采用波段策略" and await pg.locator("#plainDelta").inner_text() == "−0.003764 BTC" and "5% 波段仓" in await pg.locator("#plainEvidenceNote").inner_text())
+            check("专业曲线与简易设置默认折叠", not await pg.locator("#plainDetails").evaluate("e => e.open") and not await pg.locator("#plainQuickSettings").evaluate("e => e.open"))
+            await pg.locator("#plainDetails > summary").click()
+            await pg.wait_for_timeout(100)
+            check("展开技术依据后概览曲线完成绘制", await pg.locator("#overviewMainCanvas").evaluate("e => e.width > 200 && e.getBoundingClientRect().width > 200"))
+            await pg.locator("#plainDetails > summary").click()
+            await pg.locator("#plainQuickSettings > summary").click()
+            await pg.fill("#plainQuickRatio", "5")
+            await pg.click("#plainQuickApply")
+            check("简易设置一键运行并与研究设置同步", await pg.locator("#inpTradeRatio").input_value() == "5" and not await pg.locator("#plainQuickSettings").evaluate("e => e.open"))
+            await pg.locator("#plainQuickSettings > summary").click()
+            await pg.fill("#plainQuickRatio", "10")
+            await pg.click("#plainQuickApply")
+
             # 4. 切换进入「策略研究」模式、滚动位置记忆、折叠后非零宽高 Canvas 重绘及未知成本「未填写」
             await pg.click("#btnGoResearch")
             await pg.evaluate("""() => {
@@ -216,6 +231,7 @@ async def run_suite(root_dir):
             await pg.click("#tabModeOverview")
             await pg.evaluate("() => window.scrollTo(0, 150)")
             await pg.wait_for_timeout(40)
+            expected_y_ov = await pg.evaluate("() => Math.round(window.scrollY)")
             await pg.click("#tabModeResearch")
             await pg.evaluate("() => window.scrollTo(0, 420)")
             await pg.wait_for_timeout(40)
@@ -223,7 +239,7 @@ async def run_suite(root_dir):
             y_ov = await pg.evaluate("() => Math.round(window.scrollY)")
             await pg.click("#tabModeResearch")
             y_res = await pg.evaluate("() => Math.round(window.scrollY)")
-            check("同一会话切换「概览 / 策略研究」保持各自滚动位置", abs(y_ov - 150) <= 5 and abs(y_res - 420) <= 5, f"ov={y_ov}, res={y_res}")
+            check("同一会话切换「概览 / 策略研究」保持各自滚动位置", abs(y_ov - expected_y_ov) <= 5 and abs(y_res - 420) <= 5, f"ov={y_ov}, res={y_res}")
 
             # 5. 验证 0% 波段、单窗正收益（+0.83%）、OOS 通过但规则不匹配、OOS 通过且匹配
             await pg.fill("#inpTradeRatio", "0")
