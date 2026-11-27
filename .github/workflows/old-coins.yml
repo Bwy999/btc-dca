@@ -1,8 +1,10 @@
+# 每天预先拉取 Bitview 2011 年至今老币移动量、LTH 持仓净变化与 LTH 利润，写入 data/old-coins.json。
+# old-coins.html 优先读取这份同源静态文件，手机秒开且不挑网络。
 name: Precompute Old Coins Screener
 
 on:
   schedule:
-    - cron: "40 1 * * *"
+    - cron: "52 1 * * *"   # 每天 UTC 01:52（北京时间 09:52，错开 01:40 的 daily-state）
   workflow_dispatch:
 
 permissions:
@@ -30,5 +32,8 @@ jobs:
           git add data/old-coins.json
           if git diff --cached --quiet; then echo "no change"; exit 0; fi
           git commit -m "data: old coins $(date -u +%F)"
-          git pull --rebase --autostash
-          git push
+          for i in 1 2 3 4; do
+            git pull --rebase --autostash && git push && exit 0
+            sleep $((i * 5))
+          done
+          exit 1

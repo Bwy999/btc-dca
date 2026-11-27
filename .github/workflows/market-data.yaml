@@ -27,6 +27,7 @@ jobs:
       - name: Download
         env:
           BARK_KEY: ${{ secrets.BARK_KEY }}
+          SITE_URL: ${{ vars.SITE_URL || 'https://9992100.xyz/btc/' }}
         run: python3 tools/precompute_market.py data
       - name: Commit
         run: |
@@ -35,5 +36,8 @@ jobs:
           git add data/stablecoins.json data/mining.json data/alert-state.json 2>/dev/null || true
           if git diff --cached --quiet; then echo "no change"; exit 0; fi
           git commit -m "data: market $(date -u +%F-%H)"
-          git pull --rebase --autostash
-          git push
+          for i in 1 2 3 4; do
+            git pull --rebase --autostash && git push && exit 0
+            sleep $((i * 5))
+          done
+          exit 1

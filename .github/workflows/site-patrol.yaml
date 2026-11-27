@@ -1,4 +1,4 @@
-# 线上自动巡检：每天早上，以及每次「一键上线」完成后，用真实浏览器把正式网站五个分区走一遍。
+# 线上自动巡检：每天早上巡检正式域名（9992100.xyz/btc/），以及每次「一键上线」完成后巡检新构建。
 # 发现空白、脚本错误、乱码、多个模块暂不可用时：仓库开 Issue，本任务显示失败（GitHub 会发邮件）。
 name: Site patrol
 
@@ -34,7 +34,7 @@ jobs:
       - name: Patrol
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SITE_URL: https://bwy999.github.io/btc-dca/
+          SITE_URL: ${{ vars.SITE_URL || (github.event_name == 'workflow_run' && 'https://bwy999.github.io/btc-dca/' || 'https://9992100.xyz/btc/') }}
         run: python3 tools/patrol.py "$SITE_URL" patrol-shots
       - name: Save screenshots
         if: always()

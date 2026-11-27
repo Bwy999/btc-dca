@@ -1,0 +1,39 @@
+# 每个美股交易日收盘后拉取美国现货比特币 ETF 资金流，写入 data/etf-flows.json。
+# 网页优先读取同源静态文件，避免浏览器跨域与直连超时；文件不存在时自动回退直连 TFTC。
+name: Precompute ETF flows
+
+on:
+  schedule:
+    - cron: "30 3 * * 2-6"   # 周二至周六 UTC 03:30（北京时间 11:30，美东前一交易日收盘后）
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: etf-flows
+  cancel-in-progress: false
+
+jobs:
+  precompute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Fetch ETF flows
+        run: python3 tools/precompute_etf.py data/etf-flows.json
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
+          git add data/etf-flows.json
+          if git diff --cached --quiet; then echo "no change"; exit 0; fi
+          git commit -m "data: ETF flows $(date -u +%F)"
+          for i in 1 2 3 4; do
+            git pull --rebase --autostash && git push && exit 0
+            sleep $((i * 5))
+          done
+          exit 1

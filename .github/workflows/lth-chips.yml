@@ -1,8 +1,9 @@
+# 每天预先计算 LTH 筹码集中度（data/lth-chips.json），网页先读这份同源静态文件，只补算缺少的最新一两天。
 name: Precompute LTH chips
 
 on:
   schedule:
-    - cron: "20 1 * * *"
+    - cron: "20 1 * * *"   # 每天 UTC 01:20（北京时间 09:20）
   workflow_dispatch:
 
 permissions:
@@ -17,8 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: Compute
@@ -30,5 +31,8 @@ jobs:
           git add data/lth-chips.json
           if git diff --cached --quiet; then echo "no change"; exit 0; fi
           git commit -m "data: LTH chips $(date -u +%F)"
-          git pull --rebase --autostash
-          git push
+          for i in 1 2 3 4; do
+            git pull --rebase --autostash && git push && exit 0
+            sleep $((i * 5))
+          done
+          exit 1

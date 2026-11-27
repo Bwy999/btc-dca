@@ -1,5 +1,5 @@
-# V28 数据层：每 6 小时把 V28 网页要用的 Bitview 数据算好，写到 data/v28/core.json 与 data/v28/charts.json。
-# V27 不读这两个文件，现在跑起来只是让数据先攒着、有问题早发现。
+# V28 同源加速层：每 6 小时把主站、AHR999 专页与个人定投账本使用的核心 Bitview 数据与 URPD 分布算好，
+# 写入 data/v28/core.json 与 data/v28/charts.json。浏览器同源秒开，过期或手动点击「更新」时自动回退直连 Bitview。
 name: V28 data
 
 on:
@@ -32,5 +32,8 @@ jobs:
           git add data/v28
           if git diff --cached --quiet; then echo "no change"; exit 0; fi
           git commit -m "data: v28 $(date -u +%F-%H)"
-          git pull --rebase --autostash
-          git push
+          for i in 1 2 3 4; do
+            git pull --rebase --autostash && git push && exit 0
+            sleep $((i * 5))
+          done
+          exit 1

@@ -1,0 +1,45 @@
+# 每天预先计算「今日结论」与最近 120 天状态记录（data/daily-state.json），
+# 并在状态变化或定投日通过 Bark 推送提醒（需配置仓库 Secrets 里的 BARK_KEY）。
+name: Daily state and push
+
+on:
+  schedule:
+    - cron: "40 1 * * *"   # 每天 UTC 01:40（北京时间 09:40）
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-state
+  cancel-in-progress: false
+
+jobs:
+  daily:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Compute and push
+        env:
+          BARK_KEY: ${{ secrets.BARK_KEY }}
+          PUSH_DAILY: ${{ vars.PUSH_DAILY }}
+          DCA_DAY: ${{ vars.DCA_DAY }}
+          DCA_BUDGET: ${{ vars.DCA_BUDGET }}
+          SITE_URL: ${{ vars.SITE_URL || 'https://9992100.xyz/btc/' }}
+        run: python3 tools/daily_state.py data/daily-state.json
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
+          git add data/daily-state.json
+          if git diff --cached --quiet; then echo "no change"; exit 0; fi
+          git commit -m "data: daily state $(date -u +%F)"
+          for i in 1 2 3 4; do
+            git pull --rebase --autostash && git push && exit 0
+            sleep $((i * 5))
+          done
+          exit 1

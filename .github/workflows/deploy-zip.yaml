@@ -1,5 +1,5 @@
 # 一键上线：把 SatsGarden_*.zip 上传到仓库（任意位置）即可。
-# 自动解压 → 跑检查 → 放到对应位置 → 删除压缩包 → 提交。检查不通过时网站保持原样。
+# 自动解压 → 跑检查 → 放到对应位置（自动清理旧版冗余静态资源）→ 删除压缩包 → 提交。检查不通过时网站保持原样。
 name: Deploy from zip
 
 on:
@@ -40,8 +40,11 @@ jobs:
           git reset -q -- data .github 2>/dev/null || true
           if git diff --cached --quiet; then echo "no change"; exit 0; fi
           git commit -m "deploy: $(cat .deploy-build 2>/dev/null || echo zip)"
-          git pull --rebase --autostash
-          git push
+          for i in 1 2 3 4; do
+            git pull --rebase --autostash && git push && break
+            if [ "$i" -eq 4 ]; then exit 1; fi
+            sleep $((i * 5))
+          done
       - name: Rebuild GitHub Pages
         continue-on-error: true
         env:
