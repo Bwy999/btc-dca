@@ -75,6 +75,10 @@ with tempfile.TemporaryDirectory() as tmp:
         js = sorted(f for f in os.listdir(os.path.join(d, "assets")) if f.startswith("vhe-engine."))[0]
         os.remove(os.path.join(d, "assets", js))
 
+    def drop_vhe_worker(d):
+        js = sorted(f for f in os.listdir(os.path.join(d, "assets")) if f.startswith("vhe-worker."))[0]
+        os.remove(os.path.join(d, "assets", js))
+
     def vhe_mismatch(d):
         p = os.path.join(d, "vhe.html")
         s = open(p, encoding="utf-8").read()
@@ -90,6 +94,7 @@ with tempfile.TemporaryDirectory() as tmp:
 
     variant("资源缺失", drop_asset)
     variant("VHE 资源缺失", drop_vhe_asset)
+    variant("VHE Worker 资源缺失", drop_vhe_worker)
     variant("文件内容被改", tamper)
     variant("构建号不一致", mismatch)
     variant("VHE 构建号不一致", vhe_mismatch)

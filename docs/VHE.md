@@ -1,6 +1,6 @@
-# SatsGarden V28.2.0 · VHE 波动增币实验室技术说明
+# SatsGarden V28.2.1 · VHE 波动增币技术与策略口径说明
 
-> 本文档说明「波动增币实验室（Volatility Harvesting / BTC-Accumulating Lab，简称 VHE）」的数据规范、数学公式、子仓状态机、现金与持币对账守恒及方法局限。本模块仅为本机历史模拟实验室，不构成任何交易建议，也不连接任何实盘账户。
+> 本文档说明「波动增币（Volatility Harvesting / BTC-Accumulating Lab，简称 VHE）」的数据规范、数学公式、子仓状态机、现金与持币对账守恒及方法局限。本模块仅为本机历史模拟对照工具，不构成任何交易建议，也不连接任何实盘账户。
 
 ---
 
@@ -10,9 +10,9 @@
 2. **现金与持币严格分列**：待回购现金与外部留存现金始终独立展示，绝不直接混入「实际持仓 BTC」数字。
 3. **本机真实账本零写入**：
    - VHE 实验参数仅保存在独立本地键 `btc_vhe_config_v1`。
-   - 第一阶段严禁修改或写入用户的真实定投账本（`btc_dca_ledger_v1`）与主站执行记录（`btc_exec_v7`）。
-   - 页面提供可选的「只读带入本机持仓」按钮，仅单向读取现货 BTC 数量作为模拟起点；默认 `0.30 BTC` 明确标注为示例模拟仓位。
-4. **纯静态与按需加载**：独立页面 `vhe.html` 引用带 10 位 SHA-256 内容哈希的 `assets/vhe.<hash>.css`、`assets/vhe-engine.<hash>.js`、`assets/vhe-ui.<hash>.js`，纳入 Service Worker 的 `OPTIONAL_ASSETS`（不增加首页冷启动负担，首次访问后支持离线打开）。
+   - 严禁修改或写入用户的真实定投账本（`btc_dca_ledger_v1`）与主站执行记录（`btc_exec_v7`）。
+   - 页面提供可选的「只读导入本机数量」按钮，仅单向读取现货 BTC 数量作为模拟起点；默认 `0.30 BTC` 明确标注为示例模拟仓位。
+4. **双模式架构、纯静态与后台线程按需加载（V28.2.1）**：独立页面 `vhe.html` 默认展示极简「概览」，专业参数、矩阵、滚动窗口、现金曲线、失败回合与分页成交表置于「策略研究」模式；页面引用带 10 位 SHA-256 内容哈希的 `assets/vhe.<hash>.css`、`assets/vhe-engine.<hash>.js`、`assets/vhe-ui.<hash>.js` 与后台计算线程 `assets/vhe-worker.<hash>.js`，全部纳入 Service Worker 的 `OPTIONAL_ASSETS`（零首页冷启动体积负担，首次访问后支持离线打开）。
 
 ---
 

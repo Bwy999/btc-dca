@@ -45,12 +45,15 @@
   var DAPI="https://bitview.space/api/urpd";
   var DCOHORT="all";
   var DCACHE_KEY="btc_dist_v1";
+  var DPREV_CACHE_KEY="btc_dist_prev_v1";
   var DIST_VIEW_KEY="btc_dist_view_v1";
+  var DIST_DIFF_KEY="btc_dist_diff_v1";
   var DIST_PAD_L=46,DIST_PAD_R=12,DIST_PAD_T=26,DIST_PAD_B=34;
   var distGeom=null;
   var DTTL=6*3600*1000;
   var distCacheData=null, distSource="snapshot", distDateInfo=null, distResizeObs=null, distPlotCtx=null;
-  var distViewMode=readViewMode(),distNeedsFocus=true;
+  var distViewMode=readViewMode(), distDiffDays=readDiffDays(), distNeedsFocus=true;
+  var distPrevMem=readPrevCache(), distPrevInflight={}, distPrevFailed={};
   var stats_total=0;
 
   function $(id){return document.getElementById(id)}
@@ -63,15 +66,38 @@
   function dAuto(){progStep&&progStep()}
 
   function nowDateStr(){return new Date().toISOString().slice(0,10)}
+  function shiftIsoDay(day,deltaDays){
+    var ms=Date.parse(String(day)+"T00:00:00Z");
+    if(!isFinite(ms))ms=Date.now();
+    return new Date(ms-deltaDays*86400000).toISOString().slice(0,10);
+  }
 
   function readViewMode(){
     try{return localStorage.getItem(DIST_VIEW_KEY)==="overview"?"overview":"fine"}catch(e){return"fine"}
   }
   function writeViewMode(mode){try{localStorage.setItem(DIST_VIEW_KEY,mode)}catch(e){}}
 
+  function readDiffDays(){
+    try{
+      var v=localStorage.getItem(DIST_DIFF_KEY);
+      if(v==="0"||v==="1"||v==="7"||v==="30")return +v;
+    }catch(e){}
+    return 7;
+  }
+  function writeDiffDays(d){try{localStorage.setItem(DIST_DIFF_KEY,String(d))}catch(e){}}
+
+  function readPrevCache(){
+    try{
+      var c=JSON.parse(localStorage.getItem(DPREV_CACHE_KEY)||"null");
+      if(c&&typeof c==="object")return c;
+    }catch(e){}
+    return {};
+  }
+  function writePrevCache(){
+    try{localStorage.setItem(DPREV_CACHE_KEY,JSON.stringify(distPrevMem))}catch(e){}
+  }
+
   function cacheRead(){
-    // 缓存只要结构有效就保留；TTL 只决定“是否需要联网刷新”，不再决定“是否允许显示”。
-    // 这样 Bitview 临时不可达时不会把已经有的数据整块清成 --。
     try{
       var c=JSON.parse(localStorage.getItem(DCACHE_KEY));
       if(c&&Array.isArray(c.data)&&c.data.length&&c.day&&c.ts)return c;
@@ -85,6 +111,22 @@
     try{localStorage.setItem(DCACHE_KEY,JSON.stringify({day:day,data:buckets,ts:Date.now()}))}catch(e){}
   }
 
+  function unpackCompactUrpd(u){
+    if(!u||!Array.isArray(u.price)||!Array.isArray(u.supply)||!u.price.length)return null;
+    var out=[],n=Math.min(u.price.length,u.supply.length),i;
+    for(i=0;i<n;i++){
+      var pf=+u.price[i]||0;
+      out.push({
+        price_floor:pf,
+        price_ceil:pf+1000,
+        supply:+u.supply[i]||0,
+        realized_cap:(u.rc&&u.rc[i]!=null)?+u.rc[i]:null,
+        unrealized_pnl:(u.pnl&&u.pnl[i]!=null)?+u.pnl[i]:null
+      });
+    }
+    return {day:u.day||nowDateStr(),buckets:out};
+  }
+
   function normalizeUrpd(j,fallbackDay){
     var b=(j&&Array.isArray(j.buckets))?j.buckets:[];
     if(!b.length)throw new Error("empty buckets");
@@ -92,11 +134,8 @@
     return {day:day,buckets:b};
   }
 
-  // V24.5.1：优先直接请求“最新 URPD”。
-  // BRK 的 /api/urpd/{cohort} 自带 date + buckets，可避免 /dates 成为单点故障。
-  // 若 latest 端点失败，再退回 dates -> dated snapshot 的旧路径。
   function fetchUrpd(day){
-    var q="?agg=lin1000&weight=raw";
+    var q="?agg=lin1000";
     if(day){
       return DTry(DAPI+"/"+DCOHORT+"/"+day+q,12000).then(function(j){
         return normalizeUrpd(j,day);
@@ -104,14 +143,51 @@
     }
     return DTry(DAPI+"/"+DCOHORT+q,12000).then(function(j){
       return normalizeUrpd(j,null);
-    }).catch(function(latestErr){
-      return DTry(DAPI+"/"+DCOHORT+"/dates?weight=raw",12000).then(function(dates){
+    }).catch(function(){
+      return DTry(DAPI+"/"+DCOHORT+"/dates",12000).then(function(dates){
         var useDay=(Array.isArray(dates)&&dates.length&&dates[dates.length-1])||nowDateStr();
         return DTry(DAPI+"/"+DCOHORT+"/"+useDay+q,12000).then(function(j){
           return normalizeUrpd(j,useDay);
         });
       });
     });
+  }
+
+  function activePrevObj(){
+    if(!(distDiffDays>0)||!distDateInfo)return null;
+    var k=String(distDiffDays),rec=distPrevMem&&distPrevMem[k];
+    if(!rec||!Array.isArray(rec.buckets)||!rec.buckets.length)return null;
+    if(rec.baseDay===distDateInfo)return rec;
+    var gap=Math.abs((Date.parse(distDateInfo+"T00:00:00Z")-Date.parse(rec.day+"T00:00:00Z"))/86400000-distDiffDays);
+    return isFinite(gap)&&gap<=2.5?rec:null;
+  }
+
+  function ensurePrevUrpd(force){
+    if(!(distDiffDays>0)||!distDateInfo)return Promise.resolve(null);
+    var k=String(distDiffDays);
+    if(!force&&activePrevObj())return Promise.resolve(activePrevObj());
+    if(distPrevInflight[k])return distPrevInflight[k];
+    delete distPrevFailed[k];
+    var baseDay=distDateInfo,cands=[shiftIsoDay(baseDay,distDiffDays),shiftIsoDay(baseDay,distDiffDays+1)];
+    if(distDiffDays>1)cands.push(shiftIsoDay(baseDay,distDiffDays-1));
+    var tryAt=function(idx){
+      if(idx>=cands.length)return Promise.reject(new Error("no prev urpd"));
+      return fetchUrpd(cands[idx]).catch(function(){return tryAt(idx+1)});
+    };
+    distPrevInflight[k]=tryAt(0).then(function(res){
+      delete distPrevInflight[k];
+      var compact=res.buckets.map(function(x){return{price_floor:+x.price_floor||0,price_ceil:+x.price_ceil||((+x.price_floor||0)+1000),supply:+x.supply||0}});
+      distPrevMem[k]={baseDay:baseDay,day:res.day,buckets:compact,ts:Date.now()};
+      writePrevCache();
+      render();
+      return distPrevMem[k];
+    }).catch(function(){
+      delete distPrevInflight[k];
+      distPrevFailed[k]=true;
+      render();
+      return null;
+    });
+    return distPrevInflight[k];
   }
 
   function computeStats(buckets,spot){
@@ -161,16 +237,26 @@
     return"$"+Math.round(v);
   }
 
-  function distBuild(buckets,spot,pw,mode){
-    var src=[],i,b,f,c,s;
+  function distBuild(buckets,spot,pw,mode,prevBuckets){
+    var src=[],prevSrc=[],i,b,f,c,s,hasPrev=Array.isArray(prevBuckets)&&prevBuckets.length>0;
     for(i=0;i<buckets.length;i++){
       b=buckets[i];f=+b.price_floor||0;s=+b.supply||0;
-      if(!(f>0)||!(s>0))continue;                 // 0 成本长尾单独说明，不进主体比例尺
+      if(!(f>0)||!(s>0))continue;
       c=+b.price_ceil;if(!(c>f))c=f+1000;
       src.push({f:f,c:c,s:s});
     }
+    if(hasPrev){
+      for(i=0;i<prevBuckets.length;i++){
+        b=prevBuckets[i];f=+b.price_floor||0;s=+b.supply||0;
+        if(!(f>0)||!(s>0))continue;
+        c=+b.price_ceil;if(!(c>f))c=f+1000;
+        prevSrc.push({f:f,c:c,s:s});
+      }
+    }
     if(!src.length)return null;
-    var hiRaw=0;for(i=0;i<src.length;i++)if(src[i].c>hiRaw)hiRaw=src[i].c;
+    var hiRaw=0;
+    for(i=0;i<src.length;i++)if(src[i].c>hiRaw)hiRaw=src[i].c;
+    for(i=0;i<prevSrc.length;i++)if(prevSrc[i].c>hiRaw)hiRaw=prevSrc[i].c;
     if(spot>0&&spot>hiRaw)hiRaw=spot;
     hiRaw*=1.02;
     var fine=mode==="fine";
@@ -179,8 +265,6 @@
     var tick=fine?distNiceStepFine(hi,Math.max(8,Math.round(pw/68))):distNiceStep(hi,6);
     if(fine)tick=Math.max(5000,Math.ceil(tick/1000)*1000);
     if(!(hi>0)||!(tick>0))return null;
-    // 分箱宽度取 $1000（数据源粒度）的整数倍中的整数档，既让轴标签好读，
-    // 也保证每个显示箱正好覆盖若干个完整源箱，不产生拆分误差
     var maxBins=Math.max(20,Math.min(64,Math.round(pw/7))),step=fine?1000:0;
     var LADDER=[1000,2000,2500,5000,10000,20000,25000,50000,100000];
     if(!fine)for(var li=0;li<LADDER.length;li++){if(Math.ceil(hi/LADDER[li])<=maxBins){step=LADDER[li];break}}
@@ -188,8 +272,7 @@
     var n=Math.max(1,Math.round(hi/step));
     hi=step*n;
     var bins=new Array(n),k;
-    for(k=0;k<n;k++)bins[k]={lo:k*step,hi:(k+1)*step,supply:0};
-    // 按区间重叠比例摊分，避免源箱跨display箱时整块归错位置
+    for(k=0;k<n;k++)bins[k]={lo:k*step,hi:(k+1)*step,supply:0,prevSupply:0,diff:0};
     for(i=0;i<src.length;i++){
       var w=src[i].c-src[i].f;if(!(w>0))w=1;
       var k0=Math.max(0,Math.floor(src[i].f/step)),k1=Math.min(n-1,Math.floor((src[i].c-1e-9)/step));
@@ -198,17 +281,31 @@
         if(ov>0)bins[k].supply+=src[i].s*(ov/w);
       }
     }
-    var max=0;for(k=0;k<n;k++)if(bins[k].supply>max)max=bins[k].supply;
-    var peak=0;for(k=0;k<n;k++)if(bins[k].supply>bins[peak].supply)peak=k;
-    return {bins:bins,step:step,axisHi:hi,tick:tick,max:max,peak:peak,fine:fine};
+    if(hasPrev){
+      for(i=0;i<prevSrc.length;i++){
+        var pw2=prevSrc[i].c-prevSrc[i].f;if(!(pw2>0))pw2=1;
+        var pk0=Math.max(0,Math.floor(prevSrc[i].f/step)),pk1=Math.min(n-1,Math.floor((prevSrc[i].c-1e-9)/step));
+        for(k=pk0;k<=pk1;k++){
+          var pov=Math.min(prevSrc[i].c,bins[k].hi)-Math.max(prevSrc[i].f,bins[k].lo);
+          if(pov>0)bins[k].prevSupply+=prevSrc[i].s*(pov/pw2);
+        }
+      }
+    }
+    var max=0,peak=0,maxInIdx=-1,maxOutIdx=-1;
+    for(k=0;k<n;k++){
+      bins[k].diff=bins[k].supply-bins[k].prevSupply;
+      var topV=hasPrev?Math.max(bins[k].supply,bins[k].prevSupply):bins[k].supply;
+      if(topV>max)max=topV;
+      if(bins[k].supply>bins[peak].supply)peak=k;
+      if(hasPrev){
+        if(bins[k].diff>0.5&&(maxInIdx<0||bins[k].diff>bins[maxInIdx].diff))maxInIdx=k;
+        if(bins[k].diff<-0.5&&(maxOutIdx<0||bins[k].diff<bins[maxOutIdx].diff))maxOutIdx=k;
+      }
+    }
+    return {bins:bins,step:step,axisHi:hi,tick:tick,max:max,peak:peak,fine:fine,hasPrev:hasPrev,maxInIdx:maxInIdx,maxOutIdx:maxOutIdx};
   }
 
-  // 柱底淡出：把颜色转成低透明度同色，避免大色块压住网格
   function distFade(col){
-    // Safari / CSS Color 4 兼容：
-    // computed custom property 可能返回 rgb(52 185 120)，而不是旧式 rgb(52,185,120)。
-    // 旧实现按逗号 split 会得到 NaN，CanvasGradient.addColorStop() 随即抛错，
-    // 表现为网格已经画出，但第一根 URPD 柱开始绘制时整段中断。
     col=String(col||"").trim();
     var m=col.replace(/\s/g,"").match(/^#?([0-9a-f]{6})$/i);
     if(m){
@@ -235,7 +332,7 @@
     var W=1000,grid={},i,b,f,c,sp,k0,k1,k,ov,wd,key,best=null;
     for(i=0;i<buckets.length;i++){
       b=buckets[i];f=+b.price_floor||0;sp=+b.supply||0;
-      if(!(f>0)||!(sp>0))continue;              // 0 成本长尾不参与
+      if(!(f>0)||!(sp>0))continue;
       c=+b.price_ceil;if(!(c>f))c=f+W;
       wd=c-f;
       k0=Math.floor(f/W);k1=Math.floor((c-1e-9)/W);
@@ -248,37 +345,38 @@
     return best;
   }
 
-  function drawDist(ctx,w,h,buckets,stats){
+  function drawDist(ctx,w,h,buckets,stats,prevObj){
     var spot=stats.spot,i;
     var fine=distViewMode==="fine";
     var padL=DIST_PAD_L,padR=DIST_PAD_R,padT=fine?42:DIST_PAD_T,padB=fine?52:DIST_PAD_B;
     var pw=w-padL-padR,ph=h-padT-padB;
     if(pw<=0||ph<=0)return;
 
-    var model=distBuild(buckets,spot,pw,distViewMode);
+    var prevBuckets=(distDiffDays>0&&prevObj&&prevObj.buckets)?prevObj.buckets:null;
+    var model=distBuild(buckets,spot,pw,distViewMode,prevBuckets);
     distGeom=null;
     if(!model||!(model.max>0))return;
-    var bins=model.bins,n=bins.length,step=model.step,axisHi=model.axisHi,xTick=model.tick;
+    var bins=model.bins,n=bins.length,step=model.step,axisHi=model.axisHi,xTick=model.tick,hasPrev=model.hasPrev;
     var peakX=null,peakTop=0;
 
     var dpr=window.devicePixelRatio||1;ctx.setTransform(dpr,0,0,dpr,0,0);
     ctx.clearRect(0,0,w,h);
-    // canvas 上下文跨次绘制会保留状态，必须显式复位，否则首绘与重绘的文字对齐不一致
     ctx.textAlign="left";ctx.textBaseline="alphabetic";ctx.lineWidth=1;ctx.globalAlpha=1;ctx.setLineDash([]);
 
-    var cs=getComputedStyle(document.documentElement);
+    var cs=getComputedStyle(document.documentElement),isDark=document.documentElement.dataset.theme==="dark";
     var cTx2=cs.getPropertyValue("--text-secondary").trim()||"#a1a1a6",cTx3=cs.getPropertyValue("--text-tertiary").trim()||"#85858b";
     var cDiv=cs.getPropertyValue("--border-subtle").trim()||"#29292d";
     var cGn=cs.getPropertyValue("--market-positive-emphasis").trim()||"#7bd88f",cRd=cs.getPropertyValue("--market-negative").trim()||"#ff5000";
     var cBtc=cs.getPropertyValue("--brand-ink").trim()||"#f7931a";
+    var cKeep=isDark?"#e08a24":"#eb8b26",cAdd=isDark?"#ff4d42":"#e53935",cOut=isDark?"#4ade80":"#1f9d63";
+    var cOutFill=isDark?"rgba(74,222,128,.09)":"rgba(31,157,99,.07)";
     var FONT=cs.getPropertyValue("--sf").trim()||"system-ui";
 
     var xOf=function(p){return padL+Math.max(0,Math.min(1,p/axisHi))*pw};
-    // 线性纵轴：等宽分箱之后柱高本身就可比，不再需要平方根压缩
     var yStep=fine?distNiceStepFine(model.max*1.06,10):distNiceStep(distNiceUp(model.max),4);
     var yMax=fine?Math.ceil(model.max*1.06/yStep)*yStep:distNiceUp(model.max);
-    var PEAK_BAND=fine?30:15;               // 精细模式给箭头与双行峰值标注留空间
-    var plotTop=padT+PEAK_BAND;
+    var PEAK_BAND=fine?30:15;
+    var plotTop=padT+PEAK_BAND,yBase=padT+ph;
     var yOf=function(v){return plotTop+(ph-PEAK_BAND)*(1-Math.max(0,v)/yMax)};
 
     ctx.font="11px "+FONT;ctx.textBaseline="middle";ctx.textAlign="right";
@@ -288,38 +386,75 @@
       ctx.beginPath();ctx.moveTo(padL,gy);ctx.lineTo(padL+pw,gy);ctx.stroke();ctx.globalAlpha=1;
       ctx.fillStyle=cTx3;ctx.fillText(distSupplyLabel(gv),padL-7,gy);
     }
-    ctx.strokeStyle=cDiv;ctx.beginPath();ctx.moveTo(padL,padT+ph);ctx.lineTo(padL+pw,padT+ph);ctx.stroke();
+    ctx.strokeStyle=cDiv;ctx.beginPath();ctx.moveTo(padL,yBase);ctx.lineTo(padL+pw,yBase);ctx.stroke();
 
     var slot=pw/n,bw=Math.max(1.5,slot-Math.min(2.2,slot*0.22));
     for(i=0;i<n;i++){
-      var sv=bins[i].supply;if(!(sv>0))continue;
-      var bh=Math.max(1,padT+ph-yOf(sv));
+      var sv=bins[i].supply,pv=bins[i].prevSupply;
+      if(!(sv>0)&&!(hasPrev&&pv>0))continue;
       var bx=padL+slot*i+(slot-bw)/2;
-      var by=padT+ph-bh;
       var current=spot>0&&spot>=bins[i].lo&&spot<bins[i].hi;
-      var below=spot>0?bins[i].hi<=spot:true;
-      var col=current?cTx2:(below?cGn:cRd);
-      var g=ctx.createLinearGradient(0,by,0,padT+ph);
-      g.addColorStop(0,col);g.addColorStop(1,distFade(col));
-      ctx.fillStyle=g;ctx.globalAlpha=i===model.peak?1:.86;
-      var rr=Math.min(2.5,bw/2,bh);
-      ctx.beginPath();
-      if(ctx.roundRect)ctx.roundRect(bx,by,bw,bh,[rr,rr,0,0]);else ctx.rect(bx,by,bw,bh);
-      ctx.fill();ctx.globalAlpha=1;
-      if(current){ctx.strokeStyle=cBtc;ctx.lineWidth=1.2;ctx.stroke();ctx.lineWidth=1}
-      if(i===model.peak){peakX=bx+bw/2;peakTop=by}
+
+      if(hasPrev){
+        var baseVal=Math.min(sv,pv);
+        var bhCur=sv>0?Math.max(1,yBase-yOf(sv)):0,byCur=yBase-bhCur;
+        var bhBase=baseVal>0?Math.max(1,yBase-yOf(baseVal)):0,byBase=yBase-bhBase;
+        var baseCol=current?cTx2:cKeep;
+        if(bhBase>0){
+          var gb=ctx.createLinearGradient(0,byBase,0,yBase);
+          gb.addColorStop(0,baseCol);gb.addColorStop(1,distFade(baseCol));
+          ctx.fillStyle=gb;ctx.globalAlpha=.92;
+          var rBase=sv>pv?0:Math.min(2.5,bw/2,bhBase);
+          ctx.beginPath();
+          if(rBase>0&&ctx.roundRect)ctx.roundRect(bx,byBase,bw,bhBase,[rBase,rBase,0,0]);else ctx.rect(bx,byBase,bw,bhBase);
+          ctx.fill();ctx.globalAlpha=1;
+        }
+        if(sv>pv+0.5){
+          var ySplit=bhBase>0?byBase:yBase,capH=Math.max(1.5,ySplit-byCur),capY=ySplit-capH;
+          var rCap=Math.min(2.5,bw/2,capH);
+          ctx.fillStyle=cAdd;ctx.globalAlpha=.96;
+          ctx.beginPath();
+          if(ctx.roundRect)ctx.roundRect(bx,capY,bw,capH,[rCap,rCap,0,0]);else ctx.rect(bx,capY,bw,capH);
+          ctx.fill();ctx.globalAlpha=1;
+        }else if(pv>sv+0.5){
+          var yPrev=yOf(pv),yLow=bhCur>0?byCur:yBase,outH=yLow-yPrev;
+          if(outH>=1.5){
+            var gx=bx+0.45,gw=Math.max(1,bw-0.9);
+            ctx.fillStyle=cOutFill;ctx.fillRect(gx,yPrev,gw,outH);
+            ctx.strokeStyle=cOut;ctx.lineWidth=1.15;ctx.setLineDash([3,2.5]);
+            ctx.strokeRect(gx,yPrev,gw,outH);
+            ctx.setLineDash([]);ctx.lineWidth=1;
+          }
+        }
+        if(current&&bhCur>0){
+          ctx.strokeStyle=cBtc;ctx.lineWidth=1.25;
+          ctx.strokeRect(bx+0.4,byCur+0.4,Math.max(1,bw-0.8),Math.max(1,bhCur-0.8));
+          ctx.lineWidth=1;
+        }
+        if(i===model.peak){peakX=bx+bw/2;peakTop=Math.min(byCur,hasPrev?yOf(pv):byCur)}
+      }else{
+        var bh=Math.max(1,yBase-yOf(sv));
+        var by=yBase-bh;
+        var below=spot>0?bins[i].hi<=spot:true;
+        var col=current?cTx2:(below?cGn:cRd);
+        var g=ctx.createLinearGradient(0,by,0,yBase);
+        g.addColorStop(0,col);g.addColorStop(1,distFade(col));
+        ctx.fillStyle=g;ctx.globalAlpha=i===model.peak?1:.86;
+        var rr=Math.min(2.5,bw/2,bh);
+        ctx.beginPath();
+        if(ctx.roundRect)ctx.roundRect(bx,by,bw,bh,[rr,rr,0,0]);else ctx.rect(bx,by,bw,bh);
+        ctx.fill();ctx.globalAlpha=1;
+        if(current){ctx.strokeStyle=cBtc;ctx.lineWidth=1.2;ctx.stroke();ctx.lineWidth=1}
+        if(i===model.peak){peakX=bx+bw/2;peakTop=by}
+      }
     }
 
-    if(peakX!=null&&bins[model.peak].supply>0){
+    if(peakX!=null&&bins[model.peak].supply>0&&!fine){
       var pk=bins[model.peak],pkCount=Math.round(pk.supply).toLocaleString("en-US")+" BTC";
-      var pkBelow=spot>0?pk.hi<=spot:true,pkCol=pkBelow?cGn:cRd;
-      if(fine){
-        // V26.6.1：最大筹码峰已在上方卡片显示；精细模式不再在图上标注（原标注会超出右边缘）
-      }else{
-        var pkTxt=pkCount;ctx.font="bold 11px "+FONT;ctx.textAlign="center";ctx.textBaseline="alphabetic";
-        var pkHalf=ctx.measureText(pkTxt).width/2;ctx.fillStyle=pkCol;
-        ctx.fillText(pkTxt,Math.max(padL+pkHalf,Math.min(padL+pw-pkHalf,peakX)),Math.max(padT+9,peakTop-5));
-      }
+      var pkBelow=spot>0?pk.hi<=spot:true,pkCol=hasPrev?cKeep:(pkBelow?cGn:cRd);
+      ctx.font="bold 11px "+FONT;ctx.textAlign="center";ctx.textBaseline="alphabetic";
+      var pkHalf=ctx.measureText(pkCount).width/2;ctx.fillStyle=pkCol;
+      ctx.fillText(pkCount,Math.max(padL+pkHalf,Math.min(padL+pw-pkHalf,peakX)),Math.max(padT+9,peakTop-5));
     }
 
     ctx.font="10px "+FONT;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillStyle=cTx3;
@@ -327,20 +462,18 @@
     for(var xv=xStep;xv<=axisHi+1e-6;xv+=xStep){
       var xx=xOf(xv);
       ctx.strokeStyle=cDiv;ctx.globalAlpha=.4;
-      ctx.beginPath();ctx.moveTo(xx,plotTop);ctx.lineTo(xx,padT+ph);ctx.stroke();ctx.globalAlpha=1;
+      ctx.beginPath();ctx.moveTo(xx,plotTop);ctx.lineTo(xx,yBase);ctx.stroke();ctx.globalAlpha=1;
       var lbl=distPriceLabel(xv),half=ctx.measureText(lbl).width/2;
       ctx.fillStyle=cTx3;
       if(fine){
-        ctx.save();ctx.translate(xx,padT+ph+9);ctx.rotate(-Math.PI/4);ctx.textAlign="right";ctx.textBaseline="middle";ctx.fillText(lbl,0,0);ctx.restore();
-      }else ctx.fillText(lbl,Math.max(half+1,Math.min(w-half-1,xx)),padT+ph+12);
+        ctx.save();ctx.translate(xx,yBase+9);ctx.rotate(-Math.PI/4);ctx.textAlign="right";ctx.textBaseline="middle";ctx.fillText(lbl,0,0);ctx.restore();
+      }else ctx.fillText(lbl,Math.max(half+1,Math.min(w-half-1,xx)),yBase+12);
     }
-    ctx.font="11px "+FONT;ctx.textAlign="center";ctx.textBaseline="alphabetic";ctx.fillStyle=cTx3;
-    // V26.6.1：坐标说明不再画在图上（滑动时会被裁掉）
 
     if(spot>0&&spot<=axisHi){
       var xp=xOf(spot);
       ctx.strokeStyle=cBtc;ctx.lineWidth=1.4;ctx.setLineDash([5,4]);
-      ctx.beginPath();ctx.moveTo(xp,padT-5);ctx.lineTo(xp,padT+ph);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(xp,padT-5);ctx.lineTo(xp,yBase);ctx.stroke();
       ctx.setLineDash([]);ctx.lineWidth=1;
       var pill="\u73b0\u4ef7 $"+Math.round(spot).toLocaleString("en-US");
       ctx.font="bold 11px "+FONT;
@@ -355,8 +488,7 @@
     }
     ctx.textAlign="left";ctx.textBaseline="alphabetic";
 
-    // 绘制几何量交给 tooltip 复用，保证命中区与画面永远一致
-    distGeom={padL:padL,padT:padT,pw:pw,ph:ph,plotTop:plotTop,peakBand:PEAK_BAND,yStep:yStep,slot:slot,n:n,bins:bins,step:step,axisHi:axisHi,yMax:yMax,peak:model.peak,mode:distViewMode,spot:spot};
+    distGeom={padL:padL,padT:padT,pw:pw,ph:ph,plotTop:plotTop,peakBand:PEAK_BAND,yStep:yStep,slot:slot,n:n,bins:bins,step:step,axisHi:axisHi,yMax:yMax,peak:model.peak,mode:distViewMode,spot:spot,hasPrev:hasPrev,prevDay:prevObj?prevObj.day:null,diffDays:distDiffDays,maxInIdx:model.maxInIdx,maxOutIdx:model.maxOutIdx};
   }
 
   function drawDistYAxis(){
@@ -374,10 +506,11 @@
     }
   }
 
-  function prepareDistStage(buckets,spot){
+  function prepareDistStage(buckets,spot,prevObj){
     var shell=$("distChartShell"),stage=$("distChartStage");if(!shell||!stage)return null;
     var viewport=Math.max(280,shell.clientWidth||shell.getBoundingClientRect().width||280);
-    var probe=distBuild(buckets,spot,Math.max(1,viewport-DIST_PAD_L-DIST_PAD_R),distViewMode);
+    var prevB=(distDiffDays>0&&prevObj&&prevObj.buckets)?prevObj.buckets:null;
+    var probe=distBuild(buckets,spot,Math.max(1,viewport-DIST_PAD_L-DIST_PAD_R),distViewMode,prevB);
     var width=viewport;
     if(distViewMode==="fine"&&probe)width=Math.max(viewport,Math.ceil(probe.bins.length*7.2+DIST_PAD_L+DIST_PAD_R));
     stage.style.width=Math.round(width)+"px";
@@ -400,6 +533,15 @@
     var fine=$("distFineBtn"),overview=$("distOverviewBtn"),isFine=distViewMode==="fine";
     if(fine){fine.classList.toggle("active",isFine);fine.setAttribute("aria-pressed",isFine?"true":"false")}
     if(overview){overview.classList.toggle("active",!isFine);overview.setAttribute("aria-pressed",isFine?"false":"true")}
+    var diffBox=$("distDiffControls");
+    if(diffBox){
+      var btns=diffBox.querySelectorAll("[data-dist-diff]");
+      for(var i=0;i<btns.length;i++){
+        var on=(+btns[i].getAttribute("data-dist-diff")===distDiffDays);
+        btns[i].classList.toggle("active",on);
+        btns[i].setAttribute("aria-pressed",on?"true":"false");
+      }
+    }
   }
 
   function setDistView(mode){
@@ -407,16 +549,64 @@
     distViewMode=mode;writeViewMode(mode);distNeedsFocus=true;hideTip();syncViewButtons();render();
   }
 
+  function setDistDiff(days){
+    days=(days===0||days===1||days===7||days===30)?days:7;
+    if(days===distDiffDays)return;
+    distDiffDays=days;writeDiffDays(days);hideTip();syncViewButtons();
+    if(days>0&&distDateInfo&&!activePrevObj())ensurePrevUrpd(false);
+    render();
+  }
+
+  function syncLegendMode(showDiff){
+    var leg=$("distLegend");if(!leg)return;
+    var baseEls=leg.querySelectorAll("[data-legend-base]"),diffEls=leg.querySelectorAll("[data-legend-diff]");
+    for(var i=0;i<baseEls.length;i++)baseEls[i].hidden=!!showDiff;
+    for(var j=0;j<diffEls.length;j++)diffEls[j].hidden=!showDiff;
+  }
+
+  function updateDiffSummary(){
+    var sumEl=$("distDiffSummary");if(!sumEl)return;
+    if(!(distDiffDays>0)){sumEl.hidden=true;return}
+    sumEl.hidden=false;
+    var E=window.BTC_LANG==="en",k=String(distDiffDays);
+    if(distGeom&&distGeom.hasPrev&&distGeom.bins){
+      var pDay=(distGeom.prevDay||"").slice(5),parts=[];
+      if(distGeom.maxInIdx>=0){
+        var bi=distGeom.bins[distGeom.maxInIdx];
+        parts.push((E?"Max inflow ":"最大流入 ")+distPriceLabel(bi.lo)+"–"+distPriceLabel(bi.hi)+' <span class="inflow">+'+Math.round(bi.diff).toLocaleString("en-US")+" BTC</span>");
+      }
+      if(distGeom.maxOutIdx>=0){
+        var bo=distGeom.bins[distGeom.maxOutIdx];
+        parts.push((E?"Max outflow ":"最大移出 ")+distPriceLabel(bo.lo)+"–"+distPriceLabel(bo.hi)+' <span class="outflow">−'+Math.round(Math.abs(bo.diff)).toLocaleString("en-US")+" BTC</span>");
+      }
+      if(parts.length){
+        sumEl.innerHTML=(E?("vs "+pDay+" ("+distDiffDays+"D) · "):("对比 "+pDay+"（近"+distDiffDays+"日）· "))+parts.join(" · ");
+      }else{
+        sumEl.textContent=E?("vs "+pDay+" ("+distDiffDays+"D) · No significant bucket shift"):("对比 "+pDay+"（近"+distDiffDays+"日）· 各档无明显变动");
+      }
+    }else if(distPrevInflight[k]){
+      sumEl.textContent=E?("Syncing "+distDiffDays+"D-ago URPD snapshot…"):("正在同步 "+distDiffDays+" 日前筹码快照…");
+    }else if(distPrevFailed[k]){
+      sumEl.textContent=E?(distDiffDays+"D comparison snapshot unavailable"):(distDiffDays+" 日前对比快照暂不可用");
+    }else{
+      sumEl.textContent=E?"Waiting for comparison snapshot…":"等待对比快照…";
+    }
+  }
+
   function render(){
     var cvs=$("distChart");if(!cvs)return;
     var data=distCacheData;
     var spot=(typeof S!=='undefined'&&S.price>0)?S.price:((typeof window.__distSpot!=='undefined'&&window.__distSpot>0)?window.__distSpot:null);
     if(!data)return;
+    var prevObj=activePrevObj();
+    if(distDiffDays>0&&distDateInfo&&!prevObj&&!distPrevInflight[String(distDiffDays)]&&!distPrevFailed[String(distDiffDays)]){
+      ensurePrevUrpd(false);
+    }
+    syncLegendMode(distDiffDays>0&&!!prevObj);
     var stats=computeStats(data,spot);
     stats_total=stats.total||0;
     window.__costStructureUrpd={day:distDateInfo,spot:spot,realized:stats.realized,profitPct:stats.belowPct,lossPct:stats.abovePct,source:distSource==="live"?"Bitview 实时 URPD":distSource==="cache"?"本机 URPD 缓存":"URPD 快照"};
     if(typeof moduleIsReady==="function"&&moduleIsReady("coststate")&&typeof renderCostStructureState==="function")renderCostStructureState();
-    // 指标卡
     if(spot>0){
       dSet("distSpot",DMoney(spot));
       dSet("distProfit",stats.belowPct.toFixed(1)+"%");
@@ -428,30 +618,27 @@
     }
     dSet("distRealized",DMoney(stats.realized));
     dSet("distPnl",DFmtUsdB(stats.pnl));
-    // V26.9.2：两行数据——平均浮盈（相对持币成本）与持币总成本，和右边「最大筹码峰」的两行对齐
     (function(){var en=window.BTC_LANG==="en",cap=stats.realized*stats.total,r=cap>0&&isFinite(stats.pnl)?stats.pnl/cap*100:NaN;
       dSet("distPnlLabel",isFinite(r)?((en?(r>=0?"Avg. gain ":"Avg. loss "):(r>=0?"平均浮盈 ":"平均浮亏 "))+(r>=0?"+":"−")+Math.abs(r).toFixed(1)+"%\n"+(en?"Total cost basis ":"持币总成本 ")+(cap>=1e12?"$"+(cap/1e12).toFixed(2)+"T":"$"+(cap/1e9).toFixed(0)+"B")):(en?"Waiting for data":"等待数据"))})();
     var ageTxt="";
     if(distDateInfo){var age=Math.max(0,Math.floor((Date.now()-Date.parse(distDateInfo+"T00:00:00Z"))/86400000));if(isFinite(age))ageTxt=" · 距今 "+age+" 天"}
     if(distDateInfo)dSet("distSpotDate","数据日 "+distDateInfo);
     dSet("distSourceText","数据源 · Bitview URPD · "+distDateInfo+ageTxt+" · $1K 原始分桶");
-    // 绘制
-    prepareDistStage(data,spot);
+    prepareDistStage(data,spot,prevObj);
     var rect=cvs.getBoundingClientRect();if(rect.width===0)return;
     var w=rect.width,h=rect.height,dpr=dprId();
     var cw=Math.round(w*dpr),ch=Math.round(h*dpr);
     if(cvs.width!==cw||cvs.height!==ch){cvs.width=cw;cvs.height=ch}
     var ctx=cvs.getContext("2d");distPlotCtx=ctx;
-    drawDist(ctx,w,h,data,stats);
+    drawDist(ctx,w,h,data,stats,prevObj);
     drawDistYAxis();
     if(distNeedsFocus)requestAnimationFrame(focusDistChart);
-    // 筹码峰文案取自实际绘制的分箱，保证与图上最高的那根柱严格一致
     if(distGeom&&distGeom.bins&&distGeom.bins[distGeom.peak]){
       var pb=distGeom.bins[distGeom.peak];
       var pkShare=stats.total>0?(pb.supply/stats.total*100):0;
       dSet("distPeak","图上最高柱 "+distPriceLabel(pb.lo)+"–"+distPriceLabel(pb.hi)+" · "+Math.round(pb.supply).toLocaleString("en-US")+" BTC · 占供应 "+pkShare.toFixed(2)+"%");
     }else dSet("distPeak","图上最高柱 --");
-    // $1K 区间口径的最大筹码峰
+    updateDiffSummary();
     var p1k=distPeak1k(data);
     if(p1k){
       dSet("distPeak1k",Math.round(p1k.supply).toLocaleString("en-US"));
@@ -465,32 +652,62 @@
     var ts=Date.parse(day+"T00:00:00Z");return isFinite(ts)?Math.max(0,Math.floor((Date.now()-ts)/86400000)):999;
   }
 
+  function hydrateFromV28(){
+    if(!window.__sgV28||typeof window.__sgV28.charts!=="function")return Promise.resolve(false);
+    return window.__sgV28.charts().then(function(ch){
+      var u=ch&&ch.urpd,cur=unpackCompactUrpd(u);
+      if(!cur)return false;
+      distDateInfo=cur.day;distCacheData=cur.buckets;distSource="v28";
+      cacheWrite(cur.day,cur.buckets);
+      if(u.prev&&typeof u.prev==="object"){
+        ["1","7","30"].forEach(function(k){
+          var p=unpackCompactUrpd(u.prev[k]);
+          if(p)distPrevMem[k]={baseDay:cur.day,day:p.day,buckets:p.buckets,ts:Date.now()};
+        });
+        writePrevCache();
+      }
+      var age=distAge(cur.day);
+      dStatus(age>3?"快照较旧":"已同步",age>3?"bad":"good");
+      render();
+      return true;
+    }).catch(function(){return false});
+  }
+
   function refresh(force){
     var cached=cacheRead();
-    // 非强制刷新时，只有“缓存写入时间仍在 TTL 内”才跳过联网；
-    // 不再拿数据日本身当刷新 TTL。
     if(!force&&cached&&cacheFresh(cached)){
       if(!distCacheData){distDateInfo=cached.day;distCacheData=cached.data;distSource="cache"}
+      if(distDiffDays>0)ensurePrevUrpd(false);
       render();return;
     }
     dAuto();
     var btn=$("distRefreshBtn");if(btn)btn.disabled=true;
     dStatus("同步中","warn");
     function done(){if(btn)btn.disabled=false}
-    return fetchUrpd().then(function(res){
-      distDateInfo=res.day;distCacheData=res.buckets;distSource="live";
-      cacheWrite(res.day,res.buckets);
-      var age=distAge(res.day);
-      dStatus(age>3?"快照较旧":"已同步",age>3?"bad":"good");
-      render();done();
-    }).catch(function(err){
-      // 第一优先：保留当前内存中的有效数据，绝不因一次网络失败清空 UI。
+    var pre=force&&window.__sgNet&&typeof window.__sgNet.bust==="function"?window.__sgNet.bust("/api/urpd/all"):Promise.resolve();
+    return pre.then(function(){
+      if(!force)return hydrateFromV28();
+      return false;
+    }).then(function(usedV28){
+      if(usedV28){
+        if(distDiffDays>0&&!activePrevObj())ensurePrevUrpd(false);
+        done();return;
+      }
+      return fetchUrpd().then(function(res){
+        distDateInfo=res.day;distCacheData=res.buckets;distSource="live";
+        cacheWrite(res.day,res.buckets);
+        if(force)distPrevFailed={};
+        if(distDiffDays>0)ensurePrevUrpd(!!force);
+        var age=distAge(res.day);
+        dStatus(age>3?"快照较旧":"已同步",age>3?"bad":"good");
+        render();done();
+      });
+    }).catch(function(){
       if(distCacheData&&distCacheData.length){
         var age0=distAge(distDateInfo);
         dStatus(age0>3?"当前数据较旧":"当前数据保留",age0>3?"bad":"warn");
         render();done();return;
       }
-      // 第二优先：使用任意年龄的本机缓存。
       var c2=cacheRead();
       if(c2){
         distDateInfo=c2.day;distCacheData=c2.data;distSource="cache";
@@ -498,7 +715,6 @@
         dStatus(age2>3?"缓存较旧":"缓存可用",age2>3?"bad":"warn");
         render();done();return;
       }
-      // 真正从未成功获取过数据时，才显示不可用。
       dStatus("数据不可用","bad");
       done();
     });
@@ -516,38 +732,57 @@
       render();
     }else dSet("distSourceText","数据源 · Bitview URPD");
     refresh(false);
-    // 主题切换时重绘
     try{window.addEventListener("themechange",function(){render()})}catch(e){}
   }
 
-  // 事件与观察器（页面加载后绑定）
   function bindEvents(){
     var btn=$("distRefreshBtn");
     if(btn)btn.addEventListener("click",function(){refresh(true)});
     var fine=$("distFineBtn"),overview=$("distOverviewBtn");
     if(fine)fine.addEventListener("click",function(){setDistView("fine")});
     if(overview)overview.addEventListener("click",function(){setDistView("overview")});
+    var diffBox=$("distDiffControls");
+    if(diffBox){
+      diffBox.addEventListener("click",function(ev){
+        var t=ev.target&&ev.target.closest?ev.target.closest("[data-dist-diff]"):null;
+        if(t)setDistDiff(+t.getAttribute("data-dist-diff"));
+      });
+    }
     var shell=$("distChartShell");var cvs=$("distChart");
     if(shell&&window.ResizeObserver){distResizeObs=new ResizeObserver(function(){requestAnimationFrame(render)});distResizeObs.observe(shell)}
     if(cvs){cvs.addEventListener("pointerdown",onTip,{passive:true});cvs.addEventListener("pointermove",onTip,{passive:true});cvs.addEventListener("pointerleave",hideTip,{passive:true})}
   }
   function onTip(ev){
-    var cvs=$("distChart"),tip=$("distTooltip");
+    var cvs=$("distChart"),tip=$("distTooltip"),shell=$("distChartShell");
     if(!cvs||!tip||!distGeom)return;
     var g=distGeom,rect=cvs.getBoundingClientRect(),mx=ev.clientX-rect.left;
     var idx=Math.floor((mx-g.padL)/g.slot);
     if(idx<0||idx>=g.n){hideTip();return}
     var b=g.bins[idx];
-    if(!b||!(b.supply>0)){hideTip();return}
+    if(!b||(!(b.supply>0)&&!(g.hasPrev&&b.prevSupply>0))){hideTip();return}
+    var E=window.BTC_LANG==="en";
     var share=stats_total>0?(b.supply/stats_total*100):0;
-    tip.innerHTML="<b>"+distPriceLabel(b.lo)+" – "+distPriceLabel(b.hi)+"</b>"+
-      "<div><span>\u6301\u6709\u91cf</span><strong>"+Math.round(b.supply).toLocaleString("en-US")+" BTC</strong></div>"+
-      "<div><span>\u5360\u603b\u4f9b\u5e94</span><strong>"+share.toFixed(2)+"%</strong></div>";
-    var tw=tip.offsetWidth,left=g.padL+g.slot*(idx+0.5)+12;
-    if(left+tw>rect.width)left=g.padL+g.slot*(idx+0.5)-12-tw;
-    tip.style.left=Math.max(0,Math.min(rect.width-tw,left))+"px";
+    if(g.hasPrev){
+      var pDay=(g.prevDay||"").slice(5),df=b.diff,absDf=Math.round(Math.abs(df)).toLocaleString("en-US");
+      var dfCls=df>0.5?' class="inflow"':(df<-0.5?' class="outflow"':"");
+      var dfTxt=df>0.5?("+"+absDf+" BTC"):(df<-0.5?("−"+absDf+" BTC"):"0 BTC");
+      var prevLbl=E?(g.diffDays+"D ago"+(pDay?" ("+pDay+")":"")):(g.diffDays+"日前"+(pDay?" ("+pDay+")":""));
+      tip.innerHTML="<b>"+distPriceLabel(b.lo)+" – "+distPriceLabel(b.hi)+"</b>"+
+        "<div><span>"+prevLbl+"</span><strong>"+Math.round(b.prevSupply).toLocaleString("en-US")+" BTC</strong></div>"+
+        "<div><span>"+(E?"Net change":"期间变动")+"</span><strong"+dfCls+">"+dfTxt+"</strong></div>"+
+        "<div><span>"+(E?"Current":"当前持仓")+"</span><strong>"+Math.round(b.supply).toLocaleString("en-US")+" BTC ("+share.toFixed(2)+"%)</strong></div>";
+    }else{
+      tip.innerHTML="<b>"+distPriceLabel(b.lo)+" – "+distPriceLabel(b.hi)+"</b>"+
+        "<div><span>"+(E?"Supply":"持有量")+"</span><strong>"+Math.round(b.supply).toLocaleString("en-US")+" BTC</strong></div>"+
+        "<div><span>"+(E?"Share of supply":"占总供应")+"</span><strong>"+share.toFixed(2)+"%</strong></div>";
+    }
+    var tw=tip.offsetWidth||190,th=tip.offsetHeight||90;
+    var vLeft=shell?shell.scrollLeft+46:0,vRight=shell?shell.scrollLeft+shell.clientWidth-6:rect.width-6;
+    var left=g.padL+g.slot*(idx+0.5)+12;
+    if(left+tw>vRight)left=g.padL+g.slot*(idx+0.5)-12-tw;
+    tip.style.left=Math.max(vLeft,Math.min(Math.max(vLeft,vRight-tw),left))+"px";
     var my=ev.clientY-rect.top;
-    tip.style.top=(my>rect.height-80?my-64:my+12)+"px";
+    tip.style.top=(my>rect.height-th-18?Math.max(8,my-th-12):my+12)+"px";
     tip.classList.add("on");
   }
   function hideTip(){var tip=$("distTooltip");if(tip)tip.classList.remove("on")}
@@ -4516,7 +4751,7 @@
         var ak=localStorage.getItem("btc_bg_api_key_v1");
         if(ak){data.btc_bg_api_key_v1=ak;total++}
       }
-      return {app:"SatsGarden",v:"28.1.0",exportedAt:new Date().toISOString(),userCount:userCount,count:total,keys:data};
+      return {app:"SatsGarden",v:"28.2.1",exportedAt:new Date().toISOString(),userCount:userCount,count:total,keys:data};
     }
     function setStatus(msg,isErr){
       var el=$("rsBkStatus");

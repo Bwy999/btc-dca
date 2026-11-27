@@ -79,7 +79,7 @@ def main():
     for pg in page_files:
         ptxt = read(pg)
         pg_assets = set(re.findall(r'(?:src|href)="(?:\./)?((?:assets/)[^"?#]+)"', ptxt))
-        pg_assets |= set(re.findall(r'(?:I18N_SRC|LWC_SRC|EXT_SRC)="(?:\./)?(assets/[^"]+)"', ptxt))
+        pg_assets |= set(re.findall(r'(?:I18N_SRC|LWC_SRC|EXT_SRC|VHE_WORKER_SRC|VHE_ENGINE_SRC)="(?:\./)?(assets/[^"]+)"', ptxt))
         if "__VHE_" in ptxt or "__SEED_CYCLE_" in ptxt:
             fails.append(f"{pg} 存在未替换的构建占位符")
         for a_ref in sorted(pg_assets):

@@ -1,6 +1,6 @@
 "use strict";
 
-const SW_BUILD = "28.2.0-20261126";
+const SW_BUILD = "28.2.1-20261127";
 const CACHE_NAME = "btc-intelligence-v" + SW_BUILD.replace(/\./g, "-");
 const CACHE_PREFIX = "btc-site:" + self.registration.scope + ":";
 const SCOPED_CACHE = CACHE_PREFIX + CACHE_NAME;
@@ -12,7 +12,7 @@ const ASSETS = /*ASSETS*/[
   "./assets/insight.67c8b7276d.js",
 ]/*END*/;
 // 按需下载的资源（英文对照表与 VHE 实验室）：不预缓存，但版本切换时不删除
-const OPTIONAL_ASSETS = /*OPTIONAL*/["./assets/lightweight-charts.682f74d8c4.js", "./assets/i18n-en.80ddd33c6c.js", "./assets/ext-bundle.0912c693b4.js", "./assets/vhe.b73524d203.css", "./assets/vhe-engine.f3956e0e74.js", "./assets/vhe-ui.e5c373bc8e.js"]/*OEND*/;
+const OPTIONAL_ASSETS = /*OPTIONAL*/["./assets/lightweight-charts.682f74d8c4.js", "./assets/i18n-en.4e01ed6adb.js", "./assets/ext-bundle.3dc64d8b73.js", "./assets/vhe.df65b8c01f.css", "./assets/vhe-engine.f3956e0e74.js", "./assets/vhe-ui.28164c1f7a.js", "./assets/vhe-worker.866c41fc23.js"]/*OEND*/;
 const ASSET_CACHE = CACHE_PREFIX + "assets";
 const CORE = [
   "./",
