@@ -20,7 +20,7 @@ import urllib.request
 from datetime import datetime, timezone
 
 BULK = "https://bitview.space/api/series/bulk"
-SITE = os.environ.get("SITE_URL", "https://9992100.xyz/")
+SITE = os.environ.get("SITE_URL") or "https://9992100.xyz/btc/"
 AHR_A, AHR_B = 5.5856, -16.1567          # 新拟合（与网站一致）
 GENESIS = datetime(2009, 1, 3, tzinfo=timezone.utc)
 W, MIN = 48, 24                           # 过去 4 年分位，至少 24 个有效月
@@ -39,13 +39,13 @@ def get_json(url, tries=3):
     raise last
 
 
-def pick(raw, name, idx):
+def pick_col(raw, name, idx):
     if not isinstance(raw, list):
         return None
     for x in raw:
         if isinstance(x, dict) and name in (x.get("series"), x.get("name"), x.get("id")):
-            return x.get("data")
-    return raw[idx].get("data") if len(raw) > idx and isinstance(raw[idx], dict) else None
+            return x
+    return raw[idx] if len(raw) > idx and isinstance(raw[idx], dict) else None
 
 
 def num(v):
@@ -65,10 +65,20 @@ def bulk(series, index, start):
         raw = pm.fetch_group(list(series))
     else:
         raw = get_json(f"{BULK}?index={index}&series={','.join(series)}&start={start}")
-    cols = [pick(raw, n, i) or [] for i, n in enumerate(series)]
+    col_objs = [pick_col(raw, n, i) or {"start": 0, "data": []} for i, n in enumerate(series)]
+    base_start = int(col_objs[0].get("start") or 0)
+    dates = col_objs[0].get("data") or []
     out = {}
-    for i, d in enumerate(cols[0]):
-        out[str(d)] = {n: (num(cols[k][i]) if i < len(cols[k]) else None) for k, n in enumerate(series) if k}
+    for i, d in enumerate(dates):
+        row = {}
+        for k, n in enumerate(series):
+            if k == 0:
+                continue
+            c = col_objs[k]
+            arr = c.get("data") or []
+            idx = base_start + i - int(c.get("start") or 0)
+            row[n] = num(arr[idx]) if 0 <= idx < len(arr) else None
+        out[str(d)] = row
     return out
 
 

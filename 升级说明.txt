@@ -1,3 +1,10 @@
+V28.1.0 (2026-11-26)
+- 全面打通同源预计算加速层（data/v28/core.json 与 data/v28/charts.json）：首页今日结论、同步状态、持币成本分位带、各币龄成本与 25 组 URPD 筹码分布、长期持有者分组成本 / 每月变化 / 长短期比率 / 亏损占比、持币地址分布，以及 AHR999 专页与个人定投账本均优先秒读同源文件，过期或手动点按「更新」时自动回退直连 Bitview
+- 清理已下线接口并修复 BRK 信号偏移：Bedrock 底价与概览序列对齐最新有效列（修复 bitviewOverviewNormalize 数组位序错位）、底价中位成本线合并为单次批量请求、持币地址分布切换至 balance_* 新序列；BGeometrics 指标增加 API Key 门控与 60 分钟冷却，彻底消除冷启动冗余 404/429 请求
+- 升级个人定投账本（dca.html）至 V28.1.0 并纳入正式包与离线缓存：统一全站明暗主题（btc_theme_v1）与中/EN 双语切换（btc_lang_v1）、多源现货交叉报价与同源日线加速、与主站「我的」页备份文件双向无损互通
+- 修复线上 /btc/ 子路径分享封面图（og:image / twitter:image / canonical）与 README 直达链接 404 问题；在网络缓存层与 Service Worker 新增 Cloudflare SPA HTML 兜底拦截与 10 分钟负缓存，避免缺失 JSON 时误吞 206 KB 网页
+- 升级一键部署（tools/deploy_zip.py）与 GitHub Actions 工作流：每次上线自动清理更早版本的历史哈希资源（保留当前版与紧邻上一版，消除仓库 46 MB 膨胀）；对齐全部 11 个工作流扩展名（补齐 daily-state.yaml、etf-flows.yaml、v28-data.yaml）与正式域名巡检地址
+
 V28.0.3 (2026-11-25)
 - 修复「长期持有者分组成本」与「持币成本分位带」更新按钮串线问题：各自绑定专属更新按钮，并为全历史（5年/全部）失败场景补充回退提示
 - 修复 Bitview 批量接口多列 start 偏移对齐隐患：在分组成本、成本分位带、大户持币总量与 AHR999 专页统一按 col.start 对齐索引，防止晚起点序列错位

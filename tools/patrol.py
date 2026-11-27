@@ -14,7 +14,7 @@ import sys
 import time
 import urllib.request
 
-SITE = sys.argv[1] if len(sys.argv) > 1 else os.environ.get("SITE_URL", "https://bwy999.github.io/btc-dca/")
+SITE = (sys.argv[1] if len(sys.argv) > 1 and sys.argv[1].strip() else "") or os.environ.get("SITE_URL") or "https://9992100.xyz/btc/"
 SHOTS = sys.argv[2] if len(sys.argv) > 2 else "patrol-shots"
 TABS = [("now", "行情"), ("value", "分析"), ("chain", "链上"), ("dca", "定投"), ("mine", "我的")]
 IGNORE_ERR = ("runtime.sendMessage", "Extension context", "ResizeObserver loop")

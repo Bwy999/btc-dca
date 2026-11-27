@@ -1,6 +1,6 @@
 "use strict";
 
-const SW_BUILD = "28.0.3-20261125";
+const SW_BUILD = "28.1.0-20261126";
 const CACHE_NAME = "btc-intelligence-v" + SW_BUILD.replace(/\./g, "-");
 const CACHE_PREFIX = "btc-site:" + self.registration.scope + ":";
 const SCOPED_CACHE = CACHE_PREFIX + CACHE_NAME;
@@ -8,17 +8,18 @@ const SCOPED_CACHE = CACHE_PREFIX + CACHE_NAME;
 const ASSETS = /*ASSETS*/[
   "./assets/app.40f1343004.css",
   "./assets/seed-cycle.5a6f45f52a.js",
-  "./assets/app.8ac3594c22.js",
+  "./assets/app.2d508ce5f3.js",
   "./assets/insight.67c8b7276d.js",
 ]/*END*/;
 // 按需下载的资源（英文对照表）：不预缓存，但版本切换时不删除
-const OPTIONAL_ASSETS = /*OPTIONAL*/["./assets/lightweight-charts.682f74d8c4.js", "./assets/i18n-en.dede1b668f.js", "./assets/ext-bundle.d4631c734b.js"]/*OEND*/;
+const OPTIONAL_ASSETS = /*OPTIONAL*/["./assets/lightweight-charts.682f74d8c4.js", "./assets/i18n-en.dede1b668f.js", "./assets/ext-bundle.0826cacb3d.js"]/*OEND*/;
 const ASSET_CACHE = CACHE_PREFIX + "assets";
 const CORE = [
   "./",
   "./index.html",
   "./ahr999.html",
   "./old-coins.html",
+  "./dca.html",
   "./apple-touch-icon.png",
   "./btc-logo.png",
   "./manifest.webmanifest",
@@ -127,7 +128,7 @@ self.addEventListener("fetch", (event) => {
   }
 
   // 预先计算的数据（data/*.json）：优先取网络上的最新版本；只有合法 JSON（v === 1）才写入缓存，
-  // HTTP 错误、返回网页或损坏的 JSON 时继续使用最近一份有效缓存（V26.4.5）
+  // 若服务器对缺失文件返回 SPA 网页（text/html），无缓存时直接转为 404 JSON，避免页面重复解析整份网页。
   if (url.pathname.includes("/data/")) {
     event.respondWith((async () => {
       const key = new Request(url.origin + url.pathname);
@@ -136,6 +137,11 @@ self.addEventListener("fetch", (event) => {
       try {
         const res = await fetch(new Request(request, {cache:"no-store"}));
         if (res.ok) {
+          const ct = (res.headers.get("content-type") || "").toLowerCase();
+          if (ct.includes("text/html")) {
+            const hit = await cached();
+            return hit || new Response("{}", {status: 404, headers: {"content-type": "application/json"}});
+          }
           let valid = false;
           try { const j = JSON.parse(await res.clone().text()); valid = !!j && typeof j === "object" && j.v === 1; } catch (_) {}
           if (valid) { if (c) try { await c.put(key, res.clone()); } catch (_) {} return res; }
@@ -168,9 +174,11 @@ self.addEventListener("fetch", (event) => {
         ? "./ahr999.html"
         : p.endsWith("/old-coins.html")
           ? "./old-coins.html"
-          : (p.endsWith("/") || p.endsWith("/index.html"))
-            ? "./index.html"
-            : null;
+          : p.endsWith("/dca.html")
+            ? "./dca.html"
+            : (p.endsWith("/") || p.endsWith("/index.html"))
+              ? "./index.html"
+              : null;
     event.respondWith(networkFirst(request, fallback));
     return;
   }

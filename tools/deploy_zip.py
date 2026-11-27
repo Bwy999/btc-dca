@@ -73,10 +73,42 @@ def build_id(root):
         return "?"
 
 
+def referenced_assets(base):
+    import re
+    keep = set()
+    for fn in ("index.html", "sw.js", "ahr999.html", "old-coins.html", "dca.html"):
+        p = os.path.join(base, fn)
+        if os.path.isfile(p):
+            try:
+                t = open(p, encoding="utf-8", errors="ignore").read()
+                keep.update(re.findall(r"assets/([A-Za-z0-9._-]+\.(?:js|css))", t))
+            except Exception:
+                pass
+    return keep
+
+
+def prune_stale_assets(keep_assets):
+    import re
+    assets_dir = os.path.join(REPO, "assets")
+    if not os.path.isdir(assets_dir) or not keep_assets:
+        return 0
+    pruned = 0
+    for fn in list(os.listdir(assets_dir)):
+        fp = os.path.join(assets_dir, fn)
+        if os.path.isfile(fp) and re.search(r"\.[0-9a-f]{8,12}\.(?:js|css)$", fn) and fn not in keep_assets:
+            os.remove(fp)
+            pruned += 1
+    if pruned:
+        log(f"🧹 已自动清理 {pruned} 个历史旧版静态资源（保留在用资源 {len(keep_assets)} 个）")
+    return pruned
+
+
 def main():
     zips = [z for z in glob.glob("**/*.zip", recursive=True) if not z.startswith(("data/", ".git/"))]
     if not zips:
-        log("没有找到压缩包，什么也没做。")
+        pruned = prune_stale_assets(referenced_assets(REPO))
+        if not pruned:
+            log("没有找到压缩包，且没有需要清理的历史静态资源。")
         return 0
     z = max(zips, key=lambda p: subprocess.run(["git", "log", "-1", "--format=%ct", "--", p], capture_output=True, text=True).stdout.strip() or "0")
     log(f"## 一键上线：`{z}`")
@@ -99,11 +131,16 @@ def main():
     if not checks(root):
         log("❌ 检查没有全部通过，网站保持原样。把这一页截图发给 Claude。")
         return 1
+    # 记录上线前正在使用的上一版静态资源（过渡期保留上一版，清理更早堆积的历史文件）
+    prev_assets = referenced_assets(REPO)
+    new_assets = referenced_assets(root)
+    if os.path.isdir(os.path.join(root, "assets")):
+        new_assets.update(os.listdir(os.path.join(root, "assets")))
     # .github 有变化只提醒
     gh = os.path.join(root, ".github")
     changed = []
     if os.path.isdir(gh):
-        for p in glob.glob(os.path.join(gh, "**/*"), recursive=True):
+        for p in sorted(glob.glob(os.path.join(gh, "**/*"), recursive=True)):
             if os.path.isfile(p):
                 rel = os.path.relpath(p, root)
                 dst = os.path.join(REPO, rel)
@@ -114,12 +151,12 @@ def main():
             continue
         src, dst = os.path.join(root, name), os.path.join(REPO, name)
         if os.path.isdir(src):
-            # assets/ 里的旧文件不删：还没更新到新版的手机可能仍在请求它们
             shutil.copytree(src, dst, dirs_exist_ok=True)
         else:
             if name in KEEP_IF_EXISTS and os.path.exists(dst):
                 continue
             shutil.copy2(src, dst)
+    prune_stale_assets(prev_assets | new_assets)
     for p in zips:
         os.remove(p)
     # 清理以前上线时留下的乱码文件名（它们能还原成正确中文名、且正确名的文件已经存在）

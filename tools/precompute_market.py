@@ -95,7 +95,7 @@ def mining():
     raise ValueError("mining sources failed")
 
 
-SITE = os.environ.get("SITE_URL", "https://9992100.xyz/")
+SITE = os.environ.get("SITE_URL") or "https://9992100.xyz/btc/"
 
 
 def bark(title, body):

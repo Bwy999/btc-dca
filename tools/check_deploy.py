@@ -53,6 +53,10 @@ def main():
         ids["AHR999 专页"] = re.search(r"(\d+\.\d+\.\d+-\d{8})", read("ahr999.html"))
     if exists("old-coins.html"):
         ids["老币异动页"] = re.search(r'<meta name="old-coins-build" content="([^"]+)"', read("old-coins.html"))
+    if exists("dca.html"):
+        m_dca = re.search(r'<meta name="btc-dca-build" content="([^"]+)"', read("dca.html"))
+        if m_dca:
+            ids["个人定投页"] = m_dca
     vals = {k: (m.group(1) if m else None) for k, m in ids.items()}
     missing = [k for k, v in vals.items() if not v]
     if missing:
@@ -111,7 +115,8 @@ def main():
     # 6. 预计算数据
     now = datetime.now(timezone.utc)
     core_data = (("data/monthly.json", "groups", True), ("data/lth-chips.json", "daily", True), ("data/daily-state.json", "today", True), ("data/quantum.json", "bips", True),
-                 ("data/etf-flows.json", "days", False), ("data/old-coins.json", "rows", False), ("data/stablecoins.json", "days", False), ("data/mining.json", "raw", False))
+                 ("data/etf-flows.json", "days", False), ("data/old-coins.json", "rows", False), ("data/stablecoins.json", "days", False), ("data/mining.json", "raw", False),
+                 ("data/v28/core.json", "latest", False), ("data/v28/charts.json", "daily", False))
     for p, need, req in core_data:
         if not exists(p):
             if require_data and req:

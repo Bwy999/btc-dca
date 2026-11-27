@@ -1,17 +1,43 @@
 <!doctype html>
-<!-- BUILD: BTC-INTELLIGENCE-V22.3.2-PERSONAL-DCA-SYNC-20260808 -->
-<html lang="zh-CN" data-theme="light">
+<!-- BUILD: 28.1.0-20261126 · SATS-GARDEN-V28.1.0 -->
+<html lang="zh-CN" data-theme="dark">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="referrer" content="no-referrer" />
+  <meta name="color-scheme" content="dark light" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="format-detection" content="telephone=no" />
-  <meta name="theme-color" content="#f6f3ed" />
-  <meta name="btc-main-compatible" content="23.0-20260822" />
-  <title>个人定投 · BTC 情报终端 V23.0</title>
+  <meta name="theme-color" content="#000000" />
+  <meta name="btc-dca-build" content="28.1.0-20261126" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <meta property="og:title" content="个人定投账本 · Sats Garden" />
+  <meta property="og:image" content="https://9992100.xyz/btc/docs/cover.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://9992100.xyz/btc/docs/cover.jpg" />
+  <title>个人定投账本 · Sats Garden</title>
   <script>
-    (()=>{let t="light";try{const saved=localStorage.getItem("btc-intelligence-dca-theme");if(saved==="light"||saved==="dark")t=saved}catch(_){}document.documentElement.dataset.theme=t;const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=t==="dark"?"#000000":"#f6f3ed"})();
+    (function(){
+      var l=null;try{l=localStorage.getItem("btc_lang_v1")}catch(e){}
+      if(l!=="zh"&&l!=="en"){var n=(navigator.languages&&navigator.languages[0])||navigator.language||"";l=/^zh/i.test(n)?"zh":"en"}
+      window.BTC_LANG=l;document.documentElement.lang=l==="en"?"en":"zh-CN";
+      var t=null;
+      try{
+        t=localStorage.getItem("btc_theme_v1");
+        if(t!=="light"&&t!=="dark"){
+          var leg=localStorage.getItem("btc-intelligence-dca-theme");
+          if(leg==="light"||leg==="dark"){t=leg;localStorage.setItem("btc_theme_v1",t)}
+        }
+      }catch(e){}
+      if(t!=="light"&&t!=="dark")t=window.matchMedia&&window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";
+      document.documentElement.dataset.theme=t;
+      var meta=document.querySelector('meta[name="theme-color"]');
+      if(meta)meta.content=t==="dark"?"#000000":"#f6f3ed";
+    })();
   </script>
   <style>
     :root{
@@ -43,17 +69,17 @@
     .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
     .shell{width:min(100% - 36px,760px);margin:0 auto}
     .site-header{position:sticky;top:0;z-index:50;border-bottom:1px solid var(--line2);background:var(--chrome);-webkit-backdrop-filter:blur(22px) saturate(160%);backdrop-filter:blur(22px) saturate(160%)}
-    .header-inner{height:55px;display:flex;align-items:center;gap:10px}
+    .header-inner{height:55px;display:flex;align-items:center;gap:8px}
     .back{display:flex;align-items:center;gap:9px;min-width:0}
-    .back-mark{display:grid;place-items:center;width:23px;height:23px;border-radius:7px;background:var(--btc);color:#080400;font-size:14px;font-weight:900}
-    .wordmark{color:var(--muted);font:700 10px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .back-mark{display:grid;place-items:center;width:23px;height:23px;border-radius:7px;background:var(--btc);color:#080400;font-size:14px;font-weight:900;flex:none}
+    .wordmark{color:var(--muted);font:700 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .save-state{margin-left:auto;display:flex;align-items:center;gap:7px;color:var(--quiet);font:650 10px/1 var(--mono);white-space:nowrap}
     .save-state i{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px var(--greenTint)}
-    .theme-toggle{height:30px;padding:0 9px;border:1px solid var(--line);border-radius:999px;background:var(--soft);color:var(--muted);font-size:11px;cursor:pointer}
+    .theme-toggle{height:30px;padding:0 9px;border:1px solid var(--line);border-radius:999px;background:var(--soft);color:var(--muted);font-size:11px;cursor:pointer;white-space:nowrap;flex:none}
     .hero{padding:37px 0 30px;border-bottom:1px solid var(--line2)}
     .eyebrow{margin:0;color:var(--quiet);font:720 9.5px/1.2 var(--mono);letter-spacing:.15em;text-transform:uppercase}
     .hero-row{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-top:13px}
-    h1{margin:0;font-size:clamp(34px,9vw,48px);font-weight:660;letter-spacing:-.055em;line-height:1.04}
+    h1{margin:0;font-size:clamp(32px,8.5vw,48px);font-weight:660;letter-spacing:-.045em;line-height:1.06}
     .hero-sub{max-width:48ch;margin:12px 0 0;color:var(--muted);font-size:12px;line-height:1.7}
     .price-box{text-align:right;flex:none}.price-box small{display:block;color:var(--quiet);font-size:9px}.price-box b{display:block;margin-top:4px;font:700 15px/1.2 var(--mono)}.price-box em,.value-usd{display:block;margin-top:4px;color:var(--muted);font:600 9px/1.3 var(--mono);font-style:normal}
     .refresh-link{margin-top:4px;padding:0;border:0;background:none;color:var(--gold);font-size:10px;cursor:pointer}
@@ -64,7 +90,7 @@
     .plot-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:15px 15px 4px}.plot-head small{display:block;color:var(--quiet);font-size:10px}.plot-head b{display:block;margin-top:3px;font:700 18px/1.2 var(--mono);letter-spacing:-.035em}.plot-delta{padding:4px 7px;border-radius:999px;background:var(--greenTint);color:var(--green);font:700 9px/1 var(--mono);white-space:nowrap}.plot-delta.neg{background:var(--redTint);color:var(--red)}
     .plot{position:relative;height:176px;margin:0 8px 5px;touch-action:pan-y}.plot svg{display:block;width:100%;height:100%;overflow:visible}.grid-line{stroke:var(--line2);stroke-width:1}.area-qty{fill:url(#qtyFill)}.area-value{fill:url(#valueFill)}.line-qty,.line-value{fill:none;stroke-width:2.25;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}.line-qty{stroke:var(--btc)}.line-value{stroke:var(--green)}
     .buy-dot{fill:var(--bg);stroke:var(--btc);stroke-width:2;vector-effect:non-scaling-stroke}.cross-line{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3;vector-effect:non-scaling-stroke}.cross-dot{fill:var(--text);stroke:var(--bg);stroke-width:3;vector-effect:non-scaling-stroke}.plot-hit{fill:transparent;cursor:crosshair}
-    .plot-tip{position:absolute;left:10px;top:7px;z-index:2;max-width:calc(100% - 20px);padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:color-mix(in srgb,var(--raised) 90%,transparent);color:var(--muted);font:650 9.5px/1.35 var(--mono);opacity:0;pointer-events:none;transform:translateY(-3px);transition:.14s}.plot-tip.on{opacity:1;transform:none}
+    .plot-tip{position:absolute;left:10px;top:7px;z-index:2;max-width:calc(100% - 20px);padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:color-mix(in srgb,var(--raised) 90%,transparent);color:var(--muted);font:600 9.5px/1.35 var(--mono);opacity:0;pointer-events:none;transform:translateY(-3px);transition:.14s}.plot-tip.on{opacity:1;transform:none}
     .plot-foot{display:flex;justify-content:space-between;gap:12px;padding:0 15px 13px;color:var(--quiet);font:600 9px/1.3 var(--mono)}
     .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);margin-top:14px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
     .kpi{min-width:0;padding:13px 12px;border-right:1px solid var(--line2)}.kpi:last-child{border-right:0}.kpi small{display:block;color:var(--quiet);font-size:9.5px}.kpi b{display:block;margin-top:5px;font:700 13px/1.25 var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.kpi span{display:block;margin-top:3px;color:var(--muted);font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -74,7 +100,7 @@
     .inventory{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:15px}.inventory-item{padding:12px;border:1px solid var(--line);border-radius:13px;background:var(--soft)}.inventory-item small{display:block;color:var(--quiet);font-size:9px}.inventory-item b{display:block;margin-top:4px;font:700 13px/1.25 var(--mono)}.inventory-item.warn b{color:var(--red)}
     .host-banner{display:none;align-items:center;justify-content:space-between;gap:14px;margin-top:14px;padding:13px 14px;border:1px solid rgba(247,147,26,.25);border-radius:13px;background:var(--btcTint)}.host-banner.on{display:flex}.host-banner span{color:var(--muted);font-size:10.5px;line-height:1.5}.host-banner b{color:var(--text)}
     .ledger-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}.segmented{display:flex;gap:3px;padding:3px;border:1px solid var(--line);border-radius:11px;background:var(--soft)}.segmented button{height:29px;padding:0 10px;border:0;border-radius:8px;background:transparent;color:var(--quiet);font-size:10px;font-weight:700;cursor:pointer}.segmented button.on{background:var(--text);color:var(--bg)}
-    .ledger{border-top:1px solid var(--line)}.entry{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:12px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line2)}.entry-icon{display:grid;place-items:center;width:37px;height:37px;border-radius:50%;font:800 11px/1 var(--mono)}.entry-icon.c2c{background:rgba(100,168,255,.13);color:var(--blue)}.entry-icon.btc{background:var(--btcTint);color:var(--btc)}.entry-icon.base{background:var(--greenTint);color:var(--green)}.entry-main{min-width:0}.entry-title{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:680}.tag{padding:2px 6px;border-radius:999px;background:var(--soft);color:var(--quiet);font-size:8.5px;font-weight:700}.tag.cold{background:var(--greenTint);color:var(--green)}.entry-meta{margin-top:3px;color:var(--muted);font:600 9.5px/1.5 var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.entry-side{text-align:right}.entry-side b{display:block;font:700 12px/1.3 var(--mono)}.entry-side span{display:block;margin-top:3px;color:var(--quiet);font:600 9px/1.3 var(--mono)}.entry-menu{margin-top:5px;display:flex;justify-content:flex-end;gap:8px}.entry-menu button{padding:0;border:0;background:none;color:var(--quiet);font-size:9px;cursor:pointer}.entry-menu button:last-child{color:var(--red)}
+    .ledger{border-top:1px solid var(--line)}.entry{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:12px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line2)}.entry-icon{display:grid;place-items:center;width:37px;height:37px;border-radius:50%;font:800 11px/1 var(--mono)}.entry-icon.c2c{background:rgba(100,168,255,.13);color:var(--blue)}.entry-icon.btc{background:var(--btcTint);color:var(--btc)}.entry-icon.base{background:var(--greenTint);color:var(--green)}.entry-main{min-width:0}.entry-title{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:680;flex-wrap:wrap}.tag{padding:2px 6px;border-radius:999px;background:var(--soft);color:var(--quiet);font-size:8.5px;font-weight:700}.tag.cold{background:var(--greenTint);color:var(--green)}.entry-meta{margin-top:3px;color:var(--muted);font:600 9.5px/1.5 var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.entry-side{text-align:right}.entry-side b{display:block;font:700 12px/1.3 var(--mono)}.entry-side span{display:block;margin-top:3px;color:var(--quiet);font:600 9px/1.3 var(--mono)}.entry-menu{margin-top:5px;display:flex;justify-content:flex-end;gap:8px}.entry-menu button{padding:0;border:0;background:none;color:var(--quiet);font-size:9px;cursor:pointer}.entry-menu button:last-child{color:var(--red)}
     .empty{padding:40px 16px;text-align:center;color:var(--quiet);font-size:12px;line-height:1.7}.empty b{display:block;margin-bottom:4px;color:var(--muted);font-size:14px}
     .data-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}.data-card{padding:15px;border:1px solid var(--line);border-radius:14px;background:var(--raised)}.data-card b{display:block;font-size:12px}.data-card p{margin:5px 0 11px;color:var(--muted);font-size:10px;line-height:1.55}
     .privacy{margin-top:13px;color:var(--quiet);font-size:9.5px;line-height:1.6}
@@ -90,17 +116,18 @@
     .sheet-actions{display:flex;gap:9px;margin-top:17px}.sheet-actions .btn{flex:1}
     .toast{position:fixed;z-index:200;left:50%;bottom:calc(78px + env(safe-area-inset-bottom));max-width:calc(100% - 32px);padding:11px 17px;border:1px solid var(--line);border-radius:999px;background:var(--raised2);color:var(--text);box-shadow:var(--shadow);font-size:11px;font-weight:680;white-space:nowrap;opacity:0;pointer-events:none;transform:translate(-50%,14px);transition:.22s var(--ease)}.toast.on{opacity:1;transform:translate(-50%,0)}
     @media(max-width:680px){.chart-grid{grid-template-columns:1fr}.kpi-grid{grid-template-columns:1fr 1fr}.kpi:nth-child(2){border-right:0}.kpi:nth-child(-n+2){border-bottom:1px solid var(--line2)}.flow-rail{grid-template-columns:1fr}.flow-arrow{height:24px;transform:rotate(90deg)}.inventory{grid-template-columns:1fr 1fr}.inventory-item:last-child{grid-column:1/-1}.data-grid{grid-template-columns:1fr}}
-    @media(max-width:430px){.shell{width:min(100% - 30px,760px)}.save-state span{display:none}.hero-row{align-items:flex-start;flex-direction:column}.price-box{text-align:left}.section-head{align-items:flex-start}.section-head>span{max-width:16ch}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.entry{grid-template-columns:38px minmax(0,1fr);gap:10px}.entry-side{grid-column:2;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:-5px}.entry-menu{margin:0}.host-banner{align-items:flex-start;flex-direction:column}}
+    @media(max-width:430px){.shell{width:min(100% - 30px,760px)}.save-state span{display:none}.hero-row{align-items:flex-start;flex-direction:column}.price-box{text-align:left}.section-head{align-items:flex-start}.section-head>span{max-width:18ch}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.entry{grid-template-columns:38px minmax(0,1fr);gap:10px}.entry-side{grid-column:2;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:-5px}.entry-menu{margin:0}.host-banner{align-items:flex-start;flex-direction:column}}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
   </style>
 </head>
 <body>
   <header class="site-header">
     <div class="shell header-inner">
-      <a class="back" href="./index.html#personal" aria-label="返回 V23.0 主站">
-        <span class="back-mark">₿</span><span class="wordmark">BTC INTELLIGENCE · PERSONAL DCA</span>
+      <a class="back" id="backLink" href="./index.html#personal" aria-label="返回 Sats Garden 主站">
+        <span class="back-mark">₿</span><span class="wordmark">SATS GARDEN · PERSONAL DCA</span>
       </a>
       <span class="save-state"><i></i><span id="saveText">已保存本机</span></span>
+      <button class="theme-toggle" id="langToggle" translate="no" type="button" onclick="toggleLang()" aria-label="切换语言">EN</button>
       <button class="theme-toggle" id="themeToggle" type="button" onclick="toggleTheme()" aria-label="切换深浅主题">◐ <span id="themeText">亮色</span></button>
     </div>
   </header>
@@ -108,131 +135,131 @@
   <main>
     <section class="hero">
       <div class="shell">
-        <p class="eyebrow">V22.3.2 · PERSONAL DCA LEDGER</p>
+        <p class="eyebrow">V28.1.0 · PERSONAL DCA LEDGER</p>
         <div class="hero-row">
-          <div><h1>个人定投</h1><p class="hero-sub">把真实路径完整记下来：人民币 C2C 换成 USDT / USDC，再在币安买入 BTC。历史持仓只需填写 BTC 数量与累计人民币投入。</p></div>
-          <div class="price-box"><small>BTC / USDT</small><b id="heroPrice">--</b><em id="heroFx">USD/CNY --</em><button class="refresh-link" type="button" onclick="refreshMarket(true)"><span id="priceState">同步价格与汇率</span></button></div>
+          <div><h1 id="heroTitle">个人定投</h1><p class="hero-sub" id="heroSub">把真实路径完整记下来：人民币 C2C 换成 USDT / USDC，再买入 BTC。历史持仓只需填写 BTC 数量与累计人民币投入。</p></div>
+          <div class="price-box"><small>BTC / USD</small><b id="heroPrice">--</b><em id="heroFx">USD/CNY --</em><button class="refresh-link" type="button" onclick="refreshMarket(true)"><span id="priceState">更新价格与汇率</span></button></div>
         </div>
       </div>
     </section>
 
     <section class="charts-section">
       <div class="shell">
-        <div class="section-head"><div><p class="eyebrow">STACK & VALUE</p><h2>积累轨迹</h2></div><span id="chartSource">记录第一笔后生成曲线</span></div>
+        <div class="section-head"><div><p class="eyebrow">STACK & VALUE</p><h2 id="secStackTitle">积累轨迹</h2></div><span id="chartSource">记录第一笔后生成曲线</span></div>
         <div class="chart-grid">
           <article class="plot-card">
-            <div class="plot-head"><div><small>BTC 数量曲线</small><b id="qtyNow">0 BTC</b></div><span class="plot-delta" id="qtyDelta">+0 sats</span></div>
-            <div class="plot" id="qtyPlot"><svg viewBox="0 0 520 176" preserveAspectRatio="none" aria-label="BTC累计数量曲线"></svg><div class="plot-tip" id="qtyTip"></div></div>
-            <div class="plot-foot"><span id="qtyStart">尚无起点</span><span>累计持仓</span></div>
+            <div class="plot-head"><div><small id="qtyCardLabel">BTC 数量曲线</small><b id="qtyNow">0 BTC</b></div><span class="plot-delta" id="qtyDelta">+0 sats</span></div>
+            <div class="plot" id="qtyPlot"><svg viewBox="0 0 520 176" preserveAspectRatio="none" id="qtySvg" aria-label="BTC累计数量曲线"></svg><div class="plot-tip" id="qtyTip"></div></div>
+            <div class="plot-foot"><span id="qtyStart">尚无起点</span><span id="qtyFootRight">累计持仓</span></div>
           </article>
           <article class="plot-card">
-            <div class="plot-head"><div><small>持仓价值曲线</small><b id="valueNow">¥0</b><span class="value-usd" id="valueNowUsd">≈ $0</span></div><span class="plot-delta" id="pnlBadge">--</span></div>
-            <div class="plot" id="valuePlot"><svg viewBox="0 0 520 176" preserveAspectRatio="none" aria-label="BTC持仓价值曲线"></svg><div class="plot-tip" id="valueTip"></div></div>
+            <div class="plot-head"><div><small id="valCardLabel">持仓价值曲线</small><b id="valueNow">¥0</b><span class="value-usd" id="valueNowUsd">≈ $0</span></div><span class="plot-delta" id="pnlBadge">--</span></div>
+            <div class="plot" id="valuePlot"><svg viewBox="0 0 520 176" preserveAspectRatio="none" id="valSvg" aria-label="BTC持仓价值曲线"></svg><div class="plot-tip" id="valueTip"></div></div>
             <div class="plot-foot"><span id="valueStart">按每日收盘价估算</span><span>CNY</span></div>
           </article>
         </div>
         <div class="kpi-grid">
-          <div class="kpi"><small>总 BTC</small><b id="kpiBtc">0</b><span id="kpiSats">0 sats</span></div>
-          <div class="kpi"><small>累计 BTC 成本</small><b id="kpiCost">¥0</b><span id="kpiCostUsd">$0 · 今日汇率</span></div>
-          <div class="kpi"><small>平均买入美元成本</small><b id="kpiAvg">--</b><span id="kpiAvgCny">--</span></div>
-          <div class="kpi"><small>未实现收益</small><b id="kpiPnl">--</b><span id="kpiPnlCny">--</span></div>
+          <div class="kpi"><small id="kpiBtcLabel">总 BTC</small><b id="kpiBtc">0</b><span id="kpiSats">0 sats</span></div>
+          <div class="kpi"><small id="kpiCostLabel">累计 BTC 成本</small><b id="kpiCost">¥0</b><span id="kpiCostUsd">$0 · 今日汇率</span></div>
+          <div class="kpi"><small id="kpiAvgLabel">平均买入美元成本</small><b id="kpiAvg">--</b><span id="kpiAvgCny">--</span></div>
+          <div class="kpi"><small id="kpiPnlLabel">未实现收益</small><b id="kpiPnl">--</b><span id="kpiPnlCny">--</span></div>
         </div>
       </div>
     </section>
 
     <section class="flow-section">
       <div class="shell">
-        <div class="section-head"><div><p class="eyebrow">YOUR ACTUAL ROUTE</p><h2>一笔定投的两段流水</h2></div><span>金额与价格分开记录<br>避免把 C2C 汇率混进 BTC 价格</span></div>
+        <div class="section-head"><div><p class="eyebrow">YOUR ACTUAL ROUTE</p><h2 id="secRouteTitle">一笔定投的两段流水</h2></div><span id="secRouteSub">金额与价格分开记录<br>避免把 C2C 汇率混进 BTC 价格</span></div>
         <div class="flow-rail">
-          <div class="flow-step"><small>01 · CNY</small><b>C2C 换币</b><span>记录人民币实付与到账的 USDT / USDC，自动计算真实换币成本。</span></div><div class="flow-arrow">→</div>
-          <div class="flow-step"><small>02 · BINANCE</small><b>买入 BTC</b><span>记录 BTC 成交价、稳定币实付与 BTC 实际到账，手续费自然进入成本。</span></div><div class="flow-arrow">→</div>
-          <div class="flow-step"><small>03 · SELF CUSTODY</small><b>转入冷钱包</b><span>单笔标记是否已提币，随时检查还有多少笔停留在交易所。</span></div>
+          <div class="flow-step"><small>01 · CNY</small><b id="step1Title">C2C 换币</b><span id="step1Desc">记录人民币实付与到账的 USDT / USDC，自动计算真实换币成本。</span></div><div class="flow-arrow">→</div>
+          <div class="flow-step"><small>02 · SPOT</small><b id="step2Title">买入 BTC</b><span id="step2Desc">记录 BTC 成交价、稳定币实付与 BTC 实际到账，手续费自然进入成本。</span></div><div class="flow-arrow">→</div>
+          <div class="flow-step"><small>03 · SELF CUSTODY</small><b id="step3Title">转入冷钱包</b><span id="step3Desc">单笔标记是否已提币，随时检查还有多少笔停留在交易所。</span></div>
         </div>
-        <div class="action-row"><button class="btn" type="button" onclick="openSheet('c2c')">记录 C2C 换币</button><button class="btn secondary" type="button" onclick="openSheet('btc')">记录 BTC 买入</button><button class="btn ghost" type="button" onclick="openSheet('baseline')">设置历史持仓</button></div>
+        <div class="action-row"><button class="btn" id="btnRecC2c" type="button" onclick="openSheet('c2c')">记录 C2C 换币</button><button class="btn secondary" id="btnRecBtc" type="button" onclick="openSheet('btc')">记录 BTC 买入</button><button class="btn ghost" id="btnRecBase" type="button" onclick="openSheet('baseline')">设置历史持仓</button></div>
         <div class="inventory">
-          <div class="inventory-item" id="usdtBox"><small>USDT 可用余额</small><b id="usdtBalance">0.00 USDT</b></div>
-          <div class="inventory-item" id="usdcBox"><small>USDC 可用余额</small><b id="usdcBalance">0.00 USDC</b></div>
-          <div class="inventory-item"><small>待转冷钱包</small><b id="coldPending">0 笔</b></div>
+          <div class="inventory-item" id="usdtBox"><small id="usdtLabel">USDT 可用余额</small><b id="usdtBalance">0.00 USDT</b></div>
+          <div class="inventory-item" id="usdcBox"><small id="usdcLabel">USDC 可用余额</small><b id="usdcBalance">0.00 USDC</b></div>
+          <div class="inventory-item"><small id="coldLabel">待转冷钱包</small><b id="coldPending">0 笔</b></div>
         </div>
-        <div class="host-banner" id="hostBanner"><span id="hostText">发现主站既有持仓</span><button class="btn secondary" type="button" onclick="importHostHolding()">作为起始持仓导入</button></div>
+        <div class="host-banner" id="hostBanner"><span id="hostText">发现主站既有持仓</span><button class="btn secondary" id="btnImportHost" type="button" onclick="importHostHolding()">作为起始持仓导入</button></div>
       </div>
     </section>
 
     <section class="ledger-section">
       <div class="shell">
-        <div class="ledger-toolbar"><div><p class="eyebrow">LEDGER</p><h2 style="margin:4px 0 0;font-size:22px;font-weight:650;letter-spacing:-.03em">定投流水</h2></div><div class="segmented" aria-label="流水筛选"><button class="on" data-filter="all" onclick="setFilter('all',this)">全部</button><button data-filter="c2c" onclick="setFilter('c2c',this)">C2C</button><button data-filter="btc" onclick="setFilter('btc',this)">BTC</button></div></div>
+        <div class="ledger-toolbar"><div><p class="eyebrow">LEDGER</p><h2 id="secLedgerTitle" style="margin:4px 0 0;font-size:22px;font-weight:650;letter-spacing:-.03em">定投流水</h2></div><div class="segmented" id="filterSeg" aria-label="流水筛选"><button class="on" data-filter="all" onclick="setFilter('all',this)" id="fltAll">全部</button><button data-filter="c2c" onclick="setFilter('c2c',this)">C2C</button><button data-filter="btc" onclick="setFilter('btc',this)">BTC</button></div></div>
         <div class="ledger" id="ledger"></div>
       </div>
     </section>
 
     <section class="data-section">
       <div class="shell">
-        <div class="section-head"><div><p class="eyebrow">LOCAL FIRST</p><h2>数据与备份</h2></div><span>账本仅保存在当前设备</span></div>
+        <div class="section-head"><div><p class="eyebrow">LOCAL FIRST</p><h2 id="secDataTitle">数据与备份</h2></div><span id="secDataSub">账本仅保存在当前设备</span></div>
         <div class="data-grid">
-          <div class="data-card"><b>完整 JSON 备份</b><p>包含历史持仓、C2C 流水、BTC 买入和页面设置，可在另一台设备恢复。</p><div class="action-row"><button class="btn secondary" type="button" onclick="exportJson()">导出</button><button class="btn ghost" type="button" onclick="document.getElementById('importFile').click()">导入</button></div></div>
-          <div class="data-card"><b>表格 CSV</b><p>导出为通用流水表，可在 Excel、Numbers 或其他记账工具中查看。</p><div class="action-row"><button class="btn secondary" type="button" onclick="exportCsv()">导出 CSV</button><button class="btn danger" type="button" onclick="clearLedger()">清空</button></div></div>
+          <div class="data-card"><b id="bkJsonTitle">完整 JSON 备份</b><p id="bkJsonDesc">包含历史持仓、C2C 流水、BTC 买入和设置，与主站备份格式双向互通。</p><div class="action-row"><button class="btn secondary" id="btnExpJson" type="button" onclick="exportJson()">导出</button><button class="btn ghost" id="btnImpJson" type="button" onclick="document.getElementById('importFile').click()">导入</button></div></div>
+          <div class="data-card"><b id="bkCsvTitle">表格 CSV</b><p id="bkCsvDesc">导出为通用流水表，可在 Excel、Numbers 或其他记账工具中查看。</p><div class="action-row"><button class="btn secondary" id="btnExpCsv" type="button" onclick="exportCsv()">导出 CSV</button><button class="btn danger" id="btnClear" type="button" onclick="clearLedger()">清空</button></div></div>
         </div>
-        <p class="privacy" id="storageNote">页面会申请浏览器持久存储，并将人民币总成本、持仓与流水同步给同域名下的 V22.3.2 主站；仍建议每次换机或清理浏览器前导出 JSON。</p>
+        <p class="privacy" id="storageNote">页面会申请浏览器持久存储，并将人民币总成本、持仓与流水实时同步给同域名下的 Sats Garden 主站；仍建议换机或清理浏览器前导出 JSON。</p>
       </div>
     </section>
   </main>
 
-  <nav class="bottom-bar" aria-label="个人定投底部导航">
-    <a class="nav-item" href="./index.html" aria-label="返回主站">
+  <nav class="bottom-bar" id="bottomNav" aria-label="个人定投底部导航">
+    <a class="nav-item" id="navBack" href="./index.html" aria-label="返回主站">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.5 12 3.5l8.5 7"/><path d="M5.5 9.5v10h13v-10"/><path d="M9.5 19.5v-6h5v6"/></svg>
-      <span>返回主站</span>
+      <span id="navBackTxt">返回主站</span>
     </a>
     <span class="nav-item current" aria-current="page">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18.5V14l4-4 3 3 7-7"/><path d="M14 6h4v4"/><path d="M4 21h16"/></svg>
-      <span>个人定投</span>
+      <span id="navCurTxt">个人定投</span>
     </span>
-    <button class="nav-item add" type="button" onclick="openSheet('btc')" aria-label="记录一笔 BTC 买入">
+    <button class="nav-item add" id="navAdd" type="button" onclick="openSheet('btc')" aria-label="记录一笔 BTC 买入">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-      <span>记录</span>
+      <span id="navAddTxt">记录</span>
     </button>
   </nav>
 
   <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" onclick="modalBackdrop(event)">
     <div class="sheet">
-      <div class="sheet-top"><h3 id="sheetTitle">记录一笔</h3><button class="close" type="button" onclick="closeSheet()" aria-label="关闭">×</button></div>
-      <div class="mode-tabs"><button data-mode="c2c" onclick="switchMode('c2c')">C2C 换币</button><button data-mode="btc" onclick="switchMode('btc')">买入 BTC</button><button data-mode="baseline" onclick="switchMode('baseline')">历史持仓</button></div>
+      <div class="sheet-top"><h3 id="sheetTitle">记录一笔</h3><button class="close" id="btnCloseSheet" type="button" onclick="closeSheet()" aria-label="关闭">×</button></div>
+      <div class="mode-tabs"><button data-mode="c2c" id="tabC2c" onclick="switchMode('c2c')">C2C 换币</button><button data-mode="btc" id="tabBtc" onclick="switchMode('btc')">买入 BTC</button><button data-mode="baseline" id="tabBase" onclick="switchMode('baseline')">历史持仓</button></div>
 
       <form class="form-panel" id="formC2c" onsubmit="saveC2c(event)">
         <div class="form-grid">
-          <label class="field full"><span>成交时间</span><input id="c2cAt" type="datetime-local" required /></label>
-          <label class="field"><span>稳定币</span><select id="c2cCoin"><option>USDT</option><option>USDC</option></select></label>
-          <label class="field"><span>渠道</span><select id="c2cProvider"><option>币安 C2C</option><option>其他 C2C</option></select></label>
-          <label class="field"><span>人民币实付 <i>CNY</i></span><input id="c2cCny" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="500" required oninput="previewC2c()" /></label>
-          <label class="field"><span>稳定币到账</span><input id="c2cStable" type="number" inputmode="decimal" min="0.000001" step="0.000001" placeholder="74.07" required oninput="previewC2c()" /></label>
-          <label class="field full"><span>备注 <i>可选</i></span><textarea id="c2cNote" placeholder="例如：支付宝付款、无额外手续费"></textarea></label>
+          <label class="field full"><span id="lblC2cAt">成交时间</span><input id="c2cAt" type="datetime-local" required /></label>
+          <label class="field"><span id="lblC2cCoin">稳定币</span><select id="c2cCoin"><option>USDT</option><option>USDC</option></select></label>
+          <label class="field"><span id="lblC2cProv">渠道</span><select id="c2cProvider"><option value="币安 C2C" id="optBnC2c">币安 C2C</option><option value="其他 C2C" id="optOthC2c">其他 C2C</option></select></label>
+          <label class="field"><span id="lblC2cCny">人民币实付 <i>CNY</i></span><input id="c2cCny" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="500" required oninput="previewC2c()" /></label>
+          <label class="field"><span id="lblC2cStb">稳定币到账</span><input id="c2cStable" type="number" inputmode="decimal" min="0.000001" step="0.000001" placeholder="74.07" required oninput="previewC2c()" /></label>
+          <label class="field full"><span id="lblC2cNote">备注 <i>可选</i></span><textarea id="c2cNote" placeholder="例如：支付宝付款、无额外手续费"></textarea></label>
         </div>
-        <div class="computed"><div><small>真实 C2C 单价</small><b id="c2cRatePreview">-- CNY</b></div><div><small>到账资产</small><b id="c2cAssetPreview">--</b></div></div>
-        <div class="sheet-actions"><button class="btn secondary" type="button" onclick="closeSheet()">取消</button><button class="btn" type="submit">保存 C2C 流水</button></div>
+        <div class="computed"><div><small id="lblC2cRateP">真实 C2C 单价</small><b id="c2cRatePreview">-- CNY</b></div><div><small id="lblC2cAssetP">到账资产</small><b id="c2cAssetPreview">--</b></div></div>
+        <div class="sheet-actions"><button class="btn secondary" id="btnCancelC2c" type="button" onclick="closeSheet()">取消</button><button class="btn" id="btnSaveC2c" type="submit">保存 C2C 流水</button></div>
       </form>
 
       <form class="form-panel" id="formBtc" onsubmit="saveBtc(event)">
         <div class="form-grid">
-          <label class="field full"><span>成交时间</span><input id="btcAt" type="datetime-local" required /></label>
-          <label class="field"><span>支付币种</span><select id="btcCoin" onchange="previewBtc()"><option>USDT</option><option>USDC</option></select></label>
-          <label class="field"><span>定投类型</span><select id="btcStrategy"><option value="base">基础定投</option><option value="pull">回撤加仓</option><option value="ext">极端预备金</option></select></label>
-          <label class="field"><span>BTC 买入价格 <i>稳定币/BTC</i></span><input id="btcPrice" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="63000" required oninput="previewBtc('price')" /></label>
-          <label class="field"><span>稳定币实付</span><input id="btcSpent" type="number" inputmode="decimal" min="0.000001" step="0.000001" placeholder="74.07" required oninput="previewBtc('spent')" /></label>
-          <label class="field full"><span>BTC 实际到账 <i>可改，自动包含手续费</i></span><input id="btcReceived" type="number" inputmode="decimal" min="0.00000001" step="0.00000001" placeholder="0.00117571" required oninput="previewBtc('received')" /></label>
-          <label class="field full"><span>备注 <i>可选</i></span><textarea id="btcNote" placeholder="例如：现货 BTC/USDT 市价单"></textarea></label>
+          <label class="field full"><span id="lblBtcAt">成交时间</span><input id="btcAt" type="datetime-local" required /></label>
+          <label class="field"><span id="lblBtcCoin">支付币种</span><select id="btcCoin" onchange="previewBtc()"><option>USDT</option><option>USDC</option></select></label>
+          <label class="field"><span id="lblBtcStrat">定投类型</span><select id="btcStrategy"><option value="base" id="optStratBase">基础定投</option><option value="pull" id="optStratPull">回撤加仓</option><option value="ext" id="optStratExt">极端预备金</option></select></label>
+          <label class="field"><span id="lblBtcPrice">BTC 买入价格 <i>USD/BTC</i></span><input id="btcPrice" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="63000" required oninput="previewBtc('price')" /></label>
+          <label class="field"><span id="lblBtcSpent">稳定币实付</span><input id="btcSpent" type="number" inputmode="decimal" min="0.000001" step="0.000001" placeholder="74.07" required oninput="previewBtc('spent')" /></label>
+          <label class="field full"><span id="lblBtcRec">BTC 实际到账 <i>可改，自动包含手续费</i></span><input id="btcReceived" type="number" inputmode="decimal" min="0.00000001" step="0.00000001" placeholder="0.00117571" required oninput="previewBtc('received')" /></label>
+          <label class="field full"><span id="lblBtcNote">备注 <i>可选</i></span><textarea id="btcNote" placeholder="例如：现货 BTC/USDT 市价单"></textarea></label>
         </div>
-        <label class="check"><input id="btcCold" type="checkbox" /> 已提至冷钱包</label>
-        <div class="computed"><div><small>预计新增</small><b id="btcAddPreview">-- BTC</b></div><div><small>折合人民币成本</small><b id="btcCnyPreview">--</b></div></div>
-        <div class="sheet-actions"><button class="btn secondary" type="button" onclick="closeSheet()">取消</button><button class="btn" type="submit">保存 BTC 买入</button></div>
+        <label class="check"><input id="btcCold" type="checkbox" /> <span id="lblBtcCold">已提至冷钱包</span></label>
+        <div class="computed"><div><small id="lblBtcAddP">预计新增</small><b id="btcAddPreview">-- BTC</b></div><div><small id="lblBtcCnyP">折合人民币成本</small><b id="btcCnyPreview">--</b></div></div>
+        <div class="sheet-actions"><button class="btn secondary" id="btnCancelBtc" type="button" onclick="closeSheet()">取消</button><button class="btn" id="btnSaveBtc" type="submit">保存 BTC 买入</button></div>
       </form>
 
       <form class="form-panel" id="formBaseline" onsubmit="saveBaseline(event)">
         <div class="form-grid">
-          <label class="field"><span>历史持有 BTC 数量</span><input id="baseBtc" type="number" inputmode="decimal" min="0" step="0.00000001" placeholder="0.35" required oninput="previewBaseline()" /></label>
-          <label class="field"><span>历史累计花费 <i>人民币总额</i></span><input id="baseTotalCny" type="number" inputmode="decimal" min="0" step="0.01" placeholder="130000" required oninput="previewBaseline()" /></label>
+          <label class="field"><span id="lblBaseBtc">历史持有 BTC 数量</span><input id="baseBtc" type="number" inputmode="decimal" min="0" step="0.00000001" placeholder="0.35" required oninput="previewBaseline()" /></label>
+          <label class="field"><span id="lblBaseCny">历史累计花费 <i>CNY</i></span><input id="baseTotalCny" type="number" inputmode="decimal" min="0" step="0.01" placeholder="130000" required oninput="previewBaseline()" /></label>
         </div>
-        <div class="computed"><div><small>累计投入美元</small><b id="baseCostUsdPreview">--</b></div><div><small>平均买入美元成本</small><b id="baseAvgUsdPreview">-- / BTC</b></div></div>
+        <div class="computed"><div><small id="lblBaseUsdP">累计投入美元</small><b id="baseCostUsdPreview">--</b></div><div><small id="lblBaseAvgP">平均买入美元成本</small><b id="baseAvgUsdPreview">-- / BTC</b></div></div>
         <p class="form-note" id="baseFxPreview">联网后按今日 USD/CNY 汇率自动换算。人民币总投入保持不变，美元金额与美元均价会随汇率更新。</p>
-        <div class="sheet-actions"><button class="btn secondary" type="button" onclick="closeSheet()">取消</button><button class="btn" type="submit">保存历史持仓</button></div>
+        <div class="sheet-actions"><button class="btn secondary" id="btnCancelBase" type="button" onclick="closeSheet()">取消</button><button class="btn" id="btnSaveBase" type="submit">保存历史持仓</button></div>
       </form>
     </div>
   </div>
@@ -242,13 +269,13 @@
 
   <script>
   "use strict";
-  const BUILD="V22.3.2-PERSONAL-DCA-SYNC-1";
+  const BUILD="28.1.0-20261126";
   const KEY="btc_dca_ledger_v1",HOST_KEY="btc_exec_v7",MARKET_KEY="btc_dca_market_v1";
-  const BASES=["https://data-api.binance.vision","https://api-gcp.binance.com","https://api.binance.com"];
-  const $=id=>document.getElementById(id),num=v=>Number.isFinite(+v)?+v:0,clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const BASES=["https://data-api.binance.vision","https://api-gcp.binance.com"];
+  const $=id=>document.getElementById(id),num=v=>Number.isFinite(+v)?+v:0,en=()=>window.BTC_LANG==="en";
   const todayLocal=()=>{const d=new Date(),local=new Date(d.getTime()-d.getTimezoneOffset()*60000);return local.toISOString().slice(0,10)};
   const blank=()=>({schema:2,baseline:{at:todayLocal(),btc:0,totalCny:0,usdt:0,usdc:0,legacyRate:7.1},orders:[],settings:{fallbackFx:7.1},updatedAt:Date.now()});
-  let filter="all",editingId="",lastBtcEdited="spent",market={price:0,change:0,at:0,history:[],fx:0,fxAt:0,fxSource:""},state=load();
+  let filter="all",editingId="",lastBtcEdited="spent",currentMode="btc",market={price:0,change:0,at:0,history:[],fx:0,fxAt:0,fxSource:""},state=load();
 
   function safeOrder(o){
     if(!o||!["c2c","btc"].includes(o.type))return null;
@@ -267,19 +294,29 @@
     try{const host=JSON.parse(localStorage.getItem(HOST_KEY)||"null");if(host&&host.dcaLedger)return sanitize(host.dcaLedger)}catch(_){}
     return blank();
   }
-  function save(message="已保存本机"){
-    state.updatedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(state));syncHost();$("saveText").textContent=message;setTimeout(()=>$("saveText").textContent="已保存本机",1800)}catch(_){toast("保存失败，请检查浏览器存储权限")}
+  function defaultSavedText(){return en()?"Saved on device":"已保存本机"}
+  function save(message){
+    const msg=message||defaultSavedText();
+    state.updatedAt=Date.now();
+    try{
+      localStorage.setItem(KEY,JSON.stringify(state));
+      syncHost();
+      $("saveText").textContent=msg;
+      setTimeout(()=>{$("saveText").textContent=defaultSavedText()},1800);
+    }catch(_){toast(en()?"Save failed; check browser storage permissions":"保存失败，请检查浏览器存储权限")}
   }
   function cryptoId(){try{return crypto.randomUUID()}catch(_){return Date.now().toString(36)+Math.random().toString(36).slice(2)}}
   function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-  function dateText(ts){return new Date(ts).toLocaleString("zh-CN",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false})}
+  function dateText(ts){return new Date(ts).toLocaleString(en()?"en-US":"zh-CN",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false})}
+  function dateDayText(ts){return new Date(ts).toLocaleDateString(en()?"en-US":"zh-CN")}
   function localInput(ts=Date.now()){const d=new Date(ts-dTimezoneOffset(ts));return d.toISOString().slice(0,16)}
   function dTimezoneOffset(ts){return new Date(ts).getTimezoneOffset()*60000}
   function inputTs(v){const t=new Date(v).getTime();return Number.isFinite(t)?t:Date.now()}
   function fmtBtc(v,d=8){return num(v).toLocaleString("en-US",{minimumFractionDigits:0,maximumFractionDigits:d})}
   function fmtStable(v){return num(v).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})}
-  function fmtCny(v){return "¥"+Math.round(num(v)).toLocaleString("zh-CN")}
-  function fmtUsd(v){return "$"+Math.round(num(v)).toLocaleString("en-US")}
+  function fmtCny(v){const x=Math.round(num(v));return (x<0?"−":"")+"¥"+Math.abs(x).toLocaleString("en-US")}
+  function fmtUsd(v){const x=Math.round(num(v));return (x<0?"−":"")+"$"+Math.abs(x).toLocaleString("en-US")}
+  function fmtSignedPct(v){const x=num(v);return (x>=0?"+":"−")+Math.abs(x).toFixed(1)+"%"}
   function currentFx(){return market.fx>0?market.fx:state.settings.fallbackFx||7.1}
   function latestRate(at=Infinity,coin="USDT"){
     let rate=currentFx();state.orders.filter(o=>o.type==="c2c"&&o.coin===coin&&o.at<=at&&o.stable>0).sort((a,b)=>a.at-b.at).forEach(o=>{rate=o.cny/o.stable});return rate;
@@ -302,98 +339,347 @@
     }catch(_){}
   }
   function hostHolding(){try{const h=JSON.parse(localStorage.getItem(HOST_KEY)||"null"),hd=h&&h.hd;if(hd&&num(hd.d)>0)return{btc:num(hd.d),avg:num(hd.dc),rate:num(h.fx)||7.1}}catch(_){}return null}
-  function importHostHolding(){const h=hostHolding();if(!h)return toast("未找到可导入的主站持仓");state.baseline={...state.baseline,at:todayLocal(),btc:h.btc,totalCny:h.btc*h.avg*h.rate,legacyRate:h.rate};save("已导入主站持仓");render();toast("已作为起始持仓导入")}
+  function importHostHolding(){const h=hostHolding();if(!h)return toast(en()?"No main-site holdings found":"未找到可导入的主站持仓");state.baseline={...state.baseline,at:todayLocal(),btc:h.btc,totalCny:h.btc*h.avg*h.rate,legacyRate:h.rate};save(en()?"Imported main-site holdings":"已导入主站持仓");render();toast(en()?"Imported as baseline holdings":"已作为起始持仓导入")}
 
   function quantitySeries(){
-    const b=state.baseline,start=new Date(b.at+"T12:00:00").getTime(),points=[];let held=b.btc;if(held>0)points.push({t:start,v:held,label:"历史持仓"});state.orders.filter(o=>o.type==="btc").sort((a,c)=>a.at-c.at).forEach(o=>{held+=o.btc;points.push({t:o.at,v:held,label:"买入 "+fmtBtc(o.btc)+" BTC",buy:true})});if(points.length)points.push({t:Date.now(),v:held,label:"当前持仓"});return dedupe(points)
+    const E=en(),b=state.baseline,start=new Date(b.at+"T12:00:00").getTime(),points=[];let held=b.btc;
+    if(held>0)points.push({t:start,v:held,label:E?"Baseline":"历史持仓"});
+    state.orders.filter(o=>o.type==="btc").sort((a,c)=>a.at-c.at).forEach(o=>{held+=o.btc;points.push({t:o.at,v:held,label:(E?"Buy ":"买入 ")+fmtBtc(o.btc)+" BTC",buy:true})});
+    if(points.length)points.push({t:Date.now(),v:held,label:E?"Current":"当前持仓"});
+    return dedupe(points);
   }
   function dedupe(points){const m=new Map();points.sort((a,b)=>a.t-b.t).forEach(p=>m.set(Math.floor(p.t/60000),p));return[...m.values()]}
   function holdingsAt(ts){let held=0,bts=new Date(state.baseline.at+"T12:00:00").getTime();if(ts>=bts)held=state.baseline.btc;state.orders.forEach(o=>{if(o.type==="btc"&&o.at<=ts)held+=o.btc});return held}
   function valueSeries(){
-    const qty=quantitySeries();if(!qty.length)return[];const fx=currentFx(),earliest=qty[0].t,history=market.history.filter(x=>x.t>=Math.max(earliest,Date.now()-999*86400000));let pts=history.map(x=>({t:x.t,v:holdingsAt(x.t+86399999)*x.close*fx,label:"每日收盘"})).filter(x=>x.v>0);if(!pts.length){const price=market.price||lastBuyPrice();pts=qty.map(x=>({t:x.t,v:x.v*price*fx,label:"估算"})).filter(x=>x.v>0)}const d=derive();if(d.value>0)pts.push({t:Date.now(),v:d.value,label:"当前市值"});return dedupe(pts)
+    const E=en(),qty=quantitySeries();if(!qty.length)return[];const fx=currentFx(),earliest=qty[0].t,history=market.history.filter(x=>x.t>=Math.max(earliest,Date.now()-1100*86400000));
+    let pts=history.map(x=>({t:x.t,v:holdingsAt(x.t+86399999)*x.close*fx,label:E?"Daily close":"每日收盘"})).filter(x=>x.v>0);
+    if(!pts.length){const price=market.price||lastBuyPrice();pts=qty.map(x=>({t:x.t,v:x.v*price*fx,label:E?"Estimated":"估算"})).filter(x=>x.v>0)}
+    const d=derive();if(d.value>0)pts.push({t:Date.now(),v:d.value,label:E?"Current value":"当前市值"});return dedupe(pts);
   }
   function plot(id,tipId,points,type){
     const svg=$(id).querySelector("svg"),tip=$(tipId),W=520,H=176,P=14,grid=[.2,.4,.6,.8],color=type==="qty"?"qty":"value";
     if(!points.length){svg.innerHTML=grid.map(g=>`<line class="grid-line" x1="${P}" y1="${(P+(H-2*P)*g).toFixed(1)}" x2="${W-P}" y2="${(P+(H-2*P)*g).toFixed(1)}"/>`).join("")+`<path class="line-${color}" d="M${P},${H-P} L${W-P},${H-P}" opacity=".22"/>`;tip.classList.remove("on");return}
     const minT=Math.min(...points.map(p=>p.t)),maxT=Math.max(...points.map(p=>p.t)),maxV=Math.max(...points.map(p=>p.v)),minRaw=Math.min(...points.map(p=>p.v)),minV=type==="qty"?Math.max(0,minRaw-(maxV-minRaw)*.18):Math.max(0,minRaw-(maxV-minRaw)*.16),rangeV=maxV-minV||Math.max(1,maxV*.08),rangeT=maxT-minT||1;
-    const xy=points.map(p=>({...p,x:P+(p.t-minT)/rangeT*(W-2*P),y:H-P-(p.v-minV)/rangeV*(H-2*P)})),line=xy.map((p,i)=>(i?"L":"M")+p.x.toFixed(2)+","+p.y.toFixed(2)).join(" "),area=line+` L${xy.at(-1).x.toFixed(2)},${H-P} L${xy[0].x.toFixed(2)},${H-P} Z`,gid=type==="qty"?"qtyFill":"valueFill",fill=type==="qty"?"var(--btc)":"var(--green)";
+    const xy=points.map(p=>({...p,x:P+(p.t-minT)/rangeT*(W-2*P),y:H-P-(p.v-minV)/rangeV*(H-2*P)})),line=xy.map((p,i)=>(i?"L":"M")+p.x.toFixed(2)+","+p.y.toFixed(2)).join(" "),area=line+` L${xy[xy.length-1].x.toFixed(2)},${H-P} L${xy[0].x.toFixed(2)},${H-P} Z`,gid=type==="qty"?"qtyFill":"valueFill",fill=type==="qty"?"var(--btc)":"var(--green)";
     svg.innerHTML=`<defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${fill}" stop-opacity=".24"/><stop offset="1" stop-color="${fill}" stop-opacity="0"/></linearGradient></defs>${grid.map(g=>`<line class="grid-line" x1="${P}" y1="${(P+(H-2*P)*g).toFixed(1)}" x2="${W-P}" y2="${(P+(H-2*P)*g).toFixed(1)}"/>`).join("")}<path class="area-${color}" d="${area}"/><path class="line-${color}" d="${line}"/>${type==="qty"?xy.filter(p=>p.buy).map(p=>`<circle class="buy-dot" cx="${p.x}" cy="${p.y}" r="3.4"/>`).join(""):""}<line class="cross-line" id="${id}Cross" x1="0" y1="${P}" x2="0" y2="${H-P}" opacity="0"/><circle class="cross-dot" id="${id}Dot" cx="0" cy="0" r="4" opacity="0"/><rect class="plot-hit" x="0" y="0" width="${W}" height="${H}"/>`;
     const hit=svg.querySelector(".plot-hit"),cross=$(id+"Cross"),dot=$(id+"Dot");
-    const move=e=>{const r=svg.getBoundingClientRect(),cx=((e.touches?e.touches[0].clientX:e.clientX)-r.left)/r.width*W,near=xy.reduce((a,p)=>Math.abs(p.x-cx)<Math.abs(a.x-cx)?p:a,xy[0]);cross.setAttribute("x1",near.x);cross.setAttribute("x2",near.x);cross.setAttribute("opacity","1");dot.setAttribute("cx",near.x);dot.setAttribute("cy",near.y);dot.setAttribute("opacity","1");const val=type==="qty"?fmtBtc(near.v,8)+" BTC":fmtCny(near.v);tip.textContent=`${new Date(near.t).toLocaleDateString("zh-CN")} · ${val}`;tip.classList.add("on")};
+    const move=e=>{const r=svg.getBoundingClientRect(),cx=((e.touches?e.touches[0].clientX:e.clientX)-r.left)/r.width*W,near=xy.reduce((a,p)=>Math.abs(p.x-cx)<Math.abs(a.x-cx)?p:a,xy[0]);cross.setAttribute("x1",near.x);cross.setAttribute("x2",near.x);cross.setAttribute("opacity","1");dot.setAttribute("cx",near.x);dot.setAttribute("cy",near.y);dot.setAttribute("opacity","1");const val=type==="qty"?fmtBtc(near.v,8)+" BTC":fmtCny(near.v);tip.textContent=`${dateDayText(near.t)} · ${val}`;tip.classList.add("on")};
     const leave=()=>{cross.setAttribute("opacity","0");dot.setAttribute("opacity","0");tip.classList.remove("on")};hit.addEventListener("pointermove",move);hit.addEventListener("pointerleave",leave);hit.addEventListener("touchmove",move,{passive:true});
   }
   function renderCharts(){
-    const d=derive(),q=quantitySeries(),v=valueSeries(),sats=Math.round(d.btc*1e8),newSats=Math.round(state.orders.filter(o=>o.type==="btc").reduce((a,o)=>a+o.btc,0)*1e8);
-    $("qtyNow").textContent=fmtBtc(d.btc,8)+" BTC";$("qtyDelta").textContent="+"+newSats.toLocaleString("en-US")+" sats";$("valueNow").textContent=fmtCny(d.value);$("valueNowUsd").textContent="≈ "+fmtUsd(d.valueUsd);$("pnlBadge").textContent=d.btcCostCny>0?(d.pnlPct>=0?"+":"")+d.pnlPct.toFixed(1)+"%":"--";$("pnlBadge").classList.toggle("neg",d.pnl<0);$("qtyStart").textContent=q.length?new Date(q[0].t).toLocaleDateString("zh-CN"):"尚无起点";$("valueStart").textContent=market.history.length?"每日收盘价 · 动态估算":"按买入价 / 当前价估算";
-    $("kpiBtc").textContent=fmtBtc(d.btc,8);$("kpiSats").textContent=sats.toLocaleString("en-US")+" sats";$("kpiCost").textContent=fmtCny(d.btcCostCny);$("kpiCostUsd").textContent=d.btcCostCny?fmtUsd(d.btcCostUsd)+" · 今日汇率":"$0 · 今日汇率";$("kpiAvg").textContent=d.btc?fmtUsd(d.avgUsd)+"/BTC":"--";$("kpiAvgCny").textContent=d.btc?fmtCny(d.avgCny)+" / BTC":"--";$("kpiPnl").textContent=d.btcCostCny?(d.pnlPct>=0?"+":"")+d.pnlPct.toFixed(1)+"%":"--";$("kpiPnl").style.color=d.pnl>=0?"var(--green)":"var(--red)";$("kpiPnlCny").textContent=d.btcCostCny?(d.pnl>=0?"+":"")+fmtCny(d.pnl):"等待成本";$("chartSource").textContent=q.length?(market.history.length?"数量按流水 · 价值按 Binance 日线":"数量按流水 · 价值为本机估算"):"记录第一笔后生成曲线";plot("qtyPlot","qtyTip",q,"qty");plot("valuePlot","valueTip",v,"value");
+    const E=en(),d=derive(),q=quantitySeries(),v=valueSeries(),sats=Math.round(d.btc*1e8),newSats=Math.round(state.orders.filter(o=>o.type==="btc").reduce((a,o)=>a+o.btc,0)*1e8);
+    $("qtyNow").textContent=fmtBtc(d.btc,8)+" BTC";$("qtyDelta").textContent="+"+newSats.toLocaleString("en-US")+" sats";$("valueNow").textContent=fmtCny(d.value);$("valueNowUsd").textContent="≈ "+fmtUsd(d.valueUsd);
+    $("pnlBadge").textContent=d.btcCostCny>0?fmtSignedPct(d.pnlPct):"--";$("pnlBadge").classList.toggle("neg",d.pnl<0);
+    $("qtyStart").textContent=q.length?dateDayText(q[0].t):(E?"No entries yet":"尚无起点");
+    $("valueStart").textContent=market.history.length?(E?"Daily close · dynamic":"每日收盘价 · 动态估算"):(E?"Estimated by spot / buy price":"按买入价 / 当前价估算");
+    $("kpiBtc").textContent=fmtBtc(d.btc,8);$("kpiSats").textContent=sats.toLocaleString("en-US")+" sats";
+    $("kpiCost").textContent=fmtCny(d.btcCostCny);$("kpiCostUsd").textContent=(d.btcCostCny?fmtUsd(d.btcCostUsd):"$0")+(E?" · today FX":" · 今日汇率");
+    $("kpiAvg").textContent=d.btc?fmtUsd(d.avgUsd)+"/BTC":"--";$("kpiAvgCny").textContent=d.btc?fmtCny(d.avgCny)+" / BTC":"--";
+    $("kpiPnl").textContent=d.btcCostCny?fmtSignedPct(d.pnlPct):"--";$("kpiPnl").style.color=d.pnl>=0?"var(--green)":"var(--red)";
+    $("kpiPnlCny").textContent=d.btcCostCny?(d.pnl>=0?"+":"")+fmtCny(d.pnl):(E?"Awaiting cost":"等待成本");
+    $("chartSource").textContent=q.length?(market.history.length?(E?"Qty by ledger · Value by daily closes":"数量按流水 · 价值按日线收盘"):(E?"Qty by ledger · Value estimated locally":"数量按流水 · 价值为本机估算")):(E?"Curve appears after your first entry":"记录第一笔后生成曲线");
+    plot("qtyPlot","qtyTip",q,"qty");plot("valuePlot","valueTip",v,"value");
   }
-  function renderBalances(){const d=derive(),u=d.pools.USDT.qty,c=d.pools.USDC.qty;$("usdtBalance").textContent=fmtStable(u)+" USDT";$("usdcBalance").textContent=fmtStable(c)+" USDC";$("usdtBox").classList.toggle("warn",u<-.000001);$("usdcBox").classList.toggle("warn",c<-.000001);$("coldPending").textContent=d.pending+" 笔"}
-  function strategyName(s){return s==="pull"?"回撤加仓":s==="ext"?"极端预备金":"基础定投"}
+  function renderBalances(){const E=en(),d=derive(),u=d.pools.USDT.qty,c=d.pools.USDC.qty;$("usdtBalance").textContent=fmtStable(u)+" USDT";$("usdcBalance").textContent=fmtStable(c)+" USDC";$("usdtBox").classList.toggle("warn",u<-.000001);$("usdcBox").classList.toggle("warn",c<-.000001);$("coldPending").textContent=E?(d.pending+" tx"):(d.pending+" 笔")}
+  function strategyName(s){if(en())return s==="pull"?"Dip buy":s==="ext"?"Extreme reserve":"Base DCA";return s==="pull"?"回撤加仓":s==="ext"?"极端预备金":"基础定投"}
+  function providerLabel(p){if(!en())return p;if(p==="币安 C2C")return "Binance P2P";if(p==="其他 C2C")return "Other P2P";return p}
   function renderLedger(){
+    const E=en();
     let rows=[...state.orders].sort((a,b)=>b.at-a.at);if(filter!=="all")rows=rows.filter(o=>o.type===filter);const base=state.baseline;
-    const html=rows.map(o=>{if(o.type==="c2c"){const rate=o.stable>0?o.cny/o.stable:0;return`<div class="entry"><div class="entry-icon c2c">C2C</div><div class="entry-main"><div class="entry-title">${esc(o.coin)} 到账 <span class="tag">${esc(o.provider)}</span></div><div class="entry-meta">${esc(dateText(o.at))} · ${rate.toFixed(3)} CNY/${esc(o.coin)}${o.note?" · "+esc(o.note):""}</div></div><div class="entry-side"><b>+${fmtStable(o.stable)} ${esc(o.coin)}</b><span>−${fmtCny(o.cny)}</span><div class="entry-menu"><button onclick="editOrder('${o.id}')">编辑</button><button onclick="deleteOrder('${o.id}')">删除</button></div></div></div>`}return`<div class="entry"><div class="entry-icon btc">₿</div><div class="entry-main"><div class="entry-title">${strategyName(o.strategy)} ${o.cold?'<span class="tag cold">已入冷钱包</span>':'<span class="tag">待提币</span>'}</div><div class="entry-meta">${esc(dateText(o.at))} · ${fmtUsd(o.price)} · ${fmtStable(o.spent)} ${esc(o.coin)}${o.note?" · "+esc(o.note):""}</div></div><div class="entry-side"><b>+${fmtBtc(o.btc,8)} BTC</b><span>${Math.round(o.btc*1e8).toLocaleString("en-US")} sats</span><div class="entry-menu"><button onclick="toggleCold('${o.id}')">${o.cold?"撤销提币":"标记提币"}</button><button onclick="editOrder('${o.id}')">编辑</button><button onclick="deleteOrder('${o.id}')">删除</button></div></div></div>`}).join("");
-    const fx=currentFx(),baseUsd=fx>0?base.totalCny/fx:0,baseAvg=base.btc>0?baseUsd/base.btc:0,baseRow=filter==="all"&&base.btc>0?`<div class="entry"><div class="entry-icon base">BASE</div><div class="entry-main"><div class="entry-title">历史持仓基线 <span class="tag">人民币总成本</span></div><div class="entry-meta">${esc(base.at)} · 累计投入 ${fmtCny(base.totalCny)} · 今日折算均价 ${fmtUsd(baseAvg)}/BTC</div></div><div class="entry-side"><b>${fmtBtc(base.btc,8)} BTC</b><span>${fmtUsd(baseUsd)} · 今日汇率</span><div class="entry-menu"><button onclick="openSheet('baseline')">编辑</button></div></div></div>`:"";
-    $("ledger").innerHTML=html+baseRow||'<div class="empty"><b>还没有定投流水</b>先记录 C2C 换币，再记录 BTC 买入；已有持仓可直接设置为历史基线。</div>';
+    const html=rows.map(o=>{
+      if(o.type==="c2c"){
+        const rate=o.stable>0?o.cny/o.stable:0;
+        return`<div class="entry"><div class="entry-icon c2c">C2C</div><div class="entry-main"><div class="entry-title">${esc(o.coin)} ${E?"received":"到账"} <span class="tag">${esc(providerLabel(o.provider))}</span></div><div class="entry-meta">${esc(dateText(o.at))} · ${rate.toFixed(3)} CNY/${esc(o.coin)}${o.note?" · "+esc(o.note):""}</div></div><div class="entry-side"><b>+${fmtStable(o.stable)} ${esc(o.coin)}</b><span>${fmtCny(-o.cny)}</span><div class="entry-menu"><button onclick="editOrder('${esc(o.id)}')">${E?"Edit":"编辑"}</button><button onclick="deleteOrder('${esc(o.id)}')">${E?"Delete":"删除"}</button></div></div></div>`;
+      }
+      return`<div class="entry"><div class="entry-icon btc">₿</div><div class="entry-main"><div class="entry-title">${esc(strategyName(o.strategy))} ${o.cold?`<span class="tag cold">${E?"Cold wallet":"已入冷钱包"}</span>`:`<span class="tag">${E?"On exchange":"待提币"}</span>`}</div><div class="entry-meta">${esc(dateText(o.at))} · ${fmtUsd(o.price)} · ${fmtStable(o.spent)} ${esc(o.coin)}${o.note?" · "+esc(o.note):""}</div></div><div class="entry-side"><b>+${fmtBtc(o.btc,8)} BTC</b><span>${Math.round(o.btc*1e8).toLocaleString("en-US")} sats</span><div class="entry-menu"><button onclick="toggleCold('${esc(o.id)}')">${o.cold?(E?"Unmark":"撤销提币"):(E?"Mark withdrawn":"标记提币")}</button><button onclick="editOrder('${esc(o.id)}')">${E?"Edit":"编辑"}</button><button onclick="deleteOrder('${esc(o.id)}')">${E?"Delete":"删除"}</button></div></div></div>`;
+    }).join("");
+    const fx=currentFx(),baseUsd=fx>0?base.totalCny/fx:0,baseAvg=base.btc>0?baseUsd/base.btc:0;
+    const baseRow=filter==="all"&&base.btc>0?`<div class="entry"><div class="entry-icon base">BASE</div><div class="entry-main"><div class="entry-title">${E?"Baseline holdings":"历史持仓基线"} <span class="tag">${E?"Total CNY cost":"人民币总成本"}</span></div><div class="entry-meta">${esc(base.at)} · ${E?"Invested ":"累计投入 "}${fmtCny(base.totalCny)} · ${E?"Avg ":"今日折算均价 "}${fmtUsd(baseAvg)}/BTC</div></div><div class="entry-side"><b>${fmtBtc(base.btc,8)} BTC</b><span>${fmtUsd(baseUsd)} · ${E?"today FX":"今日汇率"}</span><div class="entry-menu"><button onclick="openSheet('baseline')">${E?"Edit":"编辑"}</button></div></div></div>`:"";
+    $("ledger").innerHTML=html+baseRow||(E?'<div class="empty"><b>No DCA entries yet</b>Record a P2P conversion first, then log your BTC buy; existing holdings can be set as a baseline.</div>':'<div class="empty"><b>还没有定投流水</b>先记录 C2C 换币，再记录 BTC 买入；已有持仓可直接设置为历史基线。</div>');
   }
-  function renderHostBanner(){const h=hostHolding(),empty=state.baseline.btc===0&&state.orders.length===0;$("hostBanner").classList.toggle("on",!!(h&&empty));if(h)$("hostText").innerHTML=`发现主站已有持仓：<b class="num">${fmtBtc(h.btc,8)} BTC</b> · 均价 ${fmtUsd(h.avg)}`}
+  function renderHostBanner(){const E=en(),h=hostHolding(),empty=state.baseline.btc===0&&state.orders.length===0;$("hostBanner").classList.toggle("on",!!(h&&empty));if(h)$("hostText").innerHTML=E?`Main-site holdings detected: <b class="num">${fmtBtc(h.btc,8)} BTC</b> · Avg ${fmtUsd(h.avg)}`:`发现主站已有持仓：<b class="num">${fmtBtc(h.btc,8)} BTC</b> · 均价 ${fmtUsd(h.avg)}`}
+
+  function applyStaticI18n(){
+    const E=en();
+    document.title=E?"Personal DCA Ledger · Sats Garden":"个人定投账本 · Sats Garden";
+    $("langToggle").textContent=E?"中文":"EN";
+    $("langToggle").setAttribute("aria-label",E?"Switch to Chinese":"切换为英文");
+    $("backLink").setAttribute("aria-label",E?"Back to Sats Garden":"返回 Sats Garden 主站");
+    $("themeToggle").setAttribute("aria-label",E?"Toggle theme":"切换深浅主题");
+    $("saveText").textContent=defaultSavedText();
+    const pairs=[
+      ["heroTitle","个人定投","Personal DCA"],
+      ["heroSub","把真实路径完整记下来：人民币 C2C 换成 USDT / USDC，再买入 BTC。历史持仓只需填写 BTC 数量与累计人民币投入。","Track your real two-step DCA route: CNY P2P into USDT / USDC, then spot BTC buys. Existing stack only needs BTC amount and cumulative CNY spent."],
+      ["secStackTitle","积累轨迹","Stack & Value"],
+      ["qtyCardLabel","BTC 数量曲线","BTC Stack Curve"],
+      ["qtyFootRight","累计持仓","Cumulative BTC"],
+      ["valCardLabel","持仓价值曲线","Portfolio Value"],
+      ["kpiBtcLabel","总 BTC","Total BTC"],
+      ["kpiCostLabel","累计 BTC 成本","Cumulative Cost"],
+      ["kpiAvgLabel","平均买入美元成本","Avg Buy Price (USD)"],
+      ["kpiPnlLabel","未实现收益","Unrealized PnL"],
+      ["secRouteTitle","一笔定投的两段流水","Two-Step DCA Ledger"],
+      ["step1Title","C2C 换币","P2P Conversion"],
+      ["step1Desc","记录人民币实付与到账的 USDT / USDC，自动计算真实换币成本。","Log CNY paid and USDT / USDC received to track your true FX rate."],
+      ["step2Title","买入 BTC","Buy Spot BTC"],
+      ["step2Desc","记录 BTC 成交价、稳定币实付与 BTC 实际到账，手续费自然进入成本。","Log BTC execution price, stablecoin spent, and net BTC received after fees."],
+      ["step3Title","转入冷钱包","Self-Custody"],
+      ["step3Desc","单笔标记是否已提币，随时检查还有多少笔停留在交易所。","Mark each buy once withdrawn so you always know what remains on exchanges."],
+      ["btnRecC2c","记录 C2C 换币","Log P2P"],
+      ["btnRecBtc","记录 BTC 买入","Log BTC Buy"],
+      ["btnRecBase","设置历史持仓","Set Baseline"],
+      ["usdtLabel","USDT 可用余额","USDT Available"],
+      ["usdcLabel","USDC 可用余额","USDC Available"],
+      ["coldLabel","待转冷钱包","Pending Withdrawal"],
+      ["btnImportHost","作为起始持仓导入","Import as Baseline"],
+      ["secLedgerTitle","定投流水","Ledger Entries"],
+      ["fltAll","全部","All"],
+      ["secDataTitle","数据与备份","Data & Backup"],
+      ["secDataSub","账本仅保存在当前设备","Stored locally on this device"],
+      ["bkJsonTitle","完整 JSON 备份","Full JSON Backup"],
+      ["bkJsonDesc","包含历史持仓、C2C 流水、BTC 买入和设置，与主站备份格式双向互通。","Includes baseline, P2P, BTC buys, and settings. Compatible with Sats Garden backups."],
+      ["btnExpJson","导出","Export"],
+      ["btnImpJson","导入","Import"],
+      ["bkCsvTitle","表格 CSV","Spreadsheet CSV"],
+      ["bkCsvDesc","导出为通用流水表，可在 Excel、Numbers 或其他记账工具中查看。","Export entries as UTF-8 CSV for Excel, Numbers, or accounting sheets."],
+      ["btnExpCsv","导出 CSV","Export CSV"],
+      ["btnClear","清空","Clear"],
+      ["navBackTxt","返回主站","Home"],
+      ["navCurTxt","个人定投","DCA Ledger"],
+      ["navAddTxt","记录","Add"],
+      ["tabC2c","C2C 换币","P2P FX"],
+      ["tabBtc","买入 BTC","Buy BTC"],
+      ["tabBase","历史持仓","Baseline"],
+      ["lblC2cAt","成交时间","Time"],
+      ["lblC2cCoin","稳定币","Stablecoin"],
+      ["lblC2cProv","渠道","Channel"],
+      ["optBnC2c","币安 C2C","Binance P2P"],
+      ["optOthC2c","其他 C2C","Other P2P"],
+      ["lblC2cStb","稳定币到账","Stablecoin Received"],
+      ["lblC2cRateP","真实 C2C 单价","Effective FX"],
+      ["lblC2cAssetP","到账资产","Asset Received"],
+      ["btnCancelC2c","取消","Cancel"],
+      ["btnSaveC2c","保存 C2C 流水","Save P2P Entry"],
+      ["lblBtcAt","成交时间","Time"],
+      ["lblBtcCoin","支付币种","Pay With"],
+      ["lblBtcStrat","定投类型","DCA Bucket"],
+      ["optStratBase","基础定投","Base DCA"],
+      ["optStratPull","回撤加仓","Dip Buy"],
+      ["optStratExt","极端预备金","Extreme Reserve"],
+      ["lblBtcSpent","稳定币实付","Stablecoin Spent"],
+      ["lblBtcCold","已提至冷钱包","Withdrawn to cold wallet"],
+      ["lblBtcAddP","预计新增","Net BTC Added"],
+      ["lblBtcCnyP","折合人民币成本","Implied CNY Cost"],
+      ["btnCancelBtc","取消","Cancel"],
+      ["btnSaveBtc","保存 BTC 买入","Save BTC Buy"],
+      ["lblBaseBtc","历史持有 BTC 数量","Baseline BTC Held"],
+      ["lblBaseUsdP","累计投入美元","Total Cost (USD)"],
+      ["lblBaseAvgP","平均买入美元成本","Avg Cost (USD/BTC)"],
+      ["btnCancelBase","取消","Cancel"],
+      ["btnSaveBase","保存历史持仓","Save Baseline"]
+    ];
+    pairs.forEach(([id,zh,eng])=>{const el=$(id);if(el)el.textContent=E?eng:zh});
+    $("secRouteSub").innerHTML=E?"Separate FX conversion from spot buys<br>for accurate CNY & USD cost basis":"金额与价格分开记录<br>避免把 C2C 汇率混进 BTC 价格";
+    $("lblC2cCny").innerHTML=E?"CNY Paid <i>CNY</i>":"人民币实付 <i>CNY</i>";
+    $("lblC2cNote").innerHTML=E?"Note <i>Optional</i>":"备注 <i>可选</i>";
+    $("lblBtcPrice").innerHTML=E?"BTC Buy Price <i>USD/BTC</i>":"BTC 买入价格 <i>USD/BTC</i>";
+    $("lblBtcRec").innerHTML=E?"Net BTC Received <i>Editable, after fees</i>":"BTC 实际到账 <i>可改，自动包含手续费</i>";
+    $("lblBtcNote").innerHTML=E?"Note <i>Optional</i>":"备注 <i>可选</i>";
+    $("lblBaseCny").innerHTML=E?"Cumulative CNY Spent <i>CNY</i>":"历史累计花费 <i>CNY</i>";
+    $("c2cNote").placeholder=E?"e.g. Alipay transfer, zero fee":"例如：支付宝付款、无额外手续费";
+    $("btcNote").placeholder=E?"e.g. Spot BTC/USDT market order":"例如：现货 BTC/USDT 市价单";
+    $("qtySvg").setAttribute("aria-label",E?"Cumulative BTC stack curve":"BTC累计数量曲线");
+    $("valSvg").setAttribute("aria-label",E?"Portfolio value curve":"BTC持仓价值曲线");
+    $("filterSeg").setAttribute("aria-label",E?"Filter ledger":"流水筛选");
+    $("bottomNav").setAttribute("aria-label",E?"Bottom navigation":"个人定投底部导航");
+    $("navBack").setAttribute("aria-label",E?"Back to main site":"返回主站");
+    $("navAdd").setAttribute("aria-label",E?"Log a BTC buy":"记录一笔 BTC 买入");
+    $("btnCloseSheet").setAttribute("aria-label",E?"Close":"关闭");
+    themeLabel();
+    switchMode(currentMode);
+  }
+
   function render(){renderCharts();renderBalances();renderLedger();renderHostBanner()}
 
-  function toggleTheme(){const root=document.documentElement,cur=root.dataset.theme||"light",next=cur==="light"?"dark":"light";root.dataset.theme=next;const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=next==="dark"?"#000000":"#f6f3ed";try{localStorage.setItem("btc-intelligence-dca-theme",next)}catch(_){}themeLabel();renderCharts()}
-  function themeLabel(){const t=document.documentElement.dataset.theme||"light";$("themeText").textContent=t==="light"?"深色":"亮色"}
+  function syncThemeMeta(t){
+    document.documentElement.dataset.theme=t;
+    const meta=document.querySelector('meta[name="theme-color"]');
+    if(meta)meta.content=t==="dark"?"#000000":"#f6f3ed";
+    themeLabel();
+  }
+  function toggleTheme(){
+    const cur=document.documentElement.dataset.theme||"dark",next=cur==="light"?"dark":"light";
+    try{localStorage.setItem("btc_theme_v1",next)}catch(_){}
+    syncThemeMeta(next);renderCharts();
+  }
+  function toggleLang(){
+    const next=en()?"zh":"en";
+    window.BTC_LANG=next;document.documentElement.lang=next==="en"?"en":"zh-CN";
+    try{localStorage.setItem("btc_lang_v1",next)}catch(_){}
+    applyStaticI18n();renderMarket();render();persistent();
+  }
+  function themeLabel(){const t=document.documentElement.dataset.theme||"dark";$("themeText").textContent=en()?(t==="light"?"Dark":"Light"):(t==="light"?"深色":"亮色")}
   function setFilter(f,btn){filter=f;document.querySelectorAll("[data-filter]").forEach(x=>x.classList.toggle("on",x===btn));renderLedger()}
   function openSheet(mode,id=""){
-    editingId=id;$("modal").classList.add("on");document.body.style.overflow="hidden";switchMode(mode);if(!id){if(mode==="c2c")resetC2c();if(mode==="btc")resetBtc();if(mode==="baseline")fillBaseline()}setTimeout(()=>$(mode==="c2c"?"c2cCny":mode==="btc"?"btcPrice":"baseBtc").focus(),80)
+    editingId=id;$("modal").classList.add("on");document.body.style.overflow="hidden";switchMode(mode);if(!id){if(mode==="c2c")resetC2c();if(mode==="btc")resetBtc();if(mode==="baseline")fillBaseline()}setTimeout(()=>$(mode==="c2c"?"c2cCny":mode==="btc"?"btcPrice":"baseBtc").focus(),80);
   }
   function closeSheet(){editingId="";$("modal").classList.remove("on");document.body.style.overflow=""}
   function modalBackdrop(e){if(e.target===$("modal"))closeSheet()}
-  function switchMode(mode){document.querySelectorAll("[data-mode]").forEach(x=>x.classList.toggle("on",x.dataset.mode===mode));document.querySelectorAll(".form-panel").forEach(x=>x.classList.remove("on"));$(mode==="c2c"?"formC2c":mode==="btc"?"formBtc":"formBaseline").classList.add("on");$("sheetTitle").textContent=mode==="c2c"?"记录 C2C 换币":mode==="btc"?"记录 BTC 买入":"设置历史持仓"}
+  function switchMode(mode){
+    currentMode=mode;
+    document.querySelectorAll("[data-mode]").forEach(x=>x.classList.toggle("on",x.dataset.mode===mode));
+    document.querySelectorAll(".form-panel").forEach(x=>x.classList.remove("on"));
+    $(mode==="c2c"?"formC2c":mode==="btc"?"formBtc":"formBaseline").classList.add("on");
+    $("sheetTitle").textContent=en()?(mode==="c2c"?"Log P2P Conversion":mode==="btc"?"Log BTC Buy":"Set Baseline Holdings"):(mode==="c2c"?"记录 C2C 换币":mode==="btc"?"记录 BTC 买入":"设置历史持仓");
+  }
   function resetC2c(){$("c2cAt").value=localInput();$("c2cCoin").value="USDT";$("c2cProvider").value="币安 C2C";$("c2cCny").value="";$("c2cStable").value="";$("c2cNote").value="";previewC2c()}
   function resetBtc(){const d=derive();$("btcAt").value=localInput();$("btcCoin").value=d.pools.USDT.qty>0?"USDT":d.pools.USDC.qty>0?"USDC":"USDT";$("btcStrategy").value="base";$("btcPrice").value=market.price?market.price.toFixed(2):"";$("btcSpent").value="";$("btcReceived").value="";$("btcCold").checked=false;$("btcNote").value="";lastBtcEdited="spent";previewBtc()}
   function fillBaseline(){const b=state.baseline;$("baseBtc").value=b.btc||"";$("baseTotalCny").value=b.totalCny||"";previewBaseline()}
   function previewC2c(){const c=num($("c2cCny").value),s=num($("c2cStable").value),coin=$("c2cCoin").value;$("c2cRatePreview").textContent=s>0?(c/s).toFixed(3)+" CNY":"-- CNY";$("c2cAssetPreview").textContent=s>0?fmtStable(s)+" "+coin:"--"}
-  function previewBtc(source){if(source)lastBtcEdited=source;const price=num($("btcPrice").value),spent=num($("btcSpent").value),rec=num($("btcReceived").value),coin=$("btcCoin").value;if(price>0&&spent>0&&lastBtcEdited!=="received")$("btcReceived").value=(spent/price).toFixed(8);const btc=num($("btcReceived").value),rate=latestRate(inputTs($("btcAt").value),coin);$("btcAddPreview").textContent=btc>0?fmtBtc(btc,8)+" BTC":"-- BTC";$("btcCnyPreview").textContent=spent>0?fmtCny(spent*rate):"--"}
-  function previewBaseline(){const btc=num($("baseBtc").value),cny=num($("baseTotalCny").value),fx=currentFx(),usd=fx>0?cny/fx:0,avg=btc>0?usd/btc:0;$("baseCostUsdPreview").textContent=cny>0&&fx>0?fmtUsd(usd):"--";$("baseAvgUsdPreview").textContent=btc>0&&cny>0&&fx>0?fmtUsd(avg)+" / BTC":"-- / BTC";$("baseFxPreview").textContent=(market.fx>0?`今日汇率：1 USD = ¥${market.fx.toFixed(4)}${market.fxSource?" · "+market.fxSource:""}`:`汇率暂不可用，当前按 1 USD = ¥${fx.toFixed(2)} 估算`)+"。人民币总投入保持不变，美元金额与美元均价会随汇率更新。"}
-  function saveC2c(e){e.preventDefault();const isEdit=!!editingId,o={id:editingId||cryptoId(),type:"c2c",at:inputTs($("c2cAt").value),coin:$("c2cCoin").value,provider:$("c2cProvider").value,cny:num($("c2cCny").value),stable:num($("c2cStable").value),note:$("c2cNote").value.trim()};if(!(o.cny>0&&o.stable>0))return toast("请输入有效的人民币实付与稳定币到账");upsert(o);closeSheet();toast(isEdit?"C2C 流水已更新":"C2C 流水已保存")}
-  function saveBtc(e){e.preventDefault();const isEdit=!!editingId,o={id:editingId||cryptoId(),type:"btc",at:inputTs($("btcAt").value),coin:$("btcCoin").value,strategy:$("btcStrategy").value,price:num($("btcPrice").value),spent:num($("btcSpent").value),btc:num($("btcReceived").value),cold:$("btcCold").checked,note:$("btcNote").value.trim()};if(!(o.price>0&&o.spent>0&&o.btc>0))return toast("请输入有效的买入价格、实付金额和 BTC 到账");upsert(o);closeSheet();toast(isEdit?"BTC 买入已更新":"BTC 买入已保存")}
-  function saveBaseline(e){e.preventDefault();const btc=Math.max(0,num($("baseBtc").value)),totalCny=Math.max(0,num($("baseTotalCny").value));if(!(btc>0&&totalCny>0))return toast("请输入历史 BTC 数量与累计人民币总投入");state.baseline={...state.baseline,at:todayLocal(),btc,totalCny};state.settings.fallbackFx=currentFx();save();closeSheet();render();toast("历史持仓已保存，美元成本已按今日汇率换算")}
+  function previewBtc(source){if(source)lastBtcEdited=source;const price=num($("btcPrice").value),spent=num($("btcSpent").value),coin=$("btcCoin").value;if(price>0&&spent>0&&lastBtcEdited!=="received")$("btcReceived").value=(spent/price).toFixed(8);const btc=num($("btcReceived").value),rate=latestRate(inputTs($("btcAt").value),coin);$("btcAddPreview").textContent=btc>0?fmtBtc(btc,8)+" BTC":"-- BTC";$("btcCnyPreview").textContent=spent>0?fmtCny(spent*rate):"--"}
+  function previewBaseline(){
+    const E=en(),btc=num($("baseBtc").value),cny=num($("baseTotalCny").value),fx=currentFx(),usd=fx>0?cny/fx:0,avg=btc>0?usd/btc:0;
+    $("baseCostUsdPreview").textContent=cny>0&&fx>0?fmtUsd(usd):"--";
+    $("baseAvgUsdPreview").textContent=btc>0&&cny>0&&fx>0?fmtUsd(avg)+" / BTC":"-- / BTC";
+    $("baseFxPreview").textContent=E
+      ?((market.fx>0?`Today FX: 1 USD = ¥${market.fx.toFixed(4)}${market.fxSource?" · "+market.fxSource:""}`:`FX offline; using 1 USD = ¥${fx.toFixed(2)}`)+". Total CNY spent stays fixed; USD equivalents update with FX.")
+      :((market.fx>0?`今日汇率：1 USD = ¥${market.fx.toFixed(4)}${market.fxSource?" · "+market.fxSource:""}`:`汇率暂不可用，当前按 1 USD = ¥${fx.toFixed(2)} 估算`)+"。人民币总投入保持不变，美元金额与美元均价会随汇率更新。");
+  }
+  function saveC2c(e){e.preventDefault();const isEdit=!!editingId,o={id:editingId||cryptoId(),type:"c2c",at:inputTs($("c2cAt").value),coin:$("c2cCoin").value,provider:$("c2cProvider").value,cny:num($("c2cCny").value),stable:num($("c2cStable").value),note:$("c2cNote").value.trim()};if(!(o.cny>0&&o.stable>0))return toast(en()?"Enter valid CNY paid and stablecoin received":"请输入有效的人民币实付与稳定币到账");upsert(o);closeSheet();toast(en()?(isEdit?"P2P entry updated":"P2P entry saved"):(isEdit?"C2C 流水已更新":"C2C 流水已保存"))}
+  function saveBtc(e){e.preventDefault();const isEdit=!!editingId,o={id:editingId||cryptoId(),type:"btc",at:inputTs($("btcAt").value),coin:$("btcCoin").value,strategy:$("btcStrategy").value,price:num($("btcPrice").value),spent:num($("btcSpent").value),btc:num($("btcReceived").value),cold:$("btcCold").checked,note:$("btcNote").value.trim()};if(!(o.price>0&&o.spent>0&&o.btc>0))return toast(en()?"Enter valid BTC price, spent amount, and BTC received":"请输入有效的买入价格、实付金额和 BTC 到账");upsert(o);closeSheet();toast(en()?(isEdit?"BTC buy updated":"BTC buy saved"):(isEdit?"BTC 买入已更新":"BTC 买入已保存"))}
+  function saveBaseline(e){e.preventDefault();const btc=Math.max(0,num($("baseBtc").value)),totalCny=Math.max(0,num($("baseTotalCny").value));if(!(btc>0&&totalCny>0))return toast(en()?"Enter baseline BTC and cumulative CNY spent":"请输入历史 BTC 数量与累计人民币总投入");state.baseline={...state.baseline,at:todayLocal(),btc,totalCny};state.settings.fallbackFx=currentFx();save();closeSheet();render();toast(en()?"Baseline holdings saved":"历史持仓已保存，美元成本已按今日汇率换算")}
   function upsert(o){const i=state.orders.findIndex(x=>x.id===o.id);if(i>=0)state.orders[i]=o;else state.orders.push(o);save();render()}
   function editOrder(id){const o=state.orders.find(x=>x.id===id);if(!o)return;openSheet(o.type,id);if(o.type==="c2c"){$("c2cAt").value=localInput(o.at);$("c2cCoin").value=o.coin;$("c2cProvider").value=o.provider;$("c2cCny").value=o.cny;$("c2cStable").value=o.stable;$("c2cNote").value=o.note;previewC2c()}else{$("btcAt").value=localInput(o.at);$("btcCoin").value=o.coin;$("btcStrategy").value=o.strategy;$("btcPrice").value=o.price;$("btcSpent").value=o.spent;$("btcReceived").value=o.btc;$("btcCold").checked=o.cold;$("btcNote").value=o.note;lastBtcEdited="received";previewBtc("received")}}
-  function deleteOrder(id){const o=state.orders.find(x=>x.id===id);if(!o||!confirm(`确认删除这笔${o.type==="c2c"?" C2C":" BTC"}流水？`))return;state.orders=state.orders.filter(x=>x.id!==id);save();render();toast("流水已删除")}
-  function toggleCold(id){const o=state.orders.find(x=>x.id===id&&x.type==="btc");if(!o)return;o.cold=!o.cold;save();render();toast(o.cold?"已标记提至冷钱包":"已恢复为待提币")}
-  function clearLedger(){if(!confirm("确认清空个人定投账本？历史持仓、C2C 与 BTC 流水都会删除。此操作不可撤销。"))return;state=blank();save();render();toast("账本已清空")}
+  function deleteOrder(id){const o=state.orders.find(x=>x.id===id);if(!o||!confirm(en()?`Delete this ${o.type==="c2c"?"P2P":"BTC"} entry?`:`确认删除这笔${o.type==="c2c"?" C2C":" BTC"}流水？`))return;state.orders=state.orders.filter(x=>x.id!==id);save();render();toast(en()?"Entry deleted":"流水已删除")}
+  function toggleCold(id){const o=state.orders.find(x=>x.id===id&&x.type==="btc");if(!o)return;o.cold=!o.cold;save();render();toast(en()?(o.cold?"Marked withdrawn to cold wallet":"Marked on exchange"):(o.cold?"已标记提至冷钱包":"已恢复为待提币"))}
+  function clearLedger(){if(!confirm(en()?"Clear the entire DCA ledger? Baseline, P2P, and BTC entries will be removed.":"确认清空个人定投账本？历史持仓、C2C 与 BTC 流水都会删除。此操作不可撤销。"))return;state=blank();save();render();toast(en()?"Ledger cleared":"账本已清空")}
 
   function download(name,text,type){const blob=new Blob([text],{type}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
-  function exportJson(){const payload={app:"BTC-PERSONAL-DCA",schema:2,build:BUILD,exportedAt:new Date().toISOString(),state};download(`btc-personal-dca-${todayLocal()}.json`,JSON.stringify(payload,null,2),"application/json");toast("JSON 备份已导出")}
+  function exportJson(){
+    const payload={app:"BTC-PERSONAL-DCA",schema:2,build:BUILD,exportedAt:new Date().toISOString(),state,keys:{btc_dca_ledger_v1:JSON.stringify(state)}};
+    download(`btc-personal-dca-${todayLocal()}.json`,JSON.stringify(payload,null,2),"application/json");
+    toast(en()?"JSON backup exported":"JSON 备份已导出");
+  }
   function csvCell(v){const s=String(v??"");return/[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}
-  function exportCsv(){const head=["类型","时间","币种","CNY实付","稳定币数量/实付","BTC价格","BTC到账","定投类型","冷钱包","备注"],rows=state.orders.sort((a,b)=>a.at-b.at).map(o=>o.type==="c2c"?["C2C",dateText(o.at),o.coin,o.cny,o.stable,"","","","",o.note]:["BTC",dateText(o.at),o.coin,"",o.spent,o.price,o.btc,strategyName(o.strategy),o.cold?"是":"否",o.note]);download(`btc-personal-dca-${todayLocal()}.csv`,"\ufeff"+[head,...rows].map(r=>r.map(csvCell).join(",")).join("\n"),"text/csv;charset=utf-8");toast("CSV 已导出")}
-  async function importJson(input){const file=input.files&&input.files[0];if(!file)return;try{const p=JSON.parse(await file.text());if(!p||p.app!=="BTC-PERSONAL-DCA"||!p.state)throw new Error();if(!confirm("导入备份将覆盖当前个人定投账本，是否继续？"))return;state=sanitize(p.state);save("备份已导入");render();toast("备份导入成功")}catch(_){toast("备份文件无效或已损坏")}finally{input.value=""}}
+  function exportCsv(){
+    const E=en();
+    const head=E?["Type","Time","Coin","CNYPaid","Stablecoin","BTCPrice","BTCReceived","Bucket","ColdWallet","Note"]:["类型","时间","币种","CNY实付","稳定币数量/实付","BTC价格","BTC到账","定投类型","冷钱包","备注"];
+    const rows=[...state.orders].sort((a,b)=>a.at-b.at).map(o=>o.type==="c2c"?["C2C",dateText(o.at),o.coin,o.cny,o.stable,"","","","",o.note]:["BTC",dateText(o.at),o.coin,"",o.spent,o.price,o.btc,strategyName(o.strategy),o.cold?(E?"Yes":"是"):(E?"No":"否"),o.note]);
+    download(`btc-personal-dca-${todayLocal()}.csv`,"\ufeff"+[head,...rows].map(r=>r.map(csvCell).join(",")).join("\n"),"text/csv;charset=utf-8");
+    toast(E?"CSV exported":"CSV 已导出");
+  }
+  function extractImportedLedger(p){
+    if(!p||typeof p!=="object")return null;
+    if(p.app==="BTC-PERSONAL-DCA"&&p.state)return p.state;
+    if(p.app==="BTC-DCA"&&p.state&&p.state.dcaLedger)return p.state.dcaLedger;
+    const bag=(p.keys&&typeof p.keys==="object")?p.keys:((p.data&&typeof p.data==="object")?p.data:p);
+    if(typeof bag.btc_dca_ledger_v1==="string"){try{return JSON.parse(bag.btc_dca_ledger_v1)}catch(_){}}
+    if(bag.btc_dca_ledger_v1&&typeof bag.btc_dca_ledger_v1==="object")return bag.btc_dca_ledger_v1;
+    if(typeof bag.btc_exec_v7==="string"){try{const h=JSON.parse(bag.btc_exec_v7);if(h&&h.dcaLedger)return h.dcaLedger}catch(_){}}
+    return null;
+  }
+  async function importJson(input){
+    const file=input.files&&input.files[0];if(!file)return;
+    try{
+      const p=JSON.parse(await file.text()),extracted=extractImportedLedger(p);
+      if(!extracted)throw new Error("invalid");
+      if(!confirm(en()?"Import backup and overwrite current DCA ledger?":"导入备份将覆盖当前个人定投账本，是否继续？"))return;
+      state=sanitize(extracted);save(en()?"Backup imported":"备份已导入");render();toast(en()?"Backup restored":"备份导入成功");
+    }catch(_){toast(en()?"Invalid backup file":"备份文件无效或未包含定投账本")}finally{input.value=""}
+  }
   function toast(t){const el=$("toast");el.textContent=t;el.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove("on"),2300)}
 
-  async function fetchJson(url,ms=7000){const c=new AbortController(),tm=setTimeout(()=>c.abort(),ms);try{const r=await fetch(url,{signal:c.signal,cache:"no-store"});if(!r.ok)throw new Error();return await r.json()}finally{clearTimeout(tm)}}
+  async function fetchJson(url,ms=7000){
+    const c=new AbortController(),tm=setTimeout(()=>c.abort(),ms);
+    try{
+      const r=await fetch(url,{signal:c.signal,cache:"no-store"});
+      if(!r.ok||(r.headers.get("content-type")||"").toLowerCase().includes("text/html"))throw new Error("http");
+      return await r.json();
+    }finally{clearTimeout(tm)}
+  }
   async function first(path){let err;for(const b of BASES)try{return await fetchJson(b+path)}catch(e){err=e}throw err||new Error()}
+  async function fetchSpotPrice(){
+    try{const t=await first("/api/v3/ticker/24hr?symbol=BTCUSDT");if(num(t.lastPrice)>0)return{price:num(t.lastPrice),change:num(t.priceChangePercent)}}catch(_){}
+    try{const j=await fetchJson("https://www.okx.com/api/v5/market/ticker?instId=BTC-USDT",6000),t=j&&j.data&&j.data[0],p=num(t&&t.last),o=num(t&&t.open24h);if(p>0)return{price:p,change:o>0?(p/o-1)*100:0}}catch(_){}
+    try{const t=await fetchJson("https://api.exchange.coinbase.com/products/BTC-USD/stats",6000),p=num(t&&t.last),o=num(t&&t.open);if(p>0)return{price:p,change:o>0?(p/o-1)*100:0}}catch(_){}
+    const core=await fetchJson("./data/v28/core.json",5000);
+    const cp=num(core&&core.latest&&core.latest.price);
+    if(cp>0)return{price:cp,change:0};
+    throw new Error("spot");
+  }
+  async function fetchDailyHistory(earliestMs){
+    try{
+      const ch=await fetchJson("./data/v28/charts.json",7000);
+      if(ch&&ch.v===1&&ch.priceAll&&Array.isArray(ch.priceAll.v)){
+        const t0=Date.parse(String(ch.priceAll.start)+"T00:00:00Z");
+        if(Number.isFinite(t0)){
+          const rows=ch.priceAll.v.map((v,i)=>({t:t0+i*86400000,close:num(v)})).filter(x=>x.t>=earliestMs&&x.close>0);
+          if(rows.length>30)return rows;
+        }
+      }
+    }catch(_){}
+    try{
+      const bv=await fetchJson("https://bitview.space/api/series/bulk?index=day1&series=date,price&start=-1100",9000);
+      const ref=bv&&bv[0],pc=bv&&bv[1],ds=(ref&&ref.data)||[],ps=(pc&&pc.data)||[],s0=num(ref&&ref.start),s1=num(pc&&pc.start);
+      const rows=ds.map((d,i)=>{const k=s0+i-s1;return{t:Date.parse(String(d)+"T00:00:00Z"),close:k>=0&&k<ps.length?num(ps[k]):0}}).filter(x=>x.t>=earliestMs&&x.close>0);
+      if(rows.length>30)return rows;
+    }catch(_){}
+    const k=await first(`/api/v3/klines?symbol=BTCUSDT&interval=1d&startTime=${Math.floor(earliestMs)}&limit=1000`);
+    return(Array.isArray(k)?k:[]).map(x=>({t:num(x[0]),close:num(x[4])})).filter(x=>x.t>0&&x.close>0);
+  }
   async function fetchFx(){
     const sources=[
       async()=>{const j=await fetchJson("https://api.coinbase.com/v2/exchange-rates?currency=USD");return{rate:num(j&&j.data&&j.data.rates&&j.data.rates.CNY),source:"Coinbase"}},
       async()=>{const j=await fetchJson("https://open.er-api.com/v6/latest/USD");return{rate:num(j&&j.rates&&j.rates.CNY),source:"ExchangeRate-API"}},
       async()=>{const j=await fetchJson("https://api.frankfurter.app/latest?from=USD&to=CNY");return{rate:num(j&&j.rates&&j.rates.CNY),source:"Frankfurter"}}
-    ];let err;for(const source of sources)try{const x=await source();if(x.rate>5&&x.rate<10)return x}catch(e){err=e}throw err||new Error()
+    ];let err;for(const source of sources)try{const x=await source();if(x.rate>5&&x.rate<10)return x}catch(e){err=e}throw err||new Error();
   }
   async function refreshMarket(force=false){
-    $("priceState").textContent="同步中…";let priceOk=false,fxOk=false;
-    const [tickerResult,fxResult]=await Promise.allSettled([first("/api/v3/ticker/24hr?symbol=BTCUSDT"),fetchFx()]);
-    if(tickerResult.status==="fulfilled"){const t=tickerResult.value,price=num(t.lastPrice),change=num(t.priceChangePercent);if(price>0){market={...market,price,change,at:Date.now()};priceOk=true}}
+    const E=en();
+    $("priceState").textContent=E?"Syncing…":"同步中…";let priceOk=false,fxOk=false;
+    const [tickerResult,fxResult]=await Promise.allSettled([fetchSpotPrice(),fetchFx()]);
+    if(tickerResult.status==="fulfilled"){const t=tickerResult.value;market={...market,price:t.price,change:t.change,at:Date.now()};priceOk=true}
     if(fxResult.status==="fulfilled"){const x=fxResult.value;market={...market,fx:x.rate,fxAt:Date.now(),fxSource:x.source};state.settings.fallbackFx=x.rate;fxOk=true}
-    if(priceOk)try{const q=quantitySeries(),earliest=q.length?q[0].t:Date.now()-365*86400000,start=Math.max(earliest,Date.now()-999*86400000),k=await first(`/api/v3/klines?symbol=BTCUSDT&interval=1d&startTime=${Math.floor(start)}&limit=1000`);market.history=(Array.isArray(k)?k:[]).map(x=>({t:num(x[0]),close:num(x[4])})).filter(x=>x.t>0&&x.close>0)}catch(_){}
+    try{const q=quantitySeries(),earliest=q.length?q[0].t:Date.now()-365*86400000,start=Math.max(earliest,Date.now()-1100*86400000),h=await fetchDailyHistory(start);if(h&&h.length)market.history=h}catch(_){}
     try{localStorage.setItem(MARKET_KEY,JSON.stringify(market));if(fxOk)localStorage.setItem(KEY,JSON.stringify(state))}catch(_){}
-    $("priceState").textContent=priceOk&&fxOk?"价格与汇率已同步":priceOk?"价格已同步 · 汇率缓存":fxOk?"汇率已同步 · 价格缓存":market.price||market.fx?"使用缓存":"数据暂不可用";
-    renderMarket();render();if($("modal").classList.contains("on")&&$("formBaseline").classList.contains("on"))previewBaseline();if(force&&!priceOk&&!fxOk)toast("价格与汇率暂不可用，已保留本机缓存")
+    $("priceState").textContent=E
+      ?(priceOk&&fxOk?"Price & FX synced":priceOk?"Price synced · FX cached":fxOk?"FX synced · Price cached":market.price||market.fx?"Using cache":"Unavailable")
+      :(priceOk&&fxOk?"价格与汇率已同步":priceOk?"价格已同步 · 汇率缓存":fxOk?"汇率已同步 · 价格缓存":market.price||market.fx?"使用缓存":"暂不可用");
+    renderMarket();render();if($("modal").classList.contains("on")&&$("formBaseline").classList.contains("on"))previewBaseline();
+    if(force&&!priceOk&&!fxOk)toast(E?"Price & FX unavailable; keeping cached values":"价格与汇率暂不可用，已保留本机缓存");
   }
   function loadMarket(){try{const x=JSON.parse(localStorage.getItem(MARKET_KEY)||"null");if(x)market={price:Math.max(0,num(x.price)),change:num(x.change),at:Math.max(0,num(x.at)),history:Array.isArray(x.history)?x.history:[],fx:Math.max(0,num(x.fx)),fxAt:Math.max(0,num(x.fxAt)),fxSource:String(x.fxSource||"")}}catch(_){}renderMarket()}
-  function renderMarket(){$("heroPrice").textContent=market.price?fmtUsd(market.price):"--";$("heroFx").textContent="USD/CNY "+(market.fx?market.fx.toFixed(4):currentFx().toFixed(2)+(market.fx?"":" · 估算"));if(market.at&&Date.now()-market.at>60000&&$("priceState").textContent==="同步价格与汇率")$("priceState").textContent=Math.floor((Date.now()-market.at)/60000)+" 分钟前"}
-  async function persistent(){try{if(navigator.storage&&navigator.storage.persist){const ok=await navigator.storage.persist();$("storageNote").textContent=(ok?"已启用本机持久存储。":"浏览器未授予持久存储。")+"账本会同步人民币总成本、持仓与流水给同域名下的 V22.3.2 主站；仍建议换机或清理浏览器前导出 JSON。"}}catch(_){}}
+  function renderMarket(){
+    const E=en();
+    $("heroPrice").textContent=market.price?fmtUsd(market.price):"--";
+    $("heroFx").textContent="USD/CNY "+(market.fx?market.fx.toFixed(4):currentFx().toFixed(2)+(market.fx?"":(E?" · est.":" · 估算")));
+    if(market.at&&Date.now()-market.at>60000&&($("priceState").textContent==="更新价格与汇率"||$("priceState").textContent==="Update price & FX")){
+      const m=Math.floor((Date.now()-market.at)/60000);
+      $("priceState").textContent=E?(m+"m ago"):(m+" 分钟前");
+    }
+  }
+  async function persistent(){
+    const E=en();
+    try{
+      if(navigator.storage&&navigator.storage.persist){
+        const ok=await navigator.storage.persist();
+        $("storageNote").textContent=E
+          ?((ok?"Persistent storage enabled. ":"Persistent storage not granted. ")+"Total CNY cost, holdings, and entries sync locally with Sats Garden on the same origin; export a JSON backup before switching devices.")
+          :((ok?"已启用本机持久存储。":"浏览器未授予持久存储。")+"账本会将人民币总成本、持仓与流水实时同步给同域名下的 Sats Garden 主站；仍建议换机或清理浏览器前导出 JSON。");
+        return;
+      }
+    }catch(_){}
+    $("storageNote").textContent=E
+      ?"Total CNY cost, holdings, and entries sync locally with Sats Garden on the same origin; export a JSON backup before switching devices."
+      :"账本会将人民币总成本、持仓与流水实时同步给同域名下的 Sats Garden 主站；仍建议换机或清理浏览器前导出 JSON。";
+  }
+  window.addEventListener("storage",e=>{
+    if(e.key==="btc_theme_v1"&&(e.newValue==="light"||e.newValue==="dark")){syncThemeMeta(e.newValue);renderCharts()}
+    if(e.key==="btc_lang_v1"&&(e.newValue==="zh"||e.newValue==="en")){window.BTC_LANG=e.newValue;document.documentElement.lang=e.newValue==="en"?"en":"zh-CN";applyStaticI18n();renderMarket();render();persistent()}
+  });
   document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("modal").classList.contains("on"))closeSheet()});
-  themeLabel();loadMarket();render();persistent();refreshMarket(false);
-  if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol))setTimeout(()=>navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(()=>{}),2500);
+  applyStaticI18n();loadMarket();render();persistent();refreshMarket(false);
+  if("serviceWorker" in navigator&&location.protocol==="https:")setTimeout(()=>navigator.serviceWorker.register("./sw.js",{scope:"./",updateViaCache:"none"}).catch(()=>{}),2500);
   </script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BUILD: 28.0.3-20261125 · SATS-GARDEN-V28.0.3 -->
+<!-- BUILD: 28.1.0-20261126 · SATS-GARDEN-V28.1.0 -->
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -10,7 +10,7 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Sats Garden" />
-  <meta name="btc-dca-build" content="28.0.3-20261125" />
+  <meta name="btc-dca-build" content="28.1.0-20261126" />
   <script>
 (function(){
   "use strict";
@@ -254,12 +254,34 @@
   function waitFor(p,sig){return new Promise(function(res,rej){
     if(sig){if(sig.aborted){rej(new DOMException("Aborted","AbortError"));return}sig.addEventListener("abort",function(){rej(new DOMException("Aborted","AbortError"))},{once:true})}
     p.then(res,rej)})}
+  var dataMiss={};
+  try{var dm=JSON.parse(sessionStorage.getItem("sg_data_miss_v1")||"{}");if(dm&&typeof dm==="object")dataMiss=dm}catch(e){}
+  function guardLocalData(input,init,pKey){
+    if(dataMiss[pKey]&&Date.now()-dataMiss[pKey]<10*60*1000){
+      return Promise.resolve(new Response("{}",{status:404,headers:{"content-type":"application/json","x-sg-miss":"1"}}));
+    }
+    return native(input,init).then(function(r){
+      var ct=(r.headers.get("content-type")||"").toLowerCase();
+      if(!r.ok||ct.indexOf("text/html")>=0){
+        dataMiss[pKey]=Date.now();
+        try{sessionStorage.setItem("sg_data_miss_v1",JSON.stringify(dataMiss))}catch(e){}
+        return new Response("{}",{status:404,headers:{"content-type":"application/json"}});
+      }
+      return r;
+    });
+  }
   window.fetch=function(input,init){
     try{
       var req=typeof input==="string"?null:input,url=req?req.url:String(input),method=((init&&init.method)||(req&&req.method)||"GET").toUpperCase();
       if(method!=="GET")return native(input,init);
       var u=new URL(url,location.href),c=cls(u);
-      if(!c)return u.origin===location.origin?native(input,init):watch(native(input,init),url).catch(function(e){failedWhy(url,reason(e));throw e});
+      if(!c){
+        if(u.origin===location.origin){
+          if(/\/data\/.+\.json$/i.test(u.pathname)&&!u.searchParams.has("_btc_update"))return guardLocalData(input,init,u.pathname);
+          return native(input,init);
+        }
+        return watch(native(input,init),url).catch(function(e){failedWhy(url,reason(e));throw e});
+      }
       var key=u.href,sig=(init&&init.signal)||(req&&req.signal)||null;
     }catch(e){return native(input,init)}
     return get(key).then(function(rec){
@@ -288,6 +310,26 @@
     });
   };
 })();
+window.__sgV28=(function(){
+  "use strict";
+  var MAX_AGE=36*3600*1000,pCore=null,pCharts=null;
+  function loadJson(path){
+    var ctrl=typeof AbortController!=="undefined"?new AbortController():null;
+    var tm=ctrl?setTimeout(function(){try{ctrl.abort()}catch(e){}},7000):null;
+    return fetch(path,ctrl?{cache:"no-cache",signal:ctrl.signal}:{cache:"no-cache"}).then(function(r){
+      if(tm)clearTimeout(tm);
+      if(!r.ok||(r.headers.get("content-type")||"").toLowerCase().indexOf("text/html")>=0)return null;
+      return r.json();
+    }).then(function(j){
+      if(!j||j.v!==1||!(+j.ts>0)||Date.now()-(+j.ts)>MAX_AGE)return null;
+      return j;
+    }).catch(function(){if(tm)clearTimeout(tm);return null});
+  }
+  return {
+    core:function(force){if(force||!pCore)pCore=loadJson("./data/v28/core.json");return pCore},
+    charts:function(force){if(force||!pCharts)pCharts=loadJson("./data/v28/charts.json");return pCharts}
+  };
+})();
 </script>
 <script>
 (function(){
@@ -305,7 +347,7 @@
 })();
 </script>
 <script>(function(){var l=null;try{l=localStorage.getItem("btc_lang_v1")}catch(e){}if(l!=="zh"&&l!=="en"){var n=(navigator.languages&&navigator.languages[0])||navigator.language||"";l=/^zh/i.test(n)?"zh":"en"}window.BTC_LANG=l;var d=document.documentElement;d.lang=l==="en"?"en":"zh-CN";if(l==="en"){d.classList.add("i18n-pending");setTimeout(function(){d.classList.remove("i18n-pending")},2500)}})();</script>
-<script>const BUILD_ID="28.0.3-20261125";const BUILD_LABEL="V28.0.3";function sgLabel(){return window.BTC_LANG==="en"?BUILD_LABEL.replace(/\s*正式版$/,""):BUILD_LABEL}(function(){var T="btc_theme_v1",t=null;try{t=localStorage.getItem(T)}catch(e){}if(t!=="light"&&t!=="dark"){t=null}window.__themePinned=!!t;if(!t)t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.dataset.theme=t;})();</script>
+<script>const BUILD_ID="28.1.0-20261126";const BUILD_LABEL="V28.1.0";function sgLabel(){return window.BTC_LANG==="en"?BUILD_LABEL.replace(/\s*正式版$/,""):BUILD_LABEL}(function(){var T="btc_theme_v1",t=null;try{t=localStorage.getItem(T)}catch(e){}if(t!=="light"&&t!=="dark"){t=null}window.__themePinned=!!t;if(!t)t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.dataset.theme=t;})();</script>
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
   <link rel="manifest" href="./manifest.webmanifest" id="pwaManifest" />
@@ -315,11 +357,11 @@
   <meta name="description" content="查看比特币价格与 AHR999 指数，切换经典与新拟合模型，记录定投进度；按需展开链上成本与市场分析。" />
   <meta name="keywords" content="BTC,比特币,Bitcoin,AHR999,MVRV,LTH_PSIL,200WMA,恐惧贪婪,Sats Garden,链上数据,幂律" />
   <meta name="robots" content="index,follow" />
-  <link rel="canonical" href="https://9992100.xyz/" />
-  <meta property="og:url" content="https://9992100.xyz/" />
-  <meta property="og:image" content="https://9992100.xyz/docs/cover.jpg" />
+  <link rel="canonical" href="https://9992100.xyz/btc/" />
+  <meta property="og:url" content="https://9992100.xyz/btc/" />
+  <meta property="og:image" content="https://9992100.xyz/btc/docs/cover.jpg" />
   <meta property="og:locale" content="zh_CN" />
-  <meta name="twitter:image" content="https://9992100.xyz/docs/cover.jpg" />
+  <meta name="twitter:image" content="https://9992100.xyz/btc/docs/cover.jpg" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Sats Garden · 比特币价格与 AHR999" />
   <meta property="og:description" content="比特币价格、AHR999 周期估值与本月定投进度。" />
@@ -6433,13 +6475,12 @@ const DEEP_LOSS_SEED={schema:1,stamp:"2026-08-01T06:11:18Z",rows:[
 const BITVIEW_API_BULK_URL="https://bitview.space/api/series/bulk",BITVIEW_FLOOR_CACHE_KEY="btc_bitview_floor_v2",BITVIEW_FLOOR_CACHE_TTL=6*3600*1000,BITVIEW_FLOOR_FAIL_KEY="btc_bitview_floor_fail_v2",BITVIEW_FLOOR_FAIL_TTL=20*60*1000;
 let bitviewFloorLastCheck=0,bitviewFloorLastFailure=0,bitviewFloorError="",bitviewFloorMemoryOnly=false,bitviewFloorTimer=null;
 const BITVIEW_MODEL_DEFS=[
-  {name:"Raw",id:"raw"},{name:"Cointime",id:"cointime"},{name:"CM",id:"coinflow"},{name:"CM 8y",id:"coinflow_8y"},{name:"CM 4y",id:"coinflow_4y"},
-  {name:"CM 2y",id:"coinflow_2y"},{name:"CM 1y",id:"coinflow_1y"},{name:"CM 6m",id:"coinflow_6m"},{name:"CM 3m",id:"coinflow_3m"},{name:"CM 1m",id:"coinflow_1m"}
+  {name:"Raw",id:"unweighted"},{name:"Cointime",id:"awake"},{name:"CM",id:"mobile"}
 ];
-const BITVIEW_MODEL_ORDER=BITVIEW_MODEL_DEFS.map(x=>x.name),BITVIEW_FLOOR_PCTS=["pct95","pct98","pct99","pct99_5","pct99_9"];
+const BITVIEW_MODEL_ORDER=["Raw","Cointime","CM","CM 8y","CM 4y","CM 2y","CM 1y","CM 6m","CM 3m","CM 1m"],BITVIEW_FLOOR_PCTS=["p95","p98","p99","p99_5","p99_9"];
 const BITVIEW_FLOOR_SERIES=["date","price",...BITVIEW_MODEL_DEFS.flatMap(m=>BITVIEW_FLOOR_PCTS.map(p=>`bedrock_${m.id}_floor_${p}`))];
 const BITVIEW_FLOOR_SEED=FLOOR_EMBEDDED;
-const BITVIEW_OVERVIEW_SERIES=["date","sth_realized_price","true_market_mean","active_price","rarity_meter_coins_in_loss_rank","rarity_meter_profit_taking_rank","rarity_meter_capitulation_rank","rarity_meter_peak_regret_rank","rarity_meter_seller_exhaustion_rank"];
+const BITVIEW_OVERVIEW_SERIES=["date","sth_realized_price","true_market_mean","active_price"];
 const BITVIEW_OVERVIEW_CACHE_KEY="btc_bitview_overview_v1",BITVIEW_OVERVIEW_CACHE_TTL=6*3600*1000;
 const BITVIEW_RARITY_META=[{key:"coins",label:"亏损筹码"},{key:"profit",label:"获利了结"},{key:"capitulation",label:"投降亏损"},{key:"regret",label:"高位后悔"},{key:"exhaustion",label:"卖方衰竭"}];
 const BITVIEW_LTH_SERIES=["date","lth_sopr_1w","lth_realized_profit_to_loss_ratio_1w","lth_coindays_destroyed_sum_1w"],BITVIEW_LTH_CACHE_KEY="btc_bitview_lth_pulse_v1",BITVIEW_LTH_CACHE_TTL=6*3600*1000;
@@ -6470,9 +6511,7 @@ const CHAIN_LAST_GOOD_SNAPSHOT={
   }
 };
 const FLOOR_API={
-  date:"https://bitview.space/api/series/date/day1?start=2014-01-01",
-  price:"https://bitview.space/api/series/price/day1?start=2014-01-01",
-  cost:"https://bitview.space/api/series/cost_basis_per_coin_pct50/day1?start=2014-01-01"
+  bulk:"https://bitview.space/api/series/bulk?index=day1&series=date,price,cost_basis_by_coin_median&start=2014-01-01"
 };
 const FLOOR_CACHE_KEY="btc_utxo_floor_v1",FLOOR_CACHE_TTL=24*3600*1000;
 const COST_STATE_KEY="btc_cost_structure_state_v1";
@@ -7138,15 +7177,26 @@ async function bgMetric(key,label,paths,lo,hi){
   return null;
 }
 
-async function fetchBgValue(paths,lo,hi){
+async function fetchBgValue(paths,lo,hi,cacheKey=""){
+  const ck=cacheKey?"bg5_"+cacheKey:"";
+  let cached=null;
+  if(ck){
+    try{cached=JSON.parse(localStorage.getItem(ck))}catch(e){}
+    if(cached&&Date.now()-cached.ts<SLOW_TTL&&cached.v!=null)return{v:+cached.v,dataTs:cached.dataTs||null,source:cached.source||"BGeometrics",url:cached.url||null};
+    if(cached&&cached.failTs&&Date.now()-cached.failTs<BG_FAILURE_TTL)return cached.v!=null?{v:+cached.v,dataTs:cached.dataTs||null,source:cached.source||"BGeometrics",url:cached.url||null}:null;
+  }
   try{
     const won=await hedgedFirst(paths,async url=>{
-      const r=await tryFetch(withBgToken(url),6000),points=bgSeriesPoints(r),point=points.at(-1)||bgPoint(r);
+      const r=await tryFetch(withBgToken(url),5000),points=bgSeriesPoints(r),point=points.at(-1)||bgPoint(r);
       if(!(point&&point.v>=lo&&point.v<=hi))throw new Error("bad value");
       return{v:point.v,dataTs:point.dataTs||null,source:/api\.bitcoin-data\.com/.test(url)?"Bitcoin Data API":/bgeometrics/.test(url)?"BGeometrics":"Bitcoin Data",url};
     },850);
+    if(ck){try{localStorage.setItem(ck,JSON.stringify({ts:Date.now(),...won.value}))}catch(e){}}
     return won.value;
-  }catch(e){return null}
+  }catch(e){
+    if(ck){try{localStorage.setItem(ck,JSON.stringify({...(cached||{}),failTs:Date.now()}))}catch(_){}}
+    return cached&&cached.v!=null?{v:+cached.v,dataTs:cached.dataTs||null,source:cached.source||"BGeometrics",url:cached.url||null}:null;
+  }
 }
 
 function saveValuationCache(patch){
@@ -8075,22 +8125,22 @@ async function fetchLive(force=false){
       primaryTs=null;
 
     // 均衡价必须来自实时指标，或由 Realized Price − Transfer Price 动态推导。
-    // 不再使用固定差值；固定常数会随着链上历史累积而持续失真。
-    const balancedPaths=[
-      "https://api.bitcoin-data.com/v1/balanced-price",
+    // 未配置个人 BGeometrics Key 时仅做单路轻量探测并缓存失败冷却，避免每次打开连发 8 个无效请求。
+    const hasBgKey=!!getBgApiKey();
+    const balancedPaths=hasBgKey?[
       "https://api.bgeometrics.com/v1/balanced-price",
-      "https://bitcoin-data.com/api/v1/balanced-price",
+      "https://api.bitcoin-data.com/v1/balanced-price",
       "https://bitcoin-data.com/v1/balanced-price"
-    ],transferPaths=[
-      "https://api.bitcoin-data.com/v1/transfer-price",
+    ]:["https://bitcoin-data.com/v1/balanced-price"];
+    const transferPaths=hasBgKey?[
       "https://api.bgeometrics.com/v1/transfer-price",
-      "https://bitcoin-data.com/api/v1/transfer-price",
+      "https://api.bitcoin-data.com/v1/transfer-price",
       "https://bitcoin-data.com/v1/transfer-price"
-    ];
+    ]:[];
     let balancedDirect=null,transferDirect=null;
     const valuationAux=Promise.all([
       bgMetric("balanced","均衡价",balancedPaths,1000,300000),
-      fetchBgValue(transferPaths,100,100000)
+      transferPaths.length?fetchBgValue(transferPaths,100,100000,"transfer"):Promise.resolve(null)
     ]).then(v=>{balancedDirect=v[0];transferDirect=v[1]}).catch(()=>{});
 
     // 零级：Bitview。MVRV = 价格 ÷ 已实现价格（realized_price），与「周期底部 / 顶部探索」同源。
@@ -8430,7 +8480,18 @@ async function fetchLive(force=false){
   // LTH_PSIL 使用公开的 Bitview/BRK 日线序列；只补充链上压力观察，不参与七维估值。
   task(1,async()=>{
     try{
-      const d=lthPsilNormalize(await tryFetch(bitviewBulkUrl(BITVIEW_PSIL_SERIES,"-366"),12000));
+      let d=null;
+      if(window.__sgV28){
+        const ch=await window.__sgV28.charts(),cd=ch&&ch.daily;
+        if(cd&&Array.isArray(cd.d)&&Array.isArray(cd.psil)&&cd.d.length>60){
+          const ser=[];
+          for(let i=Math.max(0,cd.d.length-366);i<cd.d.length;i++){
+            const v=cd.psil[i];if(cd.d[i]&&v!=null&&Number.isFinite(+v))ser.push({day:cd.d[i],value:+v});
+          }
+          if(ser.length>30)d={day:ser.at(-1).day,value:ser.at(-1).value,previous:ser.length>1?ser.at(-2).value:null,series:ser};
+        }
+      }
+      if(!d)d=lthPsilNormalize(await tryFetch(bitviewBulkUrl(BITVIEW_PSIL_SERIES,"-366"),12000));
       if(!d)throw new Error("bad LTH_PSIL series");
       result.lthPsil=d.value;
       if(d.previous!=null)result.prevLthPsil=d.previous;
@@ -8696,18 +8757,18 @@ function bitviewMedian(values){
 }
 function bitviewFloorNormalize(raw){
   if(typeof raw==="string"){try{raw=JSON.parse(raw)}catch(_){return null}}
-  if(!Array.isArray(raw)||raw.length!==BITVIEW_FLOOR_SERIES.length||!raw.every(r=>r&&r.index==="day1"&&Array.isArray(r.data)&&r.start===raw[0].start&&r.end===raw[0].end&&r.data.length===raw[0].data.length))return null;
-  const arrays=BITVIEW_FLOOR_SERIES.map((name,idx)=>pickSeries(raw,name,idx));
-  if(arrays.some(a=>!Array.isArray(a)||!a.length))return null;
-  const n=Math.min(...arrays.map(a=>a.length));let i=n-1;
-  // V27.8：新版 Bitview 只保留 3 个模型（unweighted / awake / mobile），其余 7 个的列全是空值——这些模型不参与，不再让整个模块失败
+  if(!Array.isArray(raw)||raw.length!==BITVIEW_FLOOR_SERIES.length||!raw[0]||!Array.isArray(raw[0].data))return null;
+  const ds=raw[0].data,s0=+(raw[0].start)||0;
+  const arrays=raw.map((c,idx)=>idx===0?ds:ds.map((_,i)=>{const cs=+(c&&c.start)||0,cd=(c&&c.data)||[],k=s0+i-cs;return k>=0&&k<cd.length?cd[k]:null}));
+  const n=ds.length;let i=n-1;
   const P=BITVIEW_FLOOR_PCTS.length,okAt=(m,i)=>{for(let k=0;k<P;k++){const v=+arrays[2+m*P+k][i];if(!(Number.isFinite(v)&&v>0))return false}return true};
   for(;i>=0;i--){if(/^\d{4}-\d{2}-\d{2}$/.test(String(arrays[0][i]||""))&&Date.parse(arrays[0][i]+"T00:00:00Z")<=Date.now()&&+arrays[1][i]>0&&BITVIEW_MODEL_DEFS.filter((_,m)=>okAt(m,i)).length>=3)break}
   if(i<0)return null;
-  const models={},map={pct95:"p95",pct98:"p98",pct99:"p99",pct99_5:"p995",pct99_9:"p999"};
+  const models={},map={p95:"p95",p98:"p98",p99:"p99",p99_5:"p995",p99_9:"p999",pct95:"p95",pct98:"p98",pct99:"p99",pct99_5:"p995",pct99_9:"p999"};
+  const outKeys=["p95","p98","p99","p995","p999"];
   BITVIEW_MODEL_DEFS.forEach((model,m)=>{if(!okAt(m,i))return;const row={};BITVIEW_FLOOR_PCTS.forEach((p,k)=>row[map[p]]=+arrays[2+m*P+k][i]);models[model.name]=row});
   const names=BITVIEW_MODEL_ORDER.filter(name=>models[name]);
-  const levels={};Object.values(map).forEach(key=>levels[key]=bitviewMedian(names.map(name=>models[name][key])));
+  const levels={};outKeys.forEach(key=>levels[key]=bitviewMedian(names.map(name=>models[name][key])));
   const stamp=String(raw&&raw[0]&&raw[0].stamp||new Date().toISOString());
   const out={schema:2,source:"https://bitview.space/api",sourceDate:String(arrays[0][i]),sourceUpdatedAt:stamp,updatedAt:new Date().toISOString(),checkedAt:new Date().toISOString(),status:"live",model:"Consensus",price:+arrays[1][i],levels,models};
   return bitviewFloorValid(out)?out:null;
@@ -9381,16 +9442,16 @@ function bitviewOverviewValid(d){
   return BITVIEW_RARITY_META.every(x=>d.rarity[x.key]==null||Number.isFinite(+d.rarity[x.key])&&+d.rarity[x.key]>=0&&+d.rarity[x.key]<=3);
 }
 function bitviewOverviewNormalize(raw){
-  const arrays=BITVIEW_OVERVIEW_SERIES.map((name,idx)=>pickSeries(raw,name,idx));if(arrays.some(a=>!Array.isArray(a)||!a.length))return null;
-  const n=Math.min(...arrays.map(a=>a.length)),rows=[];
-  for(let i=0;i<n;i++){
-    const day=String(arrays[0][i]||""),phase=String(arrays[1][i]||""),score=+arrays[2][i],sth=+arrays[3][i],trueMean=+arrays[4][i],active=+arrays[5][i],ranks=arrays.slice(6).map(a=>+a[i]);
-    // V27.8：新版 Bitview 已取消「资本情绪阶段」和「稀有度排名」——没有这两项时照样保留成本锚点（短期成本、真实市场均价、活跃价格）
-    if(/^\d{4}-\d{2}-\d{2}$/.test(day)&&sth>0&&trueMean>0&&active>0)rows.push({day,phase:phase&&phase!=="null"?phase:"",score:Number.isFinite(score)&&arrays[2][i]!=null?score:null,sth,trueMean,active,ranks:ranks.map((x,k)=>arrays[6+k][i]!=null&&Number.isFinite(x)&&x>=0&&x<=3?x:null)});
+  if(!Array.isArray(raw)||raw.length<4||!raw[0]||!Array.isArray(raw[0].data))return null;
+  const ds=raw[0].data,s0=+(raw[0].start)||0,at=(colIdx,i)=>{const c=raw[colIdx],cs=+(c&&c.start)||0,cd=(c&&c.data)||[],k=s0+i-cs;return k>=0&&k<cd.length?cd[k]:null};
+  const rows=[];
+  for(let i=0;i<ds.length;i++){
+    const day=String(ds[i]||""),sth=+at(1,i),trueMean=+at(2,i),active=+at(3,i);
+    if(/^\d{4}-\d{2}-\d{2}$/.test(day)&&sth>0&&trueMean>0&&active>0)rows.push({day,phase:"",score:null,sth,trueMean,active});
   }
   const last=rows.at(-1);if(!last)return null;
-  const rarity={};BITVIEW_RARITY_META.forEach((x,i)=>rarity[x.key]=last.ranks[i]);
-  const out={schema:1,day:last.day,stamp:String(raw&&raw[0]&&raw[0].stamp||""),days:rows.map(x=>x.day),phases:rows.map(x=>x.phase),scores:rows.map(x=>x.score),sth:last.sth,trueMean:last.trueMean,active:last.active,rarity};
+  const rarity={};BITVIEW_RARITY_META.forEach(x=>rarity[x.key]=null);
+  const out={schema:1,day:last.day,stamp:String(raw[0].stamp||new Date().toISOString()),days:rows.map(x=>x.day),phases:rows.map(x=>x.phase),scores:rows.map(x=>x.score),sth:last.sth,trueMean:last.trueMean,active:last.active,rarity};
   return bitviewOverviewValid(out)?out:null;
 }
 function bitviewOverviewReadCache(){try{const c=JSON.parse(localStorage.getItem(BITVIEW_OVERVIEW_CACHE_KEY));return c&&bitviewOverviewValid(c.data)?c:null}catch(e){return null}}
@@ -10988,10 +11049,6 @@ function floorReadCache(){
 function floorReadStaleCache(){
   try{const c=JSON.parse(localStorage.getItem(FLOOR_CACHE_KEY)),rows=c&&c.rows,last=Array.isArray(rows)&&rows.at(-1),ts=last&&last[0]?Date.parse(String(last[0])+"T00:00:00Z"):NaN;return c&&Array.isArray(rows)&&rows.length>1000&&Number.isFinite(ts)&&Date.now()-ts>FLOOR_MAX_AGE_DAYS*86400000?c:null}catch(e){return null}
 }
-async function floorFetchSeries(url,signal){
-  const r=await fetch(url,{signal,cache:"no-store"});if(!r.ok)throw new Error("floor source unavailable");
-  const j=await r.json();if(!j||!Array.isArray(j.data))throw new Error("bad floor series");return j;
-}
 async function refreshFloorModel(force=false){
   if(floorLoading)return;
   const cached=floorReadCache();
@@ -10999,8 +11056,12 @@ async function refreshFloorModel(force=false){
   floorLoading=true;floorSetStatus("链上同步中","warn");
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),14000);
   try{
-    const [dates,prices,costs]=await Promise.all([floorFetchSeries(FLOOR_API.date,controller.signal),floorFetchSeries(FLOOR_API.price,controller.signal),floorFetchSeries(FLOOR_API.cost,controller.signal)]);
-    floorRows=floorBuildRows(dates.data,prices.data,costs.data);floorSource="live";floorStamp=costs.stamp||prices.stamp||new Date().toISOString();
+    const r=await fetch("https://bitview.space/api/series/bulk?index=day1&series=date,price,cost_basis_by_coin_median&start=2014-01-01",{signal:controller.signal,cache:"no-store"});
+    if(!r.ok)throw new Error("floor source unavailable");
+    const j=await r.json();
+    if(!Array.isArray(j)||j.length<3||!j[0]||!Array.isArray(j[0].data))throw new Error("bad floor series");
+    const ds=j[0].data,s0=+(j[0].start)||0,align=(c)=>{const cs=+(c&&c.start)||0,cd=(c&&c.data)||[];return ds.map((_,i)=>{const k=s0+i-cs;return k>=0&&k<cd.length?cd[k]:null})};
+    floorRows=floorBuildRows(ds,align(j[1]),align(j[2]));floorSource="live";floorStamp=j[2].stamp||j[1].stamp||new Date().toISOString();
     try{localStorage.setItem(FLOOR_CACHE_KEY,JSON.stringify({ts:Date.now(),stamp:floorStamp,rows:floorRows}))}catch(e){}
     renderFloorSummary();drawFloorChart();if(force)ntf("UTXO 底价带已更新");
   }catch(e){
@@ -15086,11 +15147,14 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
     bind(card);
     return card;
   }
+  var coreObj=null;
   function paint(){
     if(!ensure())return;var en=E();
+    var sg=coreObj&&coreObj.signal||null;
     var ab=$("ahrBig"),ahr=parseFloat(ab&&ab.dataset?ab.dataset.ahrRefit:NaN),zk=ab&&ab.dataset?ab.dataset.zoneRefit:"";
+    if(!Number.isFinite(ahr)&&sg&&sg.ahr>0){ahr=+sg.ahr;zk=sg.ahrZone||""}
     var ZN={deep:["深度低估","Deep value"],value:["长期低估","Long-term value"],warm:["估值偏热","Running warm"],over:["高估风险","Overvalued risk"]},zone=ZN[zk]?ZN[zk][en?1:0]:"";
-    var TB=window.__TB||null;
+    var TB=window.__TB||(sg&&sg.zone?{zone:sg.zone,score:sg.bottomGauge!=null?100-(+sg.bottomGauge):50,risk:sg.risk||"off"}:null);
     var tbTxt=!TB?"--":TB.zone==="bottom"?(en?"Bottom zone":"底部区"):TB.zone==="topStrong"?(en?"Top · strong":"顶部区 · 强"):TB.zone==="top"?(en?"Top zone":"顶部区"):(en?"Neutral":"中性区间");
     var rkTxt=!TB?"--":TB.risk==="fired"?(en?"Prompted":"已提示"):TB.risk==="watch"?(en?"Watching":"监控中"):(en?"Inactive":"未启动");
     var act,color;
@@ -15109,32 +15173,41 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
     $("tvDate").textContent=new Date().toISOString().slice(0,10);
     why(en);
   }
-  // V27.10：「依据」——各模块最新结论各一行（读各模块存在本机的数据；还没有就先不显示那一行）
+  // V27.10 / V28.1.0：「依据」——优先读本机模块缓存或同源 core.json（1 KB 秒开），无需首次打开连发多路链上请求
   function rd(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}}
   function usd(v){return !(v>0)?"--":v>=1e3?"$"+(v/1e3).toFixed(v>=1e5?0:1)+"K":"$"+Math.round(v)}
   function wan(v,en){var a=Math.abs(v);return en?(a>=1e6?(a/1e6).toFixed(2)+"M":(a/1e3).toFixed(0)+"K"):(a>=1e4?(a/1e4).toFixed(1)+"万":Math.round(a).toLocaleString("en-US"))}
   function bn(v){var a=Math.abs(v);return (v<0?"−":"+")+"$"+(a>=1e9?(a/1e9).toFixed(1)+"B":(a/1e6).toFixed(0)+"M")}
   function why(en){
-    var box=$("tvWhy");if(!box)return;var px=typeof S!=="undefined"&&S&&S.price>0?S.price:null,rows=[];
+    var ltCore=coreObj&&coreObj.latest||null,sgCore=coreObj&&coreObj.signal||null,pctCore=coreObj&&coreObj.percentiles||null;
+    var box=$("tvWhy");if(!box)return;var px=(typeof S!=="undefined"&&S&&S.price>0)?S.price:(ltCore&&ltCore.price>0?ltCore.price:null),rows=[];
     var row=function(go,tone,zh,eng){rows.push('<button type="button" class="tv-why-row" data-go="'+go+'"><i class="'+tone+'"></i><span>'+(en?eng:zh)+'</span></button>')};
-    var T=window.__TBM;if(T&&T.gTop&&T.gTop.length){var k=T.gTop[T.gTop.length-1];if(k!=null)row("tb",k>=2?"cau":"neu","顶部证据满足 "+k+" / 3"+(k>=2?"，已进入顶部区":"，未进入顶部区"),k+" of 3 top signals"+(k>=2?" — in the top zone":""))}
-    var cb=rd("btc_cost_bands_v1");if(cb&&cb.L&&cb.L.v&&px){var v=cb.L.v,P=[5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95],pc=null;
-      for(var i=0;i<v.length-1;i++){if(v[i]>0&&v[i]<=px&&px<v[i+1])pc=Math.round(P[i]+5*Math.log(px/v[i])/Math.log(v[i+1]/v[i]))}if(px>=v[v.length-1])pc=95;
-      if(pc!=null)row("costBands",pc>=85?"cau":pc<=40?"pos":"neu","现价高于 "+pc+"% 的持币成本，中位成本 "+usd(v[9]),"Price above "+pc+"% of coins' cost; median cost "+usd(v[9]))}
-    var ac=rd("btc_age_cost_v1");if(ac&&ac.D&&ac.D.rows){var m1=ac.D.rows[0];if(m1&&m1.avg>0&&m1.profit!=null)row("ageCost","neu","近 1 个月买入的币 "+Math.round(m1.profit*100)+"% 盈利，平均成本 "+usd(m1.avg),"Coins bought in the last month: "+Math.round(m1.profit*100)+"% in profit, avg cost "+usd(m1.avg))}
+    var T=window.__TBM,kTop=(T&&T.gTop&&T.gTop.length)?T.gTop[T.gTop.length-1]:(sgCore&&sgCore.topEvidence!=null?sgCore.topEvidence:null);
+    if(kTop!=null)row("tb",kTop>=2?"cau":"neu","顶部证据满足 "+kTop+" / 3"+(kTop>=2?"，已进入顶部区":"，未进入顶部区"),kTop+" of 3 top signals"+(kTop>=2?" — in the top zone":""));
+    var cb=rd("btc_cost_bands_v1"),cbV=(cb&&cb.L&&cb.L.v)||(pctCore&&pctCore.v)||null;
+    if(cbV&&px){var P=[5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95],pc=null;
+      for(var i=0;i<cbV.length-1;i++){if(cbV[i]>0&&cbV[i]<=px&&px<cbV[i+1])pc=Math.round(P[i]+5*Math.log(px/cbV[i])/Math.log(cbV[i+1]/cbV[i]))}if(px>=cbV[cbV.length-1])pc=95;
+      if(pc!=null)row("costBands",pc>=85?"cau":pc<=40?"pos":"neu","现价高于 "+pc+"% 的持币成本，中位成本 "+usd(cbV[9]),"Price above "+pc+"% of coins' cost; median cost "+usd(cbV[9]))}
+    var ac=rd("btc_age_cost_v1"),m1=(ac&&ac.D&&ac.D.rows&&ac.D.rows[0])||(ltCore&&ltCore.newBuyers)||null;
+    if(m1&&m1.avg>0&&m1.profit!=null)row("ageCost","neu","近 1 个月买入的币 "+Math.round(m1.profit*100)+"% 盈利，平均成本 "+usd(m1.avg),"Coins bought in the last month: "+Math.round(m1.profit*100)+"% in profit, avg cost "+usd(m1.avg));
     var lm=rd("btc_lth_monthly_v1"),lr=rd("btc_lthsth_d_v1"),part=[],pe=[],lt="neu";
-    if(lm&&lm.data&&lm.data.v&&lm.data.v.length){var x=lm.data.v[lm.data.v.length-1];part.push("近 30 天"+(x>=0?"增持 ":"减持 ")+wan(x,false)+" BTC");pe.push("30-day "+(x>=0?"added ":"sold ")+wan(x,true)+" BTC");lt=x>=0?"pos":"neg"}
-    if(lr&&lr.data&&lr.data.r&&lr.data.r.length){var r=lr.data.r,n=r.length,pk=0;for(var j=Math.max(0,n-500);j<n;j++)pk=Math.max(pk,r[j]);var off=r[n-1]/pk-1;if(off<-.03){part.push("长短期持仓比率距高点 −"+Math.abs(off*100).toFixed(0)+"%");pe.push("LTH/STH ratio "+Math.abs(off*100).toFixed(0)+"% below its high")}}
+    var lthD30=(lm&&lm.data&&lm.data.v&&lm.data.v.length)?lm.data.v[lm.data.v.length-1]:(ltCore&&ltCore.lthDelta30!=null?+ltCore.lthDelta30:null);
+    if(lthD30!=null&&isFinite(lthD30)){part.push("近 30 天"+(lthD30>=0?"增持 ":"减持 ")+wan(lthD30,false)+" BTC");pe.push("30-day "+(lthD30>=0?"added ":"sold ")+wan(lthD30,true)+" BTC");lt=lthD30>=0?"pos":"neg"}
+    var off=null;
+    if(lr&&lr.data&&lr.data.r&&lr.data.r.length){var r=lr.data.r,n=r.length,pk=0;for(var j=Math.max(0,n-500);j<n;j++)pk=Math.max(pk,r[j]);if(pk>0)off=r[n-1]/pk-1}
+    else if(ltCore&&ltCore.lthSthFromPeak!=null)off=+ltCore.lthSthFromPeak;
+    if(off!=null&&off<-.03){part.push("长短期持仓比率距高点 −"+Math.abs(off*100).toFixed(0)+"%");pe.push("LTH/STH ratio "+Math.abs(off*100).toFixed(0)+"% below its high")}
     if(part.length)row("lthMonthly",lt,"长期持有者"+part.join("，"),"Long-term holders: "+pe.join("; "));
     var st=rd("btc_stablex_v1"),h=rd("btc_stablex_12h_v1");if(st&&st.data&&st.data.u&&st.data.u.length>31){var d=st.data,m=d.u.length-1,t30=(d.u[m]-d.u[m-30])+(d.c[m]-d.c[m-30]);
       var hot=h&&h.u&&h.c&&Date.now()-Math.min(h.u.t||0,h.c.t||0)<3600*1000?[["USDT",h.u],["USDC",h.c]].filter(function(q){return Math.abs(q[1].d)>=q[1].cap*.003}):[];
       row("stable",t30>0?"pos":"neg","稳定币 30 天 "+bn(t30)+(t30>0?"（扩张）":"（收缩）")+(hot.length?"，12 小时 "+hot.map(function(q){return q[0]+(q[1].d>0?" 异动增发":" 异动赎回")}).join("、"):""),"Stablecoins 30-day "+bn(t30)+(hot.length?"; 12h "+hot.map(function(q){return q[0]+(q[1].d>0?" big mint":" big burn")}).join(", "):""))}
     box.innerHTML=rows.join("");box.hidden=!rows.length;
   }
+  if(window.__sgV28)window.__sgV28.core().then(function(c){if(c){coreObj=c;paint()}});
   document.addEventListener("tb:update",paint);document.addEventListener("ahr:update",paint);
   paint();setInterval(paint,15000);setTimeout(paint,400);setTimeout(paint,1200);
-  // 第一次打开时，这几个模块还没被滑到、没有数据：页面空闲后先让它们在后台读取，「依据」随后补齐
-  setTimeout(function(){var w=window.__warm||{};["costBands","ageCost","lthMonthly","lthRatio","stable"].forEach(function(k){try{w[k]&&w[k]()}catch(e){}});[6000,12000,20000].forEach(function(t){setTimeout(paint,t)})},6000);
+  // 若同源 core.json 已就绪，只需后台预热稳定币；否则空闲时再预读各链上模块
+  setTimeout(function(){var w=window.__warm||{},list=coreObj?["stable"]:["costBands","ageCost","lthMonthly","lthRatio","stable"];list.forEach(function(k){try{w[k]&&w[k]()}catch(e){}});[6000,12000,20000].forEach(function(t){setTimeout(paint,t)})},6000);
 })();
 </script>
 <script>
@@ -15564,6 +15637,15 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
     html+='<div class="hd-row hd-total"><span class="hd-band">'+(E2?"Total":"合计")+'</span><span class="hd-cell hd-a"><b>'+num(totA)+'</b></span><span class="hd-cell hd-s"><b>'+sv(totS)+'</b></span></div>';
     box.innerHTML=html;
   }
+  var RAW_MAP={
+    under_1k_sats:["1_to_10_sats","10_to_100_sats","100_to_1k_sats"],
+    "1k_sats_to_10k_sats":["1k_to_10k_sats"],"10k_sats_to_100k_sats":["10k_to_100k_sats"],
+    "100k_sats_to_1m_sats":["100k_to_1m_sats"],"1m_sats_to_10m_sats":["1m_to_10m_sats"],
+    "10m_sats_to_1btc":["10m_to_100m_sats"],"1btc_to_10btc":["1_to_10_btc"],
+    "10btc_to_100btc":["10_to_100_btc"],"100btc_to_1k_btc":["100_to_1k_btc"],
+    "1k_btc_to_10k_btc":["1k_to_10k_btc"],"10k_btc_to_100k_btc":["10k_to_100k_btc"],
+    over_100k_btc:["over_100k_btc"]
+  };
   async function load(force){
     var c=readCache();
     if(c&&!data){data=c.data}
@@ -15571,11 +15653,23 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
     if(!force&&c&&!mStale&&Date.now()-c.ts<TTL){render();return}
     if(loading)return;loading=true;failed=false;render();
     try{
-      var names=["date"];BANDS.forEach(function(b){names.push("addrs_"+b.k+"_addr_count")});BANDS.forEach(function(b){names.push("addrs_"+b.k+"_supply")});
+      if(!force&&window.__sgV28){
+        var ch=await window.__sgV28.charts(),ad=ch&&ch.addr;
+        if(ad&&ad.day&&Array.isArray(ad.bands12)&&ad.bands12.length===BANDS.length){
+          var d0={day:ad.day,rows:BANDS.map(function(b,i){return {key:b.k,count:+ad.bands12[i].count,supply:+ad.bands12[i].supply}})};
+          if(valid(d0)){data=d0;failed=false;try{localStorage.setItem(KEY,JSON.stringify({ts:Date.now(),data:d0}))}catch(e){}return}
+        }
+      }
+      var rawBands=[];BANDS.forEach(function(b){RAW_MAP[b.k].forEach(function(rb){if(rawBands.indexOf(rb)<0)rawBands.push(rb)})});
+      var names=["date"];rawBands.forEach(function(rb){names.push("balance_"+rb+"_address_count")});rawBands.forEach(function(rb){names.push("balance_"+rb+"_supply")});
       var u=new URL(API);u.searchParams.set("index","day1");u.searchParams.set("series",names.join(","));u.searchParams.set("start","-1");
       var raw=typeof tryFetch==="function"?await tryFetch(u.toString(),20000):await (await fetch(u.toString())).json();
-      var last=function(i){var a=raw&&raw[i]&&raw[i].data;return Array.isArray(a)&&a.length?a[a.length-1]:NaN};
-      var n=BANDS.length,d={day:String(last(0)||""),rows:BANDS.map(function(b,i){return {key:b.k,count:+last(1+i),supply:+last(1+n+i)}})};
+      var last=function(i){var a=raw&&raw[i]&&raw[i].data;return Array.isArray(a)&&a.length?+a[a.length-1]:0};
+      var m=rawBands.length,byB={};rawBands.forEach(function(rb,i){byB[rb]={c:last(1+i),s:last(1+m+i)}});
+      var d={day:String(raw&&raw[0]&&raw[0].data&&raw[0].data[raw[0].data.length-1]||""),rows:BANDS.map(function(b){
+        var cnt=0,sup=0;RAW_MAP[b.k].forEach(function(rb){cnt+=byB[rb].c||0;sup+=byB[rb].s||0});
+        return {key:b.k,count:cnt,supply:sup};
+      })};
       if(!valid(d))throw new Error("bad address distribution");
       data=d;try{localStorage.setItem(KEY,JSON.stringify({ts:Date.now(),data:d}))}catch(e){}
     }catch(e){if(!data)failed=true}
@@ -15868,12 +15962,21 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
     if(dLoading||(!force&&daily))return;
     try{var c=JSON.parse(localStorage.getItem(DKEY));if(c&&valid(c.data)){daily=c.data;var ld=daily.m[daily.m.length-1],stale=!ld||(Date.now()-Date.parse(ld+"T00:00:00Z"))>2*864e5;if(!force&&!stale&&Date.now()-c.ts<TTL){if(data)render();else draw();return}}}catch(e){}
     dLoading=true;dFailed=false;
-    var u=function(name){var x=new URL(API);x.searchParams.set("index","day1");x.searchParams.set("series","date,"+name);x.searchParams.set("start","-400");return x.toString()};
-    var get=function(url){return typeof tryFetch==="function"?tryFetch(url,20000):fetch(url).then(function(r){return r.json()})};
-    Promise.all([get(u("lth_supply_delta_1m")),get(u("price"))]).then(function(r){
-      var dm=r[0][0].data,dv=r[0][1].data,pm=r[1][0].data,pv=r[1][1].data,P={},today=new Date().toISOString().slice(0,10);pm.forEach(function(d,i){P[d]=+pv[i]});
-      var d={m:[],v:[],p:[]};dm.forEach(function(x,i){var val=dv[i];if(x>=today||val==null||!isFinite(+val))return;d.m.push(x);d.v.push(+val);d.p.push(P[x]||0)});
-      if(!valid(d))throw new Error("bad daily");daily=d;try{localStorage.setItem(DKEY,JSON.stringify({ts:Date.now(),data:d}))}catch(e){}
+    var pre=(!force&&window.__sgV28)?window.__sgV28.charts():Promise.resolve(null);
+    pre.then(function(ch){
+      var cd=ch&&ch.daily;
+      if(cd&&Array.isArray(cd.d)&&Array.isArray(cd.lthDelta30)){
+        var d0={m:[],v:[],p:[]},today0=new Date().toISOString().slice(0,10);
+        cd.d.forEach(function(x,i){var val=cd.lthDelta30[i];if(x>=today0||val==null||!isFinite(+val))return;d0.m.push(x);d0.v.push(+val);d0.p.push(+(cd.price&&cd.price[i])||0)});
+        if(valid(d0)){daily=d0;try{localStorage.setItem(DKEY,JSON.stringify({ts:Date.now(),data:d0}))}catch(e){}return}
+      }
+      var u=function(name){var x=new URL(API);x.searchParams.set("index","day1");x.searchParams.set("series","date,"+name);x.searchParams.set("start","-400");return x.toString()};
+      var get=function(url){return typeof tryFetch==="function"?tryFetch(url,20000):fetch(url).then(function(r){return r.json()})};
+      return Promise.all([get(u("lth_supply_delta_1m")),get(u("price"))]).then(function(r){
+        var dm=r[0][0].data,dv=r[0][1].data,pm=r[1][0].data,pv=r[1][1].data,P={},today=new Date().toISOString().slice(0,10);pm.forEach(function(d,i){P[d]=+pv[i]});
+        var d={m:[],v:[],p:[]};dm.forEach(function(x,i){var val=dv[i];if(x>=today||val==null||!isFinite(+val))return;d.m.push(x);d.v.push(+val);d.p.push(P[x]||0)});
+        if(!valid(d))throw new Error("bad daily");daily=d;try{localStorage.setItem(DKEY,JSON.stringify({ts:Date.now(),data:d}))}catch(e){}
+      });
     }).catch(function(){if(!daily)dFailed=true}).then(function(){dLoading=false;if(data)render();else draw()});
   }
   async function bulk(name){var u=new URL(API);u.searchParams.set("index","month1");u.searchParams.set("series","date,"+name);u.searchParams.set("start","0");
@@ -15883,6 +15986,18 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
     if(!force&&c&&Date.now()-c.ts<TTL){render();return}
     if(loading)return;loading=true;failed=false;render();
     try{
+      if(!force&&window.__sgV28){
+        var ch=await window.__sgV28.charts(),cw=ch&&ch.weekly,cd=ch&&ch.daily;
+        if(cw&&Array.isArray(cw.d)&&Array.isArray(cw.lthDelta30)){
+          var byM={},today0=new Date().toISOString().slice(0,10),lastDay="";
+          cw.d.forEach(function(x,i){var val=cw.lthDelta30[i];if(!x||val==null||!isFinite(+val))return;byM[x.slice(0,7)]={m:x.slice(0,7)+"-01",v:+val,p:+(cw.price&&cw.price[i])||0};lastDay=x});
+          if(cd&&Array.isArray(cd.d)&&Array.isArray(cd.lthDelta30)){
+            cd.d.forEach(function(x,i){var val=cd.lthDelta30[i];if(!x||x>=today0||val==null||!isFinite(+val))return;byM[x.slice(0,7)]={m:x.slice(0,7)+"-01",v:+val,p:+(cd.price&&cd.price[i])||0};lastDay=x});
+          }
+          var ks=Object.keys(byM).sort(),d0={m:ks.map(function(k){return byM[k].m}),v:ks.map(function(k){return byM[k].v}),p:ks.map(function(k){return byM[k].p}),day:lastDay};
+          if(valid(d0)){data=d0;failed=false;try{localStorage.setItem(KEY,JSON.stringify({ts:Date.now(),data:d0}))}catch(e){}return}
+        }
+      }
       var r=await Promise.all([bulk("lth_supply_delta_1m"),bulk("price")]);
       var dm=r[0][0].data,dv=r[0][1].data,pm=r[1][0].data,pv=r[1][1].data,P={};pm.forEach(function(d,i){P[d]=+pv[i]});
       var d={m:[],v:[],p:[],day:String(r[0][1].stamp||"").slice(0,10)};
@@ -16180,7 +16295,18 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
     d.forEach(function(x,i){if(dropToday&&x>=today)return;var a=+l[i],b=+s[i];if(!(a>0&&b>0))return;o.d.push(x);o.r.push(a/b);o.p.push(+p[i]||0)});return o}
   function ok(o){return o&&Array.isArray(o.d)&&o.d.length>30&&o.d.length===o.r.length}
   async function loadD(force){var c=readJSON(KD);if(c&&ok(c.data)){Dd=c.data;var ld=Dd.d[Dd.d.length-1],stale=!ld||(Date.now()-Date.parse(ld+"T00:00:00Z"))>2*864e5;if(!force&&!stale&&Date.now()-c.ts<TTL)return}
-    if(loadingD)return;loadingD=true;try{var o=parse(await get(url("day1",-1100)),true);if(!ok(o))throw 0;Dd=o;try{localStorage.setItem(KD,JSON.stringify({ts:Date.now(),data:o}))}catch(e){}}catch(e){if(!Dd)failed=true}finally{loadingD=false}}
+    if(loadingD)return;loadingD=true;
+    try{
+      if(!force&&window.__sgV28){
+        var ch=await window.__sgV28.charts(),cd=ch&&ch.daily;
+        if(cd&&Array.isArray(cd.d)&&Array.isArray(cd.lth)&&Array.isArray(cd.sth)){
+          var o0={d:[],r:[],p:[]},today0=new Date().toISOString().slice(0,10);
+          cd.d.forEach(function(x,i){if(x>=today0)return;var a=+cd.lth[i],b=+cd.sth[i];if(!(a>0&&b>0))return;o0.d.push(x);o0.r.push(a/b);o0.p.push(+(cd.price&&cd.price[i])||0)});
+          if(ok(o0)){Dd=o0;failed=false;try{localStorage.setItem(KD,JSON.stringify({ts:Date.now(),data:o0}))}catch(e){}return}
+        }
+      }
+      var o=parse(await get(url("day1",-1100)),true);if(!ok(o))throw 0;Dd=o;try{localStorage.setItem(KD,JSON.stringify({ts:Date.now(),data:o}))}catch(e){}
+    }catch(e){if(!Dd)failed=true}finally{loadingD=false}}
   async function loadM(){var c=readJSON(KM);if(c&&ok(c.data)){Dm=c.data;if(Date.now()-c.ts<TTL)return}
     if(loadingM)return;loadingM=true;try{var o=parse(await get(url("month1","2011-01-01")),false);if(!ok(o))throw 0;Dm=o;try{localStorage.setItem(KM,JSON.stringify({ts:Date.now(),data:o}))}catch(e){}}catch(e){}finally{loadingM=false}}
   function badge(){var b=$("freshLthRatio");if(!b)return;var t,c;
@@ -16254,10 +16380,18 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
   // V27.9：Bitview 同步状态（/api/server/sync）——它算到第几个区块、落后几块、最后一次更新时间。
   // 显示在数据健康中心；Bitview 停更或落后时第一时间看得到。每 10 分钟检查一次（页面可见时）。
   function load(){
-    var f=typeof tryFetch==="function"?tryFetch("https://bitview.space/api/server/sync",8000):fetch("https://bitview.space/api/server/sync").then(function(r){return r.json()});
-    return f.then(function(j){
-      if(!j||!(+j.indexed_height>0))throw new Error("sync");
-      window.__bvSync={height:+(j.computed_height||j.indexed_height),tip:+j.tip_height,behind:Math.max(0,+j.blocks_behind||0),ts:+j.last_indexed_at_unix||Date.parse(j.last_indexed_at)/1000||null,at:Date.now()};
+    var pre=window.__sgV28?window.__sgV28.core():Promise.resolve(null);
+    return pre.then(function(cr){
+      var sy=cr&&cr.sync;
+      if(sy&&+sy.height>0){
+        window.__bvSync={height:+sy.height,tip:+sy.height+(+sy.behind||0),behind:Math.max(0,+sy.behind||0),ts:+sy.ts||null,at:Date.now()};
+        return;
+      }
+      var f=typeof tryFetch==="function"?tryFetch("https://bitview.space/api/server/sync",8000):fetch("https://bitview.space/api/server/sync").then(function(r){return r.json()});
+      return f.then(function(j){
+        if(!j||!(+j.indexed_height>0))throw new Error("sync");
+        window.__bvSync={height:+(j.computed_height||j.indexed_height),tip:+j.tip_height,behind:Math.max(0,+j.blocks_behind||0),ts:+j.last_indexed_at_unix||Date.parse(j.last_indexed_at)/1000||null,at:Date.now()};
+      });
     }).catch(function(){window.__bvSync={err:1,at:Date.now()}}).then(function(){if(typeof renderHealthRuntime==="function")try{renderHealthRuntime()}catch(e){}});
   }
   function start(){load();setInterval(function(){if(document.visibilityState==="visible")load()},10*60*1000)}
@@ -16280,6 +16414,16 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
     try{var c=JSON.parse(localStorage.getItem(KEY));if(c&&c.D&&c.D.v===2&&c.L){D=c.D;L=c.L;if(!force&&Date.now()-c.ts<TTL){render();return}}}catch(e){}
     if(loading)return;loading=true;render();
     try{
+      if(!force&&window.__sgV28){
+        var pair=await Promise.all([window.__sgV28.charts(),window.__sgV28.core()]);
+        var cd=pair[0]&&pair[0].daily,cp=pair[1]&&pair[1].percentiles;
+        if(cd&&Array.isArray(cd.d)&&cd.d.length>30&&cp&&Array.isArray(cp.v)&&cp.v.length===PCT.length){
+          D={v:2,d:cd.d,p:cd.price||[],b25:cd.p25||[],b40:cd.p40||[],b50:cd.p50||[],b60:cd.p60||[],b75:cd.p75||[]};
+          L={day:cp.day||cd.d[cd.d.length-1],v:cp.v.map(Number)};
+          failed=false;try{localStorage.setItem(KEY,JSON.stringify({ts:Date.now(),D:D,L:L}))}catch(e){}
+          return;
+        }
+      }
       // 全网最便宜的约四分之一的币成本接近 0（早期币），带到图上会把纵轴拉到 $2；所以图上画第 25–75、40–60 分位
       var r=await get(url(["price",nm(25),nm(40),nm(50),nm(60),nm(75)],-1100)),days=r[0].data,s0=+r[0].start||0,col=function(k){var c=r[k],cs=+(c&&c.start)||0,cd=(c&&c.data)||[];return days.map(function(_,i){var idx=s0+i-cs,x=idx>=0&&idx<cd.length?cd[idx]:null;return x==null?null:+x})};
       var d={v:2,d:days,p:col(1),b25:col(2),b40:col(3),b50:col(4),b60:col(5),b75:col(6)};
@@ -16412,9 +16556,23 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
   async function cols(suffix){var u=new URL(API);u.searchParams.set("index","day1");u.searchParams.set("series",["date"].concat(BANDS.map(function(b){return "age_"+b+"_"+suffix})).join(","));u.searchParams.set("start","-1");
     var r=await get(u.toString()),o={day:r[0].data[r[0].data.length-1]};BANDS.forEach(function(b,i){var a=r[i+1].data;o[b]=+a[a.length-1]});return o}
   async function load(){
-    try{var c=JSON.parse(localStorage.getItem(KEY));if(c&&c.D){D=c.D;if(Date.now()-c.ts<TTL){render();return}}}catch(e){}
+    try{var c=JSON.parse(localStorage.getItem(KEY));if(c&&c.D){D=c.D;if(c.dist&&typeof c.dist==="object")dist=c.dist;if(Date.now()-c.ts<TTL){render();if(shown()&&!dist[sel])loadDist(sel);return}}}catch(e){}
     if(loading)return;loading=true;render();
-    try{var s=await cols("supply"),rc=await cols("realized_cap"),pf=await cols("supply_in_profit");
+    try{
+      if(window.__sgV28){
+        var ch=await window.__sgV28.charts();
+        var ag=ch&&ch.age;
+        if(ag&&ag.day&&Array.isArray(ag.rows)&&ag.rows.length===G.length){
+          var tot0=ag.rows.reduce(function(a,r){return a+(+r.supply||0)},0);
+          if(tot0>15e6&&tot0<22e6){
+            D={day:ag.day,rows:ag.rows};
+            if(ag.dist&&typeof ag.dist==="object")dist=ag.dist;
+            failed=false;try{localStorage.setItem(KEY,JSON.stringify({ts:Date.now(),D:D}))}catch(e){}
+            return;
+          }
+        }
+      }
+      var s=await cols("supply"),rc=await cols("realized_cap"),pf=await cols("supply_in_profit");
       var rows=G.map(function(g){var sp=0,cap=0,pr=0;g.b.forEach(function(b){sp+=s[b]||0;cap+=rc[b]||0;pr+=pf[b]||0});return {k:g.k,supply:sp,avg:sp>0?cap/sp:null,profit:sp>0?pr/sp:null}});
       var tot=rows.reduce(function(a,r){return a+r.supply},0);if(!(tot>15e6&&tot<22e6))throw 0;
       D={day:s.day,rows:rows};failed=false;try{localStorage.setItem(KEY,JSON.stringify({ts:Date.now(),D:D}))}catch(e){}
@@ -16429,7 +16587,11 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
   }
   function shown(){var c=$("acCanvas");return !!(c&&c.parentElement&&c.parentElement.clientWidth>0)}
   async function loadDist(k){
-    if(dist[k])return draw();var g=G.find(function(x){return x.k===k});if(!g)return;
+    if(dist[k]){var em0=$("acEmpty");if(em0)em0.hidden=true;return draw()}
+    if(window.__sgV28){
+      try{var ch2=await window.__sgV28.charts();if(ch2&&ch2.age&&ch2.age.dist&&ch2.age.dist[k]){dist[k]=ch2.age.dist[k];var em1=$("acEmpty");if(em1)em1.hidden=true;return draw()}}catch(e){}
+    }
+    var g=G.find(function(x){return x.k===k});if(!g)return;
     var em=$("acEmpty");if(em){em.hidden=false;em.textContent=en()?"Syncing…":"同步中…"}
     try{var parts=await Promise.all(g.b.map(urpd)),acc={},close=0;
       parts.forEach(function(j){close=+j.close||close;(j.buckets||[]).forEach(function(r){var f=Math.round(+r.price_floor);acc[f]=(acc[f]||0)+(+r.supply||0)})});
@@ -16583,6 +16745,15 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
     try{var c=JSON.parse(localStorage.getItem(KEY));if(c&&c.D&&c.D.d){D=c.D;if(!force&&Date.now()-c.ts<TTL){render();return}}}catch(e){}
     if(loading)return;loading=true;render();
     try{
+      if(!force&&window.__sgV28){
+        var ch=await window.__sgV28.charts();
+        var cw=ch&&ch.cohortWeekly;
+        if(cw&&Array.isArray(cw.d)&&cw.d.length>50&&Array.isArray(cw.l10)&&cw.l10[cw.d.length-1]!=null){
+          D={d:cw.d,p:cw.price||[],l10:cw.l10,a10:cw.a10||[],a7:cw.a7||[],a5:cw.a5||[]};
+          failed=false;try{localStorage.setItem(KEY,JSON.stringify({ts:Date.now(),D:D}))}catch(e){}
+          return;
+        }
+      }
       var names=["date","price","realized_cap","circulating_supply","age_under_6m_realized_cap","age_under_6m_supply"];B.forEach(function(b){names.push("age_"+b+"_realized_cap","age_"+b+"_supply")});
       var u=new URL(API);u.searchParams.set("index","week1");u.searchParams.set("series",names.join(","));u.searchParams.set("start","2013-01-01");
       var r=await get(u.toString()),d=r[0].data,s0=+r[0].start||0,col_=function(n){var k=names.indexOf(n),c=r[k],cs=+(c&&c.start)||0,cd=(c&&c.data)||[];return d.map(function(_,i){var idx=s0+i-cs,x=idx>=0&&idx<cd.length?cd[idx]:null;return x==null?NaN:+x})};
@@ -17359,7 +17530,7 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
         var ak=localStorage.getItem("btc_bg_api_key_v1");
         if(ak){data.btc_bg_api_key_v1=ak;total++}
       }
-      return {app:"SatsGarden",v:"28.0.3",exportedAt:new Date().toISOString(),userCount:userCount,count:total,keys:data};
+      return {app:"SatsGarden",v:"28.1.0",exportedAt:new Date().toISOString(),userCount:userCount,count:total,keys:data};
     }
     function setStatus(msg,isErr){
       var el=$("rsBkStatus");
@@ -17383,6 +17554,18 @@ window.addEventListener("unhandledrejection",e=>reportRuntimeError("异步异常
         var obj=JSON.parse((raw||"").trim());
         if(!obj||typeof obj!=="object")throw new Error("invalid");
         try{localStorage.setItem("btc_v27_before_restore",JSON.stringify(collectPayload(true)))}catch(e){}
+        // 兼容 dca.html 导出的个人定投账本备份（{app:"BTC-PERSONAL-DCA", state:...}）
+        if(obj.app==="BTC-PERSONAL-DCA"&&obj.state&&typeof obj.state==="object"){
+          localStorage.setItem("btc_dca_ledger_v1",JSON.stringify(obj.state));
+          try{
+            var host=JSON.parse(localStorage.getItem("btc_exec_v7")||"{}")||{};
+            host.dcaLedger=obj.state;
+            localStorage.setItem("btc_exec_v7",JSON.stringify(host));
+          }catch(e){}
+          setStatus(E?"Restored personal DCA ledger backup, reloading…":"已恢复个人定投账本备份，正在更新页面…",false);
+          setTimeout(function(){location.reload()},600);
+          return;
+        }
         // 兼容同页「导出完整备份」生成的旧版 BTC-DCA 格式（{app:"BTC-DCA", state:S, ...}）
         if(obj.app==="BTC-DCA"&&obj.state&&typeof obj.state==="object"&&Array.isArray(obj.state.log)){
           if(typeof executionImportPair==="function"){

@@ -49,6 +49,24 @@ async def main(root):
                 failed += bool(errs)
                 print(f'{w}px {theme}: {status}')
                 await pg.close()
+        for sub in ('old-coins.html', 'dca.html'):
+            sub_path = os.path.join(root, sub)
+            if not os.path.isfile(sub_path):
+                continue
+            sub_url = 'file://' + os.path.abspath(sub_path)
+            for lang in ('zh', 'en'):
+                ctx = await b.new_context(viewport={'width': 390, 'height': 900})
+                await ctx.add_init_script(f"localStorage.setItem('btc_lang_v1','{lang}')")
+                pg = await ctx.new_page(); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
+                await pg.route('**/*', lambda r: r.abort() if not r.request.url.startswith('file:') else r.continue_())
+                await pg.goto(sub_url); await pg.wait_for_timeout(1000)
+                sw = await pg.evaluate("()=>document.documentElement.scrollWidth")
+                problems = []
+                if sw > 392: problems.append(f'横向溢出 {sw}px')
+                if errs: problems.append('脚本错误：' + errs[0])
+                failed += bool(problems)
+                print(f'{sub} 390px {lang}: ' + ('通过' if not problems else '失败：' + '；'.join(problems)))
+                await ctx.close()
         await b.close()
     print('全部通过' if not failed else f'{failed} 组有脚本错误')
     sys.exit(1 if failed else 0)

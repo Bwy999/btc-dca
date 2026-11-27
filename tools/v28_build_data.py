@@ -45,16 +45,24 @@ def get(url, tries=3):
 
 
 def bulk(index, names, start):
-    """返回 {名字: [数值…]}，第一列 date。每次最多 30 个序列。"""
+    """返回 {名字: [数值…]}，第一列 date。每次最多 30 个序列，严格按 start 偏移对齐。"""
     out = {}
+    ref_start = None
     for i in range(0, len(names), 29):
         part = names[i:i + 29]
         r = get(f"{BASE}/api/series/bulk?index={index}&series={','.join(['date'] + part)}&start={start}")
-        out.setdefault("date", r[0]["data"])
-        if len(r[0]["data"]) != len(out["date"]):
+        dates = r[0]["data"]
+        s0 = int(r[0].get("start") or 0)
+        out.setdefault("date", dates)
+        if ref_start is None:
+            ref_start = s0
+        if len(dates) != len(out["date"]) or s0 != ref_start:
             raise ValueError("bulk parts misaligned")
+        n_len = len(dates)
         for n, col in zip(part, r[1:]):
-            out[n] = col["data"]
+            cs = int(col.get("start") or 0)
+            cd = col.get("data") or []
+            out[n] = [cd[s0 + idx - cs] if 0 <= s0 + idx - cs < len(cd) else None for idx in range(n_len)]
         time.sleep(0.3)
     return out
 
@@ -161,10 +169,15 @@ def g_monthly():
 ADDR_GROUPS = [("<0.1", ["1_to_10_sats", "10_to_100_sats", "100_to_1k_sats", "1k_to_10k_sats", "10k_to_100k_sats", "100k_to_1m_sats", "1m_to_10m_sats"]),
                ("0.1–1", ["10m_to_100m_sats"]), ("1–10", ["1_to_10_btc"]), ("10–100", ["10_to_100_btc"]),
                ("100–1K", ["100_to_1k_btc"]), ("1K–10K", ["1k_to_10k_btc"]), ("≥10K", ["10k_to_100k_btc", "over_100k_btc"])]
+ADDR_BANDS_12 = [
+    ["1_to_10_sats", "10_to_100_sats", "100_to_1k_sats"], ["1k_to_10k_sats"], ["10k_to_100k_sats"],
+    ["100k_to_1m_sats"], ["1m_to_10m_sats"], ["10m_to_100m_sats"], ["1_to_10_btc"], ["10_to_100_btc"],
+    ["100_to_1k_btc"], ["1k_to_10k_btc"], ["10k_to_100k_btc"], ["over_100k_btc"],
+]
 
 
 def g_addr():
-    """持币地址分布：按余额分 7 组，每组的地址数、持币量、近 30 天持币量变化。"""
+    """持币地址分布：同时输出 7 档汇总与主站 12 档明细，零额外请求。"""
     bands = [b for _, bs in ADDR_GROUPS for b in bs]
     names = [f"balance_{b}_{suf}" for suf in ("address_count", "supply", "supply_delta_1m") for b in bands]
     r = bulk("day1", names, -1)
@@ -172,10 +185,12 @@ def g_addr():
     rows = [{"k": k, "addrs": round(sum(last(f"balance_{b}_address_count") for b in bs)),
              "supply": round(sum(last(f"balance_{b}_supply") for b in bs)),
              "d30": round(sum(last(f"balance_{b}_supply_delta_1m") for b in bs))} for k, bs in ADDR_GROUPS]
+    bands12 = [{"count": round(sum(last(f"balance_{b}_address_count") for b in bs)),
+                "supply": round(sum(last(f"balance_{b}_supply") for b in bs), 2)} for bs in ADDR_BANDS_12]
     tot = sum(x["supply"] for x in rows)
     if not 15e6 < tot < 22e6:
         raise ValueError(f"addr supply total {tot}")
-    return {"day": r["date"][-1], "rows": rows}
+    return {"day": r["date"][-1], "rows": rows, "bands12": bands12}
 
 
 def ahr_all(pa):
