@@ -79,6 +79,7 @@ def split(src, out):
     pieces = []
     ext_codes = []
     ext_slot = None
+    seed_fn = None
     for idx, m in enumerate(scripts):
         code = m.group(1)
         tags = ''
@@ -122,6 +123,22 @@ def split(src, out):
         pieces[ext_slot] = (a, b, ext_loader)
     for a, b, tags in reversed(pieces): s = s[:a] + tags + s[b:]
     with open(os.path.join(out, 'index.html'), 'w', encoding='utf-8') as f: f.write(s)
+    # 3b. V28.2：独立页 VHE 波动增币实验室（按需哈希资源放入 OPTIONAL_ASSETS，不增加首页冷启动体积，且不干扰 join）
+    src_dir = os.path.dirname(os.path.abspath(src))
+    vhe_tpl = os.path.join(src_dir, 'vhe.html')
+    vhe_css_p = os.path.join(src_dir, 'vhe.css')
+    vhe_eng_p = os.path.join(src_dir, 'vhe-engine.js')
+    vhe_ui_p = os.path.join(src_dir, 'vhe-ui.js')
+    if all(os.path.exists(p) for p in (vhe_tpl, vhe_css_p, vhe_eng_p, vhe_ui_p)):
+        vhe_css_fn = emit('vhe', 'css', minify_css(open(vhe_css_p, encoding='utf-8').read()), precache=False)
+        vhe_eng_fn = emit('vhe-engine', 'js', open(vhe_eng_p, encoding='utf-8').read(), precache=False)
+        vhe_ui_fn = emit('vhe-ui', 'js', open(vhe_ui_p, encoding='utf-8').read(), precache=False)
+        vh = open(vhe_tpl, encoding='utf-8').read()
+        vh = vh.replace('__VHE_CSS__', './' + vhe_css_fn)
+        vh = vh.replace('__SEED_CYCLE_JS__', './' + (seed_fn or ''))
+        vh = vh.replace('__VHE_ENGINE_JS__', './' + vhe_eng_fn)
+        vh = vh.replace('__VHE_UI_JS__', './' + vhe_ui_fn)
+        with open(os.path.join(out, 'vhe.html'), 'w', encoding='utf-8') as f: f.write(vh)
     # 4. Service Worker：写入资源清单
     sw_src = os.path.join(os.path.dirname(src), 'sw.js')
     if not os.path.exists(sw_src):  # 合并源码放在 source/ 时，使用仓库根目录的 sw.js

@@ -71,10 +71,31 @@ with tempfile.TemporaryDirectory() as tmp:
         s = open(p, encoding="utf-8").read()
         open(p, "w", encoding="utf-8").write(s.replace("</body>", '<i id="ahrBig"></i></body>', 1))
 
+    def drop_vhe_asset(d):
+        js = sorted(f for f in os.listdir(os.path.join(d, "assets")) if f.startswith("vhe-engine."))[0]
+        os.remove(os.path.join(d, "assets", js))
+
+    def vhe_mismatch(d):
+        p = os.path.join(d, "vhe.html")
+        s = open(p, encoding="utf-8").read()
+        open(p, "w", encoding="utf-8").write(re.sub(r'<meta name="vhe-build" content="[^"]+"', '<meta name="vhe-build" content="0.0.0-20000101"', s))
+
+    def vhe_dup_id(d):
+        p = os.path.join(d, "vhe.html")
+        s = open(p, encoding="utf-8").read()
+        open(p, "w", encoding="utf-8").write(s.replace("</body>", '<i id="kpiGrid"></i></body>', 1))
+
+    def drop_vhe_page(d):
+        os.remove(os.path.join(d, "vhe.html"))
+
     variant("资源缺失", drop_asset)
+    variant("VHE 资源缺失", drop_vhe_asset)
     variant("文件内容被改", tamper)
     variant("构建号不一致", mismatch)
+    variant("VHE 构建号不一致", vhe_mismatch)
     variant("重复元素 id", dup_id)
+    variant("VHE 重复元素 id", vhe_dup_id)
+    variant("缺少 vhe.html", drop_vhe_page)
 
 print(f"{'未通过' if bad else '全部通过'}：通过 {ok_count} 项，未通过 {len(bad)} 项")
 sys.exit(1 if bad else 0)

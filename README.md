@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/%E7%89%88%E6%9C%AC-V28.1.0-f7931a?style=flat-square" alt="版本 V28.1.0">
+  <img src="https://img.shields.io/badge/%E7%89%88%E6%9C%AC-V28.2.0-f7931a?style=flat-square" alt="版本 V28.2.0">
   <img src="https://img.shields.io/badge/%E8%AF%AD%E8%A8%80-%E4%B8%AD%E6%96%87%20%7C%20English-3a7bd5?style=flat-square" alt="中文 | English">
   <img src="https://img.shields.io/badge/%E6%95%B0%E6%8D%AE-Bitview%20%2F%20BRK-6a5ae0?style=flat-square" alt="数据 Bitview / BRK">
   <img src="https://img.shields.io/badge/%E9%9A%90%E7%A7%81-%E6%97%A0%E8%B4%A6%E5%8F%B7%20%C2%B7%20%E6%97%A0%E5%B9%BF%E5%91%8A-2e9d6a?style=flat-square" alt="无账号 无广告">
@@ -21,7 +21,8 @@
   <a href="https://bwy999.github.io/btc-dca/">GitHub Pages 镜像</a> ·
   <a href="https://9992100.xyz/btc/ahr999.html">AHR999 致敬专页</a> ·
   <a href="https://9992100.xyz/btc/old-coins.html">老币异动筛选器</a> ·
-  <a href="https://9992100.xyz/btc/dca.html">个人定投账本</a>
+  <a href="https://9992100.xyz/btc/dca.html">个人定投账本</a> ·
+  <a href="https://9992100.xyz/btc/vhe.html">波动增币实验室</a>
 </p>
 
 <p align="center">
@@ -56,7 +57,7 @@
 - **量子准备度**：BIP-360 / BIP-361 / 后量子签名的进度，以及按地址类型统计的公钥暴露（P2PK、P2TR）
 
 ### 🎯 定投
-信号联动定投计划 · 三层共振与储备金释放节奏 · 底部翻倍 / 顶部减半 / 牛市风控联动执行
+信号联动定投计划 · 三层共振与储备金释放节奏 · 底部翻倍 / 顶部减半 / 牛市风控联动执行 · 波动增币实验室（VHE 币本位模拟对照，不改动真实账本）
 
 ### 👤 我的
 本月定投与定投执行（额外加仓与今日结论同一条件）· 本机持仓一键备份与恢复 · 买入记录 · 持仓与 21M 积累进度 · 定投策略回测（含信号联动定投）与真实复盘
@@ -112,6 +113,7 @@ index.html                       主站页面
 ahr999.html                      AHR999 致敬专页
 old-coins.html                   老比特币异动筛选器
 dca.html                         个人定投账本（与主站主题、语言、备份互通）
+vhe.html                         波动增币实验室（独立币本位历史模拟，与真实账本隔离）
 manifest.webmanifest             PWA 应用清单
 sw.js                            离线缓存与版本更新
 assets/                          样式、脚本与内置历史数据
@@ -140,17 +142,18 @@ python3 -m http.server 8080
 
 版本规则：
 
-- **正式版**（如 V28.1.0）：版本号与构建号相同（V28.1.0 ↔ 28.1.0-日期；末尾 .0 可省略，V28.0 ↔ 28.0.0-日期），上传 GitHub 压缩包即可自动检查、清理旧资源并上线，VPS 每 5 分钟自动同步。
+- **正式版**（如 V28.2.0）：版本号与构建号相同（V28.2.0 ↔ 28.2.0-日期；末尾 .0 可省略，V28.0 ↔ 28.0.0-日期），上传 GitHub 压缩包即可自动检查、清理旧资源并上线，VPS 每 5 分钟自动同步。
 - **测试版**（如 V26 Beta 24）：只在本地验证，不上传。
 
-手动上传顺序：先上传 `assets/`，再上传页面（`index.html`、`ahr999.html`、`old-coins.html`、`dca.html`），最后上传 `sw.js`；保留服务器上已有的 `data/`。
+手动上传顺序：先上传 `assets/`，再上传页面（`index.html`、`ahr999.html`、`old-coins.html`、`dca.html`、`vhe.html`），最后上传 `sw.js`；保留服务器上已有的 `data/`。
 
 上传前检查（只读，不修改文件）：
 
 ```bash
-python3 tools/build.py split source/index.html dist   # 从合并源码生成部署目录
-python3 tools/check_deploy.py dist                    # 构建号、资源、哈希、重复 id
+python3 tools/build.py split source/index.html dist   # 从合并源码生成部署目录（含 vhe.html）
+python3 tools/check_deploy.py dist --require-ledger   # 构建号、资源、哈希、重复 id
 node tests/reliability_test.mjs dist                  # 历史信号：不用未来数据、按日期取收益
+node tests/vhe_test.mjs dist                          # VHE 引擎守恒、无前视偏差与真实历史回放
 python3 tests/deploy_test.py source/index.html        # 部署检查本身能发现问题
 python3 tests/static_test.py dist                     # 被 try{} 包住调用的函数都有定义
 ```

@@ -49,7 +49,7 @@ async def main(root):
                 failed += bool(errs)
                 print(f'{w}px {theme}: {status}')
                 await pg.close()
-        for sub in ('old-coins.html', 'dca.html'):
+        for sub in ('old-coins.html', 'dca.html', 'vhe.html'):
             sub_path = os.path.join(root, sub)
             if not os.path.isfile(sub_path):
                 continue

@@ -36,11 +36,11 @@ def main():
     def exists(p):
         return os.path.isfile(os.path.join(root, p))
 
-    for p in ("index.html", "sw.js"):
+    for p in ("index.html", "sw.js", "vhe.html"):
         if not exists(p):
             print(f"✗ 缺少 {p}")
             sys.exit(1)
-    html, sw = read("index.html"), read("sw.js")
+    html, sw, vhe_html = read("index.html"), read("sw.js"), read("vhe.html")
 
     # 1. 构建号
     ids = {
@@ -48,6 +48,7 @@ def main():
         "页面元数据": re.search(r'<meta name="btc-dca-build" content="([^"]+)"', html),
         "BUILD 注释": re.search(r"<!-- BUILD: ([^ ]+) ", html),
         "SW_BUILD": re.search(r'const SW_BUILD = "([^"]+)"', sw),
+        "VHE 实验室页": re.search(r'<meta name="vhe-build" content="([^"]+)"', vhe_html),
     }
     if exists("ahr999.html"):
         ids["AHR999 专页"] = re.search(r"(\d+\.\d+\.\d+-\d{8})", read("ahr999.html"))
@@ -72,12 +73,23 @@ def main():
         if label not in ("V" + num, "V" + re.sub(r"\.0$", "", num)):
             fails.append(f"版本号 {lab.group(1)} 与构建号 {vals['BUILD_ID']} 不一致")
 
-    # 2. 页面引用的本地资源
-    refs = set(re.findall(r'(?:src|href)="(?:\./)?((?:assets/)[^"?#]+)"', html))
-    refs |= set(re.findall(r'(?:I18N_SRC|LWC_SRC|EXT_SRC)="(?:\./)?(assets/[^"]+)"', html))
-    for p in ("apple-touch-icon.png", "btc-logo.png", "manifest.webmanifest"):
-        if f'="./{p}"' in html or f'="{p}"' in html:
-            refs.add(p)
+    # 2. 所有页面引用的本地资源与内容哈希校验
+    page_files = [p for p in ("index.html", "vhe.html", "ahr999.html", "old-coins.html", "dca.html") if exists(p)]
+    refs = set()
+    for pg in page_files:
+        ptxt = read(pg)
+        pg_assets = set(re.findall(r'(?:src|href)="(?:\./)?((?:assets/)[^"?#]+)"', ptxt))
+        pg_assets |= set(re.findall(r'(?:I18N_SRC|LWC_SRC|EXT_SRC)="(?:\./)?(assets/[^"]+)"', ptxt))
+        if "__VHE_" in ptxt or "__SEED_CYCLE_" in ptxt:
+            fails.append(f"{pg} 存在未替换的构建占位符")
+        for a_ref in sorted(pg_assets):
+            refs.add(a_ref)
+            base_fn = os.path.basename(a_ref)
+            if not re.match(r"^(.+)\.([0-9a-f]{10})\.(js|css)$", base_fn):
+                fails.append(f"{pg} 引用了未带 10 位内容哈希的静态资源：{a_ref}")
+        for p in ("apple-touch-icon.png", "btc-logo.png", "manifest.webmanifest"):
+            if f'="./{p}"' in ptxt or f'="{p}"' in ptxt:
+                refs.add(p)
     for p in sorted(refs):
         if not exists(p):
             fails.append(f"页面引用的文件不存在：{p}")
@@ -96,7 +108,10 @@ def main():
         if stray:
             notes.append("assets/ 中有未被引用的旧文件（不影响运行，可删除）：" + "、".join(stray[:6]) + ("…" if len(stray) > 6 else ""))
 
-    # 4. Service Worker 资源清单
+    # 4. Service Worker 资源清单与独立页覆盖
+    for req_core in ("./vhe.html", "./index.html"):
+        if f'"{req_core}"' not in sw:
+            fails.append(f"sw.js CORE 缺少 {req_core}")
     for label, pat in (("ASSETS", r"/\*ASSETS\*/(.*?)/\*END\*/"), ("OPTIONAL_ASSETS", r"/\*OPTIONAL\*/(.*?)/\*OEND\*/")):
         m = re.search(pat, sw, re.S)
         if not m:
@@ -106,11 +121,14 @@ def main():
             if not exists(p):
                 fails.append(f"sw.js {label} 中的文件不存在：{p}")
 
-    # 5. 重复 id
-    body = html[html.find("<body"):]
-    dup = [k for k, v in Counter(re.findall(r'\sid="([^"]+)"', body)).items() if v > 1]
-    if dup:
-        fails.append("重复的元素 id：" + "、".join(dup[:10]))
+    # 5. 所有页面重复 id 检查
+    for pg in page_files:
+        ptxt = read(pg)
+        b_idx = ptxt.find("<body")
+        body = ptxt[b_idx:] if b_idx >= 0 else ptxt
+        dup = [k for k, v in Counter(re.findall(r'\sid="([^"]+)"', body)).items() if v > 1]
+        if dup:
+            fails.append(f"{pg} 重复的元素 id：" + "、".join(dup[:10]))
 
     # 6. 预计算数据
     now = datetime.now(timezone.utc)

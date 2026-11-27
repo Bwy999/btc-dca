@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BUILD: 28.1.0-20261126 · SATS-GARDEN-V28.1.0 -->
+<!-- BUILD: 28.2.0-20261126 · SATS-GARDEN-V28.2.0 -->
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -10,7 +10,7 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Sats Garden" />
-  <meta name="btc-dca-build" content="28.1.0-20261126" />
+  <meta name="btc-dca-build" content="28.2.0-20261126" />
   <script>
 (function(){
   "use strict";
@@ -347,7 +347,7 @@ window.__sgV28=(function(){
 })();
 </script>
 <script>(function(){var l=null;try{l=localStorage.getItem("btc_lang_v1")}catch(e){}if(l!=="zh"&&l!=="en"){var n=(navigator.languages&&navigator.languages[0])||navigator.language||"";l=/^zh/i.test(n)?"zh":"en"}window.BTC_LANG=l;var d=document.documentElement;d.lang=l==="en"?"en":"zh-CN";if(l==="en"){d.classList.add("i18n-pending");setTimeout(function(){d.classList.remove("i18n-pending")},2500)}})();</script>
-<script>const BUILD_ID="28.1.0-20261126";const BUILD_LABEL="V28.1.0";function sgLabel(){return window.BTC_LANG==="en"?BUILD_LABEL.replace(/\s*正式版$/,""):BUILD_LABEL}(function(){var T="btc_theme_v1",t=null;try{t=localStorage.getItem(T)}catch(e){}if(t!=="light"&&t!=="dark"){t=null}window.__themePinned=!!t;if(!t)t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.dataset.theme=t;})();</script>
+<script>const BUILD_ID="28.2.0-20261126";const BUILD_LABEL="V28.2.0";function sgLabel(){return window.BTC_LANG==="en"?BUILD_LABEL.replace(/\s*正式版$/,""):BUILD_LABEL}(function(){var T="btc_theme_v1",t=null;try{t=localStorage.getItem(T)}catch(e){}if(t!=="light"&&t!=="dark"){t=null}window.__themePinned=!!t;if(!t)t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.dataset.theme=t;})();</script>
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
   <link rel="manifest" href="./manifest.webmanifest" id="pwaManifest" />
@@ -369,7 +369,7 @@ window.__sgV28=(function(){
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="BTC · 价格与 AHR999" />
   <meta name="twitter:description" content="比特币价格、AHR999 周期估值与本月定投进度。" />
-  <link rel="stylesheet" href="assets/app.40f1343004.css" data-inline="css" />
+  <link rel="stylesheet" href="assets/app.aedde8ad93.css" data-inline="css" />
 <noscript><div style="max-width:700px;margin:0 auto;padding:40px 20px;font-family:system-ui;color:#333"><h1>Sats Garden</h1><p>本页面需要启用 JavaScript 才能加载实时行情与链上指标。请在浏览器设置中开启 JavaScript 后重新访问。</p></div></noscript>
   </head>
 <body class="booting terminal-ui focus-layout">
@@ -1237,12 +1237,20 @@ window.__sgV28=(function(){
       </div>
 
       <div class="dist-toolbar">
-        <div class="dist-legend" aria-label="图例">
-          <span class="cost"><i></i>现货价下方 · 获利</span><span class="loss"><i></i>现货价上方 · 套牢</span><span class="current"><i></i>现价所在档</span><b id="distPeak">--</b>
+        <div class="dist-legend" id="distLegend" aria-label="图例">
+          <span class="cost" data-legend-base="1"><i></i>现货价下方 · 获利</span><span class="loss" data-legend-base="1"><i></i>现货价上方 · 套牢</span><span class="keep" data-legend-diff="1" hidden><i></i>留存筹码</span><span class="add" data-legend-diff="1" hidden><i></i>新增堆积</span><span class="out" data-legend-diff="1" hidden><i></i>移出减少</span><span class="current"><i></i>现价所在档</span><b id="distPeak">--</b><div class="dist-diff-summary" id="distDiffSummary" hidden></div>
         </div>
-        <div class="dist-view-controls" role="group" aria-label="成本分布显示精度">
-          <button class="dist-view-btn active" type="button" id="distFineBtn" data-dist-view="fine" aria-pressed="true">精细 · $1K</button>
-          <button class="dist-view-btn" type="button" id="distOverviewBtn" data-dist-view="overview" aria-pressed="false">全景</button>
+        <div class="dist-controls-wrap">
+          <div class="dist-view-controls" id="distViewControls" role="group" aria-label="成本分布显示精度">
+            <button class="dist-view-btn active" type="button" id="distFineBtn" data-dist-view="fine" aria-pressed="true">精细 · $1K</button>
+            <button class="dist-view-btn" type="button" id="distOverviewBtn" data-dist-view="overview" aria-pressed="false">全景</button>
+          </div>
+          <div class="dist-view-controls" id="distDiffControls" role="group" aria-label="筹码变动对比周期">
+            <button class="dist-view-btn" type="button" data-dist-diff="0" aria-pressed="false">不对比</button>
+            <button class="dist-view-btn" type="button" data-dist-diff="1" aria-pressed="false">近1日</button>
+            <button class="dist-view-btn active" type="button" data-dist-diff="7" aria-pressed="true">近7日</button>
+            <button class="dist-view-btn" type="button" data-dist-diff="30" aria-pressed="false">近30日</button>
+          </div>
         </div>
       </div>
 
@@ -2151,8 +2159,9 @@ window.__sgV28=(function(){
 
     <div class="dcalab-audit" id="dcaLabAudit" aria-label="回测自检状态"></div>
     <div class="m21-note">只统计已结束的完整自然月：前一日 AHR999 信号，月末收盘价模拟成交。历史缺月时不拼接跳算。卡片收益率为期末资产／累计投入 − 1；净值与最大回撤使用剔除入金影响的份额净值，按月采样，不反映月内最大跌幅。现金计入资产、不计利息；年化按实际日期 XIRR。固定汇率、费用假设可在上方调整。这是历史机械回测，不是未来收益保证。</div>
-    <div class="m21-actions"><span>倍数和起投设置仅保存在本机，不影响真实预算、DCA 账本或个人持仓。</span><button class="btn ghost sm" type="button" onclick="resetDcaLab()">恢复默认参数</button></div>
+    <div class="m21-actions"><span>倍数和起投设置仅保存在本机，不影响真实预算、DCA 账本或个人持仓。</span><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn ghost sm" href="./vhe.html" style="text-decoration:none">波动增币实验室 ↗</a><button class="btn ghost sm" type="button" onclick="resetDcaLab()">恢复默认参数</button></div></div>
   </section></details>
+<div class="module-fold" id="vheEntry" data-module="vheEntry"><a href="./vhe.html" style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;text-decoration:none;color:inherit;min-height:66px;"><div><b style="display:block;font-size:14px;font-weight:700;line-height:1.4;color:var(--text-primary);">波动增币实验室（VHE）</b><small style="display:block;font-size:12px;font-weight:600;line-height:1.4;color:var(--text-secondary);margin-top:3px;">币本位波段模拟 · 对比纯持有与定投基准（不改动真实账本）</small></div><span style="font-size:18px;color:var(--text-tertiary);line-height:1;">›</span></a></div>
 <details class="module-fold" data-module="custody"><summary><span><b>自托管操作窗口</b><small>链上费率与内存池状态</small></span></summary><section class="sec custody-section" id="custody" aria-label="比特币自托管操作窗口">
     <div class="module-head">
       <div class="module-title-row"><h2 class="sec-title">自托管操作窗口</h2><div class="module-status head-status"><span class="fresh-badge warn" id="freshCustody">等待数据</span></div><button class="mini-toggle" type="button" onclick="refreshCustodyWindow(true)">更新</button></div>
@@ -2242,7 +2251,7 @@ window.__sgV28=(function(){
 
 <script data-inline="vendor">window.LWC_SRC="assets/lightweight-charts.682f74d8c4.js";(function(){var p=false;function load(){if(p||window.LightweightCharts)return;p=true;var sc=document.createElement("script");sc.src=window.LWC_SRC;sc.async=true;sc.onload=function(){try{window.dispatchEvent(new Event("resize"))}catch(e){}};document.head.appendChild(sc)}window.__loadLwc=load;function trig(){load()}["pointerdown","touchstart","keydown"].forEach(function(ev){window.addEventListener(ev,trig,{once:true,passive:true})});if(typeof requestIdleCallback==="function")requestIdleCallback(load,{timeout:1400});else setTimeout(load,1100);})();</script>
 <script defer src="assets/seed-cycle.5a6f45f52a.js" data-inline="seed"></script>
-<script defer src="assets/app.2d508ce5f3.js" data-inline="app"></script>
+<script defer src="assets/app.90de05af6a.js" data-inline="app"></script>
 
 
 
@@ -2275,9 +2284,9 @@ window.__sgV28=(function(){
 
 
 
-<script data-inline="i18n">window.I18N_SRC="assets/i18n-en.dede1b668f.js";if(window.BTC_LANG==="en"){var l=document.createElement("link");l.rel="preload";l.as="script";l.href=window.I18N_SRC;document.head.appendChild(l)}</script>
+<script data-inline="i18n">window.I18N_SRC="assets/i18n-en.80ddd33c6c.js";if(window.BTC_LANG==="en"){var l=document.createElement("link");l.rel="preload";l.as="script";l.href=window.I18N_SRC;document.head.appendChild(l)}</script>
 
 
-<script data-inline="ext">window.EXT_SRC="assets/ext-bundle.0826cacb3d.js";(function(){var p=false;function load(){if(p)return;p=true;var sc=document.createElement("script");sc.src=window.EXT_SRC;sc.async=true;document.body.appendChild(sc)}window.__loadExt=load;if(window.BTC_LANG==="en"){load();return}function arm(){["pointerdown","touchstart","keydown","hashchange"].forEach(function(ev){window.addEventListener(ev,load,{once:true,passive:true})});if(typeof requestIdleCallback==="function")requestIdleCallback(load,{timeout:600});else setTimeout(load,400);}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",arm,{once:true});else arm();})();</script>
+<script data-inline="ext">window.EXT_SRC="assets/ext-bundle.0912c693b4.js";(function(){var p=false;function load(){if(p)return;p=true;var sc=document.createElement("script");sc.src=window.EXT_SRC;sc.async=true;document.body.appendChild(sc)}window.__loadExt=load;if(window.BTC_LANG==="en"){load();return}function arm(){["pointerdown","touchstart","keydown","hashchange"].forEach(function(ev){window.addEventListener(ev,load,{once:true,passive:true})});if(typeof requestIdleCallback==="function")requestIdleCallback(load,{timeout:600});else setTimeout(load,400);}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",arm,{once:true});else arm();})();</script>
 </body>
 </html>

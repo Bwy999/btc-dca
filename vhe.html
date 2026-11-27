@@ -1,0 +1,427 @@
+<!doctype html>
+<!-- BUILD: 28.2.0-20261126 · SATS-GARDEN-V28.2.0 -->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="referrer" content="no-referrer" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="vhe-build" content="28.2.0-20261126" />
+  <script>(function(){var l=null;try{l=localStorage.getItem("btc_lang_v1")}catch(e){}if(l!=="zh"&&l!=="en"){var n=(navigator.languages&&navigator.languages[0])||navigator.language||"";l=/^zh/i.test(n)?"zh":"en"}window.BTC_LANG=l;document.documentElement.lang=l==="en"?"en":"zh-CN";var T="btc_theme_v1",t=null;try{t=localStorage.getItem(T)}catch(e){}if(t!=="light"&&t!=="dark")t=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t;})();</script>
+  <title>波动增币实验室 · Sats Garden</title>
+  <meta property="og:title" content="波动增币实验室 (VHE) · Sats Garden" />
+  <meta property="og:image" content="https://9992100.xyz/btc/docs/cover.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://9992100.xyz/btc/docs/cover.jpg" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="stylesheet" href="./assets/vhe.b73524d203.css" />
+</head>
+<body>
+  <!-- 1. 顶栏 -->
+  <header class="hdr">
+    <div class="hdr-in">
+      <div class="hdr-left">
+        <a class="back-btn" href="./index.html#dcalab" id="backMainLink">
+          <span aria-hidden="true">‹</span>
+          <span data-i18n="backMain">主站</span>
+        </a>
+        <div class="title-wrap">
+          <div class="title-row">
+            <span class="btitle" data-i18n="pageTitle">波动增币实验室</span>
+            <span class="sim-tag" data-i18n="simBadge">历史模拟</span>
+          </div>
+        </div>
+      </div>
+      <div class="hdr-act">
+        <span class="status-badge warn num" id="dataStatusBadge"><i></i><span id="dataStatusText">等待数据</span></span>
+        <button class="mini-btn" type="button" id="btnRefreshData" data-i18n="btnUpdate">更新</button>
+        <button class="icon-btn" type="button" id="btnThemeToggle" aria-label="切换明暗主题">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>
+        </button>
+        <div class="seg" role="group" aria-label="语言切换" translate="no">
+          <button type="button" id="langZhBtn" class="on">中</button>
+          <button type="button" id="langEnBtn">EN</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap" id="vheMain">
+    <!-- 离线未缓存或坏数据兜底提示 -->
+    <section class="card" id="vheUnavailableCard" hidden>
+      <div class="empty-state" id="vheUnavailableMsg">暂不可用。离线首次打开时脚本尚未缓存，请联网后点按「更新」重试。</div>
+    </section>
+
+    <!-- 数据元信息条 -->
+    <section class="prov-bar num" id="dataProvenanceBar" aria-label="数据来源与区间">
+      <span class="prov-item"><small data-i18n="provSource">来源</small><b id="provSourceVal">--</b></span>
+      <span class="prov-item"><small data-i18n="provSpan">首末数据日</small><b id="provSpanVal">--</b></span>
+      <span class="prov-item"><small data-i18n="provRows">有效日线</small><b id="provRowsVal">--</b></span>
+      <span class="prov-item"><small data-i18n="provUpdated">文件生成日</small><b id="provUpdatedVal">--</b></span>
+      <span class="prov-item"><small data-i18n="provWindow">回测区间</small><b id="provWindowVal">--</b></span>
+      <span class="prov-item"><small data-i18n="provSemantics">成交模型</small><b id="provSemanticsVal">日参考价 · T信号→T+1收盘</b></span>
+    </section>
+
+    <!-- 2. 结果区 -->
+    <section class="card" id="resultSection" aria-label="核心回测结果">
+      <div class="card-hd">
+        <div>
+          <h1 data-i18n="secResultTitle">币本位模拟结果</h1>
+          <p class="card-sub" id="secResultSub" data-i18n="secResultSub">比较相同起始资产与相同外部现金流下的最终 BTC 数量。现金与持币分开统计。</p>
+        </div>
+        <span class="status-badge ok num" id="auditBadge"><i></i><span id="auditBadgeText">守恒通过</span></span>
+      </div>
+
+      <div id="runErrorBanner" class="error-banner" hidden></div>
+      <div id="runWarningsBox"></div>
+
+      <div class="verdict-box neg" id="verdictBox">
+        <div>
+          <b id="verdictTitle">未证明增币能力</b>
+          <span id="verdictDesc">当前规则在本区间未跑赢同现金流持有基准。仅作策略实验室对照，不是买卖信号。</span>
+        </div>
+      </div>
+
+      <div class="kpis" id="kpiGrid">
+        <article class="kpi">
+          <small data-i18n="kpiHeldLabel">实际持仓 BTC</small>
+          <b class="num" id="kpiHeldVal">--</b>
+          <span class="num" id="kpiHeldSub">--</span>
+        </article>
+        <article class="kpi">
+          <small data-i18n="kpiCashLabel">待回购与储备现金</small>
+          <b class="num" id="kpiCashVal">--</b>
+          <span class="num" id="kpiCashSub">--</span>
+        </article>
+        <article class="kpi">
+          <small data-i18n="kpiEqLabel">BTC 等价资产与相对基准</small>
+          <b class="num" id="kpiEqVal">--</b>
+          <span class="num" id="kpiEqSub">--</span>
+        </article>
+        <article class="kpi">
+          <small data-i18n="kpiDdLabel">最差币本位回撤</small>
+          <b class="num" id="kpiDdVal">--</b>
+          <span class="num" id="kpiDdSub">--</span>
+        </article>
+      </div>
+
+      <div class="kv-grid num" id="diagKvGrid" aria-label="回合与风险指标"></div>
+
+      <div class="lots-grid num" id="lotsGrid" aria-label="实验子仓状态"></div>
+    </section>
+
+    <!-- 3. 对照曲线 -->
+    <section class="card" id="chartSection" aria-label="对照曲线与待回购现金">
+      <div class="card-hd">
+        <div>
+          <h2 data-i18n="secChartTitle">基准与 VHE 对照曲线</h2>
+          <p class="card-sub" data-i18n="secChartSub">点按或滑动图表查看每日持币、待回购现金与买卖执行点。</p>
+        </div>
+        <div class="seg" id="chartModeSeg" role="group" aria-label="切换曲线口径">
+          <button type="button" data-chart-mode="eq" class="on" data-i18n="modeEqBtc">BTC 等价</button>
+          <button type="button" data-chart-mode="held" data-i18n="modeHeldBtc">实际持仓</button>
+        </div>
+      </div>
+
+      <div class="preset-strip" id="startPresetStrip" role="group" aria-label="快捷回测起点">
+        <button type="button" class="preset-chip num" data-start-preset="2017-12-01" data-i18n="pre2017">2017-12 牛顶</button>
+        <button type="button" class="preset-chip num" data-start-preset="2018-12-01" data-i18n="pre2018">2018-12 熊底</button>
+        <button type="button" class="preset-chip num on" data-start-preset="2021-11-01" data-i18n="pre2021">2021-11 牛顶</button>
+        <button type="button" class="preset-chip num" data-start-preset="2022-11-01" data-i18n="pre2022">2022-11 熊底</button>
+        <button type="button" class="preset-chip num" data-start-preset="2024-01-01" data-i18n="pre2024">2024-01 ETF</button>
+      </div>
+
+      <div class="chart-legend" id="chartLegend">
+        <span class="leg-item"><i class="leg-dot" style="background:var(--blue)"></i><span id="legBaseText">同现金流基准</span></span>
+        <span class="leg-item"><i class="leg-dot" style="background:var(--ink)"></i><span id="legVheText">VHE 等价 BTC</span></span>
+        <span class="leg-item"><i class="leg-dot" style="background:var(--red)"></i><span data-i18n="legSell">卖出执行</span></span>
+        <span class="leg-item"><i class="leg-dot" style="background:var(--green)"></i><span data-i18n="legBuy">分层回购</span></span>
+        <span class="leg-item"><i class="leg-dot" style="background:var(--amber)"></i><span data-i18n="legExit">止损/超时回购</span></span>
+      </div>
+
+      <div class="cv-main-wrap" id="mainChartWrap">
+        <canvas id="mainChartCanvas"></canvas>
+        <div class="cv-tip num" id="mainChartTip" hidden></div>
+      </div>
+
+      <div class="cv-cash-wrap" id="cashChartWrap">
+        <canvas id="cashChartCanvas"></canvas>
+      </div>
+    </section>
+
+    <!-- 4. 策略参数（默认折叠） -->
+    <details class="card param-fold" id="paramFold">
+      <summary>
+        <div class="fold-title">
+          <b data-i18n="secParamTitle">实验参数设置</b>
+          <small data-i18n="secParamSub">仅修改本机模拟参数，不提供未经验证的推荐值，不修改真实定投账本。</small>
+        </div>
+        <span class="fold-arrow" data-i18n="btnExpandParam">展开调整</span>
+      </summary>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="inpStart"><span data-i18n="lblStart">回测开始日</span></label>
+          <input class="inp num" type="date" id="inpStart" value="2021-11-01" />
+        </div>
+        <div class="field">
+          <label for="inpEnd"><span data-i18n="lblEnd">回测结束日（留空至末数据日）</span></label>
+          <input class="inp num" type="date" id="inpEnd" />
+        </div>
+        <div class="field">
+          <label for="inpInitBtc">
+            <span data-i18n="lblInitBtc">起始 BTC（默认示例 0.30）</span>
+            <button type="button" class="mini-btn" id="btnReadLocalBtc" style="height:22px;padding:0 7px;font-size:11px" data-i18n="btnReadSnapshot">只读带入本机持仓</button>
+          </label>
+          <input class="inp num" type="number" id="inpInitBtc" min="0" max="10000" step="0.0001" value="0.3" />
+        </div>
+        <div class="field">
+          <label for="inpTradeRatio"><span data-i18n="lblTradeRatio">波段实验仓上限（0%–10%）</span></label>
+          <input class="inp num" type="number" id="inpTradeRatio" min="0" max="10" step="0.5" value="10" />
+        </div>
+        <div class="field">
+          <label for="inpMaLen"><span data-i18n="lblMaLen">算术均线长度（日）</span></label>
+          <input class="inp num" type="number" id="inpMaLen" min="20" max="400" step="1" value="200" />
+        </div>
+        <div class="field">
+          <label><span data-i18n="lblSellThr">A / B / C 卖出偏离阈值（%）</span></label>
+          <div class="triple-inp">
+            <input class="inp num" type="number" id="inpSellA" min="1" max="300" step="1" value="25" aria-label="子仓 A 卖出阈值百分比" />
+            <input class="inp num" type="number" id="inpSellB" min="2" max="400" step="1" value="40" aria-label="子仓 B 卖出阈值百分比" />
+            <input class="inp num" type="number" id="inpSellC" min="3" max="500" step="1" value="55" aria-label="子仓 C 卖出阈值百分比" />
+          </div>
+        </div>
+        <div class="field">
+          <label><span data-i18n="lblBuyThr">分层回撤回购阈值（%）</span></label>
+          <div class="triple-inp">
+            <input class="inp num" type="number" id="inpBuy1" min="1" max="80" step="1" value="10" aria-label="第一档回撤百分比" />
+            <input class="inp num" type="number" id="inpBuy2" min="2" max="85" step="1" value="20" aria-label="第二档回撤百分比" />
+            <input class="inp num" type="number" id="inpBuy3" min="3" max="90" step="1" value="30" aria-label="第三档回撤百分比" />
+          </div>
+        </div>
+        <div class="field">
+          <label for="selExitPolicy"><span data-i18n="lblExitPolicy">风控退出策略</span></label>
+          <select class="inp" id="selExitPolicy">
+            <option value="stop_up_20pct" data-i18n="optExitStop20">较卖出成交价上涨 20% 止损回购</option>
+            <option value="hold_wait" data-i18n="optExitWait">无限等待回撤回购</option>
+            <option value="timeout_90d" data-i18n="optExitTimeout90">等待满 90 天超时回购</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="selTrendFilter"><span data-i18n="lblTrendFilter">卖出前趋势过滤（仅用过去价格）</span></label>
+          <select class="inp" id="selTrendFilter">
+            <option value="none" data-i18n="optTrendNone">不启用趋势过滤</option>
+            <option value="ma_slope_cap" data-i18n="optTrendSlope">近 20 日均线斜率过陡时禁止卖出</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="inpFee"><span data-i18n="lblFee">单边手续费率（%）</span></label>
+          <input class="inp num" type="number" id="inpFee" min="0" max="5" step="0.01" value="0.1" />
+        </div>
+        <div class="field">
+          <label for="inpSlip"><span data-i18n="lblSlip">单边滑点假设（%）</span></label>
+          <input class="inp num" type="number" id="inpSlip" min="0" max="5" step="0.01" value="0.05" />
+        </div>
+        <div class="field">
+          <label for="inpCooldown"><span data-i18n="lblCooldown">子仓完成后冷却期（天）</span></label>
+          <input class="inp num" type="number" id="inpCooldown" min="0" max="365" step="1" value="0" />
+        </div>
+        <div class="field">
+          <label for="selContribMode"><span data-i18n="lblContribMode">外部现金流模式</span></label>
+          <select class="inp" id="selContribMode">
+            <option value="none" data-i18n="optContribNone">无新增入金（纯存量对照）</option>
+            <option value="monthly_uniform" data-i18n="optContribUniform">每月等额定投（同入金日对照）</option>
+            <option value="monthly_ahr999" data-i18n="optContribAhr">每月 AHR999 动态定投（保留未投现金）</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="inpMonthlyUsd"><span data-i18n="lblMonthlyUsd">每月外部入金（USD，仅定投模式生效）</span></label>
+          <input class="inp num" type="number" id="inpMonthlyUsd" min="0" max="1000000" step="50" value="500" />
+        </div>
+        <div class="field">
+          <label for="inpInitCost"><span data-i18n="lblInitCost">起始仓位已知净投入 USD（可选）</span></label>
+          <input class="inp num" type="number" id="inpInitCost" min="0" step="100" placeholder="未知留空" />
+        </div>
+      </div>
+
+      <div class="preset-strip" style="margin-top:12px">
+        <button type="button" class="preset-chip" data-fee-preset="0,0" data-i18n="feeZero">零摩擦检验 (0%)</button>
+        <button type="button" class="preset-chip on" data-fee-preset="0.1,0.05" data-i18n="feeStd">标准摩擦 (0.10%+0.05%)</button>
+        <button type="button" class="preset-chip" data-fee-preset="0.25,0.15" data-i18n="feeHigh">高压摩擦 (0.25%+0.15%)</button>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="btn-primary" id="btnApplyParams" data-i18n="btnRunSim">运行模拟</button>
+        <button type="button" class="btn-sec" id="btnResetParams" data-i18n="btnResetDefault">恢复实验默认</button>
+      </div>
+
+      <div class="note-list">
+        <p id="snapshotHint" data-i18n="paramSnapshotNote">0.30 BTC 为默认示例仓位。点按「只读带入本机持仓」仅读取数量，绝不写入或改动定投账本。</p>
+      </div>
+    </details>
+
+    <!-- 5. 滚动对照结果、策略矩阵与失败回合 -->
+    <section class="card" id="rollingSection" aria-label="策略矩阵与滚动窗口检验">
+      <div class="card-hd">
+        <div>
+          <h2 data-i18n="secRollingTitle">同现金流对照与滚动样本检验</h2>
+          <p class="card-sub" data-i18n="secRollingSub">突出展示不利区间、失败回合与未回购现金。不因跑输基准而隐藏样本。</p>
+        </div>
+        <div class="seg" id="matrixBatchSeg" role="group" aria-label="切换实验批次">
+          <button type="button" data-batch="batch1" class="on" data-i18n="batch1Tab">第一批 · 存量对照</button>
+          <button type="button" data-batch="batch2" data-i18n="batch2Tab">第二批 · 定投对照</button>
+        </div>
+      </div>
+
+      <div class="tbl-wrap">
+        <table aria-label="同现金流策略对照表">
+          <thead>
+            <tr>
+              <th data-i18n="thStrategy">对照方案（点按可载入曲线）</th>
+              <th class="r" data-i18n="thHeldBtc">实际 BTC</th>
+              <th class="r" data-i18n="thEndCash">期末现金</th>
+              <th class="r" data-i18n="thEqBtc">等价 BTC</th>
+              <th class="r" data-i18n="thVsRef">相对组基准</th>
+              <th class="r" data-i18n="thMaxDd">最大币本位回撤</th>
+              <th class="r" data-i18n="thFailCnt">失败回合</th>
+              <th data-i18n="thVerdict">结论</th>
+            </tr>
+          </thead>
+          <tbody id="matrixTableBody" class="num"></tbody>
+        </table>
+      </div>
+
+      <div class="sub-hd">
+        <h3 data-i18n="subRollingWinTitle">跨起点按月滚动窗口</h3>
+        <div class="seg" id="rollingWinSeg" role="group" aria-label="选择滚动窗口长度">
+          <button type="button" data-roll-months="24" class="on" data-i18n="win24m">24 个月</button>
+          <button type="button" data-roll-months="36" data-i18n="win36m">36 个月</button>
+          <button type="button" data-roll-months="48" data-i18n="win48m">48 个月</button>
+        </div>
+      </div>
+
+      <div class="warn-banner" id="rollingNoticeBanner" data-i18n="rollingOverlapWarn">按月滚动窗口存在时间重叠，样本数不等于独立周期观测数。</div>
+
+      <div class="kpis" id="rollingKpiGrid"></div>
+
+      <div class="cv-roll-wrap">
+        <canvas id="rollingChartCanvas"></canvas>
+      </div>
+
+      <div class="sub-hd">
+        <h3 data-i18n="subOosTitle">预注册训练期（2013–2020）→ 样本外（2021–末数据日）检验</h3>
+      </div>
+      <div class="tbl-wrap">
+        <table aria-label="预注册样本外检验表">
+          <thead>
+            <tr>
+              <th data-i18n="thCandidate">预注册候选（共 6 组）</th>
+              <th class="r" data-i18n="thTrainEx">训练期超额</th>
+              <th class="r" data-i18n="thOosEx">样本外超额</th>
+              <th class="r" data-i18n="thOosHighFee">高费率压力超额</th>
+              <th class="r" data-i18n="thOosCash">样本外期末现金</th>
+              <th class="r" data-i18n="thOosDd">样本外回撤</th>
+            </tr>
+          </thead>
+          <tbody id="oosTableBody" class="num"></tbody>
+        </table>
+      </div>
+
+      <div class="sub-hd">
+        <h3 data-i18n="subFailedCyclesTitle">失败回合、止损退出与未完成子仓</h3>
+      </div>
+      <div class="tbl-wrap">
+        <table aria-label="失败回合与未完成子仓表">
+          <thead>
+            <tr>
+              <th data-i18n="thCycleLot">子仓 / 状态</th>
+              <th data-i18n="thCycleSpan">卖出执行日 → 结束日</th>
+              <th class="r" data-i18n="thAnchorPx">卖出成交锚点</th>
+              <th class="r" data-i18n="thSoldBtc">卖出 BTC</th>
+              <th class="r" data-i18n="thRepBtc">已回购 BTC</th>
+              <th class="r" data-i18n="thNetLoss">净增减 / 待回购现金</th>
+            </tr>
+          </thead>
+          <tbody id="failedCyclesBody" class="num"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 6. 完整交易记录、导出与策略风险说明 -->
+    <section class="card" id="tradeLogSection" aria-label="完整模拟成交明细与导出">
+      <div class="card-hd">
+        <div>
+          <h2 data-i18n="secTradeTitle">完整模拟成交记录与独立备份</h2>
+          <p class="card-sub" data-i18n="secTradeSub">交易记录导出为 CSV 表格；本页模拟参数独立导出为 JSON，不包含在主站定投账本备份中。</p>
+        </div>
+        <div class="seg" id="tradeFilterSeg" role="group" aria-label="筛选交易类型">
+          <button type="button" data-trade-filter="all" class="on" data-i18n="fltAll">全部</button>
+          <button type="button" data-trade-filter="sell" data-i18n="fltSell">仅卖出</button>
+          <button type="button" data-trade-filter="buy" data-i18n="fltBuy">仅回购/止损</button>
+        </div>
+      </div>
+
+      <div class="btn-row" style="margin-top:0;margin-bottom:12px">
+        <button type="button" class="btn-sec" id="btnExportCsv" data-i18n="btnExportCsv">导出模拟成交记录 CSV</button>
+        <button type="button" class="btn-sec" id="btnExportJson" data-i18n="btnExportJson">导出 VHE 实验设置 JSON</button>
+        <button type="button" class="btn-sec" id="btnImportJson" data-i18n="btnImportJson">导入 VHE 实验设置 JSON</button>
+        <input type="file" id="fileImportJson" accept=".json,application/json" hidden />
+      </div>
+
+      <div class="tbl-wrap" style="max-height:360px;overflow-y:auto">
+        <table aria-label="模拟成交记录明细">
+          <thead>
+            <tr>
+              <th data-i18n="thSigDay">信号日 (T)</th>
+              <th data-i18n="thExecDay">执行日 (T+1)</th>
+              <th data-i18n="thLot">子仓</th>
+              <th data-i18n="thAction">动作</th>
+              <th class="r" data-i18n="thExecPx">模拟成交价</th>
+              <th class="r" data-i18n="thQtyBtc">数量 (BTC)</th>
+              <th class="r" data-i18n="thFeeSlip">费用+滑点</th>
+              <th class="r" data-i18n="thBtcAfter">成交后实际 BTC</th>
+              <th class="r" data-i18n="thCashAfter">成交后现金</th>
+              <th data-i18n="thReason">触发原因</th>
+            </tr>
+          </thead>
+          <tbody id="tradeTableBody" class="num"></tbody>
+        </table>
+      </div>
+
+      <div class="sub-hd" style="margin-top:18px">
+        <h3 data-i18n="secMethodTitle">指标说明、账本隔离与方法局限</h3>
+      </div>
+      <div class="method-list" id="methodDisclosure">
+        <p data-i18n="method1"><b>收盘后次日执行：</b>无全历史日内逐笔与高低价文件，所有信号在 T 日完成收盘后确认，并于 T+1 日参考价叠加单边滑点与报价币手续费模拟成交，不假设盘中触价成交或限价必成。</p>
+        <p data-i18n="method2"><b>均线与估值口径区分：</b>本页 MA200 为连续 200 个已完成有效日的算术均值；AHR999 使用 200 日调和均值定投成本，其 2026 新拟合系数用于早期历史重放存在模型选择后见风险。VHE 第一阶段不使用 URPD 快照构造历史信号。</p>
+        <p data-i18n="method3"><b>账本严格只读隔离：</b>本页参数仅存于独立键 btc_vhe_config_v1，不读写 btc_dca_ledger_v1 或 btc_exec_v7，不连接任何交易接口，不使用杠杆。若样本外未证明稳定增币优势，继续持有与纪律定投仍是默认基准。</p>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="vheToast" role="status" aria-live="polite"></div>
+
+  <script defer src="./assets/seed-cycle.5a6f45f52a.js"></script>
+  <script defer src="./assets/vhe-engine.f3956e0e74.js"></script>
+  <script defer src="./assets/vhe-ui.e5c373bc8e.js"></script>
+  <script>
+    window.addEventListener("load", function () {
+      if (!window.VHEEngine || !window.VHEUI) {
+        var card = document.getElementById("vheUnavailableCard");
+        var badge = document.getElementById("dataStatusBadge");
+        var txt = document.getElementById("dataStatusText");
+        if (card) card.hidden = false;
+        if (badge) badge.className = "status-badge bad num";
+        if (txt) txt.textContent = window.BTC_LANG === "en" ? "Unavailable" : "暂不可用";
+      }
+      if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1")) {
+        navigator.serviceWorker.register("./sw.js").catch(function () {});
+      }
+    });
+  </script>
+</body>
+</html>

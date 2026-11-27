@@ -1,18 +1,18 @@
 "use strict";
 
-const SW_BUILD = "28.1.0-20261126";
+const SW_BUILD = "28.2.0-20261126";
 const CACHE_NAME = "btc-intelligence-v" + SW_BUILD.replace(/\./g, "-");
 const CACHE_PREFIX = "btc-site:" + self.registration.scope + ":";
 const SCOPED_CACHE = CACHE_PREFIX + CACHE_NAME;
 // 带内容哈希的静态资源。文件内容不变，文件名就不变，更新时无需重新下载。
 const ASSETS = /*ASSETS*/[
-  "./assets/app.40f1343004.css",
+  "./assets/app.aedde8ad93.css",
   "./assets/seed-cycle.5a6f45f52a.js",
-  "./assets/app.2d508ce5f3.js",
+  "./assets/app.90de05af6a.js",
   "./assets/insight.67c8b7276d.js",
 ]/*END*/;
-// 按需下载的资源（英文对照表）：不预缓存，但版本切换时不删除
-const OPTIONAL_ASSETS = /*OPTIONAL*/["./assets/lightweight-charts.682f74d8c4.js", "./assets/i18n-en.dede1b668f.js", "./assets/ext-bundle.0826cacb3d.js"]/*OEND*/;
+// 按需下载的资源（英文对照表与 VHE 实验室）：不预缓存，但版本切换时不删除
+const OPTIONAL_ASSETS = /*OPTIONAL*/["./assets/lightweight-charts.682f74d8c4.js", "./assets/i18n-en.80ddd33c6c.js", "./assets/ext-bundle.0912c693b4.js", "./assets/vhe.b73524d203.css", "./assets/vhe-engine.f3956e0e74.js", "./assets/vhe-ui.e5c373bc8e.js"]/*OEND*/;
 const ASSET_CACHE = CACHE_PREFIX + "assets";
 const CORE = [
   "./",
@@ -20,6 +20,7 @@ const CORE = [
   "./ahr999.html",
   "./old-coins.html",
   "./dca.html",
+  "./vhe.html",
   "./apple-touch-icon.png",
   "./btc-logo.png",
   "./manifest.webmanifest",
@@ -176,9 +177,11 @@ self.addEventListener("fetch", (event) => {
           ? "./old-coins.html"
           : p.endsWith("/dca.html")
             ? "./dca.html"
-            : (p.endsWith("/") || p.endsWith("/index.html"))
-              ? "./index.html"
-              : null;
+            : p.endsWith("/vhe.html")
+              ? "./vhe.html"
+              : (p.endsWith("/") || p.endsWith("/index.html"))
+                ? "./index.html"
+                : null;
     event.respondWith(networkFirst(request, fallback));
     return;
   }

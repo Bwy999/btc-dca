@@ -97,9 +97,46 @@ def g_weekly():
 
 
 def g_price_all():
-    """全部历史日收盘（AHR999 的 200 日成本和拟合要用）。"""
+    """全部历史日收盘（AHR999 的 200 日成本、拟合与 VHE 日频回测共用；保留 start/v 兼容并输出显式日期 d 与缺口校验）。"""
+    import math
+    from datetime import date, timedelta
     r = bulk("day1", ["price"], "2010-07-17")
-    return {"start": r["date"][0], "v": [rnd(x) for x in r["price"]]}
+    raw_d, raw_p = r.get("date") or [], r.get("price") or []
+    if not raw_d or len(raw_d) != len(raw_p):
+        raise ValueError("priceAll empty or length mismatch")
+    by_day, prev_dt = {}, None
+    for ds, px in zip(raw_d, raw_p):
+        dt = date.fromisoformat(str(ds)[:10])
+        if prev_dt is not None and dt <= prev_dt:
+            raise ValueError(f"priceAll non-increasing or duplicate date: {ds}")
+        prev_dt = dt
+        val = None
+        if px is not None:
+            fpx = float(px)
+            if math.isfinite(fpx) and fpx > 0:
+                val = rnd(fpx)
+        by_day[dt] = val
+    d0, dn = date.fromisoformat(str(raw_d[0])[:10]), prev_dt
+    span = (dn - d0).days + 1
+    grid_d, grid_v, gaps = [], [], []
+    for k in range(span):
+        cur = d0 + timedelta(days=k)
+        iso = cur.isoformat()
+        val = by_day.get(cur)
+        grid_d.append(iso)
+        grid_v.append(val)
+        if val is None:
+            gaps.append(iso)
+    return {
+        "schema": 2,
+        "start": grid_d[0],
+        "end": grid_d[-1],
+        "d": grid_d,
+        "v": grid_v,
+        "gaps": gaps,
+        "contiguous": len(gaps) == 0,
+    }
+
 
 
 def g_percentiles():
@@ -245,7 +282,41 @@ def g_signal():
             "topEvidence": t.get("topEvidence"), "risk": t["risk"], "psil": None if ps[i] is None else round(ps[i], 1), "deep": deep, "confirm": confirm}
 
 
-GROUPS_CHARTS = {"daily": g_daily, "priceAll": g_price_all, "cohortWeekly": g_cohort_weekly, "age": g_age, "monthly": g_monthly, "addr": g_addr, "weekly": g_weekly}
+def g_urpd():
+    """精细 $1K 筹码分布（URPD）最新快照及 1日 / 7日 / 30日前对比快照，供筹码变动叠加图同源秒读。"""
+    from datetime import date, timedelta
+    cur = get(f"{BASE}/api/urpd/all?agg=lin1000")
+    b = cur.get("buckets") or {}
+    day = str(cur.get("date") or "")
+    out = {
+        "day": day,
+        "price": [round(float(x)) for x in (b.get("price") or [])],
+        "supply": [rnd(x, 2) for x in (b.get("supply") or [])],
+        "rc": [None if x is None else round(float(x)) for x in (b.get("realized_cap") or [])],
+        "pnl": [None if x is None else round(float(x)) for x in (b.get("unrealized_pnl") or [])],
+        "prev": {},
+    }
+    if day:
+        base_dt = date.fromisoformat(day)
+        for d in (1, 7, 30):
+            for off in (d, d + 1, max(1, d - 1)):
+                td = (base_dt - timedelta(days=off)).isoformat()
+                try:
+                    pj = get(f"{BASE}/api/urpd/all/{td}?agg=lin1000")
+                    pb = pj.get("buckets") or {}
+                    if pb.get("price") and pb.get("supply"):
+                        out["prev"][str(d)] = {
+                            "day": str(pj.get("date") or td),
+                            "price": [round(float(x)) for x in pb["price"]],
+                            "supply": [rnd(x, 2) for x in pb["supply"]],
+                        }
+                        break
+                except Exception:
+                    continue
+    return out
+
+
+GROUPS_CHARTS = {"daily": g_daily, "priceAll": g_price_all, "cohortWeekly": g_cohort_weekly, "age": g_age, "monthly": g_monthly, "addr": g_addr, "weekly": g_weekly, "urpd": g_urpd}
 GROUPS_CORE = {"percentiles": g_percentiles, "sync": g_sync, "signal": g_signal}
 
 

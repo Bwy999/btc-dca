@@ -52,10 +52,20 @@ def checks(root):
         for name, script in (("脚本语法", "tests/syntax_check.py"), ("Safari 兼容", "tests/safari_compat.py")):
             if os.path.exists(os.path.join(root, script)):
                 todo.append((name, ["python3", script, "source/index.html"]))
+    if os.path.exists(os.path.join(root, "source/vhe.html")):
+        for name, script in (("VHE 脚本语法", "tests/syntax_check.py"), ("VHE Safari 兼容", "tests/safari_compat.py")):
+            if os.path.exists(os.path.join(root, script)):
+                todo.append((name, ["python3", script, "source/vhe.html"]))
     if os.path.exists(os.path.join(root, "tests/static_test.py")):
         todo.append(("静态检查", ["python3", "tests/static_test.py", "."]))
-    if os.path.exists(os.path.join(root, "tests/reliability_test.mjs")) and shutil.which("node"):
-        todo.append(("可靠性", ["node", "tests/reliability_test.mjs", "."]))
+    node_bin = shutil.which("node")
+    vhe_test_path = os.path.join(root, "tests/vhe_test.mjs")
+    if not node_bin or not os.path.exists(vhe_test_path):
+        log("❌ VHE 验收测试：缺少 node 运行环境或 tests/vhe_test.mjs，拒绝跳过部署门禁。")
+        return False
+    if os.path.exists(os.path.join(root, "tests/reliability_test.mjs")):
+        todo.append(("可靠性", [node_bin, "tests/reliability_test.mjs", "."]))
+    todo.append(("VHE 验收测试", [node_bin, "tests/vhe_test.mjs", "."]))
     ok_all = True
     for name, cmd in todo:
         ok, tail = run(cmd, root)
@@ -76,7 +86,7 @@ def build_id(root):
 def referenced_assets(base):
     import re
     keep = set()
-    for fn in ("index.html", "sw.js", "ahr999.html", "old-coins.html", "dca.html"):
+    for fn in ("index.html", "sw.js", "ahr999.html", "old-coins.html", "dca.html", "vhe.html"):
         p = os.path.join(base, fn)
         if os.path.isfile(p):
             try:
