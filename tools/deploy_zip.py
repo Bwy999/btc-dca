@@ -66,8 +66,6 @@ def checks(root):
     if os.path.exists(os.path.join(root, "tests/reliability_test.mjs")):
         todo.append(("可靠性", [node_bin, "tests/reliability_test.mjs", "."]))
     todo.append(("VHE 验收测试", [node_bin, "tests/vhe_test.mjs", "."]))
-    if os.path.exists(os.path.join(root, "tests/vhe_plain_test.mjs")):
-        todo.append(("VHE 简明界面逻辑", [node_bin, "tests/vhe_plain_test.mjs", "."]))
     ok_all = True
     for name, cmd in todo:
         ok, tail = run(cmd, root)

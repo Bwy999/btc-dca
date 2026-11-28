@@ -14,7 +14,7 @@ async def main(root):
     url = 'file://' + os.path.abspath(os.path.join(root, 'index.html'))
     failed = 0
     async with async_playwright() as pw:
-        b = await pw.chromium.launch()
+        b = await pw.chromium.launch(args=['--disable-dev-shm-usage'])
         # V26.4.1：中英文在 390px 下不横向溢出；今日结论只属于行情分区
         for lang in ('zh', 'en'):
             ctx = await b.new_context(viewport={'width': 390, 'height': 900})
@@ -36,7 +36,8 @@ async def main(root):
             await ctx.close()
         for w in (390, 1440):
             for theme in ('light', 'dark'):
-                pg = await b.new_page(viewport={'width': w, 'height': 900})
+                ctx = await b.new_context(viewport={'width': w, 'height': 900})
+                pg = await ctx.new_page()
                 errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
                 await pg.route('**/*', lambda r: r.abort() if not r.request.url.startswith('file:') else r.continue_())
                 await pg.goto(url); await pg.wait_for_timeout(1500)
@@ -48,7 +49,7 @@ async def main(root):
                 status = '通过' if not errs else '失败：' + errs[0]
                 failed += bool(errs)
                 print(f'{w}px {theme}: {status}')
-                await pg.close()
+                await ctx.close()
         for sub in ('old-coins.html', 'dca.html', 'vhe.html'):
             sub_path = os.path.join(root, sub)
             if not os.path.isfile(sub_path):

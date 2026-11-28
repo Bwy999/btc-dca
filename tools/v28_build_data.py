@@ -316,8 +316,46 @@ def g_urpd():
     return out
 
 
+def g_bottoms_top():
+    """Bitview Bottoms 周期底部精准榜前三名及最新线值，供首页价格关键位同源秒读。"""
+    rk = get(f"{BASE}/bottoms/ranking.json")
+    ranked = rk.get("ranked") or []
+    if not ranked:
+        raise ValueError("bottoms ranking empty")
+    top3 = ranked[:3]
+    ids = [x["row"]["id"] for x in top3]
+    r = bulk("day1", ids, -7)
+    dates = r.get("date") or []
+    day_iso = ""
+    top_out = []
+    for item in top3:
+        sid = item["row"]["id"]
+        vals = r.get(sid) or []
+        px, d_hit = None, ""
+        for ds, v in zip(reversed(dates), reversed(vals)):
+            if v is not None and float(v) > 0:
+                px = rnd(v)
+                d_hit = str(ds)[:10]
+                break
+        if d_hit and d_hit > day_iso:
+            day_iso = d_hit
+        top_out.append({
+            "rank": int(item.get("rank") or 1),
+            "id": sid,
+            "worst": rnd(item.get("worst"), 4),
+            "price": px,
+            "misses": [rnd(a.get("miss"), 4) if isinstance(a, dict) and a.get("miss") is not None else None for a in (item["row"].get("at") or [])],
+        })
+    return {
+        "day": day_iso,
+        "rankedCount": len(ranked),
+        "lows": rk.get("lows") or [],
+        "top": top_out,
+    }
+
+
 GROUPS_CHARTS = {"daily": g_daily, "priceAll": g_price_all, "cohortWeekly": g_cohort_weekly, "age": g_age, "monthly": g_monthly, "addr": g_addr, "weekly": g_weekly, "urpd": g_urpd}
-GROUPS_CORE = {"percentiles": g_percentiles, "sync": g_sync, "signal": g_signal}
+GROUPS_CORE = {"percentiles": g_percentiles, "sync": g_sync, "signal": g_signal, "bottomsTop": g_bottoms_top}
 
 
 def latest(daily, cohort, age, pct):

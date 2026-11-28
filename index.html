@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BUILD: 28.2.2-20261127 · SATS-GARDEN-V28.2.2 -->
+<!-- BUILD: 28.3.0-20261128 · SATS-GARDEN-V28.3.0 -->
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -10,7 +10,7 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Sats Garden" />
-  <meta name="btc-dca-build" content="28.2.2-20261127" />
+  <meta name="btc-dca-build" content="28.3.0-20261128" />
   <script>
 (function(){
   "use strict";
@@ -66,7 +66,7 @@
         if(st&&/^-\d+$/.test(st)&&+st>-100)return "live";
         return "daily";
       }
-      if(p.indexOf("/api/urpd")===0)return "daily";
+      if(p.indexOf("/api/urpd")===0||p==="/bottoms/ranking.json")return "daily";
       return null;
     }
     if(/(^|\.)bitcoin-data\.com$|^api\.bgeometrics\.com$/.test(h))return /\/last$/.test(p)?"live":"daily";
@@ -138,7 +138,7 @@
     if((m=/^utxos_over_(\d+)pct_in_loss_supply$/.exec(n)))return {k:"loss",pct:+m[1],parts:[]};
     if((m=/^addrs_(.+?)_(addr_count|supply(?:_delta_\w+)?)$/.exec(n))&&BAL[m[1]]){var suf=m[2]==="addr_count"?"address_count":m[2];return {k:"sum",parts:BAL[m[1]].map(function(b){return "balance_"+b+"_"+suf})}}
     if((m=/^bedrock_(raw|cointime|coinflow)_floor_pct(\w+)$/.exec(n)))return {k:"alias",parts:["bedrock_"+{raw:"unweighted",cointime:"awake",coinflow:"mobile"}[m[1]]+"_floor_p"+m[2]]};
-    if(/^bedrock_coinflow_\w+_floor_/.test(n)||/^capital_sentiment_/.test(n)||/^rarity_meter_/.test(n))return {k:"none",parts:[]};   // 新版没有对应数据
+    if(/^bedrock_coinflow_\w+_floor_/.test(n)||/^capital_sentiment_/.test(n)||/^rarity_meter_(?!p\d)/.test(n))return {k:"none",parts:[]};   // 新版没有对应数据
     return {k:"alias",parts:[n]};
   }
   function bvGet(u){return native(u,{mode:"cors",cache:"no-store"}).then(function(r){return r.text().then(function(t){var j=null;try{j=JSON.parse(t)}catch(e){}return {ok:r.ok,status:r.status,j:j,t:t}})})}
@@ -337,7 +337,7 @@ window.__sgV28=(function(){
   // V27.10：给本机存储瘦身。这几个模块各自把 170～420 KB 的图表数据存进 localStorage（Safari 上限约 5 MB，已用近 3 MB）；
   // 同一份数据网络缓存层已经存在 IndexedDB 里（容量大得多、离线也能用），所以这里不再重复存：写入时直接跳过，并清掉以前存的。
   // 模块下次打开时照常「请求」，由缓存层从本机副本立即返回，不产生网络流量。IndexedDB 不可用（如无痕模式）时保持原样。
-  var BIG={btc_bitview_capitalized_price_v1:1,btc_bitview_lth_psil_v1:1,btc_bitview_cost_basis_v1:1,btc_bitview_revived_v3_1y:1,btc_bitview_lth_nupl_v1:1,btc_bitview_floor_v2:1,btc_power_history_v2:1,btc_fgi_full_v1:1};
+  var BIG={btc_bitview_capitalized_price_v1:1,btc_bitview_lth_psil_v1:1,btc_bitview_cost_basis_v1:1,btc_bitview_revived_v3_1y:1,btc_bitview_lth_nupl_v1:1,btc_bitview_floor_v2:1,btc_power_history_v2:1,btc_fgi_full_v1:1,btc_bv_bottoms_v1:1};
   if(!window.indexedDB||!window.__sgNet)return;
   try{
     var raw=Storage.prototype.setItem;
@@ -347,7 +347,7 @@ window.__sgV28=(function(){
 })();
 </script>
 <script>(function(){var l=null;try{l=localStorage.getItem("btc_lang_v1")}catch(e){}if(l!=="zh"&&l!=="en"){var n=(navigator.languages&&navigator.languages[0])||navigator.language||"";l=/^zh/i.test(n)?"zh":"en"}window.BTC_LANG=l;var d=document.documentElement;d.lang=l==="en"?"en":"zh-CN";if(l==="en"){d.classList.add("i18n-pending");setTimeout(function(){d.classList.remove("i18n-pending")},2500)}})();</script>
-<script>const BUILD_ID="28.2.2-20261127";const BUILD_LABEL="V28.2.2";function sgLabel(){return window.BTC_LANG==="en"?BUILD_LABEL.replace(/\s*正式版$/,""):BUILD_LABEL}(function(){var T="btc_theme_v1",t=null;try{t=localStorage.getItem(T)}catch(e){}if(t!=="light"&&t!=="dark"){t=null}window.__themePinned=!!t;if(!t)t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.dataset.theme=t;})();</script>
+<script>const BUILD_ID="28.3.0-20261128";const BUILD_LABEL="V28.3.0";function sgLabel(){return window.BTC_LANG==="en"?BUILD_LABEL.replace(/\s*正式版$/,""):BUILD_LABEL}(function(){var T="btc_theme_v1",t=null;try{t=localStorage.getItem(T)}catch(e){}if(t!=="light"&&t!=="dark"){t=null}window.__themePinned=!!t;if(!t)t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.dataset.theme=t;})();</script>
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="180x180" href="./apple-touch-icon.png" />
   <link rel="manifest" href="./manifest.webmanifest" id="pwaManifest" />
@@ -369,7 +369,7 @@ window.__sgV28=(function(){
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="BTC · 价格与 AHR999" />
   <meta name="twitter:description" content="比特币价格、AHR999 周期估值与本月定投进度。" />
-  <link rel="stylesheet" href="assets/app.aedde8ad93.css" data-inline="css" />
+  <link rel="stylesheet" href="assets/app.ffb6619994.css" data-inline="css" />
 <noscript><div style="max-width:700px;margin:0 auto;padding:40px 20px;font-family:system-ui;color:#333"><h1>Sats Garden</h1><p>本页面需要启用 JavaScript 才能加载实时行情与链上指标。请在浏览器设置中开启 JavaScript 后重新访问。</p></div></noscript>
   </head>
 <body class="booting terminal-ui focus-layout">
@@ -975,6 +975,77 @@ window.__sgV28=(function(){
     </div>
   </section></details>
 
+<details class="module-fold" data-module="bottoms" id="bottomsFold"><summary><span><b>周期底价精准榜</b><small data-fold-live="bottoms" data-fold-default="对比 346 条底价线在历轮熊市底部的最大误差 · Bitview">对比 346 条底价线在历轮熊市底部的最大误差 · Bitview</small></span></summary><section class="sec" id="bottomsSec" aria-label="周期底价精准榜">
+    <div class="module-head">
+      <div class="module-title-row"><h2 class="sec-title">周期底价精准榜</h2><div class="module-status head-status"><span class="fresh-badge warn" id="freshBottoms">按需加载</span></div><button class="mini-toggle" id="btmRefreshBtn" type="button">更新</button></div>
+      <div class="module-meta-row"><details class="module-explainer"><summary>指标说明</summary><div class="section-kicker">BITVIEW BOTTOMS · CYCLE FLOOR RANKING</div><div class="sec-sub">对比 Bitview 全部 346 条链上成本分位、Bedrock 底价、稀有度线、长周期均线与幂律底价在 2017 年以来每轮减半周期底部（历史高点回撤至少 50% 的最低收盘价）的贴近程度。</div><div class="sec-sub">评分口径（最差误差，越小越准）：每日收盘价严格对比前一日已知线值（无未来数据泄漏）。若下跌途中触及该线，误差为触线后继续跌至最低点的幅度；若未触及，误差为最低点当日该线低于底部的幅度。按历轮中最差一次误差排序。</div></details></div>
+    </div>
+
+    <div class="btm-podium" id="btmPodium" aria-label="排名前三的底价线">
+      <div class="btm-pcard"><div class="btm-pcard-top"><span class="btm-pcard-title"><i class="btm-rank-badge" data-r="1">1</i><span>等待加载…</span></span><span class="btm-worst-pill num">--</span></div><div class="btm-pcard-mid"><b class="btm-pcard-price num">--</b><span class="btm-pcard-gap">距现价 --</span></div><div class="btm-pcard-sub">展开后自动同步排行榜与实时线值</div></div>
+      <div class="btm-pcard"><div class="btm-pcard-top"><span class="btm-pcard-title"><i class="btm-rank-badge" data-r="2">2</i><span>等待加载…</span></span><span class="btm-worst-pill num">--</span></div><div class="btm-pcard-mid"><b class="btm-pcard-price num">--</b><span class="btm-pcard-gap">距现价 --</span></div><div class="btm-pcard-sub">展开后自动同步排行榜与实时线值</div></div>
+      <div class="btm-pcard"><div class="btm-pcard-top"><span class="btm-pcard-title"><i class="btm-rank-badge" data-r="3">3</i><span>等待加载…</span></span><span class="btm-worst-pill num">--</span></div><div class="btm-pcard-mid"><b class="btm-pcard-price num">--</b><span class="btm-pcard-gap">距现价 --</span></div><div class="btm-pcard-sub">展开后自动同步排行榜与实时线值</div></div>
+    </div>
+
+    <div class="btm-callout" role="status" aria-live="polite">
+      <b id="btmCalloutTitle">展开自动同步 Bitview Bottoms 数据</b>
+      <span id="btmCalloutSub">历史仅约 3 轮减半熊市样本；历轮最差误差小代表历史贴合度高，不是未来绝不跌破的价格保证。</span>
+    </div>
+
+    <div class="btm-toolbar">
+      <div class="btm-legend" aria-label="图例">
+        <span class="k-px"><i></i>BTC 价格</span>
+        <span class="k-r1"><i></i>第 1 名</span>
+        <span class="k-r2"><i></i>第 2 名</span>
+        <span class="k-r3"><i></i>第 3 名</span>
+        <button type="button" class="btm-picked-chip" id="btmPickedChip" hidden></button>
+      </div>
+      <div class="range-tabs" id="btmRangeSeg" role="group" aria-label="周期底部缩放">
+        <button class="range-btn active" type="button" data-btm-view="all" aria-pressed="true">全部</button>
+      </div>
+    </div>
+
+    <div class="btm-chart-shell" id="btmChartShell">
+      <canvas class="btm-chart" id="btmChart" aria-label="BTC 对数收盘价与历轮最准底价线走势图"></canvas>
+      <div class="btm-tooltip" id="btmTooltip" aria-hidden="true"></div>
+    </div>
+
+    <div class="btm-falls-grid" id="btmFallsGrid" aria-label="2017 年以来各轮减半周期底部"></div>
+
+    <div class="btm-board">
+      <div class="btm-board-head">
+        <h3 id="btmBoardCount">全部底价线精准排行</h3>
+        <span>点按任一底价线可叠加到上方图表</span>
+      </div>
+      <div class="btm-controls">
+        <input class="btm-find" id="btmSearch" type="search" inputmode="search" autocomplete="off" placeholder="搜索底价线（如 P20、200周、CVDD、幂律…）" aria-label="搜索底价线" />
+        <div class="btm-cats" id="btmCatSeg" role="group" aria-label="按类型筛选">
+          <button type="button" class="btm-chip-btn on" data-btm-cat="all" aria-pressed="true">全部</button>
+          <button type="button" class="btm-chip-btn" data-btm-cat="pct" aria-pressed="false">成本分位</button>
+          <button type="button" class="btm-chip-btn" data-btm-cat="floor" aria-pressed="false">Bedrock</button>
+          <button type="button" class="btm-chip-btn" data-btm-cat="rarity" aria-pressed="false">稀有度线</button>
+          <button type="button" class="btm-chip-btn" data-btm-cat="ma" aria-pressed="false">均线与幂律</button>
+          <button type="button" class="btm-chip-btn" data-btm-cat="classic" aria-pressed="false">经典估值</button>
+        </div>
+      </div>
+      <div class="btm-sorts-wrap">
+        <span class="btm-sorts-label">排序（误差越小越靠前）：</span>
+        <div class="btm-sorts" id="btmSortSeg" role="group" aria-label="选择排序列">
+          <button type="button" class="btm-chip-btn on" data-btm-sort="-1" aria-pressed="true">最差误差 ↑</button>
+        </div>
+      </div>
+      <ol class="btm-rank-list" id="btmRankList"></ol>
+      <div class="btm-more-wrap">
+        <span class="btm-sorts-label num" id="btmShownInfo"></span>
+        <button type="button" class="btm-more-btn" id="btmMoreBtn" hidden>展开更多</button>
+      </div>
+    </div>
+
+    <div class="btm-foot">
+      <span id="btmSourceNote">数据源：Bitview Bottoms（bitview.space/bottoms）与日线 API · 在浏览器本机校验</span>
+      <span>未纳入排名的线：短于 1 年的均线、高于中位数的分位线、短期持有者（STH）线，以及自 2017 年起超三分之二周收盘在其下方的阻力线。不构成买卖建议。</span>
+    </div>
+  </section></details>
 
 <details class="module-fold" data-module="liquidity"><summary><span><b>资金与情绪</b><small data-fold-live="fund" data-fold-default="恐惧贪婪、资金费率、稳定币与预测市场">恐惧贪婪、资金费率、稳定币与预测市场</small></span></summary><section class="sec" id="liquidity">
     <div class="module-head">
@@ -2197,6 +2268,7 @@ window.__sgV28=(function(){
         <a href="#decision" data-section="decision" data-keywords="市场 图谱 结构 价格"><b>图谱</b><small>市场结构</small></a>
         <a href="#powerlaw" data-section="powerlaw" data-keywords="幂律 Power Law 长期"><b>幂律</b><small>长期走廊</small></a>
         <a href="#floor" data-section="floor" data-keywords="底价 Floor Bedrock UTXO 成本锚"><b>底价</b><small>双锚模型</small></a>
+        <a href="#bottomsSec" data-section="bottomsSec" data-keywords="Bottoms 周期底价 精准榜 底部 误差 排行 P20 Bedrock CVDD"><b>底价榜</b><small>底部误差</small></a>
         <a href="#custody" data-section="custody" data-keywords="自托管 手续费 内存池 冷钱包"><b>自托管</b><small>手续费窗口</small></a>
         <a href="#mining" data-section="mining" data-keywords="矿业 算力 难度 矿工"><b>矿业</b><small>算力与难度</small></a>
         <a href="#holders" data-section="holders" data-keywords="持币 群体 地址 鲸鱼"><b>群体</b><small>供应迁移</small></a>
@@ -2251,7 +2323,7 @@ window.__sgV28=(function(){
 
 <script data-inline="vendor">window.LWC_SRC="assets/lightweight-charts.682f74d8c4.js";(function(){var p=false;function load(){if(p||window.LightweightCharts)return;p=true;var sc=document.createElement("script");sc.src=window.LWC_SRC;sc.async=true;sc.onload=function(){try{window.dispatchEvent(new Event("resize"))}catch(e){}};document.head.appendChild(sc)}window.__loadLwc=load;function trig(){load()}["pointerdown","touchstart","keydown"].forEach(function(ev){window.addEventListener(ev,trig,{once:true,passive:true})});if(typeof requestIdleCallback==="function")requestIdleCallback(load,{timeout:1400});else setTimeout(load,1100);})();</script>
 <script defer src="assets/seed-cycle.5a6f45f52a.js" data-inline="seed"></script>
-<script defer src="assets/app.90de05af6a.js" data-inline="app"></script>
+<script defer src="assets/app.09c1ed3b38.js" data-inline="app"></script>
 
 
 
@@ -2284,9 +2356,10 @@ window.__sgV28=(function(){
 
 
 
-<script data-inline="i18n">window.I18N_SRC="assets/i18n-en.4e01ed6adb.js";if(window.BTC_LANG==="en"){var l=document.createElement("link");l.rel="preload";l.as="script";l.href=window.I18N_SRC;document.head.appendChild(l)}</script>
+<script data-inline="i18n">window.I18N_SRC="assets/i18n-en.ae8d607397.js";if(window.BTC_LANG==="en"){var l=document.createElement("link");l.rel="preload";l.as="script";l.href=window.I18N_SRC;document.head.appendChild(l)}</script>
 
 
-<script data-inline="ext">window.EXT_SRC="assets/ext-bundle.3dc64d8b73.js";(function(){var p=false;function load(){if(p)return;p=true;var sc=document.createElement("script");sc.src=window.EXT_SRC;sc.async=true;document.body.appendChild(sc)}window.__loadExt=load;if(window.BTC_LANG==="en"){load();return}function arm(){["pointerdown","touchstart","keydown","hashchange"].forEach(function(ev){window.addEventListener(ev,load,{once:true,passive:true})});if(typeof requestIdleCallback==="function")requestIdleCallback(load,{timeout:600});else setTimeout(load,400);}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",arm,{once:true});else arm();})();</script>
+
+<script data-inline="ext">window.EXT_SRC="assets/ext-bundle.5b489ff1ee.js";(function(){var p=false;function load(){if(p)return;p=true;var sc=document.createElement("script");sc.src=window.EXT_SRC;sc.async=true;document.body.appendChild(sc)}window.__loadExt=load;if(window.BTC_LANG==="en"){load();return}function arm(){["pointerdown","touchstart","keydown","hashchange"].forEach(function(ev){window.addEventListener(ev,load,{once:true,passive:true})});if(typeof requestIdleCallback==="function")requestIdleCallback(load,{timeout:600});else setTimeout(load,400);}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",arm,{once:true});else arm();})();</script>
 </body>
 </html>

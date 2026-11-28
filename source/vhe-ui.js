@@ -1,4 +1,4 @@
-/* SatsGarden V28.2.2 · Plain-Language VHE UI Controller
+/* SatsGarden V28.2.1 · VHE Dual-Mode Standalone UI Controller
  * 极简决策概览（默认） + 完整策略研究双模式架构：
  * 1. 首屏仅运行主回测并立即交给浏览器绘制，样本外（OOS）、策略矩阵与滚动检验通过后台 Worker / 可取消调度按需执行；
  * 2. 严格区分「固定预注册候选研究门槛」与「当前自定义规则单窗结果」，禁止将单窗领先包装成实盘信号；
@@ -33,7 +33,7 @@
       pillUnapplied: "未应用",
       eqExplainSummary: "什么是 BTC 等价资产？",
       eqExplainBody: "BTC 等价资产 = 实际持币 + 现金按期末日参考价折算的 BTC。现金折算仅用于同口径对比，不代表已持有的真实币量，不含税费。",
-      btnOverviewImportLocal: "使用我的持仓数量（只读）",
+      btnOverviewImportLocal: "只读导入本机数量",
       btnRestoreExample: "恢复 0.30 示例",
       ovChartTitle: "BTC 等价资产对照曲线",
       ovChartSub: "点按或滑动曲线查看单日数值；红绿点为模拟卖出与回购日。",
@@ -179,7 +179,7 @@
       pillUnapplied: "Unapplied",
       eqExplainSummary: "What is BTC Equivalent?",
       eqExplainBody: "BTC Equivalent = Actual Held BTC + Cash converted at the period-end daily reference price. Conversion is for apples-to-apples comparison only, not real held coins, and excludes taxes.",
-      btnOverviewImportLocal: "Use my BTC quantity (read only)",
+      btnOverviewImportLocal: "Import Local BTC (Read-Only)",
       btnRestoreExample: "Restore 0.30 Example",
       ovChartTitle: "BTC Equivalent Comparison",
       ovChartSub: "Tap or drag to inspect daily values; red/green dots mark simulated sells and buybacks.",
@@ -819,10 +819,6 @@
 
     syncPresetHighlights(c.start, c.end, c.feeRate * 100, c.slippageRate * 100);
     syncMonthlyFieldVisibility();
-    $("plainQuickBTC").value = String(c.initialBTC);
-    $("plainQuickStart").value = c.start || "2021-11-01";
-    $("plainQuickRatio").value = String(Number((c.tradeRatio*100).toFixed(2)));
-    $("plainQuickNotice").hidden = true;
     setFormDirty(false);
   }
 
@@ -1012,104 +1008,7 @@
     if (ctx) ctx.clearRect(0, 0, cv.width, cv.height);
   }
 
-  // V28.2.2: Plain-language summary, independent of technical display text.
-  // No new trading rules; all numbers come from the same applied backtest.
-  function renderPlainSummary(status) {
-    var en = isEn();
-    function put(id, zh, eng) { $(id).textContent = en ? eng : zh; }
-    put("plainKicker", "历史模拟 · 非实时交易信号", "Historical simulation · Not a live signal");
-    put("plainEvidenceHeading", "为什么这么判断？", "Why this conclusion?");
-    put("plainActionHeading", "下一步怎么做？", "What next?");
-    put("plainSettingsText", "完整策略研究", "Full strategy research");
-    put("plainQuickHeading", "调整模拟（可选）", "Adjust simulation (optional)");
-    put("plainQuickHint", "仅修改这三项。其他研究设置不变；点击重新模拟才生效。", "Only these three settings change; other research settings stay. Apply to run.");
-    put("plainQuickBTCLabel", "起始持仓（BTC）", "Starting BTC");
-    put("plainQuickStartLabel", "从哪天开始模拟", "Simulation start date");
-    put("plainQuickRatioLabel", "用于波段的比例（%）", "Swing allocation (%)");
-    put("plainQuickApply", "重新模拟", "Run simulation");
-    put("plainDetailsText", "查看计算依据与图表", "Calculation details and charts");
-    put("plainTestLabel", "测试区间", "Test period");
-    put("plainAllocationLabel", "模拟仓位", "Simulated position");
-    put("plainUnitCostLabel", "同样投入下的单位成本", "Unit cost, same capital");
-    $("plainDirty").hidden = !state.isFormDirty;
-    put("plainDirty", "研究页有未应用的设置；此处仍显示上次结果。", "Unapplied settings in Research; showing last applied result.");
-    var bt = state.bt;
-    if (status || !bt || !bt.ok || !state.norm || !bt.audit || !bt.audit.passed) {
-      $("plainResult").hidden = true;
-      $("plainCostRow").hidden = true;
-      $("plainUnitCost").textContent = "";
-      var loading = status === "loading";
-      put("plainTitle", loading ? "正在计算" : "暂时无法判断", loading ? "Calculating" : "Result unavailable");
-      put("plainReason", loading ? "正在读取并校验历史价格。" : "当前没有有效的回测结果。", loading ? "Reading and verifying historical prices." : "There is no valid backtest result.");
-      put("plainEvidence", "暂无可用结论。", "No available conclusion.");
-      put("plainEvidenceNote", "", "");
-      put("plainAction", loading ? "请等待计算完成。" : "更新历史数据，或在设置中恢复默认参数。", loading ? "Wait for the calculation to finish." : "Update historical data or restore defaults in Settings.");
-      ["plainDelta","plainPercent","plainBase","plainSwing","plainBaseCash","plainSwingCash","plainCashNote","plainWindow","plainAllocation","plainCostNote"].forEach(function(id){ $(id).textContent=""; });
-      return;
-    }
-    var m=bt.metrics, cfg=bt.config, diff=m.netDiffEqBTC;
-    var ready=state.oosState.status==="ready" && state.oosState.data && state.oosState.data.ok;
-    var oos=ready ? state.oosState.data : null;
-    var matched=oos && matchPreRegisteredCandidate(cfg,oos);
-    var passed=oos && oos.researchGatePassed;
-    var base=translateBaselineLabel(cfg,true), noContrib=cfg.contributionMode==="none";
-    var cash=m.totalCashUSD>1e-9 || m.baselineCashUSD>1e-9;
-    var pos=diff>1e-10, neg=diff< -1e-10;
-    $("plainResult").hidden=false;
-    if (cfg.tradeRatio===0) {
-      put("plainTitle","当前没有做波段","No swing trading selected");
-      put("plainReason","波段仓为 0%，此结果只代表基准策略。","The swing allocation is 0%; this is the baseline only.");
-    } else if (!ready) {
-      put("plainTitle","暂不判断策略有效","Strategy not yet validated");
-      put("plainReason",state.oosState.status==="unavailable" ? "跨时期检验未完成，不能确认长期优势。" : "单次回测已完成，正在检验其他历史时期。",state.oosState.status==="unavailable" ? "Long-term validation is unavailable." : "This backtest is ready; other historical periods are being checked.");
-    } else if (passed && matched && m.outperformedBaseline) {
-      put("plainTitle","可继续模拟观察","Continue simulation only");
-      put("plainReason","历史检验初步通过，但不代表未来盈利。","Historical checks provisionally passed, but future gains are not assured.");
-    } else {
-      put("plainTitle","暂不采用波段策略","Do not adopt swing trading yet");
-      put("plainReason",pos ? (cash ? "这段历史折算后的资产更多，但长期优势仍未得到证明。" : "这段历史多了 BTC，但长期优势仍未得到证明。") : (neg ? (cash ? "这段历史折算后的资产更少，长期优势也未得到证明。" : "这段历史做波段反而少了 BTC，长期优势也未得到证明。") : "这段历史没有增币优势，长期优势仍未得到证明。"),pos ? "This period gained BTC value, but a lasting edge is not established." : (neg ? "Swing trading lost BTC value versus the baseline in this period; no lasting edge is established." : "This period shows no BTC advantage; a lasting edge is not established."));
-    }
-    put("plainDeltaLabel",(cash ? "现金折算后，相比" : "相比")+base+(pos ? "多了" : neg ? "少了" : "的差额"),(cash ? "BTC-equivalent vs " : "Compared with ")+base);
-    $("plainDelta").textContent=fmtSignedNum(diff,Math.abs(diff)>0 && Math.abs(diff)<0.000001 ? 8 : 6," BTC");
-    $("plainDelta").className="simple-value num "+(pos?"up":neg?"dn":"");
-    $("plainPercent").textContent=fmtPct(m.netDiffEqPct,2,true)+" · "+fmtSatsSigned(diff);
-    put("plainBaseLabel",noContrib?"一直持有":"只做定投",noContrib?"Just hold":"DCA only");
-    put("plainSwingLabel","加入波段交易","With swing trading");
-    $("plainBase").textContent=m.baselineEqBTC.toFixed(6)+" BTC";
-    $("plainSwing").textContent=m.eqBTC.toFixed(6)+" BTC";
-    $("plainSwing").className=pos?"up":neg?"dn":"";
-    put("plainBaseCash",cash?"实际持币 "+m.baselineHeldBTC.toFixed(6)+" · 现金 "+fmtUsd(m.baselineCashUSD,2):"",cash?"Held "+m.baselineHeldBTC.toFixed(6)+" · Cash "+fmtUsd(m.baselineCashUSD,2):"");
-    put("plainSwingCash",cash?"实际持币 "+m.heldBTC.toFixed(6)+" · 现金 "+fmtUsd(m.totalCashUSD,2):"",cash?"Held "+m.heldBTC.toFixed(6)+" · Cash "+fmtUsd(m.totalCashUSD,2):"");
-    put("plainCashNote",cash?"上方为实际持币与现金按期末价格折成 BTC 的合计，不是实际币量。":"两种方式均以相同本金和投入比较。",cash?"Totals include cash converted at the final BTC price; not actual coins held.":"Both methods use the same starting assets and contributions.");
-    $("plainWindow").textContent=m.startDay+" — "+m.endDay;
-    var local = cfg.positionSource === "local_snapshot";
-    var allocation=String(cfg.initialBTC)+" BTC"+(cfg.initialCash>0 ? " + "+fmtUsd(cfg.initialCash,2) : "");
-    put("plainAllocation",(local?"本机数量 ":"示例 ")+allocation+" · "+Number((cfg.tradeRatio*100).toFixed(1))+"% 波段",(local?"Local snapshot ":"Example ")+allocation+" · "+Number((cfg.tradeRatio*100).toFixed(1))+"% swing");
-    // Same positive starting cost and external inflows imply relative unit cost = inverse quantity ratio.
-    // If cash remains, show equivalent rather than actual-coin cost. Never infer absolute dollar cost.
-    var unitChange = m.eqBTC>1e-10 && m.baselineEqBTC>1e-10 ? m.baselineEqBTC/m.eqBTC-1 : null;
-    $("plainCostRow").hidden = unitChange===null || (m.costBasisKnown && m.totalExternalInvestedUSD<=0);
-    put("plainUnitCostLabel",cash?"折算单位成本变化":"相对单位投入成本",cash?"Equivalent unit cost change":"Relative unit cost");
-    $("plainUnitCost").textContent = unitChange===null ? "--" : fmtPct(unitChange,2,true);
-    $("plainUnitCost").className = "num "+(unitChange>1e-9?"dn":unitChange< -1e-9?"up":"");
-    put("plainCostNote","已计模拟手续费与滑点，未计税费。"+(!m.costBasisKnown?" 实际投入成本未知。":"")+(noContrib?" 无新增入金。":" 每月入金 "+fmtUsd(cfg.monthlyUSD,2)+"。"),"Includes modeled fees and slippage, excludes taxes."+(!m.costBasisKnown?" Actual cost unknown.":"")+(noContrib?" No new contributions.":" Monthly inflow "+fmtUsd(cfg.monthlyUSD,2)+"."));
-    if (oos && oos.selectedOosRolling24m && oos.selectedOosRolling24m.oosSampleCount > 0) {
-      var r=oos.selectedOosRolling24m, win=fmtPct(r.winRate,1,false), med=fmtPct(r.medianExcessPct,2,true);
-      var candidate=CANDIDATE_SPECS[oos.trainSelectedCandidateId];
-      var candidatePct=candidate ? Number((candidate.tradeRatio*100).toFixed(1))+"%" : "";
-      put("plainEvidence","另一项历史检验中，只有 "+win+" 的两年窗口跑赢基准。","In a separate study, "+win+" of two-year windows beat the baseline.");
-      if (r.winRate>=0.5) put("plainEvidence","另一项历史检验中，"+win+" 的两年窗口跑赢基准。","In a separate study, "+win+" of two-year windows beat the baseline.");
-      if (matched) put("plainEvidence",win+" 的两年历史窗口跑赢基准。",win+" of two-year historical windows beat the baseline.");
-      put("plainEvidenceNote",(matched?"与当前规则匹配。":"另用"+(candidatePct?" "+candidatePct+" 波段仓":"候选策略")+"测试，并非当前设置的胜率。")+" 中位差额 "+med+"；窗口有重叠，不代表未来成功概率。",(matched?"Matches the current rule. ":"Separate candidate"+(candidatePct?" ("+candidatePct+" swing)":"")+", not the current settings' win rate. ")+"Median difference "+med+"; overlapping windows are not future odds.");
-    } else {
-      put("plainEvidence",(state.oosState.status==="unavailable"||ready)?"历史检验暂无有效窗口。":"正在检验不同历史时期的结果。",(state.oosState.status==="unavailable"||ready)?"No valid historical validation windows available.":"Checking results across historical periods.");
-      put("plainEvidenceNote","不能仅凭一个回测区间判断策略有效。","One backtest period cannot establish an edge.");
-    }
-    put("plainAction",passed && matched && m.outperformedBaseline ? "保留长期持有作为对照。先模拟观察，不自动下单。" : "以长期持有和定投为对照。当前结果不支持启动实盘波段。",passed && matched && m.outperformedBaseline ? "Keep long-term holding as the benchmark. Simulate only; no orders." : "Keep holding and DCA as benchmarks. The current evidence does not support live swing trading.");
-  }
-
   function renderLoadingState() {
-    renderPlainSummary("loading");
     $("verdictTitle").textContent = isEn() ? "Calculating…" : "正在计算…";
     $("verdictDesc").textContent = isEn()
       ? "Reading and verifying historical daily closes."
@@ -1131,7 +1030,6 @@
 
   function renderClearedInvalidState(reasonMsg, isDataMissing) {
     state.bt = null;
-    renderPlainSummary("invalid");
     state.ovHoverIdx = -1;
     state.resHoverIdx = -1;
 
@@ -1336,8 +1234,8 @@
       $("provWindowVal").textContent = winTxt;
       $("provHashVal").textContent = meta.fingerprint + " · " + bt.config.hash;
       $("headerMetaSummary").textContent = isEn()
-        ? ("Data through " + meta.lastDay)
-        : ("数据截至 " + meta.lastDay);
+        ? ("Data End " + meta.lastDay + (meta.gapCount > 0 ? (" · " + meta.gapCount + " gaps") : "") + " · Historical Sim (Not a Signal)")
+        : ("数据末日 " + meta.lastDay + (meta.gapCount > 0 ? (" · 含早期缺口 " + meta.gapCount + " 日") : "") + " · 历史模拟，非今日交易信号");
     } else {
       $("provWindowVal").textContent = "--";
       $("provHashVal").textContent = meta.fingerprint;
@@ -1352,7 +1250,7 @@
     if (state.norm && state.norm.meta.gapCount > 0) {
       warns.push('<div class="warn-notice">' + escHtml(isEn()
         ? ("Data gap notice: Series has " + state.norm.meta.gapCount + " missing calendar days in early history; MA requires contiguous valid days without interpolation.")
-        : ("早期历史缺少 " + state.norm.meta.gapCount + " 天数据，未作插值。")) + "</div>");
+        : ("缺日提示：历史序列早期含 " + state.norm.meta.gapCount + " 个缺失自然日；均线严格按连续有效日计算，不对缺口插值。")) + "</div>");
     }
     if (bt && bt.ok && bt.config.contributionMode === "monthly_ahr999" && bt.metrics.startDay < "2026-01-01") {
       warns.push('<div class="warn-notice">' + escHtml(isEn()
@@ -1446,7 +1344,6 @@
     if (state.isLoadingData || state.isCalculatingPrimary) return;
     var bt = state.bt;
     if (!state.norm || !bt || !bt.ok) return;
-    renderPlainSummary();
 
     var m = bt.metrics;
     var cfg = bt.config;
@@ -2652,42 +2549,8 @@
     showToast(isEn() ? ("Read-only quantity imported: " + snap + " BTC") : ("已只读导入本机数量：" + snap + " BTC（原账本未改动）"));
   }
 
-  // Quick settings change only the applied configuration, not the real ledger.
-  function applyQuickSettings() {
-    var note=$("plainQuickNotice");
-    function reject(msg) { note.textContent=msg; note.hidden=false; }
-    if (state.isFormDirty) {
-      reject(isEn()?"Apply or reset the draft in Strategy Research first.":"研究页还有未应用的修改，请先应用或恢复设置。"); return false;
-    }
-    if (state.isLoadingData || state.isCalculatingPrimary) {
-      reject(isEn()?"Wait for the current calculation.":"当前正在更新数据或计算，请稍候。"); return false;
-    }
-    var rawBtc=$("plainQuickBTC").value.trim(), rawRatio=$("plainQuickRatio").value.trim();
-    var amount=rawBtc!==""?Number(rawBtc):NaN, ratio=rawRatio!==""?Number(rawRatio)/100:NaN;
-    var start=$("plainQuickStart").value;
-    if (!Number.isFinite(amount)||amount<0||amount>10000||!Number.isFinite(ratio)||ratio<0||ratio>0.1||!start) {
-      reject(isEn()?"Enter a valid date, BTC quantity and 0–10% allocation.":"请输入有效日期、BTC 数量和 0–10% 的波段比例。"); return false;
-    }
-    if ((state.config.end && start>state.config.end) || (state.norm && state.norm.meta.lastDay && start>=state.norm.meta.lastDay)) {
-      reject(isEn()?"Start must precede the end date and available data.":"开始日必须早于结束日及历史数据末日。"); return false;
-    }
-    var changed=Math.abs(amount-state.config.initialBTC)>1e-10;
-    var raw=Object.assign({},state.config,{initialBTC:amount,start:start,tradeRatio:ratio});
-    if (changed) { raw.positionSource="example"; raw.initialCostUSD=null; }
-    var check=VHE.validateConfig(raw);
-    if(!check.ok) { reject(isEn()?"Invalid settings. Check full research parameters.":"设置无效，请检查完整研究参数。"); return false; }
-    state.config=check.config;
-    saveConfigToLocal(state.config);
-    syncFormFromConfig();
-    executeSimulationFlow(true);
-    $("plainQuickSettings").open=false;
-    window.scrollTo(0,0);
-    return true;
-  }
-
   // ==================== 事件绑定 ====================
   function bindEvents() {
-    $("plainQuickForm").addEventListener("submit", function(ev) { ev.preventDefault(); applyQuickSettings(); });
     $("btnThemeToggle").addEventListener("click", function () {
       state.theme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
       document.documentElement.dataset.theme = state.theme;
@@ -2739,13 +2602,7 @@
     });
 
     $("btnGoResearch").addEventListener("click", function () {
-      setViewMode("research", true);
-      $("secResearchParams").open = true;
-    });
-    $("plainDetails").addEventListener("toggle", function () {
-      if (this.open && state.viewMode === "overview" && state.bt && state.bt.ok) {
-        drawSingleCurveCanvas("overviewMainCanvas", "overviewChartTip", state.bt, true, state.ovHoverIdx);
-      }
+      setViewMode("research", false);
     });
 
     $("btnOverviewReadLocal").addEventListener("click", triggerReadLocalHoldings);

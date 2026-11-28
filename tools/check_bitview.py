@@ -87,6 +87,16 @@ def main():
         time.sleep(0.2)
     if bad_c:
         problems.append("**成本分布（URPD）队列失效：** " + "、".join(bad_c))
+    st_b, t_b = http(f"{BASE}/bottoms/ranking.json")
+    if st_b == 200:
+        try:
+            jb = json.loads(t_b)
+            if not (isinstance(jb.get("ranked"), list) and len(jb["ranked"]) > 0 and isinstance(jb.get("lows"), list)):
+                problems.append("**Bottoms 排行榜格式无法识别**")
+        except Exception:
+            problems.append("**Bottoms 排行榜 JSON 解析失败**")
+    else:
+        problems.append(f"**Bottoms 排行榜接口出错：** HTTP {st_b}")
     st, t = http(f"{BASE}/api/server/sync")
     sync_line = ""
     if st == 200:
